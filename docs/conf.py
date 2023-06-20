@@ -43,7 +43,7 @@ source_suffix = [".rst", ".md"]
 main_doc = "index"
 
 # General information about the project.
-project = "ScyllaDB Open Source"
+project = "ScyllaDB Documentation"
 copyright = str(date.today().year) + ", ScyllaDB. All rights reserved."
 author = u"ScyllaDB Project Contributors"
 
