@@ -5,7 +5,6 @@ import warnings
 from datetime import date
 
 from sphinx_scylladb_theme.utils import multiversion_regex_builder
-from recommonmark.transform import AutoStructify
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -15,11 +14,11 @@ sys.path.insert(0, os.path.abspath(".."))
 BASE_URL = 'https://docs.scylladb.com'
 # Build documentation for the following tags and branches.
 TAGS = []
-BRANCHES = ["master", "branch-5.1", "branch-5.2"]
+BRANCHES = ["main"]
 # Set the latest version.
-LATEST_VERSION = "branch-5.2"
+LATEST_VERSION = "main"
 # Set which versions are not released yet.
-UNSTABLE_VERSIONS = ["master"]
+UNSTABLE_VERSIONS = ["main"]
 # Set which versions are deprecated.
 DEPRECATED_VERSIONS = [""]
 
@@ -35,14 +34,13 @@ extensions = [
     "sphinx_sitemap",
     "sphinx_scylladb_theme",
     "sphinx_multiversion",  # optional
-    "recommonmark",  # optional
 ]
 
 # The suffix(es) of source filenames.
 source_suffix = [".rst", ".md"]
 
-# The master toctree document.
-master_doc = "index"
+# The main toctree document.
+main_doc = "index"
 
 # General information about the project.
 project = "ScyllaDB Open Source"
@@ -145,7 +143,3 @@ def setup(sphinx):
         category=UserWarning,
         message=r".*Container node skipped.*",
     )
-    sphinx.add_config_value('recommonmark_config', {
-        'enable_eval_rst': True,
-    }, True)
-    sphinx.add_transform(AutoStructify)
