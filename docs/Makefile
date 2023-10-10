@@ -15,12 +15,6 @@ ALLSPHINXOPTS   := -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(
 TESTSPHINXOPTS  := $(ALLSPHINXOPTS) -W --keep-going
 PROD_OPTS       := -D html_theme_options.collapse_navigation='false' -D html_theme_options.navigation_depth=3 -c $(CONF_PATH)
 
-
-# Windows variables
-ifeq ($(OS),Windows_NT)
-    POETRY = $(APPDATA)\Python\Scripts\poetry
-endif
-
 .PHONY: all
 all: dirhtml
 
