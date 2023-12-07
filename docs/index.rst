@@ -11,9 +11,9 @@
 .. hero-box::
   :title: Welcome to ScyllaDB Documentation
   :image: /_static/img/mascots/scylla-docs.svg
-  :search_box:
-
-  New to ScyllaDB? Start `here <https://cloud.docs.scylladb.com/stable/scylladb-basics/>`_!
+  :button_icon: fa fa-play
+  :button_url: https://docs.scylladb.com/stable
+  :button_text: New to ScyllaDB? Start here!
 
 .. raw:: html
 
@@ -147,3 +147,9 @@
 .. raw:: html
 
   </div>
+
+
+.. toctree::
+   :hidden:
+
+   get-started/index
