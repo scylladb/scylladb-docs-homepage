@@ -12,7 +12,7 @@
   :title: Welcome to ScyllaDB Documentation
   :image: /_static/img/mascots/scylla-docs.svg
   :button_icon: fa fa-play
-  :button_url: https://docs.scylladb.com/stable
+  :button_url: https://docs.scylladb.com/stable/get-started/
   :button_text: New to ScyllaDB? Start here!
 
 .. raw:: html
