@@ -121,6 +121,7 @@ html_theme_options = {
     "banner_button_url": "https://lp.scylladb.com/university-live-2023-03-registration?siteplacement=docs",
     "banner_title_text": 'ScyllaDB University LIVE, FREE Virtual Training Event | March 21',
     "collapse_navigation": "true",
+    "zendesk_tag": "bphi8zrvgbfkjmk197b7s9",
 }
 
 # Last updated format
