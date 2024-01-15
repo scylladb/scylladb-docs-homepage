@@ -20,7 +20,7 @@ Gaming Leaderboard
 ---------------------
 
 The `Gaming Leaderboard sample application <https://github.com/scylladb/gaming-leaderboard-demo>`_ 
-will guide you through the process of creating a leaderboard to your gaming 
+will guide you through the process of creating a leaderboard for your gaming 
 application using ScyllaDB Cloud and NextJS.
 
 Video Streaming 
