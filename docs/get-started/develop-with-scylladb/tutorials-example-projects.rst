@@ -27,7 +27,7 @@ Video Streaming
 ---------------------
 
 The `Video Streaming sample application <https://github.com/scylladb/video-streaming>`_ 
-will guide you through the process of creating leaderboard to your gaming-like application 
+will guide you through the process of creating leaderboard to your gaming-like 
 application using ScyllaDB Cloud and NextJS.
 
 Care Pet Project
