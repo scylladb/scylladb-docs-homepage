@@ -15,6 +15,14 @@ ScyllaDB Cloud.
 It includes examples for NodeJS, Java, Python, Rust, Ruby, Elixir, C#, and
 Go.
 
+
+Gaming Leaderboard
+---------------------
+
+The `Gaming Leaderboard sample application <https://github.com/scylladb/gaming-leaderboard-demo>`_ 
+will guide you through the process of creating a leaderboard for your gaming 
+application using ScyllaDB Cloud and NextJS.
+
 Video Streaming 
 ---------------------
 
