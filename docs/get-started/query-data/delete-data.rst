@@ -24,7 +24,7 @@ the statement specifies a restriction for filtering the rows to be deleted.
 
 Including the ``WHERE`` clause with a specific restriction is essential to ensure 
 that only the rows meeting the restriction will be deleted. This is done to 
-prevent accidental deletions of all data in the table.
+prevent accidental deletions of the wrong data in the table.
 
 In summary, the ``DELETE`` statement in ScyllaDB is used to remove existing 
 data from a table. Always use a ``WHERE`` clause with a suitable restriction to 
