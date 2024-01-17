@@ -2,7 +2,7 @@
 Updating Data
 ===================
 
-Update data using the ``UPDATE`` statement. Always specify a condition to avoid 
+Update data using the ``UPDATE`` statement. Always specify a restriction to avoid 
 full-table updates. For example:
 
 .. code::
@@ -22,18 +22,18 @@ want to update data. In this example, you are updating data in a table named
 
 ``SET age = 78``: This part of the statement specifies the update operation. 
 You are setting the value of the age column to ``78`` for rows that match 
-the specified condition.
+the specified restriction.
 
 **WHERE Clause**
 ``WHERE user_id = 123e4567-e89b-12d3-a456-426655440000``: This part of 
-the statement specifies a condition that determines which rows will be updated.
+the statement specifies a restriction that determines which rows will be updated.
 
-By including the ``WHERE`` clause with a specific condition, you ensure that 
-only the rows that meet the condition will be updated. This is important to 
+By including the ``WHERE`` clause with a specific restriction, you ensure that 
+only the rows that meet the restriction will be updated. This is important to 
 prevent unintended updates to the entire table.
 
 In summary, the ``UPDATE`` statement in ScyllaDB is used to modify existing 
-data in a table. Always include a ``WHERE`` clause with a suitable condition 
+data in a table. Always include a ``WHERE`` clause with a suitable restriction 
 to target the specific rows you want to update, and specify the changes you 
 want to make using the SET clause. This helps you ensure the accuracy and 
 precision of your updates.
