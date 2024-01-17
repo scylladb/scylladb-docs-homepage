@@ -20,8 +20,7 @@ Let's break down the key concepts related to keyspace creation and replication i
 
 To create a keyspace, you use the ``CREATE KEYSPACE`` command followed by
 a keyspace name. In the example above, ``my_keyspace`` is the name of 
-the keyspace  you want to create. You can also specify various configuration 
-settings within the ``WITH`` clause.
+the keyspace you want to create.
 
 **Replication Strategy**
 
