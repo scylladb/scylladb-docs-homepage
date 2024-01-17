@@ -28,10 +28,6 @@ the specified restriction.
 ``WHERE user_id = 123e4567-e89b-12d3-a456-426655440000``: This part of 
 the statement specifies the affected partition key, which is mandatory.
 
-By including the ``WHERE`` clause with a specific restriction, you ensure that 
-only the rows that meet the restriction will be updated. This is important to 
-prevent unintended updates to the entire table.
-
 In summary, the ``UPDATE`` statement in ScyllaDB is used to modify existing 
 data in a table. Always include a ``WHERE`` clause with a suitable restriction 
 to target the specific rows you want to update, and specify the changes you 
