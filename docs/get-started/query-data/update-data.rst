@@ -2,8 +2,7 @@
 Updating Data
 ===================
 
-Update data using the ``UPDATE`` statement. Always specify a restriction to avoid 
-full-table updates. For example:
+Update data using the ``UPDATE`` statement. For example:
 
 .. code::
 
@@ -25,6 +24,7 @@ You are setting the value of the age column to ``78`` for rows that match
 the specified restriction.
 
 **WHERE Clause**
+
 ``WHERE user_id = 123e4567-e89b-12d3-a456-426655440000``: This part of 
 the statement specifies a restriction that determines which rows will be updated.
 
