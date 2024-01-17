@@ -7,8 +7,8 @@ A schema represents the organization of data in ScyllaDB.
 Keyspace
 ---------------
 
-A ScyllaDB keyspace contains tables and defines settings for replication 
-and durability. To create a keyspace, use the following syntax:
+A ScyllaDB keyspace contains tables and defines settings for replication.
+To create a keyspace, use the following syntax:
 
 .. code::
 
