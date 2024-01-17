@@ -12,7 +12,11 @@ To create a keyspace, use the following syntax:
 
 .. code::
 
-    CREATE KEYSPACE my_keyspace WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3};
+    CREATE KEYSPACE my_keyspace
+      WITH replication = {
+        'class': 'NetworkTopologyStrategy',
+        'replication_factor': 3
+    };
 
 Let's break down the key concepts related to keyspace creation and replication in ScyllaDB.
 
@@ -56,10 +60,10 @@ keys. Here's how to create a table:
 .. code::
 
     CREATE TABLE my_keyspace.users (
-        user_id uuid PRIMARY KEY,
-        first_name text,
-        last_name text,
-        age int
+      user_id uuid PRIMARY KEY,
+      first_name text,
+      last_name text,
+      age int
     );
 
 Let's break down the components of this ``CREATE TABLE`` statement:
@@ -107,10 +111,10 @@ determine the internal sorting of data within a partition.
 .. code::
 
     CREATE TABLE my_keyspace.orders (
-        order_id uuid,
-        product_id uuid,
-        quantity int,
-        PRIMARY KEY (order_id, product_id)
+      order_id uuid,
+      product_id uuid,
+      quantity int,
+      PRIMARY KEY (order_id, product_id)
     );
 
 In this example, ``order_id`` is the partition key, and ``product_id`` is 
@@ -125,4 +129,4 @@ Learn More
 --------------
 
 * See `Data Definition <https://opensource.docs.scylladb.com/stable/cql/ddl>`_ 
-  in the ScyllDB documentation to learn more about defining a schema in ScyllaDB.
+  in the ScyllaDB documentation to learn more about defining a schema in ScyllaDB.

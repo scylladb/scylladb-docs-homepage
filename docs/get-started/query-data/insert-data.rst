@@ -8,7 +8,7 @@ the column values. For example:
 .. code::
 
     INSERT INTO my_keyspace.users (user_id, first_name, last_name, age) 
-          VALUES (123e4567-e89b-12d3-a456-426655440000, 'Polly', 'Partition', 77);
+      VALUES (123e4567-e89b-12d3-a456-426655440000, 'Polly', 'Partition', 77);
 
 
 Let's break down the components of this ``INSERT INTO`` statement:

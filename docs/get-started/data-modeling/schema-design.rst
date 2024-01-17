@@ -22,12 +22,12 @@ and query performance.
 .. code::
 
     CREATE TABLE my_keyspace.products (
-        seller_id uuid,
-        product_id uuid,
-        product_name text,
-        price decimal,
-        description text
-        PRIMARY KEY (seller_id, price, product_id)
+      seller_id uuid,
+      product_id uuid,
+      product_name text,
+      price decimal,
+      description text
+      PRIMARY KEY (seller_id, price, product_id)
     );
 
 In this example, for the ``price``` column, we've chosen the decimal data type.

@@ -8,7 +8,7 @@ avoid accidental deletions. For example:
 .. code::
 
     DELETE FROM my_keyspace.users 
-     WHERE user_id = 123e4567-e89b-12d3-a456-426655440000;
+      WHERE user_id = 123e4567-e89b-12d3-a456-426655440000;
 
 Let's break down the components of this ``DELETE`` statement:
 

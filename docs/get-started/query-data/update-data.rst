@@ -7,7 +7,7 @@ Update data using the ``UPDATE`` statement. For example:
 .. code::
 
     UPDATE my_keyspace.users SET age = 78 
-     WHERE user_id = 123e4567-e89b-12d3-a456-426655440000;
+      WHERE user_id = 123e4567-e89b-12d3-a456-426655440000;
 
 Let's break down the components of this ``UPDATE`` statement:
 

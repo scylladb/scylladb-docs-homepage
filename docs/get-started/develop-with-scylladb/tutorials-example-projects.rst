@@ -38,4 +38,5 @@ an IoT project connected to ScyllaDB Cloud.
 
 ML Feature Store
 -----------------------
-Our `Feature Store sample application and tutorial <https://feature-store.scylladb.com/>`_ help you build a real-time feature store with ScyllaDB in Python.
+Our `Feature Store sample application and tutorial <https://feature-store.scylladb.com/>`_
+help you build a real-time feature store with ScyllaDB in Python.
