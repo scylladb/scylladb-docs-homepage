@@ -99,8 +99,7 @@ Primary Keys
 
 The primary key can be made up of two parts: the partition key and optional 
 clustering columns. The ``user_id`` column is the partition key in this example. 
-It determines how data is distributed across different partitions (data shards) 
-in the cluster.
+It determines how data gets distributed across the cluster.
 
 Additional columns, if present, can be specified as clustering columns, which 
 determine the internal sorting of data within a partition.
