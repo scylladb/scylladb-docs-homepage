@@ -30,7 +30,7 @@ defines how data should be replicated across nodes in the cluster. In the exampl
 above, the replication strategy is set to ``NetworkTopologyStrategy``.
 
 This is a commonly used replication strategy in ScyllaDB, especially in 
-multi-datacenter deployments. It allows you to specify the number of replicas 
+production deployments. It allows you to specify the number of replicas
 for each datacenter separately, which provides fine-grained control over data 
 distribution in a multi-datacenter environment.
 For example, if you have two datacenters, you can set different replication 
