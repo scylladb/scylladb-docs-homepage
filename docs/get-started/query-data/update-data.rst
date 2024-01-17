@@ -26,7 +26,7 @@ the specified restriction.
 **WHERE Clause**
 
 ``WHERE user_id = 123e4567-e89b-12d3-a456-426655440000``: This part of 
-the statement specifies a restriction that determines which rows will be updated.
+the statement specifies the affected partition key, which is mandatory.
 
 By including the ``WHERE`` clause with a specific restriction, you ensure that 
 only the rows that meet the restriction will be updated. This is important to 
