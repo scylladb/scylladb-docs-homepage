@@ -22,20 +22,21 @@ and query performance.
 .. code::
 
     CREATE TABLE my_keyspace.products (
-        product_id uuid PRIMARY KEY,
+        seller_id uuid,
+        product_id uuid,
         product_name text,
         price decimal,
         description text
+        PRIMARY KEY (seller_id, price, product_id)
     );
 
-In this example, for the``price`` column, we've chosen the decimal data type. 
-This data type is suitable for storing precise numerical values, such as 
-prices, as it preserves decimal precision.
-Choosing decimal over other numeric data types like float or double is 
-essential when dealing with financial data to avoid issues with rounding errors.
+In this example, for the ``price``` column, we've chosen the decimal data type.
+This data type is suitable for storing precise numerical values, such as prices,
+as it preserves decimal precision. Choosing decimal over other numeric data types
+like float or double is essential when dealing with financial data to avoid issues
+with rounding errors.
 
-You can efficiently index and query prices using the decimal data type, 
-ensuring fast and precise searches for products within specific price ranges. 
-When you need to sort products by price, the decimal data type maintains the 
-correct order, even for values with different decimal precision.
-
+You can efficiently index and query prices using the decimal data type, ensuring
+fast and precise searches for products within specific price ranges partitioned by
+``seller_id``. When you need to sort products by ``price``, the decimal data type
+maintains the correct order, even for values with different decimal precision.
