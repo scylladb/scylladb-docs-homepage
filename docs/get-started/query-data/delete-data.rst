@@ -34,5 +34,3 @@ data integrity in your ScyllaDB tables.
 
 See the details about the `DELETE statement <https://opensource.docs.scylladb.com/stable/cql/dml/delete.html>`_ 
 in the ScyllaDB documentation.
-
-

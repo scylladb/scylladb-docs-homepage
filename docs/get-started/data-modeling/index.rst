@@ -20,9 +20,3 @@ to execute.
   query-design
   schema-design
   best-practices
-
-
-  
-
-
-

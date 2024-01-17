@@ -13,10 +13,3 @@ and use it as the database for your application.
    query-data/index
    data-modeling/index
    learn-resources/index
-
-
-
-
-
-
-
