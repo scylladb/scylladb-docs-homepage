@@ -10,9 +10,9 @@ This further reinforces the concept of adopting a query-first data model.
 
 **Data Types**
 
-Selecting the appropriate `data type <https://opensource.docs.scylladb.com/stable/cql/types.html>`_ for your columns is critical for both 
-physical storage and logical query performance in your data model. You will 
-need to consider factors such as data size, indexing, and sorting.
+Selecting the appropriate `data type <https://opensource.docs.scylladb.com/stable/cql/types.html>`_
+for your columns is critical to your application semantics in your data model.
+You will need to consider factors such as data size, indexing, and sorting.
 
 Let's say you're designing a table to store information about e-commerce 
 products, and one of the attributes you want to capture is the product's price. 
