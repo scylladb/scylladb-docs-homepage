@@ -26,7 +26,7 @@ Let's consider a scenario with poor partition key selection:
     );
 
 In this model, the partition key is chosen as ``user_id``, which is a globally
-unique identifier for each message. This choice results in poor partition key 
+unique identifier for each user. This choice results in poor partition key
 selection because it doesn't distribute data evenly across partitions. As 
 a result, messages from popular users with many messages will create hot
 partitions, as all their messages will be concentrated in a single partition.
