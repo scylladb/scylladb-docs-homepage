@@ -42,7 +42,6 @@ the ``age`` column (without quotes) as it is an ``int`` data type.
   `Lightweight Transaction <https://opensource.docs.scylladb.com/stable/using-scylla/lwt.html>`_
   ``IF NOT EXISTS`` or ``IF EXISTS`` clauses.
 
-
 In summary, the ``INSERT INTO`` statement in ScyllaDB is used to insert a new 
 row of data into a specific table within a keyspace. It requires you to specify 
 the keyspace, table, column names, and the corresponding values that you want 
