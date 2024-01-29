@@ -38,4 +38,3 @@ The output of this command will look something like this:
 
 See `CQLSh: the CQL shell <https://opensource.docs.scylladb.com/master/cql/cqlsh.html>`_ 
 for details.
-

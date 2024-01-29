@@ -16,5 +16,6 @@ To perform these basic operations, you will use CQL.
   update-data
   delete-data
 
+.. note::
 
-  
+  If you are looking to query data with a DynamoDB compatible API, we recommend using `ScyllaDB Alternator <https://opensource.docs.scylladb.com/stable/alternator/getting-started.html>`_.

@@ -8,7 +8,7 @@ the column values. For example:
 .. code::
 
     INSERT INTO my_keyspace.users (user_id, first_name, last_name, age) 
-          VALUES (123e4567-e89b-12d3-a456-426655440000, 'Polly', 'Partition', 77);
+      VALUES (123e4567-e89b-12d3-a456-426655440000, 'Polly', 'Partition', 77);
 
 
 Let's break down the components of this ``INSERT INTO`` statement:
@@ -33,6 +33,14 @@ inserted into the ``user_id`` column (without quotes) as it is an ``uuid`` data
 type. ``'Polly', 'Partition'`` (enclosed in single quotes) are being inserted into 
 the ``first_name``, ``last_name`` columns. ``77`` is being inserted into 
 the ``age`` column (without quotes) as it is an ``int`` data type. 
+
+.. note::
+
+  Unlike in SQL, ``INSERT INTO`` does not check the prior existence of the row by default:
+  the row is created if none existed before, and updated otherwise.
+  This behavior can be changed by using ScyllaDB's
+  `Lightweight Transaction <https://opensource.docs.scylladb.com/stable/using-scylla/lwt.html>`_
+  ``IF NOT EXISTS`` or ``IF EXISTS`` clauses.
 
 In summary, the ``INSERT INTO`` statement in ScyllaDB is used to insert a new 
 row of data into a specific table within a keyspace. It requires you to specify 

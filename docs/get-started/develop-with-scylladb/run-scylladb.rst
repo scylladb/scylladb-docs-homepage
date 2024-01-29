@@ -17,9 +17,11 @@ Run ScyllaDB in Docker
 Docker simplifies the deployment and management of ScyllaDB. By using Docker 
 containers, you can easily create isolated ScyllaDB instances for development, 
 testing, and production. Running ScyllaDB in Docker is the simplest way to 
-experiment with ScyllaDB, and we highly recommend it. If you intend to run 
-ScyllaDB in Docker in production, we recommend following our 
-`best practices guide <https://opensource.docs.scylladb.com/stable/operating-scylla/procedures/tips/best-practices-scylla-on-docker.html>`_.
+experiment with ScyllaDB, and we highly recommend it.
+
+If you intend to run ScyllaDB in Docker in production, we recommend using
+`ScyllaDB Operator <https://operator.docs.scylladb.com/stable/>`_
+which will help you manage ScyllaDB clusters within Kubernetes.
 
 Running a Single Node
 =======================

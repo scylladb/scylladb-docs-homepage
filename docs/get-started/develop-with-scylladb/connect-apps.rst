@@ -105,6 +105,3 @@ To connect your application to ScyllaDB, you need to:
           credentials: {username: 'scylla', password: 'your-awesome-password'},
           // keyspace: 'your_keyspace' // optional
       })
-
-
-

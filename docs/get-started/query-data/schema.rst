@@ -7,12 +7,16 @@ A schema represents the organization of data in ScyllaDB.
 Keyspace
 ---------------
 
-A ScyllaDB keyspace contains tables and defines settings for replication 
-and durability. To create a keyspace, use the following syntax:
+A ScyllaDB keyspace contains tables and defines settings for replication.
+To create a keyspace, use the following syntax:
 
 .. code::
 
-    CREATE KEYSPACE my_keyspace WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3};
+    CREATE KEYSPACE my_keyspace
+      WITH replication = {
+        'class': 'NetworkTopologyStrategy',
+        'replication_factor': 3
+    };
 
 Let's break down the key concepts related to keyspace creation and replication in ScyllaDB.
 
@@ -20,8 +24,7 @@ Let's break down the key concepts related to keyspace creation and replication i
 
 To create a keyspace, you use the ``CREATE KEYSPACE`` command followed by
 a keyspace name. In the example above, ``my_keyspace`` is the name of 
-the keyspace  you want to create. You can also specify various configuration 
-settings within the ``WITH`` clause.
+the keyspace you want to create.
 
 **Replication Strategy**
 
@@ -31,7 +34,7 @@ defines how data should be replicated across nodes in the cluster. In the exampl
 above, the replication strategy is set to ``NetworkTopologyStrategy``.
 
 This is a commonly used replication strategy in ScyllaDB, especially in 
-multi-datacenter deployments. It allows you to specify the number of replicas 
+production deployments. It allows you to specify the number of replicas
 for each datacenter separately, which provides fine-grained control over data 
 distribution in a multi-datacenter environment.
 For example, if you have two datacenters, you can set different replication 
@@ -57,10 +60,10 @@ keys. Here's how to create a table:
 .. code::
 
     CREATE TABLE my_keyspace.users (
-        user_id uuid PRIMARY KEY,
-        first_name text,
-        last_name text,
-        age int
+      user_id uuid PRIMARY KEY,
+      first_name text,
+      last_name text,
+      age int
     );
 
 Let's break down the components of this ``CREATE TABLE`` statement:
@@ -100,8 +103,7 @@ Primary Keys
 
 The primary key can be made up of two parts: the partition key and optional 
 clustering columns. The ``user_id`` column is the partition key in this example. 
-It determines how data is distributed across different partitions (data shards) 
-in the cluster.
+It determines how data gets distributed across the cluster.
 
 Additional columns, if present, can be specified as clustering columns, which 
 determine the internal sorting of data within a partition.
@@ -109,10 +111,10 @@ determine the internal sorting of data within a partition.
 .. code::
 
     CREATE TABLE my_keyspace.orders (
-        order_id uuid,
-        product_id uuid,
-        quantity int,
-        PRIMARY KEY (order_id, product_id)
+      order_id uuid,
+      product_id uuid,
+      quantity int,
+      PRIMARY KEY (order_id, product_id)
     );
 
 In this example, ``order_id`` is the partition key, and ``product_id`` is 
@@ -127,4 +129,4 @@ Learn More
 --------------
 
 * See `Data Definition <https://opensource.docs.scylladb.com/stable/cql/ddl>`_ 
-  in the ScyllDB documentation to learn more about defining a schema in ScyllaDB.
+  in the ScyllaDB documentation to learn more about defining a schema in ScyllaDB.

@@ -15,7 +15,6 @@ Why ScyllaDB?
 --------------
 ScyllaDB is favored for its exceptional capability to manage high data volumes 
 and support rapid read/write operations. It is particularly effective in 
-environments demanding high throughput, low latency, and the ability to scale. The database is also known for its robustness and fault tolerance, 
+environments demanding high throughput, low latency, and the ability to scale.
+The database is also known for its robustness and fault tolerance,
 ensuring data integrity and availability.
-
-
