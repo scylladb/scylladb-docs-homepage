@@ -26,7 +26,7 @@ application using ScyllaDB Cloud and NextJS.
 Video Streaming 
 ---------------------
 
-The `Video Streaming sample application <https://github.com/scylladb/video-streaming>`_ 
+The `Video Streaming sample application <https://video-streaming.scylladb.com>`_ 
 will guide you through the process of creating a video streaming 
 application using ScyllaDB Cloud and NextJS.
 
