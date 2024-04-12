@@ -108,6 +108,7 @@ html_css_files = [
 # documentation.
 html_theme_options = {
     "conf_py_path": "docs/",
+    "default_branch": "main",
     "hide_banner": "true",
     "hide_version_dropdown": UNSTABLE_VERSIONS,
     "hide_versions_dropdown": "true",
