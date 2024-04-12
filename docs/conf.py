@@ -108,13 +108,14 @@ html_css_files = [
 # documentation.
 html_theme_options = {
     "conf_py_path": "docs/",
+    "default_branch": "main",
     "hide_banner": "true",
     "hide_version_dropdown": UNSTABLE_VERSIONS,
     "hide_versions_dropdown": "true",
     "hide_edit_this_page_button": "false",
     "hide_feedback_buttons": 'false',
-    "github_issues_repository": "scylladb/scylladb",
-    "github_repository": "scylladb/scylladb",
+    "github_issues_repository": "scylladb/scylladb-docs-homepage",
+    "github_repository": "scylladb/scylladb-docs-homepage",
     "versions_unstable": UNSTABLE_VERSIONS,
     "versions_deprecated": DEPRECATED_VERSIONS,
     "banner_button_text": "Register for Free",
