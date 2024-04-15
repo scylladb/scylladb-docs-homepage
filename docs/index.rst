@@ -11,9 +11,13 @@
 .. hero-box::
   :title: Welcome to ScyllaDB Documentation
   :image: /_static/img/mascots/scylla-docs.svg
-  :button_icon: fa fa-play
+  :button_icon: fa fa-arrow-right
   :button_url: https://docs.scylladb.com/stable/get-started/
-  :button_text: New to ScyllaDB? Start here!
+  :button_text: New to ScyllaDB?
+  :button_style: bold
+  :button_icon_position: right
+  :button_icon_link:
+  :cta: Start here!
 
 .. raw:: html
 
@@ -29,6 +33,7 @@
   :title: ScyllaDB Cloud
   :icon: scylla-icon scylla-icon--cloud
   :link: https://cloud.docs.scylladb.com
+  :link_target: _self
   :class: large-4 cloud-card
   :anchor: ScyllaDB Cloud Documentation
 
@@ -38,6 +43,7 @@
   :title: ScyllaDB Enterprise
   :icon: scylla-icon scylla-icon--enterprise-m
   :link: https://enterprise.docs.scylladb.com
+  :link_target: _self
   :class: large-4 enterprise-card
   :anchor: ScyllaDB Enterprise Documentation
 
@@ -47,6 +53,7 @@
   :title: ScyllaDB Open Source
   :icon: scylla-icon scylla-icon--about-us-m
   :link: https://opensource.docs.scylladb.com
+  :link_target: _self
   :class: large-4 opensource-card
   :anchor: ScyllaDB Open Source Documentation
 
@@ -70,6 +77,7 @@
 .. topic-box::
   :title: ScyllaDB Alternator
   :link: https://opensource.docs.scylladb.com/stable/alternator/alternator.html
+  :link_target: _self
   :image: /_static/img/mascots/scylla-alternator.svg
   :class: topic-box--product,large-4,small-6
 
@@ -78,6 +86,7 @@
 .. topic-box::
   :title: ScyllaDB Monitoring Stack
   :link: https://monitoring.docs.scylladb.com
+  :link_target: _self
   :image: /_static/img/mascots/scylla-monitor.svg
   :class: topic-box--product,large-4,small-6
 
@@ -86,6 +95,7 @@
 .. topic-box::
   :title: ScyllaDB Manager
   :link: https://manager.docs.scylladb.com
+  :link_target: _self
   :image: /_static/img/mascots/scylla-manager.svg
   :class: topic-box--product,large-4,small-6
 
@@ -94,6 +104,7 @@
 .. topic-box::
   :title: ScyllaDB Drivers
   :link: https://opensource.docs.scylladb.com/stable/using-scylla/drivers/
+  :link_target: _self
   :image: /_static/img/mascots/scylla-drivers.svg
   :class: topic-box--product,large-4,small-6
 
@@ -102,6 +113,7 @@
 .. topic-box::
   :title: ScyllaDB Operator
   :link: https://operator.docs.scylladb.com
+  :link_target: _self
   :image: /_static/img/mascots/scylla-enterprise.svg
   :class: topic-box--product,large-4,small-6
 
