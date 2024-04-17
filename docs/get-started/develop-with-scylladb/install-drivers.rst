@@ -23,7 +23,7 @@ retrieval.
 
     .. code::
 
-        cargo add scylladb
+        cargo add scylla
 
     Or add the relevant version to your ``Cargo.toml`` following instructions on
     `crates.io <https://crates.io/>`_.
