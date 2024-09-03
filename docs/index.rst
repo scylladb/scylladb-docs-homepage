@@ -165,3 +165,4 @@
    :hidden:
 
    get-started/index
+   versioning/index 
