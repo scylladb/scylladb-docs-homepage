@@ -40,3 +40,11 @@ ML Feature Store
 -----------------------
 Our `Feature Store sample application and tutorial <https://feature-store.scylladb.com/>`_
 help you build a real-time feature store with ScyllaDB in Python.
+
+Shopping Cart
+--------------------
+
+The `Shopping Cart sample application <https://shopping-cart.scylladb.com/stable/>`_ 
+will guide you through the process of creating a new ScyllaDB cluster and running
+the shopping cart API server. 
+
