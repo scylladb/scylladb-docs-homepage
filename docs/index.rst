@@ -10,7 +10,7 @@
 
 .. hero-box::
   :title: Welcome to ScyllaDB Documentation
-  :image: /_static/img/mascots/scylla-docs.svg
+  :image: /_static/img/mascots-2/docs.svg
   :button_icon: fa fa-arrow-right
   :button_url: https://docs.scylladb.com/stable/get-started/
   :button_text: New to ScyllaDB?
@@ -31,7 +31,7 @@
 
 .. topic-box::
   :title: ScyllaDB Cloud
-  :icon: scylla-icon scylla-icon--cloud
+  :icon: icon-docs-cloud
   :link: https://cloud.docs.scylladb.com
   :link_target: _self
   :class: large-4 cloud-card
@@ -41,7 +41,7 @@
 
 .. topic-box::
   :title: ScyllaDB Enterprise
-  :icon: scylla-icon scylla-icon--enterprise-m
+  :icon: icon-docs-enterprise
   :link: https://enterprise.docs.scylladb.com
   :link_target: _self
   :class: large-4 enterprise-card
@@ -51,7 +51,7 @@
 
 .. topic-box::
   :title: ScyllaDB Open Source
-  :icon: scylla-icon scylla-icon--about-us-m
+  :icon: icon-docs-open-source
   :link: https://opensource.docs.scylladb.com
   :link_target: _self
   :class: large-4 opensource-card
@@ -78,7 +78,7 @@
   :title: ScyllaDB Alternator
   :link: https://opensource.docs.scylladb.com/stable/alternator/alternator.html
   :link_target: _self
-  :image: /_static/img/mascots/scylla-alternator.svg
+  :image: /_static/img/mascots-2/alternator.svg
   :class: topic-box--product,large-4,small-6
 
   Open source Amazon DynamoDB-compatible API.
@@ -87,7 +87,7 @@
   :title: ScyllaDB Monitoring Stack
   :link: https://monitoring.docs.scylladb.com
   :link_target: _self
-  :image: /_static/img/mascots/scylla-monitor.svg
+  :image: /_static/img/mascots-2/monitor.svg
   :class: topic-box--product,large-4,small-6
 
   Complete open source monitoring solution for your ScyllaDB clusters.
@@ -96,7 +96,7 @@
   :title: ScyllaDB Manager
   :link: https://manager.docs.scylladb.com
   :link_target: _self
-  :image: /_static/img/mascots/scylla-manager.svg
+  :image: /_static/img/mascots-2/manager.svg
   :class: topic-box--product,large-4,small-6
 
   Hassle-free ScyllaDB NoSQL database management for scale-out clusters.
@@ -105,7 +105,7 @@
   :title: ScyllaDB Drivers
   :link: https://opensource.docs.scylladb.com/stable/using-scylla/drivers/
   :link_target: _self
-  :image: /_static/img/mascots/scylla-drivers.svg
+  :image: /_static/img/mascots-2/driver.svg
   :class: topic-box--product,large-4,small-6
 
   Shard-aware drivers for superior performance. 
@@ -114,7 +114,7 @@
   :title: ScyllaDB Operator
   :link: https://operator.docs.scylladb.com
   :link_target: _self
-  :image: /_static/img/mascots/scylla-enterprise.svg
+  :image: /_static/img/mascots-2/operator.svg
   :class: topic-box--product,large-4,small-6
 
   Easily run and manage your ScyllaDB cluster on Kubernetes.
@@ -135,7 +135,7 @@
 .. topic-box::
   :title: Attend ScyllaDB University
   :link: https://university.scylladb.com/
-  :image: /_static/img/mascots/scylla-university.png
+  :image: /_static/img/mascots-2/university.svg
   :class: large-6,small-12
   :anchor: Find a Class
 
@@ -145,7 +145,7 @@
 .. topic-box::
   :title: Register for a Webinar
   :link: https://www.scylladb.com/resources/webinars/
-  :image: /_static/img/mascots/scylla-with-computer-2.png
+  :image: /_static/img/mascots-2/laptop.svg
   :class: large-6,small-12
   :anchor: Find a Webinar
 
