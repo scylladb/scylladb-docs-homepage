@@ -11,7 +11,7 @@
 .. hero-box::
   :title: Welcome to ScyllaDB Documentation
   :image: /_static/img/mascots-2/docs.svg
-  :button_icon: fa fa-arrow-right
+  :button_icon: icon-arrow-right
   :button_url: https://docs.scylladb.com/stable/get-started/
   :button_text: New to ScyllaDB?
   :button_style: bold
