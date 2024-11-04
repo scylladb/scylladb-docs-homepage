@@ -14,7 +14,7 @@ Supported Versions
      - Status
      - End of Life (EOL)
    * - 2024.2
-     - September 2024
+     - November 2024
      - Supported
      - After 2026.1 or 2025.2 is released (see :ref:`Version Support Policy <version-support-policy>`)
    * - 2024.1 (LTS)
