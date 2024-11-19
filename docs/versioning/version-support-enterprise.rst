@@ -5,34 +5,8 @@ ScyllaDB Enterprise Version Support
 Supported Versions
 ------------------------
 
-.. list-table:: 
-   :widths: 20 25 20 35
-   :header-rows: 1
-
-   * - Version
-     - Released
-     - Status
-     - End of Life (EOL)
-   * - 2024.2
-     - November 2024
-     - Supported
-     - After 2026.1 or 2025.2 is released (see :ref:`Version Support Policy <version-support-policy>`)
-   * - 2024.1 (LTS)
-     - February 2024
-     - Supported
-     - After 2026.1 is released (see :ref:`Version Support Policy <version-support-policy>`)
-   * - 2023.1 (LTS)
-     - August 2023
-     - Supported
-     - After 2025.1 is released (see :ref:`Version Support Policy <version-support-policy>`)
-   * - 2022.2
-     - January 2023
-     - Not supported
-     - June 2024
-   * - 2022.1 (LTS)
-     - August 2022
-     - Not supported
-     - June 2024
+.. datatemplate:json:: /_static/data/enterprise_supported_versions.json
+   :template: supported_versions.tmpl
 
 Version Numbering
 -------------------
