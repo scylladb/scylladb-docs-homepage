@@ -1,0 +1,15 @@
+.. list-table::
+   :widths: 20 25 20 35
+   :header-rows: 1
+
+   * - Version
+     - Released
+     - Status
+     - End of Life (EOL)
+
+{% for row in data['data'] %}
+   * - {{ row['version'] }}
+     - {{ row['released'] }}
+     - {{ row['status'] }}
+     - {{ row['end_of_life'] }}  {% if row['show_version_policy_link'] %} (see :ref:`Version Support Policy <version-support-policy>`){% endif %}
+{% endfor %}

@@ -34,6 +34,8 @@ extensions = [
     "sphinx_sitemap",
     "sphinx_scylladb_theme",
     "sphinx_multiversion",  # optional
+    "sphinxcontrib.datatemplates",
+    
 ]
 
 # The suffix(es) of source filenames.
@@ -93,6 +95,9 @@ smv_outputdir_format = "{ref.name}"
 
 # The theme to use for pages.
 html_theme = "sphinx_scylladb_theme"
+
+# The directory for data templates.
+templates_path = ['_templates', ]
 
 # These folders are copied to the documentation's HTML output
 html_static_path = ['_static']
