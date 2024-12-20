@@ -12,12 +12,9 @@
   :title: Welcome to ScyllaDB Documentation
   :image: /_static/img/mascots-2/docs.svg
   :button_icon: icon-arrow-right
-  :button_url: https://docs.scylladb.com/stable/get-started/
-  :button_text: New to ScyllaDB?
-  :button_style: bold
-  :button_icon_position: right
-  :button_icon_link:
-  :cta: Start here!
+  :search_box:
+
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ut est luctus, lobortis lectus eget, vehicula est.
 
 .. raw:: html
 
@@ -30,32 +27,32 @@
   <div class="grid-x grid-margin-x hs">
 
 .. topic-box::
+  :title: Getting started
+  :icon: icon-docs-getting-started
+  :link: https://docs.scylladb.com/stable/get-started/
+  :link_target: _self
+  :class: large-4 getting-started-card
+  :anchor: First Steps
+
+  Start developing with ScyllaDB here, with sample models, connection instructions and more.
+
+.. topic-box::
   :title: ScyllaDB Cloud
-  :icon: icon-docs-cloud
+  :icon: icon-cloud
   :link: https://cloud.docs.scylladb.com
   :link_target: _self
   :class: large-4 cloud-card
-  :anchor: ScyllaDB Cloud Documentation
-
-  Simplify application development with ScyllaDB Cloud - a fully managed database-as-a-service.
-
-.. topic-box::
-  :title: ScyllaDB Enterprise
-  :icon: icon-docs-enterprise
-  :link: https://enterprise.docs.scylladb.com
-  :link_target: _self
-  :class: large-4 enterprise-card
-  :anchor: ScyllaDB Enterprise Documentation
+  :anchor: ScyllaDB Cloud
 
   Deploy and manage ScyllaDB's most stable enterprise-grade database with premium features and 24/7 support.
 
 .. topic-box::
-  :title: ScyllaDB Open Source
-  :icon: icon-docs-open-source
-  :link: https://opensource.docs.scylladb.com
+  :title: Self-Hosted
+  :icon: icon-instance
+  :link: https://docs.scylladb.com/manual
   :link_target: _self
-  :class: large-4 opensource-card
-  :anchor: ScyllaDB Open Source Documentation
+  :class: large-4 self-hosted-card
+  :anchor: ScyllaDB Self-Hosted Docs
 
   Deploy and manage your database in your environment.
 
