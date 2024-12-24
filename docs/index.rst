@@ -14,7 +14,7 @@
   :button_icon: icon-arrow-right
   :search_box:
 
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ut est luctus, lobortis lectus eget, vehicula est.
+  ScyllaDB is a high-performance NoSQL database optimized for speed and scalability.
 
 .. raw:: html
 
