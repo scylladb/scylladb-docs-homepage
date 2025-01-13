@@ -1,7 +1,7 @@
 name: "Docs / Publish docs.scylladb.com/manual"
 
 env:
-  FLAG: manual
+  FLAG: 'manual'
 
 on:
   schedule:
@@ -21,24 +21,21 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Fetch submodules
+      - name: Fetch submodules latest version
         run: |
-          git submodule update --init
-          cd submodules/scylladb
-          git fetch --all
+          git submodule sync
+          git submodule update --init --remote
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-
+          python-version: '3.10'
+    
       - name: Set up env
         run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" setupenv
 
       - name: Build docs
-        run: |
-          cd submodules/scylladb/docs
-          make FLAG="${{ env.FLAG }}" multiversion
+        run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" multiversion
           
       - name: Build redirects
         run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" redirects
