@@ -1,4 +1,4 @@
-name: "Docs / Publish"
+name: "Docs / Publish docs.scylladb.com"
 # For more information,
 # see https://sphinx-theme.scylladb.com/stable/deployment/production.html#available-workflows
 
@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - 'branch-**'
     paths:
       - "docs/**"
   workflow_dispatch:
@@ -32,6 +31,6 @@ jobs:
       - name: Build redirects
         run: make -C docs redirects
       - name: Deploy docs to GitHub Pages
-        run: ./docs/_utils/deploy.sh
+        run: ./scripts/deploy_pages.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
