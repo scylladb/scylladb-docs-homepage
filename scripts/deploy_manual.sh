@@ -18,7 +18,7 @@ if git ls-remote --heads "$REPO_URL" gh-pages; then
 
     echo "Copying new documentation..."
     mkdir -p manual
-    cp -r ../$GH_PAGES_DIR/* manual/
+    cp -a ../$GH_PAGES_DIR/. manual/
 
     echo "Configuring Git..."
     git config --local user.email "action@scylladb.com"
