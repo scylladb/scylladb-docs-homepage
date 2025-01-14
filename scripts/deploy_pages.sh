@@ -17,8 +17,8 @@ if git ls-remote --heads "$REPO_URL" gh-pages; then
     find . -mindepth 1 -not -path './.git*' -not -path './manual*' -exec rm -rf {} +
 
     echo "Copying new documentation..."
-    cp -r ../$GH_PAGES_DIR/* .
-    
+    cp -a ../$GH_PAGES_DIR/. .
+
     echo "Configuring Git..."
     git config --local user.email "action@scylladb.com"
     git config --local user.name "GitHub Action"
