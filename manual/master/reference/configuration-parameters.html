@@ -3882,6 +3882,95 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-audit">
+<dt class="sig sig-object std" id="confval-audit">
+<span class="sig-name descname"><span class="pre">audit</span></span><a class="headerlink" href="#confval-audit" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Controls the audit feature:</p>
+<blockquote>
+<div><p>tnone   : No auditing enabled.
+tsyslog : Audit messages sent to Syslog.
+ttable  : Audit messages written to column family named audit.audit_log.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-audit-categories">
+<dt class="sig sig-object std" id="confval-audit_categories">
+<span class="sig-name descname"><span class="pre">audit_categories</span></span><a class="headerlink" href="#confval-audit_categories" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Comma separated list of operation categories that should be audited.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;DCL,DDL,AUTH&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-audit-tables">
+<dt class="sig sig-object std" id="confval-audit_tables">
+<span class="sig-name descname"><span class="pre">audit_tables</span></span><a class="headerlink" href="#confval-audit_tables" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Comma separated list of table names (&lt;keyspace&gt;.&lt;table&gt;) that will be audited.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-audit-keyspaces">
+<dt class="sig sig-object std" id="confval-audit_keyspaces">
+<span class="sig-name descname"><span class="pre">audit_keyspaces</span></span><a class="headerlink" href="#confval-audit_keyspaces" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Comma separated list of keyspaces that will be audited. All tables in those keyspaces will be audited</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-audit-unix-socket-path">
+<dt class="sig sig-object std" id="confval-audit_unix_socket_path">
+<span class="sig-name descname"><span class="pre">audit_unix_socket_path</span></span><a class="headerlink" href="#confval-audit_unix_socket_path" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The path to the unix socket used for writting to syslog. Only applicable when audit is set to syslog.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;/dev/log&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-audit-syslog-write-buffer-size">
+<dt class="sig sig-object std" id="confval-audit_syslog_write_buffer_size">
+<span class="sig-name descname"><span class="pre">audit_syslog_write_buffer_size</span></span><a class="headerlink" href="#confval-audit_syslog_write_buffer_size" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The size (in bytes) of a write buffer used when writting to syslog socket.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">size_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1048576</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-ldap-url-template">
 <dt class="sig sig-object std" id="confval-ldap_url_template">
 <span class="sig-name descname"><span class="pre">ldap_url_template</span></span><a class="headerlink" href="#confval-ldap_url_template" title="Link to this definition">¶</a></dt>
@@ -4307,6 +4396,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
@@ -4555,8 +4645,8 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>
@@ -4664,7 +4754,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Jan 2025.
+                        Last updated on 18 Jan 2025.
                     
                 </div>
             
