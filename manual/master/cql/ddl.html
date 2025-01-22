@@ -831,6 +831,10 @@ against the table: the <code class="docutils literal notranslate"><span class="p
 options of a table are described in the following sections.</p>
 <section id="compact-tables">
 <span id="id8"></span><h4>Compact tables<a class="headerlink" href="#compact-tables" title="Link to this heading">¶</a></h4>
+<p>Support for compact tables has been deprecated.
+By default, new tables cannot be created with the <code class="docutils literal notranslate"><span class="pre">COMPACT</span> <span class="pre">STORAGE</span></code> option, but existing tables continue to work as before.
+To allow creating new COMPACT STORAGE tables, set the <code class="docutils literal notranslate"><span class="pre">enable_create_table_with_compact_storage</span></code> option to <code class="docutils literal notranslate"><span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>,
+yet beware that support for compact tables is planned to be permanently removed in a future version.</p>
 <p>A <em>compact</em> table is one defined with the <code class="docutils literal notranslate"><span class="pre">COMPACT</span> <span class="pre">STORAGE</span></code> option. This option is only maintained for backward
 compatibility for definitions created before CQL version 3 and shouldn’t be used for new tables. Declaring a
 table with this option creates limitations for the table, which are largely arbitrary (and exists for historical
