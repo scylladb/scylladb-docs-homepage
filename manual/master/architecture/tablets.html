@@ -351,6 +351,21 @@ the impact of cleanup on the performance of user queries.</p>
 to a new node.</p>
 <img alt="../_images/tablets-load-balancing.png" src="../_images/tablets-load-balancing.png" />
 </section>
+<section id="file-based-streaming">
+<h3>File-based Streaming<a class="headerlink" href="#file-based-streaming" title="Link to this heading">¶</a></h3>
+<p><span class="label label--tip">ScyllaDB Enterprise</span></p>
+<p>File-based streaming is a ScyllaDB Enterprise-only feature that optimizes
+tablet migration.</p>
+<p>In ScyllaDB Open Source, migrating tablets is performed by streaming mutation
+fragments, which involves deserializing SSTable files into mutation fragments
+and re-serializing them back into SSTables on the other node.
+In ScyllaDB Enterprise, migrating tablets is performed by streaming entire
+SStables, which does not require (de)serializing or processing mutation fragments.
+As a result, less data is streamed over the network, and less CPU is consumed,
+especially for data models that contain small cells.</p>
+<p>File-based streaming is used for tablet migration in all
+<a class="reference internal" href="../cql/ddl.html#tablets"><span class="std std-ref">keyspaces created with tablets enabled</span></a>.</p>
+</section>
 </section>
 <section id="enabling-tablets">
 <span id="tablets-enable-tablets"></span><h2>Enabling Tablets<a class="headerlink" href="#enabling-tablets" title="Link to this heading">¶</a></h2>
@@ -921,6 +936,7 @@ starts serving CQL.</p></li>
 <li><a class="reference internal" href="#data-distribution">Data Distribution</a><ul>
 <li><a class="reference internal" href="#load-balancing">Load Balancing</a></li>
 <li><a class="reference internal" href="#scaling-out">Scaling Out</a></li>
+<li><a class="reference internal" href="#file-based-streaming">File-based Streaming</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#enabling-tablets">Enabling Tablets</a></li>
@@ -974,7 +990,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Jan 2025.
+                        Last updated on 27 Jan 2025.
                     
                 </div>
             
