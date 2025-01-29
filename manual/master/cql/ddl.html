@@ -492,8 +492,15 @@ explicitly zero out the datacenter you want to have zero replicas.</p>
 </pre></div>
 </div>
 </section>
+<section id="keyspace-storage-options-experimental">
+<h3>Keyspace storage options <span class="label label--caution">Experimental</span><a class="headerlink" href="#keyspace-storage-options-experimental" title="Link to this heading">¶</a></h3>
+<p>By default, SStables of a keyspace are stored locally.
+As an alternative, you can configure your keyspace to be stored
+on Amazon S3 or another S3-compatible object store.
+See <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">Keyspace storage options</span></a> for details.</p>
+</section>
 <section id="the-tablets-property">
-<h3>The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property<a class="headerlink" href="#the-tablets-property" title="Link to this heading">¶</a></h3>
+<span id="tablets"></span><h3>The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property<a class="headerlink" href="#the-tablets-property" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property enables or disables tablets-based distribution
 for a keyspace.</p>
 <p>Options:</p>
@@ -1460,7 +1467,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-arrow-dropdown"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -1809,6 +1816,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#id2">CREATE KEYSPACE</a><ul>
 <li><a class="reference internal" href="#simplestrategy">SimpleStrategy</a></li>
 <li><a class="reference internal" href="#networktopologystrategy">NetworkTopologyStrategy</a></li>
+<li><a class="reference internal" href="#keyspace-storage-options-experimental">Keyspace storage options <span class="label label--caution">Experimental</span></a></li>
 <li><a class="reference internal" href="#the-tablets-property">The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property</a></li>
 </ul>
 </li>
@@ -1898,7 +1906,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Jan 2025.
+                        Last updated on 29 Jan 2025.
                     
                 </div>
             
