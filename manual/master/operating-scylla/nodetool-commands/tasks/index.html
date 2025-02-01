@@ -329,18 +329,13 @@ which makes them observable and controllable. Task manager operates per node.</p
 <ul class="simple">
 <li><p>When a task completes, its status is temporarily stored on the executing node</p></li>
 <li><p>Status information is retained for up to <a class="reference internal" href="../../../reference/configuration-parameters.html#confval-task_ttl_in_seconds"><code class="xref std std-confval docutils literal notranslate"><span class="pre">task_ttl_in_seconds</span></code></a> seconds</p></li>
-<li><p>The status information of a completed task is automatically removed after being queried with <code class="docutils literal notranslate"><span class="pre">tasks</span> <span class="pre">status</span></code> or <code class="docutils literal notranslate"><span class="pre">tasks</span> <span class="pre">tree</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tasks</span> <span class="pre">wait</span></code> returns the status, but it does not remove the task information of the queried task</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Multiple status queries using <code class="docutils literal notranslate"><span class="pre">tasks</span> <span class="pre">status</span></code> and <code class="docutils literal notranslate"><span class="pre">tasks</span> <span class="pre">tree</span></code> for the same completed task will only receive a response for the first query, since the status is removed after being retrieved.</p>
-</div>
 </section>
 <section id="supported-tasks-suboperations">
 <h2>Supported tasks suboperations<a class="headerlink" href="#supported-tasks-suboperations" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="abort.html"><span class="doc">abort</span></a> - Aborts the task.</p></li>
+<li><p><a class="reference internal" href="drain.html"><span class="doc">drain</span></a> - Unregisters all finished local tasks.</p></li>
 <li><p><a class="reference internal" href="user-ttl.html"><span class="doc">user-ttl</span></a> - Gets or sets user_task_ttl value.</p></li>
 <li><p><a class="reference internal" href="list.html"><span class="doc">list</span></a> - Lists tasks in the module.</p></li>
 <li><p><a class="reference internal" href="modules.html"><span class="doc">modules</span></a> - Lists supported modules.</p></li>
@@ -909,7 +904,7 @@ which makes them observable and controllable. Task manager operates per node.</p
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 31 Jan 2025.
+                        Last updated on 01 Feb 2025.
                     
                 </div>
             

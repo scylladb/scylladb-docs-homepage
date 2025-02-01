@@ -381,16 +381,16 @@ for which cluster tasks are visible in task manager isn’t specified.</p>
 </ul>
 </div></blockquote>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/task_status/{task_id}</span></code> - gets the task’s status, unregisters the task if it’s finished;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/task_status/{task_id}</span></code> - gets the task’s status;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/abort_task/{task_id}</span></code> - aborts the task if it’s abortable, otherwise 403 status code is returned;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/wait_task/{task_id}</span></code> - waits for the task and gets its status (does not unregister the tasks); query params:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/wait_task/{task_id}</span></code> - waits for the task and gets its status; query params:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><em>timeout</em> - timeout in seconds; if set - 408 status code is returned if waiting times out;</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/task_status_recursive/{task_id}</span></code> - gets statuses of the task and all its descendants in BFS order, unregisters the root task;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/task_status_recursive/{task_id}</span></code> - gets statuses of the task and all its descendants in BFS order;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/ttl</span></code> - gets or sets new ttl; query params (if setting):</p>
 <blockquote>
 <div><ul class="simple">
@@ -405,6 +405,7 @@ for which cluster tasks are visible in task manager isn’t specified.</p>
 </ul>
 </div></blockquote>
 </li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/task_manager/drain/{module}</span></code> - unregisters all finished local tasks in the module.</p></li>
 </ul>
 <p>Cluster tasks are not unregistered from task manager with API calls.</p>
 </section>
@@ -984,7 +985,7 @@ return the id of the associated task. You can query the operation’s status wit
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 31 Jan 2025.
+                        Last updated on 01 Feb 2025.
                     
                 </div>
             
