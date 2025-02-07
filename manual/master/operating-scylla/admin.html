@@ -546,7 +546,7 @@ For example:</p>
 <p>Scylla has the ability to communicate directly with S3-compatible storage. This
 feature enables various functionalities, but requires proper configuration of
 storage endpoints.</p>
-<p>To enable S3-compatible storage features, you need to describe the endpoints
+<p>To enable S3-compatible storage features, you need to describe the endpoints and credentials
 where SSTable files can be stored. This is done using a YAML configuration file.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code> file should follow this format:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
@@ -586,6 +586,65 @@ in the same directory as <code class="docutils literal notranslate"><span class=
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object-storage-config-file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object-storage-config-file.yaml</span>
 </pre></div>
 </div>
+<section id="configuring-aws-s3-access">
+<h3>Configuring AWS S3 access<a class="headerlink" href="#configuring-aws-s3-access" title="Link to this heading">¶</a></h3>
+<p>You can define endpoint details and authentication tokens in the
+<code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code> file. For example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-1.amazonaws.com</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-1</span>
+</pre></div>
+</div>
+<section id="local-development-environment">
+<h4>Local/Development Environment<a class="headerlink" href="#local-development-environment" title="Link to this heading">¶</a></h4>
+<p>In a local or development environment, you usually need to add
+authentication tokens to this file to ensure the client works properly.
+For instance:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-2.amazonaws.com</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-2</span>
+<span class="w">    </span><span class="nt">aws_access_key_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_ACCESS_KEY_ID</span>
+<span class="w">    </span><span class="nt">aws_secret_access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_SECRET_ACCESS_KEY</span>
+</pre></div>
+</div>
+<p>Additionally, you may include an <code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code>, although this is
+not typically necessary for local or development environments:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-2.amazonaws.com</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-2</span>
+<span class="w">    </span><span class="nt">aws_access_key_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_ACCESS_KEY_ID</span>
+<span class="w">    </span><span class="nt">aws_secret_access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_SECRET_ACCESS_KEY</span>
+<span class="w">    </span><span class="nt">aws_session_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_TEMPORARY_SESSION_TOKEN</span>
+</pre></div>
+</div>
+</section>
+<section id="important-note">
+<h4>Important Note<a class="headerlink" href="#important-note" title="Link to this heading">¶</a></h4>
+<p>The examples above are intended for development or local environments.
+You should <em>never</em> use this approach in production. The Scylla S3 client
+will first attempt to access credentials from the file or environment
+variables. If it fails to obtain credentials, it will then try to
+retrieve them from the AWS Security Token Service (STS) or the EC2
+Instance Metadata Service.</p>
+<p>For the EC2 Instance Metadata Service to function correctly, no
+additional configuration is required. However, STS requires the IAM Role
+ARN to be defined in the <code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code> file, as shown below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-1.amazonaws.com</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-1</span>
+<span class="w">    </span><span class="nt">iam_role_arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arn:aws:iam::123456789012:instance-profile/my-instance-instance-profile</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="compression">
 <span id="admin-compression"></span><h3>Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h3>
 <p>In ScyllaDB, you can configure compression at rest and compression in transit.
@@ -999,6 +1058,11 @@ with the ScyllaDB REST API.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuring-object-storage-experimental">Configuring Object Storage <span class="label label--caution">Experimental</span></a><ul>
+<li><a class="reference internal" href="#configuring-aws-s3-access">Configuring AWS S3 access</a><ul>
+<li><a class="reference internal" href="#local-development-environment">Local/Development Environment</a></li>
+<li><a class="reference internal" href="#important-note">Important Note</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#compression">Compression</a><ul>
 <li><a class="reference internal" href="#client-node-compression">Client - Node Compression</a></li>
 <li><a class="reference internal" href="#internode-compression">Internode Compression</a></li>
@@ -1475,7 +1539,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 06 Feb 2025.
+                        Last updated on 07 Feb 2025.
                     
                 </div>
             
