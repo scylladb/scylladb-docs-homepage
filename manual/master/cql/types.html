@@ -310,7 +310,7 @@
 <h1>Data Types<a class="headerlink" href="#data-types" title="Link to this heading">¶</a></h1>
 <p>CQL is a typed language and supports a rich set of data types, including <a class="reference internal" href="#native-types"><span class="std std-ref">native types</span></a> and
 <a class="reference internal" href="#collections"><span class="std std-ref">collection types</span></a>.</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cql_type</span><span class="p">:</span> <span class="o">`</span><span class="n">native_type</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">collection_type</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">user_defined_type</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">tuple_type</span><span class="o">`</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cql_type</span><span class="p">:</span> <span class="o">`</span><span class="n">native_type</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">collection_type</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">user_defined_type</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">tuple_type</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">vector_type</span><span class="o">`</span>
 </pre></div>
 </div>
 <section id="working-with-bytes">
@@ -572,7 +572,7 @@ by:</p>
 </pre></div>
 </div>
 <p>and their values can be input using collection literals:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">collection_literal</span><span class="p">:</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">set_literal</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">list_literal</span><span class="o">`</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">collection_literal</span><span class="p">:</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">set_literal</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">list_or_vector_literal</span><span class="o">`</span>
 
 <span class="n">map_literal</span><span class="p">:</span> <span class="s1">&#39;{&#39;</span> <span class="p">[</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;:&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="p">(</span><span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="p">:</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span><span class="p">)</span><span class="o">*</span> <span class="p">]</span> <span class="s1">&#39;}&#39;</span>
 
@@ -936,6 +936,33 @@ thought as anonymous UDTs with anonymous fields. Tuple types and tuple literals 
 <cite>frozen</cite> keyword), and it is not possible to update only some elements of a tuple (without updating the whole tuple).
 Also, a tuple literal should always provide values for all the components of the tuple type (some of
 those values can be null, but they need to be explicitly declared as so).</p>
+</section>
+<section id="vectors">
+<span id="id9"></span><h2>Vectors<a class="headerlink" href="#vectors" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">vector</span></code> is an array of a given number of elements of a given type.
+For example, a <code class="docutils literal notranslate"><span class="pre">vector&lt;float,</span> <span class="pre">3&gt;</span></code> holds vectors of 3 floats
+(in mathematical terms, these are 3-dimensional float vectors).
+None of the elements stored in a vector can be null.
+The vector type and it’s respective literal are defined by:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">vector_type</span><span class="p">:</span> <span class="n">VECTOR</span> <span class="s1">&#39;&lt;&#39;</span> <span class="o">`</span><span class="n">cql_type</span><span class="o">`</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="s1">&#39;&gt;&#39;</span>
+<span class="n">list_literal</span><span class="p">:</span> <span class="s1">&#39;[&#39;</span> <span class="p">[</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="p">(</span><span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span><span class="p">)</span><span class="o">*</span> <span class="p">]</span> <span class="s1">&#39;]&#39;</span>
+</pre></div>
+</div>
+<p>Note that list_literal is used for both <a class="reference internal" href="#lists"><span class="std std-ref">Lists</span></a> and <a class="reference internal" href="#vectors"><span class="std std-ref">Vectors</span></a> as their syntax is the same.
+In the case of vectors, the number of elements in the list_literal must match the number of elements in the vector type.</p>
+<p>Vectors can be used as in the example below:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">vectors</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">int</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">gene_expr</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">float</span><span class="p">,</span> <span class="mf">3</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">vectors</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">gene_expr</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">180503</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2228</span><span class="p">,</span> <span class="mf">0.2112</span><span class="p">,</span> <span class="mf">0.2024</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>Similar to tuple type, a vector is always <code class="docutils literal notranslate"><span class="pre">frozen&lt;vector&gt;</span></code> (without the need of the <cite>frozen</cite> keyword), and
+it is not possible to update only some elements of a vector (without updating the whole vector).</p>
+<p>Types stored in a vector are not implicitly frozen, so if you want to store a frozen collection or
+frozen UDT in a vector, you need to explicitly wrap them using <cite>frozen</cite> keyword.</p>
 <p><a class="reference internal" href="index.html"><span class="doc">Apache Cassandra Query Language</span></a></p>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
@@ -1089,6 +1116,7 @@ those values can be null, but they need to be explicitly declared as so).</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#tuples">Tuples</a></li>
+<li><a class="reference internal" href="#vectors">Vectors</a></li>
 </ul>
 </li>
 </ul>
@@ -1529,7 +1557,7 @@ those values can be null, but they need to be explicitly declared as so).</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Feb 2025.
+                        Last updated on 08 Feb 2025.
                     
                 </div>
             

@@ -341,8 +341,8 @@ meaning that pre-existing values for those columns will be preserved.</p>
 <p>Where possible, ScyllaDB will represent and accept data types in their native <code class="docutils literal notranslate"><span class="pre">JSON</span></code> representation. ScyllaDB will
 also accept string representations matching the CQL literal format for all single-field types. For example, floats,
 ints, UUIDs, and dates can be represented by CQL literal strings. However, compound types, such as collections, tuples,
-and user-defined types, must be represented by native <code class="docutils literal notranslate"><span class="pre">JSON</span></code> collections (maps and lists) or a JSON-encoded string
-representation of the collection.</p>
+vectors, and user-defined types, must be represented by native <code class="docutils literal notranslate"><span class="pre">JSON</span></code> collections (maps and lists) or a JSON-encoded
+string representation of the collection.</p>
 <p>The following table describes the encodings that ScyllaDB will accept in <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">JSON</span></code> values (and <code class="docutils literal notranslate"><span class="pre">fromJson()</span></code>
 arguments) as well as the format ScyllaDB will use when returning data for <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">JSON</span></code> statements (and
 <code class="docutils literal notranslate"><span class="pre">fromJson()</span></code>):</p>
@@ -478,6 +478,11 @@ as dates</span></a>. Datestamps with format <code class="docutils literal notran
 <td><p>integer</p></td>
 <td><p>Variable length; may overflow 32 or 64 bit integers in
 client-side decoder</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector</span></code></p></td>
+<td><p>list, string</p></td>
+<td><p>list</p></td>
+<td><p>Uses JSON’s native list representation</p></td>
 </tr>
 </tbody>
 </table>
@@ -1067,7 +1072,7 @@ in the selection clause of a <code class="docutils literal notranslate"><span cl
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Feb 2025.
+                        Last updated on 08 Feb 2025.
                     
                 </div>
             
