@@ -52,17 +52,17 @@
   :link: https://cloud.docs.scylladb.com
   :link_target: _self
   :class: large-4 cloud-card
-  :anchor: ScyllaDB Cloud
+  :anchor: ScyllaDB Cloud Docs
 
   Deploy and manage ScyllaDB's most stable enterprise-grade database with premium features and 24/7 support.
 
 .. topic-box::
-  :title: Self-Hosted
+  :title: ScyllaDB
   :icon: icon-instance
   :link: https://docs.scylladb.com/manual
   :link_target: _self
   :class: large-4 self-hosted-card
-  :anchor: ScyllaDB Self-Hosted Docs
+  :anchor: ScyllaDB Docs
 
   Deploy and manage your database in your environment.
 
