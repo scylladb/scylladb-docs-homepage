@@ -59,7 +59,7 @@
 .. topic-box::
   :title: ScyllaDB
   :icon: icon-instance
-  :link: https://docs.scylladb.com/manual
+  :link: https://enterprise.docs.scylladb.com/branch-2024.2
   :link_target: _self
   :class: large-4 self-hosted-card
   :anchor: ScyllaDB Docs
