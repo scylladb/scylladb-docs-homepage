@@ -26,7 +26,7 @@ and query performance.
       product_id uuid,
       product_name text,
       price decimal,
-      description text
+      description text,
       PRIMARY KEY (seller_id, price, product_id)
     );
 
