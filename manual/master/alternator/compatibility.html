@@ -340,7 +340,7 @@ Instructions for doing this can be found in:
 <section id="write-isolation-policies">
 <h2>Write isolation policies<a class="headerlink" href="#write-isolation-policies" title="Link to this heading">¶</a></h2>
 <p>Scylla was designed to optimize the performance of pure write operations -
-writes which do not need to read the the previous value of the item.
+writes which do not need to read the previous value of the item.
 In CQL, writes which do need the previous value of the item must explicitly
 use the slower LWT (“LightWeight Transaction”) feature to be correctly
 isolated from each other. It is not allowed to mix LWT and non-LWT writes
@@ -391,12 +391,12 @@ two requests to two different nodes.</p></li>
 <li><p>Consider using the <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> write isolation policy.
 It is slower, but has better guarantees.</p></li>
 </ol>
-<p>Another guarantee that that <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> can make and other write
+<p>Another guarantee that <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> can make and other write
 isolation modes do not is that writes to the same item are <em>serialized</em>:
 Even if the two write are sent at exactly the same time to two different
 nodes, the result will appear as if one write happened first, and then
 the other. But in other modes (with non-LWT writes), two writes can get
-exactly the same microsecond-resolution timestamp, the the result may be
+exactly the same microsecond-resolution timestamp, the result may be
 a mixture of both writes - some attributes from one and some from the
 other - instead of being just one or the other.</p>
 </section>
@@ -1232,7 +1232,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Feb 2025.
+                        Last updated on 14 Feb 2025.
                     
                 </div>
             
