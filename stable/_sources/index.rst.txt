@@ -18,11 +18,11 @@
 
 .. raw:: html
 
-  <div class="landing__content landing__content">
+  <div class="landing__content">
 
 .. raw:: html
 
-  <div class="topics-grid topics-grid--scrollable grid-container full">
+  <div class="topics-grid grid-container full">
 
 .. alert::
   :link: https://www.scylladb.com/2024/12/18/why-were-moving-to-a-source-available-license/
