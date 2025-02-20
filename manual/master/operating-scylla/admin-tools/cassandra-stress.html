@@ -315,178 +315,10 @@
                         <section id="cassandra-stress">
 <h1>Cassandra Stress<a class="headerlink" href="#cassandra-stress" title="Link to this heading">¶</a></h1>
 <p>The cassandra-stress tool is used for benchmarking and load testing both ScyllaDB and Cassandra clusters. The cassandra-stress tool also supports testing arbitrary CQL tables and queries to allow users to benchmark their data model.</p>
-<p>This documentation focuses on user mode as this allows the testing of your actual schema.</p>
-<section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
-<p>There are several operation types:</p>
-<ul class="simple">
-<li><p>write-only, read-only, and mixed workloads of standard data</p></li>
-<li><p>write-only and read-only workloads for counter columns</p></li>
-<li><p>user configured workloads, running custom queries on custom schemas</p></li>
-<li><p>The syntax is cassandra-stress &lt;command&gt; [options]. If you want more information on a given command or options, just run cassandra-stress help</p></li>
-</ul>
-<p>Commands:</p>
-<p>read: Multiple concurrent reads - the cluster must first be populated by a write test.</p>
-<p>write: Multiple concurrent writes against the cluster.</p>
-<p>mixed: Interleaving of any basic commands, with configurable ratio and distribution - the cluster must first be populated by a write test.</p>
-<p>counter_write: Multiple concurrent updates of counters.</p>
-<p>counter_read: Multiple concurrent reads of counters. The cluster must first be populated by a counterwrite test.</p>
-<p>user: Interleaving of user provided queries, with configurable ratio and distribution.</p>
-<p>help: Print help for a command or option.</p>
-<p>print: Inspect the output of a distribution definition.</p>
-<p>legacy: Legacy support mode.</p>
-<p>Primary Options:</p>
-<p>-pop: Population distribution and intra-partition visit order.</p>
-<p>-insert: Insert specific options relating to various methods for batching and splitting partition updates.</p>
-<p>-col: Column details such as size and count distribution, data generator, names, comparator and if super columns should be used.</p>
-<p>-rate: Thread count, rate limit or automatic mode (default is auto).</p>
-<p>-mode: CQL with options.</p>
-<p>-errors: How to handle errors when encountered during stress.</p>
-<p>-sample: Specify the number of samples to collect for measuring latency.</p>
-<p>-schema: Replication settings, compression, compaction, etc.</p>
-<p>-node: Nodes to connect to.</p>
-<p>-log: Where to log progress to, and the interval at which to do it.</p>
-<p>-transport: Custom transport factories.</p>
-<p>-port: The port to connect to cassandra nodes on.</p>
-<p>-sendto: Specify a stress server to send this command to.</p>
-<p>-graph: Graph recorded metrics.</p>
-<p>-tokenrange: Token range settings.</p>
-</section>
-<section id="user-mode">
-<h2>User mode<a class="headerlink" href="#user-mode" title="Link to this heading">¶</a></h2>
-<p>User mode allows you to use your stress your own schemas. This can save time in the long run rather than building an application and then realising your schema doesn’t scale.</p>
-<section id="profile">
-<h3>Profile<a class="headerlink" href="#profile" title="Link to this heading">¶</a></h3>
-<p>User mode requires a profile defined in YAML. Multiple YAML files may be specified in which case operations in the ops argument are referenced as specname.opname.</p>
-<p>An identifier for the profile:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">specname</span><span class="p">:</span> <span class="n">staff_activities</span>
-</pre></div>
-</div>
-<p>The keyspace for the test:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">keyspace</span><span class="p">:</span> <span class="n">staff</span>
-</pre></div>
-</div>
-<p>CQL for the keyspace. Optional if the keyspace already exists:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">keyspace_definition</span><span class="p">:</span> <span class="o">|</span>
-<span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">stresscql</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;SimpleStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span><span class="p">:</span> <span class="mf">3</span><span class="p">};</span>
-</pre></div>
-</div>
-<p>The table to be stressed:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">table</span><span class="p">:</span> <span class="n">staff_activities</span>
-</pre></div>
-</div>
-<p>CQL for the table. Optional if the table already exists:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">table_definition</span><span class="p">:</span> <span class="o">|</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">staff_activities</span> <span class="p">(</span>
-<span class="n">name</span> <span class="nb">text</span><span class="p">,</span>
-<span class="n">when</span> <span class="nb">timeuuid</span><span class="p">,</span>
-<span class="n">what</span> <span class="nb">text</span><span class="p">,</span>
-<span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">when</span><span class="p">,</span> <span class="n">what</span><span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>Optional meta information on the generated columns in the above table. The min and max only apply to text and blob types. The distribution field represents the total unique population distribution of that column across rows:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">columnspec</span><span class="p">:</span>
-<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span>
-  <span class="n">size</span><span class="p">:</span> <span class="n">uniform</span><span class="p">(</span><span class="mf">5..10</span><span class="p">)</span> <span class="o">#</span> <span class="n">The</span> <span class="n">names</span> <span class="k">of</span> <span class="n">the</span> <span class="n">staff</span> <span class="n">members</span> <span class="n">are</span> <span class="n">between</span> <span class="mf">5</span><span class="o">-</span><span class="mf">10</span> <span class="n">characters</span>
-  <span class="n">population</span><span class="p">:</span> <span class="n">uniform</span><span class="p">(</span><span class="mf">1..10</span><span class="p">)</span> <span class="o">#</span> <span class="mf">10</span> <span class="n">possible</span> <span class="n">staff</span> <span class="n">members</span> <span class="k">to</span> <span class="n">pick</span> <span class="k">from</span>
-<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">when</span>
-  <span class="n">cluster</span><span class="p">:</span> <span class="n">uniform</span><span class="p">(</span><span class="mf">20..500</span><span class="p">)</span> <span class="o">#</span> <span class="n">Staff</span> <span class="n">members</span> <span class="n">do</span> <span class="n">between</span> <span class="mf">20</span> <span class="k">and</span> <span class="mf">500</span> <span class="n">events</span>
-<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">what</span>
-  <span class="n">size</span><span class="p">:</span> <span class="n">normal</span><span class="p">(</span><span class="mf">10..100</span><span class="p">,</span><span class="mf">50</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Supported types are:</p>
-<p>An exponential distribution over the range [min..max]:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">EXP</span><span class="p">(</span><span class="n">min</span><span class="mf">..</span><span class="n">max</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>An extreme value (Weibull) distribution over the range [min..max]:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">EXTREME</span><span class="p">(</span><span class="n">min</span><span class="mf">..</span><span class="n">max</span><span class="p">,</span><span class="n">shape</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>A gaussian/normal distribution, where mean=(min+max)/2, and stdev is (mean-min)/stdvrng:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">GAUSSIAN</span><span class="p">(</span><span class="n">min</span><span class="mf">..</span><span class="n">max</span><span class="p">,</span><span class="n">stdvrng</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>A gaussian/normal distribution, with explicitly defined mean and stdev:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">GAUSSIAN</span><span class="p">(</span><span class="n">min</span><span class="mf">..</span><span class="n">max</span><span class="p">,</span><span class="n">mean</span><span class="p">,</span><span class="n">stdev</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>A uniform distribution over the range [min, max]:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">UNIFORM</span><span class="p">(</span><span class="n">min</span><span class="mf">..</span><span class="n">max</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>A fixed distribution, always returning the same value:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">FIXED</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>If preceded by ~, the distribution is inverted</p>
-<p>Defaults for all columns are size: uniform(4..8), population: uniform(1..100B), cluster: fixed(1)</p>
-<p>Insert distributions:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">insert</span><span class="p">:</span>
-<span class="o">#</span> <span class="n">How</span> <span class="n">many</span> <span class="k">partition</span> <span class="k">to</span> <span class="k">insert</span> <span class="k">per</span> <span class="k">batch</span>
-<span class="n">partitions</span><span class="p">:</span> <span class="n">fixed</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
-<span class="o">#</span> <span class="n">How</span> <span class="n">many</span> <span class="n">rows</span> <span class="k">to</span> <span class="k">update</span> <span class="k">per</span> <span class="k">partition</span>
-<span class="k">select</span><span class="p">:</span> <span class="n">fixed</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span><span class="o">/</span><span class="mf">500</span>
-<span class="o">#</span> <span class="k">UNLOGGED</span> <span class="k">or</span> <span class="n">LOGGED</span> <span class="k">batch</span> <span class="n">for</span> <span class="k">insert</span>
-<span class="n">batchtype</span><span class="p">:</span> <span class="k">UNLOGGED</span>
-</pre></div>
-</div>
-<p>Currently all inserts are done inside batches.</p>
-<p>Read statements to use during the test:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">queries</span><span class="p">:</span>
-   <span class="n">events</span><span class="p">:</span>
-      <span class="n">cql</span><span class="p">:</span> <span class="k">select</span> <span class="o">*</span>  <span class="k">from</span> <span class="n">staff_activities</span> <span class="k">where</span> <span class="n">name</span> <span class="o">=</span> <span class="o">?</span>
-      <span class="n">fields</span><span class="p">:</span> <span class="n">samerow</span>
-   <span class="n">latest_event</span><span class="p">:</span>
-      <span class="n">cql</span><span class="p">:</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">staff_activities</span> <span class="k">where</span> <span class="n">name</span> <span class="o">=</span> <span class="o">?</span>  <span class="k">LIMIT</span> <span class="mf">1</span>
-      <span class="n">fields</span><span class="p">:</span> <span class="n">samerow</span>
-</pre></div>
-</div>
-<p>Running a user mode test:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cassandra</span><span class="o">-</span><span class="n">stress</span> <span class="k">user</span> <span class="n">profile</span><span class="o">=</span><span class="mf">.</span><span class="o">/</span><span class="n">example</span><span class="mf">.</span><span class="n">yaml</span> <span class="n">duration</span><span class="o">=</span><span class="mf">1</span><span class="n">m</span> <span class="s s-Name">&quot;ops(insert=1,latest_event=1,events=1)&quot;</span> <span class="k">truncate</span><span class="o">=</span><span class="n">once</span>
-</pre></div>
-</div>
-<p>This will create the schema then run tests for 1 minute with an equal number of inserts, latest_event queries and events queries. Additionally the table will be truncated once before the test.</p>
-<p>The full example can be found here yaml</p>
-<p>Running a user mode test with multiple yaml files:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cassandra-stress user profile=./example.yaml,./example2.yaml duration=1m “ops(ex1.insert=1,ex1.latest_event=1,ex2.insert=2)” truncate=once
-</pre></div>
-</div>
-<p>This will run operations as specified in both the example.yaml and example2.yaml files. example.yaml and example2.yaml can reference the same table
-although care must be taken that the table definition is identical (data generation specs can be different).</p>
-</section>
-<section id="graphing">
-<h3>Graphing<a class="headerlink" href="#graphing" title="Link to this heading">¶</a></h3>
-<p>Graphs can be generated for each run of stress.</p>
-<img alt="../../_images/example-stress-graph.png" src="../../_images/example-stress-graph.png" />
-<p>To create a new graph:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cassandra</span><span class="o">-</span><span class="n">stress</span> <span class="k">user</span> <span class="n">profile</span><span class="o">=</span><span class="mf">.</span><span class="o">/</span><span class="n">stress</span><span class="o">-</span><span class="n">example</span><span class="mf">.</span><span class="n">yaml</span> <span class="s s-Name">&quot;ops(insert=1,latest_event=1,events=1)&quot;</span> <span class="o">-</span><span class="n">graph</span> <span class="n">file</span><span class="o">=</span><span class="n">graph</span><span class="mf">.</span><span class="n">html</span> <span class="n">title</span><span class="o">=</span><span class="s s-Name">&quot;Awesome graph&quot;</span>
-</pre></div>
-</div>
-<p>To add a new run to an existing graph point to an existing file and add a revision name:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cassandra</span><span class="o">-</span><span class="n">stress</span> <span class="k">user</span> <span class="n">profile</span><span class="o">=</span><span class="mf">.</span><span class="o">/</span><span class="n">stress</span><span class="o">-</span><span class="n">example</span><span class="mf">.</span><span class="n">yaml</span> <span class="n">duration</span><span class="o">=</span><span class="mf">1</span><span class="n">m</span> <span class="s s-Name">&quot;ops(insert=1,latest_event=1,events=1)&quot;</span> <span class="o">-</span><span class="n">graph</span> <span class="n">file</span><span class="o">=</span><span class="n">graph</span><span class="mf">.</span><span class="n">html</span> <span class="n">title</span><span class="o">=</span><span class="s s-Name">&quot;Awesome graph&quot;</span> <span class="n">revision</span><span class="o">=</span><span class="s s-Name">&quot;Second run&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="faq">
-<h3>FAQ<a class="headerlink" href="#faq" title="Link to this heading">¶</a></h3>
-<p>How do you use NetworkTopologyStrategy for the keyspace?</p>
-<p>Use the schema option making sure to either escape the parenthesis or enclose in quotes:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cassandra</span><span class="o">-</span><span class="n">stress</span> <span class="n">write</span> <span class="o">-</span><span class="k">schema</span> <span class="s s-Name">&quot;replication(strategy=NetworkTopologyStrategy,datacenter1=3)&quot;</span>
-</pre></div>
-</div>
-<p>How do you use SSL?</p>
-<p>Use the transport option:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cassandra</span><span class="o">-</span><span class="n">stress</span> <span class="s s-Name">&quot;write n=100k cl=ONE no-warmup&quot;</span> <span class="o">-</span><span class="n">transport</span> <span class="s s-Name">&quot;truststore=$HOME/jks/truststore.jks truststore-password=cassandra&quot;</span>
-</pre></div>
-</div>
+<p>Cassandra Stress is not part of ScyllaDB and it is not distributed along side it anymore. It has it’s own seperate repository and release cycle. More information about it can be found on <a class="reference external" href="https://github.com/scylladb/cassandra-stress">GitHub</a> or on <a class="reference external" href="https://hub.docker.com/r/scylladb/cassandra-stress">DockerHub</a>.</p>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
 <p>Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.</p>
-</section>
-</section>
 </section>
 
                     </div>
@@ -605,23 +437,6 @@ although care must be taken that the table definition is identical (data generat
         
     </ul>
 
-    
-        <div class="secondary-side-nav__content">
-            <p class="topic-title">On this page</p>
-            <ul>
-<li><a class="reference internal" href="#">Cassandra Stress</a><ul>
-<li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#user-mode">User mode</a><ul>
-<li><a class="reference internal" href="#profile">Profile</a></li>
-<li><a class="reference internal" href="#graphing">Graphing</a></li>
-<li><a class="reference internal" href="#faq">FAQ</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-        </div>
     
 </div>
                         </div>
@@ -1057,7 +872,7 @@ although care must be taken that the table definition is identical (data generat
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 Feb 2025.
+                        Last updated on 20 Feb 2025.
                     
                 </div>
             
