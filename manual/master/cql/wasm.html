@@ -332,8 +332,8 @@
 </pre></div>
 </div>
 <p>The compilation instructions are described at <a class="reference external" href="https://github.com/scylladb/scylla-rust-udf">https://github.com/scylladb/scylla-rust-udf</a> but the commands will generally be:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>build<span class="w"> </span>--target<span class="o">=</span>wasm32-wasi
-wasm2wat<span class="w"> </span>target/wasm32-wasi/debug/flatten.wasm<span class="w"> </span>&gt;<span class="w"> </span>flatten.wat
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>build<span class="w"> </span>--target<span class="o">=</span>wasm32-wasip1
+wasm2wat<span class="w"> </span>target/wasm32-wasip1/debug/flatten.wasm<span class="w"> </span>&gt;<span class="w"> </span>flatten.wat
 </pre></div>
 </div>
 </section>
@@ -392,7 +392,7 @@ Just to implement the fib() function that returns a special value on a NULL, you
 </pre></div>
 </div>
 <p>And compile it with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/path/to/wasm/supporting/c/compiler<span class="w"> </span>--sysroot<span class="o">=</span>/path/to/wasi/sysroot<span class="w"> </span>-O2<span class="w">  </span>--target<span class="o">=</span>wasm32-wasi<span class="w"> </span>-Wl,--export<span class="o">=</span>fib<span class="w"> </span>-Wl,--export<span class="o">=</span>_scylla_abi<span class="w"> </span>-Wl,--export<span class="o">=</span>_scylla_malloc<span class="w"> </span>-Wl,--export<span class="o">=</span>_scylla_free<span class="w"> </span>-Wl,--no-entry<span class="w"> </span>fibnull.c<span class="w"> </span>-o<span class="w"> </span>fibnull.wasm
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/path/to/wasm/supporting/c/compiler<span class="w"> </span>--sysroot<span class="o">=</span>/path/to/wasi/sysroot<span class="w"> </span>-O2<span class="w">  </span>--target<span class="o">=</span>wasm32-wasip1<span class="w"> </span>-Wl,--export<span class="o">=</span>fib<span class="w"> </span>-Wl,--export<span class="o">=</span>_scylla_abi<span class="w"> </span>-Wl,--export<span class="o">=</span>_scylla_malloc<span class="w"> </span>-Wl,--export<span class="o">=</span>_scylla_free<span class="w"> </span>-Wl,--no-entry<span class="w"> </span>fibnull.c<span class="w"> </span>-o<span class="w"> </span>fibnull.wasm
 wasm2wat<span class="w"> </span>fibnull.wasm<span class="w"> </span>&gt;<span class="w"> </span>fibnull.wat
 </pre></div>
 </div>
@@ -1186,7 +1186,7 @@ Alternative ways of expressing whether a function can <strong>return</strong> nu
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Feb 2025.
+                        Last updated on 25 Feb 2025.
                     
                 </div>
             

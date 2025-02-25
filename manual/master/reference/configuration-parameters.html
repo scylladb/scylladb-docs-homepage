@@ -3841,12 +3841,26 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-tablets_initial_scale_factor">
 <span class="sig-name descname"><span class="pre">tablets_initial_scale_factor</span></span><a class="headerlink" href="#confval-tablets_initial_scale_factor" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Calculated initial tablets are multiplied by this number</p>
+<div><p>Minimum average number of tablet replicas per shard per table. Suppressed by tablet options in table’s schema: min_per_shard_tablet_count and min_tablet_count</p>
 <ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">10</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-tablets-per-shard-goal">
+<dt class="sig sig-object std" id="confval-tablets_per_shard_goal">
+<span class="sig-name descname"><span class="pre">tablets_per_shard_goal</span></span><a class="headerlink" href="#confval-tablets_per_shard_goal" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The goal for the maximum number of tablet replicas per shard. Tablet allocator tries to keep this goal.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">unsigned</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -4803,7 +4817,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Feb 2025.
+                        Last updated on 25 Feb 2025.
                     
                 </div>
             
