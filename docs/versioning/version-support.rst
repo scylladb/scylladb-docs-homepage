@@ -1,24 +1,24 @@
 ======================================
-ScyllaDB Enterprise Version Support 
+ScyllaDB Version Support 
 ======================================
 
 Supported Versions
 ------------------------
 
-.. datatemplate:json:: /_static/data/enterprise_supported_versions.json
+.. datatemplate:json:: /_static/data/supported_versions.json
    :template: supported_versions.tmpl
 
 Version Numbering
 -------------------
 
-ScyllaDB Enterprise follows the MAJOR.MINOR.PATCH `semantic versioning <https://semver.org/>`_:
+ScyllaDB follows the MAJOR.MINOR.PATCH `semantic versioning <https://semver.org/>`_:
 
 * ``MAJOR`` versions contain significant changes in the product and may
   introduce incompatible API changes.
 * ``MINOR`` versions introduce new features and improvements in a backward-compatible manner.
 * ``PATCH`` versions have backward-compatible bug fixes.
 
-.. image:: images/enterprise-versioning.png
+.. image:: images/versioning.png
     :width: 300px
 
 LTS vs. Feature Releases
@@ -32,10 +32,6 @@ Long-Term Support (LTS)
 Feature releases:
 
 * 2-4 feature releases per year.
-* Closely follow ScyllaDB Open Source releases
-  (see `ScyllaDB Enterprise vs. Open Source Matrix <https://enterprise.docs.scylladb.com/stable/reference/versions-matrix-enterprise-oss.html>`_).
-* Introduce features added in ScyllaDB Open Source, as well as Enterprise-only
-  features.
 
 You can only use LTS releases (upgrading to the latest patch release for
 the greatest stability) or follow the feature and LTS releases for the latest
