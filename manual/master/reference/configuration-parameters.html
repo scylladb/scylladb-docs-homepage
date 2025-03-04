@@ -1208,7 +1208,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-tombstone_warn_threshold">
 <span class="sig-name descname"><span class="pre">tombstone_warn_threshold</span></span><a class="headerlink" href="#confval-tombstone_warn_threshold" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>The maximum number of tombstones a query can scan before warning.</p>
+<div><p>The maximum number of tombstones a query can scan before warning. Tombstone warnings are only logged for single-partition queries.     Tombstone logs for range-scans are logged with debug level (querier logger), as it is normal for range-scans to go through many tombstones.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1000</span></code></p></li>
@@ -1993,6 +1993,7 @@ The change will take effect without a node restart, changing the value in the co
 <ul class="simple">
 <li><p>priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
 <li><p>require_client_auth: (Default: false) Enables or disables certificate authentication.</p></li>
+<li><p>enable_session_tickets: (Default: false) Enables or disables TLS1.3 session tickets.</p></li>
 </ul>
 <p>Related information: Client-to-node encryption</p>
 </dd>
@@ -2018,6 +2019,7 @@ The change will take effect without a node restart, changing the value in the co
 <p>The advanced settings are:</p>
 <ul class="simple">
 <li><p>priority_string: GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
+<li><p>enable_session_tickets: (Default: false) Enables or disables TLS1.3 session tickets.</p></li>
 </ul>
 </dd>
 </dl>
