@@ -500,13 +500,6 @@ explicitly zero out the datacenter you want to have zero replicas.</p>
 </pre></div>
 </div>
 </section>
-<section id="keyspace-storage-options-experimental">
-<h3>Keyspace storage options <span class="label label--caution">Experimental</span><a class="headerlink" href="#keyspace-storage-options-experimental" title="Link to this heading">¶</a></h3>
-<p>By default, SStables of a keyspace are stored locally.
-As an alternative, you can configure your keyspace to be stored
-on Amazon S3 or another S3-compatible object store.
-See <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">Keyspace storage options</span></a> for details.</p>
-</section>
 <section id="the-tablets-property">
 <span id="tablets"></span><h3>The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property<a class="headerlink" href="#the-tablets-property" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property enables or disables tablets-based distribution
@@ -530,9 +523,12 @@ for a keyspace.</p>
 </tr>
 </tbody>
 </table>
-<p>By default, a keyspace is created with tablets enabled. The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> option
-is used to opt out a keyspace from tablets-based distribution; see <a class="reference internal" href="../architecture/tablets.html#tablets-enable-tablets"><span class="std std-ref">Enabling Tablets</span></a>
+<p>By default, a keyspace is created with tablets enabled. You can use the <code class="docutils literal notranslate"><span class="pre">tablets</span></code> option
+to opt out a keyspace from tablets-based distribution.</p>
+<p>You may want to opt out if you plan to use features that are not supported for keyspaces
+with tablets enabled. See <a class="reference internal" href="../architecture/tablets.html#tablets-limitations"><span class="std std-ref">Limitations and Unsupported Features</span></a>
 for details.</p>
+<p><strong>The ``initial`` sub-option (deprecated)</strong></p>
 <p>A good rule of thumb to calculate initial tablets is to divide the expected total storage used
 by tables in this keyspace by (<code class="docutils literal notranslate"><span class="pre">replication_factor</span></code> * 5GB). For example, if you expect a 30TB
 table and have a replication factor of 3, divide 30TB by (3*5GB) for a result of 2000. Since the
@@ -549,6 +545,13 @@ The calculation applies to every table in the keyspace.</p>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="../architecture/tablets.html"><span class="doc">Data Distribution with Tablets</span></a> for more information about tablets.</p>
+</section>
+<section id="keyspace-storage-options-experimental">
+<h3>Keyspace storage options <span class="label label--caution">Experimental</span><a class="headerlink" href="#keyspace-storage-options-experimental" title="Link to this heading">¶</a></h3>
+<p>By default, SStables of a keyspace are stored locally.
+As an alternative, you can configure your keyspace to be stored
+on Amazon S3 or another S3-compatible object store.
+See <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">Keyspace storage options</span></a> for details.</p>
 </section>
 </section>
 <section id="use-statement">
@@ -1444,8 +1447,8 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#id2">CREATE KEYSPACE</a><ul>
 <li><a class="reference internal" href="#simplestrategy">SimpleStrategy</a></li>
 <li><a class="reference internal" href="#networktopologystrategy">NetworkTopologyStrategy</a></li>
-<li><a class="reference internal" href="#keyspace-storage-options-experimental">Keyspace storage options <span class="label label--caution">Experimental</span></a></li>
 <li><a class="reference internal" href="#the-tablets-property">The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property</a></li>
+<li><a class="reference internal" href="#keyspace-storage-options-experimental">Keyspace storage options <span class="label label--caution">Experimental</span></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#use-statement">USE</a></li>
