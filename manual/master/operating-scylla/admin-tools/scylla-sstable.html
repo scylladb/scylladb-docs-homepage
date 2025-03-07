@@ -921,6 +921,83 @@ $SHARD_ID := Uint
 </pre></div>
 </div>
 </section>
+<section id="query">
+<h3>query<a class="headerlink" href="#query" title="Link to this heading">¶</a></h3>
+<p>The query is run on the combined content of all input sstables.</p>
+<p>By default, the following query is run: SELECT * FROM $table.
+Custom queries can be provided either via the <code class="docutils literal notranslate"><span class="pre">--query</span></code> (on the command-line)
+or via <code class="docutils literal notranslate"><span class="pre">--query-file</span></code> (in a file).
+When writing queries by hand, there are some things to keep in in mind:</p>
+<ul class="simple">
+<li><p>The keyspace of the table is changed to <code class="docutils literal notranslate"><span class="pre">scylla_sstable.</span></code> This is to avoid any
+collisions in case the sstables belong to a system keyspace.</p></li>
+<li><p>If the schema is read from the sstable itself, partition key columns will be
+<code class="docutils literal notranslate"><span class="pre">$pk0..$pkN</span></code> and clustering key columns will be <code class="docutils literal notranslate"><span class="pre">$ck0..$ckN</span></code>. This is because
+the in-sstable schema doesn’t contain key column names.
+If the table-name wasn’t provided with <code class="docutils literal notranslate"><span class="pre">--table</span></code>, the table name will be
+<code class="docutils literal notranslate"><span class="pre">my_table</span></code>.</p></li>
+</ul>
+<p>Chose the output format with <code class="docutils literal notranslate"><span class="pre">--output-format</span></code>. Text is similar to
+<cite>CQLSH &lt;https://opensource.docs.scylladb.com/stable/cql/cqlsh.html&gt;_</cite> text
+output, while json is similar to <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">JSON</span></code> output.
+Default output format is text.</p>
+<p>This operation needs a temporary directory to write files to – as it sets up a
+<code class="docutils literal notranslate"><span class="pre">cql_test_env</span></code>. This temporary directory will have a size of a couple of megabytes.
+By default it will create this in <code class="docutils literal notranslate"><span class="pre">/tmp</span></code>, this can be changed with the <code class="docutils literal notranslate"><span class="pre">TEMPDIR</span></code>
+environment variable. This temporary directory is removed on exit.</p>
+<section id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h4>
+<p>Select everything from a table:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-big-Data.db
+<span class="go"> keyspace_name                 | durable_writes | replication</span>
+<span class="go">-------------------------------+----------------+-------------------------------------------------------------------------------------</span>
+<span class="go">        system_replicated_keys |           true |                         ({class : org.apache.cassandra.locator.EverywhereStrategy})</span>
+<span class="go">                   system_auth |           true |   ({class : org.apache.cassandra.locator.SimpleStrategy}, {replication_factor : 1})</span>
+<span class="go">                 system_schema |           true |                              ({class : org.apache.cassandra.locator.LocalStrategy})</span>
+<span class="go">            system_distributed |           true |   ({class : org.apache.cassandra.locator.SimpleStrategy}, {replication_factor : 3})</span>
+<span class="go">                        system |           true |                              ({class : org.apache.cassandra.locator.LocalStrategy})</span>
+<span class="go">                            ks |           true | ({class : org.apache.cassandra.locator.NetworkTopologyStrategy}, {datacenter1 : 1})</span>
+<span class="go">                 system_traces |           true |   ({class : org.apache.cassandra.locator.SimpleStrategy}, {replication_factor : 2})</span>
+<span class="go"> system_distributed_everywhere |           true |                         ({class : org.apache.cassandra.locator.EverywhereStrategy})</span>
+</pre></div>
+</div>
+<p>Select everything from a single SSTable, use the JSON output (filtered through <cite>jq &lt;https://jqlang.github.io/jq/&gt;_</cite> for better readability):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--output-format<span class="o">=</span>json<span class="w"> </span>/path/to/data/system_schema/keyspaces-*/me-3gm7_127s_3ndxs28xt4llzxwqz6-big-Data.db<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+<span class="go">[</span>
+<span class="go">  {</span>
+<span class="go">    &quot;keyspace_name&quot;: &quot;system_schema&quot;,</span>
+<span class="go">    &quot;durable_writes&quot;: true,</span>
+<span class="go">    &quot;replication&quot;: {</span>
+<span class="go">      &quot;class&quot;: &quot;org.apache.cassandra.locator.LocalStrategy&quot;</span>
+<span class="go">    }</span>
+<span class="go">  },</span>
+<span class="go">  {</span>
+<span class="go">    &quot;keyspace_name&quot;: &quot;system&quot;,</span>
+<span class="go">    &quot;durable_writes&quot;: true,</span>
+<span class="go">    &quot;replication&quot;: {</span>
+<span class="go">      &quot;class&quot;: &quot;org.apache.cassandra.locator.LocalStrategy&quot;</span>
+<span class="go">    }</span>
+<span class="go">  }</span>
+<span class="go">]</span>
+</pre></div>
+</div>
+<p>Select a specific field in a specific partition using the command-line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name=&#39;ks&#39;&quot;</span><span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-Data.db
+<span class="go"> replication</span>
+<span class="go">-------------------------------------------------------------------------------------</span>
+<span class="go"> ({class : org.apache.cassandra.locator.NetworkTopologyStrategy}, {datacenter1 : 1})</span>
+</pre></div>
+</div>
+<p>Select a specific field in a specific partition using <code class="docutils literal notranslate"><span class="pre">--query-file</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name=&#39;ks&#39;;&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>query.cql
+<span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query-file<span class="o">=</span>./query.cql<span class="w"> </span>./scylla-workdir/data/system_schema/keyspaces-*/*-Data.db
+<span class="go"> replication</span>
+<span class="go">-------------------------------------------------------------------------------------</span>
+<span class="go"> ({class : org.apache.cassandra.locator.NetworkTopologyStrategy}, {datacenter1 : 1})</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="script">
 <h3>script<a class="headerlink" href="#script" title="Link to this heading">¶</a></h3>
 <p>Reads the SStable(s) and passes the resulting <a class="reference internal" href="#scylla-sstable-sstable-content">fragment stream</a> to the script specified by <cite>–script-file</cite>.
@@ -1380,14 +1457,14 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <p>Argument is a string representing serialized partition key in hex format.</p>
 </section>
 </section>
-<section id="examples">
-<h4>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h4>
+<section id="id2">
+<h4>Examples<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
 <p>You can find example scripts at <a class="reference external" href="https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts">https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts</a>.</p>
 </section>
 </section>
 </section>
-<section id="id2">
-<h2>Examples<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<section id="id3">
+<h2>Examples<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <p>Dumping the content of the SStable:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data /path/to/md-123456-big-Data.db</span>
 </pre></div>
@@ -1550,6 +1627,10 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li><a class="reference internal" href="#decompress">decompress</a></li>
 <li><a class="reference internal" href="#write">write</a></li>
 <li><a class="reference internal" href="#shard-of">shard-of</a></li>
+<li><a class="reference internal" href="#query">query</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#script">script</a><ul>
 <li><a class="reference internal" href="#scylladb-consume-api">ScyllaDB Consume API</a><ul>
 <li><a class="reference internal" href="#consume-stream-start-args">consume_stream_start(args)</a></li>
@@ -1594,12 +1675,12 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li><a class="reference internal" href="#scylladb-unserialize-partition-key">ScyllaDB.unserialize_partition_key()</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -2037,7 +2118,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 06 Mar 2025.
+                        Last updated on 07 Mar 2025.
                     
                 </div>
             
