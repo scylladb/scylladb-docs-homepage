@@ -358,9 +358,6 @@
 </section>
 <section id="incremental-compaction-strategy-ics">
 <span id="ics1"></span><h2>Incremental Compaction Strategy (ICS)<a class="headerlink" href="#incremental-compaction-strategy-ics" title="Link to this heading">¶</a></h2>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 2019.1.4: </span>Scylla Enterprise</p>
-</div>
 <p>ICS principles of operation are similar to those of STCS, merely replacing the increasingly larger SSTables in each tier, by increasingly longer SSTable runs, modeled after LCS runs, but using larger fragment size of 1 GB, by default.</p>
 <p>Compaction is triggered when there are two or more runs of roughly the same size. These runs are incrementally compacted with each other, producing a new SSTable run, while incrementally releasing space as soon as each SSTable in the input run is processed and compacted. This method eliminates the high temporary space amplification problem of STCS by limiting the overhead to twice the (constant) fragment size, per shard.</p>
 <section id="incremental-compaction-strategy-benefits">
@@ -1092,7 +1089,7 @@ SSTables from different time windows are never compacted together. You set the <
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 08 Mar 2025.
+                        Last updated on 09 Mar 2025.
                     
                 </div>
             
