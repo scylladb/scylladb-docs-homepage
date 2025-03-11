@@ -423,6 +423,14 @@ enabled:</p>
 </ul>
 <p>If you plan to use any of the above features, CREATE your keyspace
 <a class="reference internal" href="#tablets-enable-tablets"><span class="std std-ref">with tablets disabled</span></a>.</p>
+<p>The following ScyllaDB features are disabled by default when used with a keyspace
+that has tablets enabled:</p>
+<ul class="simple">
+<li><p>Materialized Views (MV)</p></li>
+<li><p>Secondary indexes (SI, as it depends on MV)</p></li>
+</ul>
+<p>To enable MV and SI for tablet keyspaces, use the <cite>–experimental-features=views-with-tablets</cite>
+configuration option.  See <a class="reference internal" href="../operating-scylla/admin.html#admin-views-with-tablets"><span class="std std-ref">Views with tablets</span></a> for details.</p>
 <p>Resharding in keyspaces with tablets enabled has the following limitations:</p>
 <ul class="simple">
 <li><p>ScyllaDB does not support reducing the number of shards after node restart.</p></li>
@@ -835,6 +843,7 @@ starts serving CQL.</p></li>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="compaction/compaction-strategies.html">Compaction Strategies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raft.html">Raft Consensus Algorithm in ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zero-token-nodes.html">Zero-token Nodes</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1000,7 +1009,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Mar 2025.
+                        Last updated on 11 Mar 2025.
                     
                 </div>
             

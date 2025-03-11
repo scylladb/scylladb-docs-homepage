@@ -748,6 +748,18 @@ the <code class="docutils literal notranslate"><span class="pre">keyspace-storag
 <a class="reference internal" href="#object-storage-configuration"><span class="std std-ref">configure</span></a> the object storage
 credentials and endpoint.</p>
 </section>
+<section id="views-with-tablets">
+<span id="admin-views-with-tablets"></span><h3>Views with tablets<a class="headerlink" href="#views-with-tablets" title="Link to this heading">¶</a></h3>
+<p>By default, Materialized Views (MV) and Secondary Indexes (SI)
+are disabled in keyspaces that use tablets.</p>
+<p>Support for MV and SI with tablets is experimental and must be explicitly
+enabled in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file by specifying
+the <code class="docutils literal notranslate"><span class="pre">views-with-tablets</span></code> option:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">experimental_features</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">views-with-tablets</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="monitoring">
 <h2>Monitoring<a class="headerlink" href="#monitoring" title="Link to this heading">¶</a></h2>
@@ -1012,6 +1024,7 @@ with the ScyllaDB REST API.</p>
 <li><a class="reference internal" href="#schedule-fstrim">Schedule fstrim</a></li>
 <li><a class="reference internal" href="#experimental-features">Experimental Features</a><ul>
 <li><a class="reference internal" href="#keyspace-storage-options">Keyspace storage options</a></li>
+<li><a class="reference internal" href="#views-with-tablets">Views with tablets</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#monitoring">Monitoring</a><ul>
@@ -1306,6 +1319,7 @@ with the ScyllaDB REST API.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture/compaction/compaction-strategies.html">Compaction Strategies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture/raft.html">Raft Consensus Algorithm in ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/zero-token-nodes.html">Zero-token Nodes</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1471,7 +1485,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Mar 2025.
+                        Last updated on 11 Mar 2025.
                     
                 </div>
             
