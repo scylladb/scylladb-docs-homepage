@@ -525,6 +525,10 @@ induced by the clustering columns and the reverse of that one.</p></li>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> option to a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement limits the number of rows returned by a query, while the <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span>
 <span class="pre">LIMIT</span></code>  option (introduced in ScyllaDB 3.1) limits the number of rows returned for a given <strong>partition</strong> by the query. Note that both types of limit can be
 used in the same statement.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> and <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span> <span class="pre">LIMIT</span></code> are applied to the output of the aggregate functions.</p>
+</div>
 <p>Examples:</p>
 <p>The Partition Key in the following table is <code class="docutils literal notranslate"><span class="pre">client_id</span></code>, and the clustering key is <code class="docutils literal notranslate"><span class="pre">when</span></code>.
 The table has seven rows, split between four clients (partition keys)</p>
@@ -656,7 +660,7 @@ of the SELECT statement.</p>
 <li><p>GROUP BY is then applied to create groups.</p></li>
 <li><p>Aggregate functions in the SELECT clause are applied to groups, or to the entire query if GROUP BY was not specified.</p></li>
 <li><p>If there are selectors that are not aggregate functions, then the first value in the group is selected.</p></li>
-<li><p>If specified, PER PARTITION LIMIT is applied to each partition.</p></li>
+<li><p>If specified, PER PARTITION LIMIT is applied to each partition result.</p></li>
 <li><p>If specified, LIMIT is applied to the entire query result.</p></li>
 </ul>
 </div></blockquote>
@@ -1376,7 +1380,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Mar 2025.
+                        Last updated on 14 Mar 2025.
                     
                 </div>
             
