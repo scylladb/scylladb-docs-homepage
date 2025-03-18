@@ -308,15 +308,6 @@
                         
                         <section id="scylladb-seed-nodes">
 <h1>ScyllaDB Seed Nodes<a class="headerlink" href="#scylladb-seed-nodes" title="Link to this heading">¶</a></h1>
-<p><strong>Topic: ScyllaDB Seed Nodes Overview</strong></p>
-<p><strong>Learn: What a seed node is, and how they should be used in a ScyllaDB Cluster</strong></p>
-<p><strong>Audience: ScyllaDB Administrators</strong></p>
-<section id="what-is-the-function-of-a-seed-node-in-scylladb">
-<h2>What is the Function of a Seed Node in ScyllaDB?<a class="headerlink" href="#what-is-the-function-of-a-seed-node-in-scylladb" title="Link to this heading">¶</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Seed nodes function was changed in ScyllaDB Open Source 4.3 and ScyllaDB Enterprise 2021.1; if you are running an older version, see <a class="reference internal" href="#seeds-older-versions"><span class="std std-ref">Older Version Of ScyllaDB</span></a>.</p>
-</div>
 <p>A ScyllaDB seed node is a node specified with the <code class="docutils literal notranslate"><span class="pre">seeds</span></code> configuration parameter in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>. It is used by new node joining as the first contact point.
 It allows nodes to discover the cluster ring topology on startup (when joining the cluster). This means that any time a node is joining the cluster, it needs to learn the cluster ring topology, meaning:</p>
 <ul class="simple">
@@ -324,24 +315,9 @@ It allows nodes to discover the cluster ring topology on startup (when joining t
 <li><p>Which token ranges are available</p></li>
 <li><p>Which nodes will own which tokens when a new node joins the cluster</p></li>
 </ul>
-<p><strong>Once the nodes have joined the cluster, seed node has no function.</strong></p>
-<p>The first node in a new cluster needs to be a seed node.</p>
-</section>
-<section id="older-version-of-scylladb">
-<span id="seeds-older-versions"></span><h2>Older Version Of ScyllaDB<a class="headerlink" href="#older-version-of-scylladb" title="Link to this heading">¶</a></h2>
-<p>In ScyllaDB releases older than ScyllaDB Open Source 4.3 and ScyllaDB Enterprise 2021.1, seed node has one more function: it assists with <a class="reference internal" href="gossip.html"><span class="doc">gossip</span></a> convergence.
-Gossiping with other nodes ensures that any update to the cluster is propagated across the cluster. This includes detecting and alerting whenever a node goes down, comes back, or is removed from the cluster.</p>
-<p>This functions was removed, as described in <a class="reference external" href="https://www.scylladb.com/2020/09/22/seedless-nosql-getting-rid-of-seed-nodes-in-scylla/">Seedless NoSQL: Getting Rid of Seed Nodes in ScyllaDB</a>.</p>
-<p>If you run an older ScyllaDB release, we recommend upgrading to version 4.3 (ScyllaDB Open Source) or 2021.1 (ScyllaDB Enterprise) or later. If you choose to run an older version, it is good practice to follow these guidelines:</p>
-<ul class="simple">
-<li><p>The first node in a new cluster needs to be a seed node.</p></li>
-<li><p>Ensure that all nodes in the cluster have the same seed nodes listed in each node’s scylla.yaml.</p></li>
-<li><p>To maintain resiliency of the cluster, it is recommended to have more than one seed node in the cluster.</p></li>
-<li><p>If you have more than one seed in a DC with multiple racks (or availability zones), make sure to put your seeds in different racks.</p></li>
-<li><p>You must have at least one node that is not a seed node. You cannot create a cluster where all nodes are seed nodes.</p></li>
-<li><p>You should have more than one seed node.</p></li>
-</ul>
-</section>
+<p><strong>Once the nodes have joined the cluster, the seed node has no function.</strong></p>
+<p>The first node in a new cluster must be a seed node. In typical scenarios,
+there’s no need to configure more than one seed node.</p>
 </section>
 
                     </div>
@@ -460,18 +436,6 @@ Gossiping with other nodes ensures that any update to the cluster is propagated 
         
     </ul>
 
-    
-        <div class="secondary-side-nav__content">
-            <p class="topic-title">On this page</p>
-            <ul>
-<li><a class="reference internal" href="#">ScyllaDB Seed Nodes</a><ul>
-<li><a class="reference internal" href="#what-is-the-function-of-a-seed-node-in-scylladb">What is the Function of a Seed Node in ScyllaDB?</a></li>
-<li><a class="reference internal" href="#older-version-of-scylladb">Older Version Of ScyllaDB</a></li>
-</ul>
-</li>
-</ul>
-
-        </div>
     
 </div>
                         </div>
@@ -905,7 +869,7 @@ Gossiping with other nodes ensures that any update to the cluster is propagated 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Mar 2025.
+                        Last updated on 18 Mar 2025.
                     
                 </div>
             

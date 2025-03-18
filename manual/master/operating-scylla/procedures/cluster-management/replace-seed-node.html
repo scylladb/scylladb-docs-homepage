@@ -324,13 +324,29 @@
                         
                         <section id="replacing-a-dead-seed-node">
 <h1>Replacing a Dead Seed Node<a class="headerlink" href="#replacing-a-dead-seed-node" title="Link to this heading">¶</a></h1>
+<p>In ScyllaDB, it is not possible to bootstrap a seed node. The following steps describe how to replace a dead seed node.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The seed concept in gossip has been removed.
-A seed node is only used by a new node during startup to learn about the cluster topology. As a result, there’s no need
-to replace the node configured with the <code class="docutils literal notranslate"><span class="pre">seeds</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.</p>
+<p>A seed node is only used by a new node during startup to learn about
+the cluster topology.
+Once the nodes have joined the cluster, the seed node has no function.
+In typical scenarios, there’s no need to replace the node
+configured with the <code class="docutils literal notranslate"><span class="pre">seeds</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.</p>
 </div>
-<p>In ScyllaDB, it is not possible to bootstrap a seed node. The following steps describe how to replace a dead seed node.</p>
+<ul class="simple">
+<li><p>The first node in a new cluster must be a seed node.</p></li>
+<li><p>It is sufficient to configure one seed node in a node’s <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.
+You may choose to configure two or three seed nodes if your cluster is large.</p></li>
+<li><p>It’s not recommended that all the nodes in the cluster be defined as seed nodes.</p></li>
+<li><p>If you update the IP address of a seed node or remove it from the cluster,
+you should update configuration files on all the remaining nodes to keep the
+configuration consistent.
+Once a node has joined the cluster and has all the peer information saved
+locally in the <code class="docutils literal notranslate"><span class="pre">system.peers</span></code> system table, seed nodes are no longer used,
+but they are still contacted on each restart. To avoid configuration errors
+and to be able to reach out to the cluster if the seed IP address changes,
+the seed configuration should be valid.</p></li>
+</ul>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
 <p>Verify that the node is listed as a seed node in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file by running the following command:</p>
@@ -365,7 +381,6 @@ Use <code class="docutils literal notranslate"><span class="pre">nodetool</span>
 </li>
 <li><p>Replace the dead node using the <a class="reference internal" href="replace-dead-node.html"><span class="doc">dead node replacement procedure</span></a>.</p></li>
 </ol>
-<p>Your cluster should have more than one seed node, but it’s not allowed to define all the nodes in the cluster to be seed nodes.</p>
 </section>
 </section>
 
@@ -930,7 +945,7 @@ Use <code class="docutils literal notranslate"><span class="pre">nodetool</span>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Mar 2025.
+                        Last updated on 18 Mar 2025.
                     
                 </div>
             
