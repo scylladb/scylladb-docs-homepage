@@ -400,6 +400,10 @@ See <a class="reference internal" href="../operating-scylla/procedures/cluster-m
 </dd>
 <dt id="term-Reshard">Reshard<a class="headerlink" href="#term-Reshard" title="Link to this term">¶</a></dt><dd><p>Splitting an SSTable, that is owned by more than one shard (core), into SSTables that are owned by a single shard. For example: when restoring data from a different server, importing SSTables from Apache Cassandra, or changing the number of cores in a machine (upscale).</p>
 </dd>
+<dt id="term-RF-rack-valid-keyspace">RF-rack-valid keyspace<a class="headerlink" href="#term-RF-rack-valid-keyspace" title="Link to this term">¶</a></dt><dd><p>A keyspace with <a class="reference internal" href="../architecture/tablets.html"><span class="doc">tablets</span></a> enabled is RF-rack-valid if all of its data centers
+have the <a class="reference internal" href="#term-Replication-Factor-RF"><span class="xref std std-term">Replication Factor (RF)</span></a> of 0, 1, or the number of racks in that data center.</p>
+<p>Keyspaces with tablets disabled are always deemed RF-rack-valid, even if they do not satisfy the aforementioned condition.</p>
+</dd>
 <dt id="term-Shard">Shard<a class="headerlink" href="#term-Shard" title="Link to this term">¶</a></dt><dd><p>Each ScyllaDB node is internally split into <em>shards</em>, an independent thread bound to a dedicated core.
 Each shard of data is allotted CPU, RAM, persistent storage, and networking resources which it uses as efficiently as possible.
 See <a class="reference external" href="https://www.scylladb.com/product/technology/shard-per-core-architecture/">ScyllaDB Shard per Core Architecture</a> for more information.</p>
@@ -989,7 +993,7 @@ ships with a feature that allows you to prioritize one workload over another (e.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Mar 2025.
+                        Last updated on 22 Mar 2025.
                     
                 </div>
             

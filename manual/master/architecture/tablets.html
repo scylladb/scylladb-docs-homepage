@@ -413,6 +413,12 @@ the keyspace schema with <code class="docutils literal notranslate"><span class=
 </section>
 <section id="limitations-and-unsupported-features">
 <span id="tablets-limitations"></span><h2>Limitations and Unsupported Features<a class="headerlink" href="#limitations-and-unsupported-features" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If a keyspace has tablets enabled, it must remain <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>
+throughout its lifetime. Failing to keep that invariant satisfied may result in data inconsistencies,
+performance problems, or other issues.</p>
+</div>
 <p>The following ScyllaDB features are not supported if a keyspace has tablets
 enabled:</p>
 <ul class="simple">
@@ -1009,7 +1015,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Mar 2025.
+                        Last updated on 22 Mar 2025.
                     
                 </div>
             

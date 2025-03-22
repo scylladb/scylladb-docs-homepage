@@ -526,7 +526,8 @@ for a keyspace.</p>
 <p>By default, a keyspace is created with tablets enabled. You can use the <code class="docutils literal notranslate"><span class="pre">tablets</span></code> option
 to opt out a keyspace from tablets-based distribution.</p>
 <p>You may want to opt out if you plan to use features that are not supported for keyspaces
-with tablets enabled. See <a class="reference internal" href="../architecture/tablets.html#tablets-limitations"><span class="std std-ref">Limitations and Unsupported Features</span></a>
+with tablets enabled. Keyspaces using tablets must also remain <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>
+throughout their lifetime. See <a class="reference internal" href="../architecture/tablets.html#tablets-limitations"><span class="std std-ref">Limitations and Unsupported Features</span></a>
 for details.</p>
 <p><strong>The ``initial`` sub-option (deprecated)</strong></p>
 <p>A good rule of thumb to calculate initial tablets is to divide the expected total storage used
@@ -586,6 +587,7 @@ keyspace name). A <code class="docutils literal notranslate"><span class="pre">U
 <li><p>If there’s any other ongoing global topology operation, executing the <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement will fail (with an explicit and specific error) and needs to be repeated.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement may take longer than the regular query timeout, and even if it times out, it will continue to execute in the background.</p></li>
 <li><p>The replication strategy cannot be modified, as keyspaces with tablets only support <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement will fail if it would make the keyspace <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-invalid</span></a>.</p></li>
 </ul>
 </section>
 </section>
@@ -2008,7 +2010,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Mar 2025.
+                        Last updated on 22 Mar 2025.
                     
                 </div>
             
