@@ -324,6 +324,11 @@ to the cluster.</p></li>
 <li><p>Zero-token nodes never store replicated data, so running <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">rebuild</span></code>,
 <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code>, and <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">cleanup</span></code> can be skipped as it does not
 affect zero-token nodes.</p></li>
+<li><p>Racks consisting solely of zero-token nodes are not taken into consideration
+when deciding whether a keyspace is <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>.
+However, an RF-rack-valid keyspace must have the replication factor equal to 0
+in an <a class="reference internal" href="../operating-scylla/procedures/cluster-management/arbiter-dc.html"><span class="doc">arbiter DC</span></a>.
+Otherwise, it is RF-rack-invalid.</p></li>
 </ul>
 </section>
 
@@ -876,7 +881,7 @@ affect zero-token nodes.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Mar 2025.
+                        Last updated on 24 Mar 2025.
                     
                 </div>
             
