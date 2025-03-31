@@ -38,10 +38,10 @@ range queries. For example:
     PRIMARY KEY ((user_id, activity_date), log_time)
   );
   
-In this table, here the partition is a combination of the ``user_id```
-and ``activity_date```, using a technique called "bucketing". This ensures that there
+In this table, here the partition is a combination of the ``user_id``
+and ``activity_date``, using a technique called "bucketing". This ensures that there
 is no unbounded growth within a partition, bucketed to a date. In addition, logs are
-ordered by ``log_time``` within each ``(user_id, activity_date)`` partition, making it
+ordered by ``log_time`` within each ``(user_id, activity_date)`` partition, making it
 efficient to query logs over a time range for a specific user.
 
 Your query design should also be optimized for efficient and effective queries 
