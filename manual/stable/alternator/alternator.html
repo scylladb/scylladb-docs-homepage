@@ -306,6 +306,8 @@ Alternator’s compatibility with DynamoDB is described in the
 <a class="reference internal" href="compatibility.html"><span class="std std-doc">Scylla Alternator for DynamoDB users</span></a> document,
 which is updated as the work on Alternator progresses and compatibility
 continues to improve.</p>
+<p>Alternator also adds several features and APIs that are not available in
+DynamoDB. These are described in <a class="reference internal" href="new-apis.html"><span class="std std-doc">Alternator-specific APIs</span></a>.</p>
 </section>
 <section id="running-alternator">
 <h2>Running Alternator<a class="headerlink" href="#running-alternator" title="Link to this heading">¶</a></h2>
@@ -323,8 +325,9 @@ YAML configuration file:</p>
 DynamoDB API requests. By default, it listens on this port on all network
 interfaces. To listen only on a specific interface, configure also the
 <strong>alternator_address</strong> option.</p>
-<p>The meaning of the <strong>alternator_write_isolation</strong> option is explained in detail
-in the “Write isolation policies” below. Alternator has four different choices
+<p>The meaning of the <strong>alternator_write_isolation</strong> option is explained in the
+“Write isolation policies” section of <a class="reference internal" href="new-apis.html"><span class="std std-doc">Alternator-specific APIs</span></a>.
+Alternator has four different choices
 for the implementation of writes, each with different advantages. You should
 carefully consider which of the options makes more sense for your intended
 use case and configure alternator_write_isolation accordingly. There is
@@ -352,77 +355,6 @@ Alternator does not provide such a load-balancing setup, so you should
 either set one up, or set up the client library to do the load balancing
 itself. Instructions, code and examples for doing this can be found in the
 <a class="reference external" href="https://github.com/scylladb/alternator-load-balancing/">Alternator Load Balancing project</a>.</p>
-</section>
-<section id="alternator-specific-api">
-<h2>Alternator-specific API<a class="headerlink" href="#alternator-specific-api" title="Link to this heading">¶</a></h2>
-<section id="write-isolation-policies">
-<h3>Write isolation policies<a class="headerlink" href="#write-isolation-policies" title="Link to this heading">¶</a></h3>
-<p>DynamoDB API update requests may involve a read before the write - e.g., a
-<em>conditional</em> update or an update based on the old value of an attribute.
-The read and the write should be treated as a single transaction - protected
-(<em>isolated</em>) from other parallel writes to the same item.</p>
-<p>Alternator could do this isolation by using Scylla’s LWT (lightweight
-transactions) for every write operation, but this significantly slows
-down writes, and not necessary for workloads which don’t use read-modify-write
-(RMW) updates.</p>
-<p>So Alternator supports four <em>write isolation policies</em>, which can be chosen
-on a per-table basis and may make sense for certain workloads as explained
-below.</p>
-<p>A default write isolation policy <strong>must</strong> be chosen using the
-<code class="docutils literal notranslate"><span class="pre">--alternator-write-isolation</span></code> configuration option. Additionally, the write
-isolation policy for a specific table can be overridden by tagging the table
-(at CreateTable time, or any time later with TagResource) with the key
-<code class="docutils literal notranslate"><span class="pre">system:write_isolation</span></code>, and one of the following values:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">always</span></code>, or <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> - This mode performs every write
-operation - even those that do not need a read before the write - as a
-lightweight transaction.</p>
-<p>This is the slowest choice, but also the only choice guaranteed to work
-correctly for every workload.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>, <code class="docutils literal notranslate"><span class="pre">forbid</span></code>, or <code class="docutils literal notranslate"><span class="pre">forbid_rmw</span></code> - This mode <em>forbids</em> write requests
-which need a read before the write. An attempt to use such statements
-(e.g.,  UpdateItem with a ConditionExpression) will result in an error.
-In this mode, the remaining write requests which are allowed - pure writes
-without a read - are performed using standard Scylla writes, not LWT,
-so they are significantly faster than they would have been in the
-<code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code>, but their isolation is still correct.</p>
-<p>This mode is the fastest mode which is still guaranteed to be always
-safe. However, it is not useful for workloads that do need read-modify-
-write requests on this table - which this mode forbids.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">o</span></code>, or <code class="docutils literal notranslate"><span class="pre">only_rmw_uses_lwt</span></code> - This mode uses LWT only for updates that
-require read-modify-write, and does normal quorum writes for write-only
-updates.</p>
-<p>The benefit of this mode is that it allows fast write-only updates to some
-items, while still allowing some slower read-modify-write operations to
-other items. However, This mode is only safe if the workload does not mix
-read-modify-write and write-only updates to the same item, concurrently.
-It cannot verify that this condition is actually honored by the workload.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">unsafe</span></code>, or <code class="docutils literal notranslate"><span class="pre">unsafe_rmw</span></code> - This mode performs read-modify-write
-operations as separate reads and writes, without any isolation guarantees.
-It is the fastest option, but not safe - it does not correctly isolate
-read-modify-write updates. This mode is not recommended for any use case,
-and will likely be removed in the future.</p></li>
-</ul>
-</section>
-<section id="accessing-system-tables-from-scylla">
-<h3>Accessing system tables from Scylla<a class="headerlink" href="#accessing-system-tables-from-scylla" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p>Scylla exposes lots of useful information via its internal system tables,
-which can be found in system keyspaces: ‘system’, ‘system_auth’, etc.
-In order to access to these tables via alternator interface,
-Scan and Query requests can use a special table name:
-.scylla.alternator.KEYSPACE_NAME.TABLE_NAME
-which will return results fetched from corresponding Scylla table.
-This interface can be used only to fetch data from system tables.
-Attempts to read regular tables via the virtual interface will result
-in an error.
-Example: in order to query the contents of Scylla’s system.large_rows,
-pass TableName=’.scylla.alternator.system.large_rows’ to a Query/Scan request.</p></li>
-</ul>
-</section>
 </section>
 <section id="alternator-design-and-implementation">
 <h2>Alternator design and implementation<a class="headerlink" href="#alternator-design-and-implementation" title="Link to this heading">¶</a></h2>
@@ -521,7 +453,7 @@ with Tablets enabled.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator: DynamoDB API in Scylla&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/alternator/alternator%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator: DynamoDB API in Scylla&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/alternator/alternator%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -590,7 +522,7 @@ with Tablets enabled.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator: DynamoDB API in Scylla&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/alternator/alternator%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator: DynamoDB API in Scylla&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/alternator/alternator%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -612,11 +544,6 @@ with Tablets enabled.</p>
 <li><a class="reference internal" href="#">Alternator: DynamoDB API in Scylla</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#running-alternator">Running Alternator</a></li>
-<li><a class="reference internal" href="#alternator-specific-api">Alternator-specific API</a><ul>
-<li><a class="reference internal" href="#write-isolation-policies">Write isolation policies</a></li>
-<li><a class="reference internal" href="#accessing-system-tables-from-scylla">Accessing system tables from Scylla</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#alternator-design-and-implementation">Alternator design and implementation</a></li>
 </ul>
 </li>
@@ -649,7 +576,7 @@ with Tablets enabled.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -663,13 +590,7 @@ with Tablets enabled.</p>
             
                 
                     <li>
-                        <a href="../../branch-2025.1/index.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="alternator.html">6.2</a>
+                        <a href="alternator.html">2025.1</a>
                     </li>
                 
             
@@ -686,7 +607,7 @@ with Tablets enabled.</p>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -698,7 +619,7 @@ with Tablets enabled.</p>
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -754,10 +675,14 @@ with Tablets enabled.</p>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -784,11 +709,8 @@ with Tablets enabled.</p>
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -838,6 +760,7 @@ with Tablets enabled.</p>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -845,6 +768,7 @@ with Tablets enabled.</p>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Alternator: DynamoDB API in Scylla</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -866,6 +790,7 @@ with Tablets enabled.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -961,6 +886,7 @@ with Tablets enabled.</p>
 <li class="toctree-l2"><a class="reference internal" href="../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -996,8 +922,8 @@ with Tablets enabled.</p>
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>

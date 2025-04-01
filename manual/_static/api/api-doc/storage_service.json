@@ -783,8 +783,24 @@
                           "paramType":"query"
                       },
                       {
+                           "name":"prefix",
+                           "description":"The prefix of the objects for the backuped sstables",
+                           "required":true,
+                           "allowMultiple":false,
+                           "type":"string",
+                           "paramType":"query"
+                      },
+                      {
                           "name":"keyspace",
                           "description":"Name of a keyspace to copy sstables from",
+                          "required":true,
+                          "allowMultiple":false,
+                          "type":"string",
+                          "paramType":"query"
+                      },
+                      {
+                          "name":"table",
+                          "description":"Name of a table to copy sstables from",
                           "required":true,
                           "allowMultiple":false,
                           "type":"string",
@@ -831,12 +847,24 @@
                           "paramType":"query"
                       },
                       {
-                          "name":"snapshot",
-                          "description":"Name of a snapshot to copy SSTables from",
+                          "name":"prefix",
+                          "description":"The prefix of the object keys for the backuped SSTables",
                           "required":true,
                           "allowMultiple":false,
                           "type":"string",
                           "paramType":"query"
+                      },
+                      {
+                          "in": "body",
+                          "name": "sstables",
+                          "description": "The list of the object keys of the TOC component of the SSTables to be restored",
+                          "required":true,
+                          "schema" :{
+                              "type": "array",
+                              "items": {
+                                  "type": "string"
+                              }
+                          }
                       },
                       {
                           "name":"keyspace",
@@ -849,10 +877,19 @@
                       {
                           "name":"table",
                           "description":"Name of a table to copy SSTables to",
-                          "required":false,
+                          "required":true,
                           "allowMultiple":false,
                           "type":"string",
                           "paramType":"query"
+                      },
+                      {
+                          "name":"scope",
+                          "description":"Defines the set of nodes to which mutations can be streamed",
+                          "required":false,
+                          "allowMultiple":false,
+                          "type":"string",
+                          "paramType":"query",
+                          "enum": ["all", "dc", "rack", "node"]
                       }
                   ]
               }
@@ -1607,38 +1644,6 @@
                   "application/json"
                ],
                "parameters":[
-               ]
-            }
-         ]
-      },
-      {
-         "path":"/storage_service/truncate/{keyspace}",
-         "operations":[
-            {
-               "method":"POST",
-               "summary":"Truncates (deletes) the given columnFamily from the provided keyspace. Calling truncate results in actual deletion of all data in the cluster under the given columnFamily and it will fail unless all hosts are up. All data in the given column family will be deleted, but its definition will not be affected.",
-               "type":"void",
-               "nickname":"truncate",
-               "produces":[
-                  "application/json"
-               ],
-               "parameters":[
-                  {
-                     "name":"keyspace",
-                     "description":"The keyspace",
-                     "required":true,
-                     "allowMultiple":false,
-                     "type":"string",
-                     "paramType":"path"
-                  },
-                  {
-                     "name":"cf",
-                     "description":"Column family name",
-                     "required":false,
-                     "allowMultiple":false,
-                     "type":"string",
-                     "paramType":"query"
-                  }
                ]
             }
          ]
@@ -2818,6 +2823,70 @@
                      "required":false,
                      "allowMultiple":false,
                      "type":"boolean",
+                     "paramType":"query"
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "path":"/storage_service/tablets/repair",
+         "operations":[
+            {
+               "nickname":"repair_tablet",
+               "method":"POST",
+               "summary":"Repair a tablet",
+               "type":"void",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"ks",
+                     "description":"Keyspace name to repair",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"table",
+                     "description":"Table name to repair",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"tokens",
+                     "description":"Tokens owned by the tablets to repair. Multiple tokens can be provided using a comma-separated list. When set to the special word 'all', all tablets will be repaired",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"hosts_filter",
+                     "description":"Repair replicas listed in the comma-separated host_id list.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"dcs_filter",
+                     "description":"Repair replicas listed in the comma-separated DC list",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"await_completion",
+                     "description":"Set true to wait for the repair to complete. Set false to skip waiting for the repair to complete. When the option is not provided, it defaults to false.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
                      "paramType":"query"
                   }
                ]

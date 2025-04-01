@@ -376,23 +376,40 @@ You can clean snapshots by using <a class="reference internal" href="operating-s
 </section>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
-<section id="i-want-to-try-out-new-features-how-do-i-enable-experimental-mode">
-<h3>I want to try out new features.  How do I enable experimental mode?<a class="headerlink" href="#i-want-to-try-out-new-features-how-do-i-enable-experimental-mode" title="Link to this heading">¶</a></h3>
-<p>You need to add the line <code class="code docutils literal notranslate"><span class="pre">experimental:</span> <span class="pre">true</span></code>  to your <code class="code docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.</p>
+<section id="i-want-to-try-out-new-features-how-do-i-enable-them">
+<h3>I want to try out new features.  How do I enable them?<a class="headerlink" href="#i-want-to-try-out-new-features-how-do-i-enable-them" title="Link to this heading">¶</a></h3>
+<p>ScyllaDB features can be enabled individually either through the configuration file or via command-line flags.</p>
+<p>To configure using <code class="code docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file:</p>
 <ol class="arabic">
-<li><p>Launch the file in a text editor: <code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">vi</span> <span class="pre">/etc/scylla/scylla.yaml</span></code>. (Alternately, on docker, it’s <code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">your_node</span> <span class="pre">vi</span> <span class="pre">/etc/scylla/scylla.yaml</span></code>);</p></li>
-<li><p>Add the line <code class="code docutils literal notranslate"><span class="pre">experimental:</span> <span class="pre">true</span></code>;</p></li>
+<li><p>Open the file in a text editor:</p>
+<p>On Linux systems</p>
+<p><code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">vi</span> <span class="pre">/etc/scylla/scylla.yaml</span></code></p>
+<p>On Docker</p>
+<p><code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">your_node</span> <span class="pre">vi</span> <span class="pre">/etc/scylla/scylla.yaml</span></code></p>
+</li>
+<li><p>Add the features you want to enable</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: enabling UDF and Alternator Streams features</span>
+<span class="nt">experimental_features</span><span class="p">:</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udf</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alternator-streams</span>
+</pre></div>
+</div>
+</li>
 <li><p>Save the file and exit.</p></li>
-<li><p>Stop and restart the node.</p>
+<li><p>Restart the node.</p>
 <p>On RedHat Enterprise Linux, CentOS or Ubuntu:</p>
 <p><code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">restart</span> <span class="pre">scylla-server</span></code></p>
 <p>On Docker:</p>
 <p><code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">docker</span> <span class="pre">stop</span> <span class="pre">&lt;your_node&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">docker</span> <span class="pre">start</span> <span class="pre">&lt;your_node&gt;</span></code></p>
-<p>Alternately, starting from ScyllaDB 2.0, you can start ScyllaDB for Docker with the <code class="code docutils literal notranslate"><span class="pre">experimental</span></code> flag as follows:</p>
-<p><code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">--name</span> <span class="pre">&lt;your_node&gt;</span> <span class="pre">-d</span> <span class="pre">scylladb/scylla</span> <span class="pre">--experimental</span> <span class="pre">1</span></code></p>
 </li>
 </ol>
-<p>You should now be able to use the experimental features available in your version of ScyllaDB.</p>
+<p>Alternately, starting from ScyllaDB 3.3, you can enable features directly via command line flags the <code class="code docutils literal notranslate"><span class="pre">--experimental-features</span></code> flag as follows. This command line options can be repeated multiple times. For example, to enable UDF and Alternator Streams:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>&lt;your_node&gt;<span class="w"> </span>-d<span class="w"> </span>scylladb/scylla<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--experimental-features<span class="o">=</span>udf<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--experimental-features<span class="o">=</span>alternator-streams
+</pre></div>
+</div>
+<p>You should now be able to use the specified experimental features.</p>
 </section>
 <section id="how-do-i-check-the-current-version-of-scylladb-that-i-am-running">
 <h3>How do I check the current version of ScyllaDB that I am running?<a class="headerlink" href="#how-do-i-check-the-current-version-of-scylladb-that-i-am-running" title="Link to this heading">¶</a></h3>
@@ -431,6 +448,8 @@ See <a class="reference external" href="https://stackoverflow.com/questions/7216
 </pre></div>
 </div>
 <p>We recommend uninstalling Apache Cassandra before installing <code class="code docutils literal notranslate"><span class="pre">scylla-tools</span></code>.</p>
+<blockquote>
+<div></div></blockquote>
 </section>
 <section id="can-i-install-or-upgrade-to-a-patch-release-other-than-latest-on-debian-or-ubuntu">
 <span id="faq-pinning"></span><h3>Can I install or upgrade to a patch release other than latest on Debian or Ubuntu?<a class="headerlink" href="#can-i-install-or-upgrade-to-a-patch-release-other-than-latest-on-debian-or-ubuntu" title="Link to this heading">¶</a></h3>
@@ -658,7 +677,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB FAQ&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/faq%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB FAQ&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/faq%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -698,7 +717,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Metrics (BETA)
+                    <span class="colored">PREVIOUS</span> <br />Metrics
                 </div>
             </a>
         
@@ -727,7 +746,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB FAQ&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/faq%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB FAQ&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/faq%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -766,7 +785,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 </ul>
 </li>
 <li><a class="reference internal" href="#features">Features</a><ul>
-<li><a class="reference internal" href="#i-want-to-try-out-new-features-how-do-i-enable-experimental-mode">I want to try out new features.  How do I enable experimental mode?</a></li>
+<li><a class="reference internal" href="#i-want-to-try-out-new-features-how-do-i-enable-them">I want to try out new features.  How do I enable them?</a></li>
 <li><a class="reference internal" href="#how-do-i-check-the-current-version-of-scylladb-that-i-am-running">How do I check the current version of ScyllaDB that I am running?</a></li>
 <li><a class="reference internal" href="#i-am-upgrading-my-nodes-to-a-version-that-uses-a-newer-sstable-format-when-will-the-nodes-start-using-the-new-sstable-format">I am upgrading my nodes to a version that uses a newer SSTable format, when will the nodes start using the new SSTable format?</a></li>
 </ul>
@@ -826,7 +845,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -840,13 +859,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
             
                 
                     <li>
-                        <a href="../branch-2025.1/faq.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="faq.html">6.2</a>
+                        <a href="faq.html">2025.1</a>
                     </li>
                 
             
@@ -863,7 +876,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l3"><a class="reference internal" href="getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -875,7 +888,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l2"><a class="reference internal" href="getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -931,10 +944,14 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -961,11 +978,8 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1015,6 +1029,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l2"><a class="reference internal" href="cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1022,6 +1037,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l1 has-children"><a class="reference internal" href="alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1043,6 +1059,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1138,6 +1155,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l2"><a class="reference internal" href="kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -1173,8 +1191,8 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">ScyllaDB FAQ</a></li>

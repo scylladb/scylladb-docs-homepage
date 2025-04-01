@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Metrics (BETA) | ScyllaDB Docs 
+             Metrics | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../_static/img/favicon.ico" type="image/x-icon" />
@@ -282,7 +282,7 @@
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Metrics (BETA)</span>
+    <span class="bread__item bread__item--last">Metrics</span>
 </div>
                     </div>
                 
@@ -296,8 +296,11 @@
                             
                         
                         
-                        <section id="metrics-beta">
-<h1>Metrics (BETA)<a class="headerlink" href="#metrics-beta" title="Link to this heading">¶</a></h1>
+                        <section id="metrics">
+<h1>Metrics<a class="headerlink" href="#metrics" title="Link to this heading">¶</a></h1>
+<section id="ldap-role-manager">
+<h2>Ldap role manager<a class="headerlink" href="#ldap-role-manager" title="Link to this heading">¶</a></h2>
+</section>
 <section id="wasm-instance-cache">
 <h2>Wasm instance cache<a class="headerlink" href="#wasm-instance-cache" title="Link to this heading">¶</a></h2>
 <dl class="std metrics_option" id="metricsprop-scyllauser-functions-cache-hits">
@@ -375,6 +378,9 @@
 </div></blockquote>
 </dd></dl>
 
+</section>
+<section id="service">
+<h2>Service<a class="headerlink" href="#service" title="Link to this heading">¶</a></h2>
 </section>
 <section id="client">
 <h2>Client<a class="headerlink" href="#client" title="Link to this heading">¶</a></h2>
@@ -592,6 +598,9 @@
 </dd></dl>
 
 </section>
+<section id="standard-role-manager">
+<h2>Standard role manager<a class="headerlink" href="#standard-role-manager" title="Link to this heading">¶</a></h2>
+</section>
 <section id="compaction-manager">
 <h2>Compaction manager<a class="headerlink" href="#compaction-manager" title="Link to this heading">¶</a></h2>
 <dl class="std metrics_option" id="metricsprop-scyllacompaction-manager-compactions">
@@ -732,6 +741,9 @@
 </div></blockquote>
 </dd></dl>
 
+</section>
+<section id="service-level-controller">
+<h2>Service level controller<a class="headerlink" href="#service-level-controller" title="Link to this heading">¶</a></h2>
 </section>
 <section id="view-update-generator">
 <h2>View update generator<a class="headerlink" href="#view-update-generator" title="Link to this heading">¶</a></h2>
@@ -1007,6 +1019,354 @@
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
 <li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">lsa</span></code></p></li>
 <li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">memory_freed</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="server">
+<h2>Server<a class="headerlink" href="#server" title="Link to this heading">¶</a></h2>
+<dl class="std metrics_option" id="metricsprop-scyllaraft-add-entries">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_add_entries">
+<span class="sig-name descname"><span class="pre">scyllaraft_add_entries</span></span><a class="headerlink" href="#metrics_option-scyllaraft_add_entries" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of entries added on this node, the log_entry_type label can be command, dummy or config</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">add_entries</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-messages-received">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_messages_received">
+<span class="sig-name descname"><span class="pre">scyllaraft_messages_received</span></span><a class="headerlink" href="#metrics_option-scyllaraft_messages_received" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of messages received, the message_type determines the type of message</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">messages_received</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-messages-sent">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_messages_sent">
+<span class="sig-name descname"><span class="pre">scyllaraft_messages_sent</span></span><a class="headerlink" href="#metrics_option-scyllaraft_messages_sent" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of messages sent, the message_type determines the type of message</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">messages_sent</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-waiter-awoken">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_waiter_awoken">
+<span class="sig-name descname"><span class="pre">scyllaraft_waiter_awoken</span></span><a class="headerlink" href="#metrics_option-scyllaraft_waiter_awoken" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of waiters that got result back</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">waiter_awoken</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-waiter-dropped">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_waiter_dropped">
+<span class="sig-name descname"><span class="pre">scyllaraft_waiter_dropped</span></span><a class="headerlink" href="#metrics_option-scyllaraft_waiter_dropped" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of waiters that did not get result back</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">waiter_dropped</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-polls">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_polls">
+<span class="sig-name descname"><span class="pre">scyllaraft_polls</span></span><a class="headerlink" href="#metrics_option-scyllaraft_polls" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of times raft state machine polled</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">polls</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-store-term-and-vote">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_store_term_and_vote">
+<span class="sig-name descname"><span class="pre">scyllaraft_store_term_and_vote</span></span><a class="headerlink" href="#metrics_option-scyllaraft_store_term_and_vote" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of times term and vote persisted</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">store_term_and_vote</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-store-snapshot">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_store_snapshot">
+<span class="sig-name descname"><span class="pre">scyllaraft_store_snapshot</span></span><a class="headerlink" href="#metrics_option-scyllaraft_store_snapshot" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of snapshots persisted</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">store_snapshot</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-sm-load-snapshot">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_sm_load_snapshot">
+<span class="sig-name descname"><span class="pre">scyllaraft_sm_load_snapshot</span></span><a class="headerlink" href="#metrics_option-scyllaraft_sm_load_snapshot" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of times user state machine reloaded with a snapshot</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">sm_load_snapshot</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-truncate-persisted-log">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_truncate_persisted_log">
+<span class="sig-name descname"><span class="pre">scyllaraft_truncate_persisted_log</span></span><a class="headerlink" href="#metrics_option-scyllaraft_truncate_persisted_log" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of times log truncated on storage</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">truncate_persisted_log</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-persisted-log-entries">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_persisted_log_entries">
+<span class="sig-name descname"><span class="pre">scyllaraft_persisted_log_entries</span></span><a class="headerlink" href="#metrics_option-scyllaraft_persisted_log_entries" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of log entries persisted</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">persisted_log_entries</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-queue-entries-for-apply">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_queue_entries_for_apply">
+<span class="sig-name descname"><span class="pre">scyllaraft_queue_entries_for_apply</span></span><a class="headerlink" href="#metrics_option-scyllaraft_queue_entries_for_apply" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of log entries queued to be applied</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">queue_entries_for_apply</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-applied-entries">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_applied_entries">
+<span class="sig-name descname"><span class="pre">scyllaraft_applied_entries</span></span><a class="headerlink" href="#metrics_option-scyllaraft_applied_entries" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of log entries applied</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">applied_entries</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-snapshots-taken">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_snapshots_taken">
+<span class="sig-name descname"><span class="pre">scyllaraft_snapshots_taken</span></span><a class="headerlink" href="#metrics_option-scyllaraft_snapshots_taken" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of times user’s state machine snapshotted</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">snapshots_taken</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-in-memory-log-size">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_in_memory_log_size">
+<span class="sig-name descname"><span class="pre">scyllaraft_in_memory_log_size</span></span><a class="headerlink" href="#metrics_option-scyllaraft_in_memory_log_size" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>size of in-memory part of the log</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">in_memory_log_size</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-log-memory-usage">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_log_memory_usage">
+<span class="sig-name descname"><span class="pre">scyllaraft_log_memory_usage</span></span><a class="headerlink" href="#metrics_option-scyllaraft_log_memory_usage" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>memory usage of in-memory part of the log in bytes</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">log_memory_usage</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-log-last-index">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_log_last_index">
+<span class="sig-name descname"><span class="pre">scyllaraft_log_last_index</span></span><a class="headerlink" href="#metrics_option-scyllaraft_log_last_index" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>term of the last log entry</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">log_last_index</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-log-last-term">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_log_last_term">
+<span class="sig-name descname"><span class="pre">scyllaraft_log_last_term</span></span><a class="headerlink" href="#metrics_option-scyllaraft_log_last_term" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>index of the last log entry</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">log_last_term</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-snapshot-last-index">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_snapshot_last_index">
+<span class="sig-name descname"><span class="pre">scyllaraft_snapshot_last_index</span></span><a class="headerlink" href="#metrics_option-scyllaraft_snapshot_last_index" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>term of the snapshot</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">snapshot_last_index</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-snapshot-last-term">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_snapshot_last_term">
+<span class="sig-name descname"><span class="pre">scyllaraft_snapshot_last_term</span></span><a class="headerlink" href="#metrics_option-scyllaraft_snapshot_last_term" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>index of the snapshot</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">snapshot_last_term</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-state">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_state">
+<span class="sig-name descname"><span class="pre">scyllaraft_state</span></span><a class="headerlink" href="#metrics_option-scyllaraft_state" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>current state: 0 - follower, 1 - candidate, 2 - leader</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">state</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-commit-index">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_commit_index">
+<span class="sig-name descname"><span class="pre">scyllaraft_commit_index</span></span><a class="headerlink" href="#metrics_option-scyllaraft_commit_index" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>commit index</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">commit_index</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaraft-apply-index">
+<dt class="sig sig-object std" id="metrics_option-scyllaraft_apply_index">
+<span class="sig-name descname"><span class="pre">scyllaraft_apply_index</span></span><a class="headerlink" href="#metrics_option-scyllaraft_apply_index" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>applied index</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">apply_index</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -2043,6 +2403,36 @@
 </div></blockquote>
 </dd></dl>
 
+<dl class="std metrics_option" id="metricsprop-scyllaalternator-rcu-total">
+<dt class="sig sig-object std" id="metrics_option-scyllaalternator_rcu_total">
+<span class="sig-name descname"><span class="pre">scyllaalternator_rcu_total</span></span><a class="headerlink" href="#metrics_option-scyllaalternator_rcu_total" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>total number of consumed read units, counted as half units</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">alternator</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">rcu_total</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllaalternator-wcu-total">
+<dt class="sig sig-object std" id="metrics_option-scyllaalternator_wcu_total">
+<span class="sig-name descname"><span class="pre">scyllaalternator_wcu_total</span></span><a class="headerlink" href="#metrics_option-scyllaalternator_wcu_total" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>total number of consumed write units, counted as half units</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">alternator</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">wcu_total</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std metrics_option" id="metricsprop-scyllaalternator-filtered-rows-dropped-total">
 <dt class="sig sig-object std" id="metrics_option-scyllaalternator_filtered_rows_dropped_total">
 <span class="sig-name descname"><span class="pre">scyllaalternator_filtered_rows_dropped_total</span></span><a class="headerlink" href="#metrics_option-scyllaalternator_filtered_rows_dropped_total" title="Link to this definition">¶</a></dt>
@@ -2242,6 +2632,9 @@
 </dd></dl>
 
 </section>
+<section id="schema">
+<h2>Schema<a class="headerlink" href="#schema" title="Link to this heading">¶</a></h2>
+</section>
 <section id="view">
 <h2>View<a class="headerlink" href="#view" title="Link to this heading">¶</a></h2>
 <dl class="std metrics_option" id="metricsprop-scyllacolumn-family-view-updates-pushed-remote">
@@ -2379,6 +2772,9 @@
 </div></blockquote>
 </dd></dl>
 
+</section>
+<section id="data-dictionary">
+<h2>Data dictionary<a class="headerlink" href="#data-dictionary" title="Link to this heading">¶</a></h2>
 </section>
 <section id="batchlog-manager">
 <h2>Batchlog manager<a class="headerlink" href="#batchlog-manager" title="Link to this heading">¶</a></h2>
@@ -2605,6 +3001,9 @@
 </dd></dl>
 
 </section>
+<section id="maintenance-socket-role-manager">
+<h2>Maintenance socket role manager<a class="headerlink" href="#maintenance-socket-role-manager" title="Link to this heading">¶</a></h2>
+</section>
 <section id="tablet-allocator">
 <h2>Tablet allocator<a class="headerlink" href="#tablet-allocator" title="Link to this heading">¶</a></h2>
 <dl class="std metrics_option" id="metricsprop-scyllagroup-name-calls">
@@ -2648,6 +3047,21 @@
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
 <li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">group_name</span></code></p></li>
 <li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">migrations_skipped</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllagroup-name-cross-rack-collocations">
+<dt class="sig sig-object std" id="metrics_option-scyllagroup_name_cross_rack_collocations">
+<span class="sig-name descname"><span class="pre">scyllagroup_name_cross_rack_collocations</span></span><a class="headerlink" href="#metrics_option-scyllagroup_name_cross_rack_collocations" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>number of co-locating migrations which move replica across racks</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">group_name</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">cross_rack_collocations</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -2744,6 +3158,129 @@
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
 <li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">node</span></code></p></li>
 <li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">operation_mode</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="advanced-rpc-compressor">
+<h2>Advanced rpc compressor<a class="headerlink" href="#advanced-rpc-compressor" title="Link to this heading">¶</a></h2>
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-bytes-sent">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_bytes_sent">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_bytes_sent</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_bytes_sent" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>bytes written to RPC connections, before compression</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">bytes_sent</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-compressed-bytes-sent">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_compressed_bytes_sent">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_compressed_bytes_sent</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_compressed_bytes_sent" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>bytes written to RPC connections, after compression</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compressed_bytes_sent</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-compressed-bytes-received">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_compressed_bytes_received">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_compressed_bytes_received</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_compressed_bytes_received" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>bytes read from RPC connections, before decompression</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compressed_bytes_received</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-messages-received">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_messages_received">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_messages_received</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_messages_received" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>RPC messages received</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">messages_received</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-messages-sent">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_messages_sent">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_messages_sent</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_messages_sent" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>RPC messages sent</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">messages_sent</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-bytes-received">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_bytes_received">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_bytes_received</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_bytes_received" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>bytes read from RPC connections, after decompression</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">bytes_received</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-compression-cpu-nanos">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_compression_cpu_nanos">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_compression_cpu_nanos</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_compression_cpu_nanos" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>nanoseconds spent on compression</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compression_cpu_nanos</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scyllarpc-compression-decompression-cpu-nanos">
+<dt class="sig sig-object std" id="metrics_option-scyllarpc_compression_decompression_cpu_nanos">
+<span class="sig-name descname"><span class="pre">scyllarpc_compression_decompression_cpu_nanos</span></span><a class="headerlink" href="#metrics_option-scyllarpc_compression_decompression_cpu_nanos" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>nanoseconds spent on decompression</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">rpc_compression</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">decompression_cpu_nanos</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -2871,6 +3408,12 @@
 </div></blockquote>
 </dd></dl>
 
+</section>
+<section id="describe-statement">
+<h2>Describe statement<a class="headerlink" href="#describe-statement" title="Link to this heading">¶</a></h2>
+</section>
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading">¶</a></h2>
 </section>
 <section id="trace-keyspace-helper">
 <h2>Trace keyspace helper<a class="headerlink" href="#trace-keyspace-helper" title="Link to this heading">¶</a></h2>
@@ -3467,7 +4010,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics (BETA)&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -3507,7 +4050,7 @@
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />API Reference (BETA)
+                    <span class="colored">PREVIOUS</span> <br />API Reference
                 </div>
             </a>
         
@@ -3536,7 +4079,7 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics (BETA)&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -3555,30 +4098,41 @@
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Metrics (BETA)</a><ul>
+<li><a class="reference internal" href="#">Metrics</a><ul>
+<li><a class="reference internal" href="#ldap-role-manager">Ldap role manager</a></li>
 <li><a class="reference internal" href="#wasm-instance-cache">Wasm instance cache</a></li>
+<li><a class="reference internal" href="#service">Service</a></li>
 <li><a class="reference internal" href="#client">Client</a></li>
 <li><a class="reference internal" href="#rate-limiter">Rate limiter</a></li>
+<li><a class="reference internal" href="#standard-role-manager">Standard role manager</a></li>
 <li><a class="reference internal" href="#compaction-manager">Compaction manager</a></li>
 <li><a class="reference internal" href="#main">Main</a></li>
+<li><a class="reference internal" href="#service-level-controller">Service level controller</a></li>
 <li><a class="reference internal" href="#view-update-generator">View update generator</a></li>
 <li><a class="reference internal" href="#raft-group0">Raft group0</a></li>
 <li><a class="reference internal" href="#logalloc">Logalloc</a></li>
+<li><a class="reference internal" href="#server">Server</a></li>
 <li><a class="reference internal" href="#stream-session">Stream session</a></li>
 <li><a class="reference internal" href="#sstables">Sstables</a></li>
 <li><a class="reference internal" href="#manager">Manager</a></li>
 <li><a class="reference internal" href="#stats">Stats</a></li>
 <li><a class="reference internal" href="#reader-concurrency-semaphore">Reader concurrency semaphore</a></li>
+<li><a class="reference internal" href="#schema">Schema</a></li>
 <li><a class="reference internal" href="#view">View</a></li>
+<li><a class="reference internal" href="#data-dictionary">Data dictionary</a></li>
 <li><a class="reference internal" href="#batchlog-manager">Batchlog manager</a></li>
 <li><a class="reference internal" href="#stream-manager">Stream manager</a></li>
 <li><a class="reference internal" href="#mapreduce-service">Mapreduce service</a></li>
 <li><a class="reference internal" href="#gossiper">Gossiper</a></li>
 <li><a class="reference internal" href="#ttl">Ttl</a></li>
+<li><a class="reference internal" href="#maintenance-socket-role-manager">Maintenance socket role manager</a></li>
 <li><a class="reference internal" href="#tablet-allocator">Tablet allocator</a></li>
 <li><a class="reference internal" href="#repair">Repair</a></li>
 <li><a class="reference internal" href="#storage-service">Storage service</a></li>
+<li><a class="reference internal" href="#advanced-rpc-compressor">Advanced rpc compressor</a></li>
 <li><a class="reference internal" href="#row-level">Row level</a></li>
+<li><a class="reference internal" href="#describe-statement">Describe statement</a></li>
+<li><a class="reference internal" href="#types">Types</a></li>
 <li><a class="reference internal" href="#trace-keyspace-helper">Trace keyspace helper</a></li>
 <li><a class="reference internal" href="#row-cache">Row cache</a></li>
 </ul>
@@ -3612,7 +4166,7 @@
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -3626,13 +4180,7 @@
             
                 
                     <li>
-                        <a href="../../branch-2025.1/reference/metrics.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="metrics.html">6.2</a>
+                        <a href="metrics.html">2025.1</a>
                     </li>
                 
             
@@ -3649,7 +4197,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -3661,7 +4209,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -3717,10 +4265,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -3747,11 +4299,8 @@
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -3801,6 +4350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -3808,6 +4358,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -3829,6 +4380,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -3924,6 +4476,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -3959,8 +4512,8 @@
 <li class="toctree-l2"><a class="reference internal" href="configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>

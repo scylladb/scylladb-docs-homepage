@@ -305,7 +305,7 @@
                         <section id="scylladb-web-installer-for-linux">
 <h1>ScyllaDB Web Installer for Linux<a class="headerlink" href="#scylladb-web-installer-for-linux" title="Link to this heading">¶</a></h1>
 <p>ScyllaDB Web Installer is a platform-agnostic installation script you can run with <code class="docutils literal notranslate"><span class="pre">curl</span></code> to install ScyllaDB on Linux.</p>
-<p>See <a class="reference external" href="https://www.scylladb.com/download/#core">ScyllaDB Download Center</a> for information on manually installing ScyllaDB with platform-specific installation packages.</p>
+<p>See <a class="reference internal" href="../install-scylla/install-on-linux.html"><span class="doc">Install ScyllaDB Linux Packages</span></a> for information on manually installing ScyllaDB with platform-specific installation packages.</p>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
 <p>Ensure that your platform is supported by the ScyllaDB version you want to install.
@@ -317,44 +317,37 @@ See <a class="reference internal" href="../os-support.html"><span class="doc">OS
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash</span>
 </pre></div>
 </div>
-<p>By default, running the script installs the latest official version of ScyllaDB Open Source. You can use the following
-options to install a different version or ScyllaDB Enterprise:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 25.0%" />
-<col style="width: 55.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Option</p></th>
-<th class="head"><p>Acceptable values</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--scylla-product</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">scylla</span></code> | <code class="docutils literal notranslate"><span class="pre">scylla-enterprise</span></code></p></td>
-<td><p>Specifies the ScyllaDB product to install: Open Source (<code class="docutils literal notranslate"><span class="pre">scylla</span></code>) or Enterprise (<code class="docutils literal notranslate"><span class="pre">scylla-enterprise</span></code>)  The default is <code class="docutils literal notranslate"><span class="pre">scylla</span></code>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--scylla-version</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;version</span> <span class="pre">number&gt;</span></code></p></td>
-<td><p>Specifies the ScyllaDB version to install. You can specify the major release (<code class="docutils literal notranslate"><span class="pre">x.y</span></code>) to install the latest patch for that version or a specific patch release (<code class="docutils literal notranslate"><span class="pre">x.y.x</span></code>). The default is the latest official version.</p></td>
-</tr>
-</tbody>
-</table>
+<p>By default, running the script installs the latest official version of ScyllaDB.</p>
 <p>You can run the command with the <code class="docutils literal notranslate"><span class="pre">-h</span></code> or <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag to print information about the script.</p>
-<section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h3>
-<p>Installing ScyllaDB Open Source 6.0.1:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 6.0.1</span>
+</section>
+<section id="installing-a-non-default-version">
+<h2>Installing a Non-default Version<a class="headerlink" href="#installing-a-non-default-version" title="Link to this heading">¶</a></h2>
+<p>You can install a version other than the default.</p>
+<section id="versions-2025-1-and-later">
+<h3>Versions 2025.1 and Later<a class="headerlink" href="#versions-2025-1-and-later" title="Link to this heading">¶</a></h3>
+<p>Run the command with the <code class="docutils literal notranslate"><span class="pre">--scylla-version</span></code> option to specify the version
+you want to install.</p>
+<p><strong>Example</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 2025.1.1</span>
 </pre></div>
 </div>
-<p>Installing the latest patch release for ScyllaDB Open Source 6.0:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 6.0</span>
-</pre></div>
-</div>
-<p>Installing ScyllaDB Enterprise 2024.1:</p>
+</section>
+<section id="versions-earlier-than-2025-1">
+<h3>Versions Earlier than 2025.1<a class="headerlink" href="#versions-earlier-than-2025-1" title="Link to this heading">¶</a></h3>
+<p>To install a supported version of <em>ScyllaDB Enterprise</em>, run the command with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--scylla-product</span> <span class="pre">scylla-enterprise</span></code> to specify that you want to install
+ScyllaDB Entrprise.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--scylla-version</span></code> to specify the version you want to install.</p></li>
+</ul>
+<p>For example:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-product scylla-enterprise --scylla-version 2024.1</span>
+</pre></div>
+</div>
+<p>To install a supported version of <em>ScyllaDB Open Source</em>, run the command with
+the <code class="docutils literal notranslate"><span class="pre">--scylla-version</span></code> option to specify the version you want to install.</p>
+<p>For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 6.2.1</span>
 </pre></div>
 </div>
 </section>
@@ -440,7 +433,7 @@ We recommend against enabling developer mode in production environments to ensur
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -509,7 +502,7 @@ We recommend against enabling developer mode in production environments to ensur
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -530,8 +523,10 @@ We recommend against enabling developer mode in production environments to ensur
             <ul>
 <li><a class="reference internal" href="#">ScyllaDB Web Installer for Linux</a><ul>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li><a class="reference internal" href="#install-scylladb-with-web-installer">Install ScyllaDB with Web Installer</a><ul>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#install-scylladb-with-web-installer">Install ScyllaDB with Web Installer</a></li>
+<li><a class="reference internal" href="#installing-a-non-default-version">Installing a Non-default Version</a><ul>
+<li><a class="reference internal" href="#versions-2025-1-and-later">Versions 2025.1 and Later</a></li>
+<li><a class="reference internal" href="#versions-earlier-than-2025-1">Versions Earlier than 2025.1</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configure-and-run-scylladb">Configure and Run ScyllaDB</a></li>
@@ -566,7 +561,7 @@ We recommend against enabling developer mode in production environments to ensur
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -580,13 +575,7 @@ We recommend against enabling developer mode in production environments to ensur
             
                 
                     <li>
-                        <a href="../../../branch-2025.1/getting-started/installation-common/scylla-web-installer.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="scylla-web-installer.html">6.2</a>
+                        <a href="scylla-web-installer.html">2025.1</a>
                     </li>
                 
             
@@ -603,7 +592,7 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l3"><a class="reference internal" href="../install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -615,7 +604,7 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l2"><a class="reference internal" href="../config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -671,10 +660,14 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -701,11 +694,8 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -755,6 +745,7 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -762,6 +753,7 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -783,6 +775,7 @@ We recommend against enabling developer mode in production environments to ensur
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -878,6 +871,7 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l2"><a class="reference internal" href="../../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -913,8 +907,8 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">ScyllaDB FAQ</a></li>

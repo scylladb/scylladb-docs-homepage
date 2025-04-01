@@ -331,6 +331,9 @@
 <tr class="row-even"><td><p><code class="code docutils literal notranslate"><span class="pre">/etc/scylla/cassandra-rackdc.properties</span></code></p></td>
 <td><p>Rack &amp; dc configuration file</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="code docutils literal notranslate"><span class="pre">/etc/scylla/object_storage.yaml</span></code></p></td>
+<td><p>Object storage configuration file</p></td>
+</tr>
 </tbody>
 </table>
 <section id="check-your-current-version-of-scylladb">
@@ -527,6 +530,52 @@ For example:</p>
 <p>To read the rest of the <a class="reference internal" href="#"><span class="doc">Administration Guide</span></a> (from the top).</p>
 <p>To go to the System Configuration documentation, click <a class="reference internal" href="system-configuration/index.html"><span class="doc">here</span></a>.</p>
 </section>
+</section>
+<section id="configuring-object-storage-experimental">
+<span id="object-storage-configuration"></span><h2>Configuring Object Storage <span class="label label--caution">Experimental</span><a class="headerlink" href="#configuring-object-storage-experimental" title="Link to this heading">¶</a></h2>
+<p>Scylla has the ability to communicate directly with S3-compatible storage. This
+feature enables various functionalities, but requires proper configuration of
+storage endpoints.</p>
+<p>To enable S3-compatible storage features, you need to describe the endpoints
+where SSTable files can be stored. This is done using a YAML configuration file.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code> file should follow this format:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;endpoint_address_or_domain_name&gt;</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;port_number&gt;</span>
+<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;true_or_false&gt;</span><span class="w"> </span><span class="c1"># optional</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;region_name&gt;</span><span class="w"> </span><span class="c1"># optional, e.g. us-east-1</span>
+<span class="w">    </span><span class="nt">aws_access_key_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;access_key&gt;</span><span class="w"> </span><span class="c1"># optional</span>
+<span class="w">    </span><span class="nt">aws_secret_access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;secret_access_key&gt;</span><span class="w"> </span><span class="c1"># optional</span>
+<span class="w">    </span><span class="nt">aws_session_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;session_token&gt;</span><span class="w"> </span><span class="c1"># optional</span>
+</pre></div>
+</div>
+<p>The AWS-related options (<code class="docutils literal notranslate"><span class="pre">aws_region</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_access_key_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">aws_secret_access_key</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code>) can be configured in two ways:</p>
+<ul class="simple">
+<li><p>Directly in the YAML file (as shown above).</p></li>
+<li><p>Using environment variables:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_DEFAULT_REGION</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_ACCESS_KEY_ID</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_SECRET_ACCESS_KEY</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_SESSION_TOKEN</span></code></p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>All AWS-related parameters must be either present or absent as a group.</p></li>
+<li><p>When set, these values are used by the S3 client to sign requests.</p></li>
+<li><p>If not set, requests are sent unsigned, which may not be accepted by all servers.</p></li>
+</ul>
+</div>
+<p>By default, Scylla looks for the configuration file named <code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code>
+in the same directory as <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>. You can override this location using the
+<a class="reference internal" href="../reference/configuration-parameters.html#confval-object_storage_config_file"><code class="xref std std-confval docutils literal notranslate"><span class="pre">object_storage_config_file</span></code></a> option in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object-storage-config-file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object-storage-config-file.yaml</span>
+</pre></div>
+</div>
 <section id="compression">
 <span id="admin-compression"></span><h3>Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h3>
 <p>In ScyllaDB, you can configure compression at rest and compression in transit.
@@ -670,11 +719,37 @@ discard, or trim, any blocks no longer in use by the filesystem.</p>
 </section>
 <section id="experimental-features">
 <h2>Experimental Features<a class="headerlink" href="#experimental-features" title="Link to this heading">¶</a></h2>
-<p>ScyllaDB Open Source uses experimental flags to expose non-production-ready features safely. These features are not stable enough to be used in production, and their API will likely change, breaking backward or forward compatibility.</p>
+<p>ScyllaDB uses experimental flags to expose non-production-ready features safely. These features are not stable enough to be used in production, and their API will likely change, breaking backward or forward compatibility.</p>
 <p>In recent ScyllaDB versions, these features are controlled by the <code class="docutils literal notranslate"><span class="pre">experimental_features</span></code> list in scylla.yaml, allowing one to choose which experimental to enable.
-For example, some of the experimental features in ScyllaDB Open Source 4.5 are: <code class="docutils literal notranslate"><span class="pre">udf</span></code>, <code class="docutils literal notranslate"><span class="pre">alternator-streams</span></code> and <code class="docutils literal notranslate"><span class="pre">raft</span></code>.
 Use <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">--help</span></code> to get the list of experimental features.</p>
-<p>ScyllaDB Enterprise and ScyllaDB Cloud do not officially support experimental Features.</p>
+<section id="keyspace-storage-options">
+<span id="admin-keyspace-storage-options"></span><h3>Keyspace storage options<a class="headerlink" href="#keyspace-storage-options" title="Link to this heading">¶</a></h3>
+<p>By default, SStables of a keyspace are stored in a local directory.
+As an alternative, you can configure your keyspace to be stored
+on Amazon S3 or another S3-compatible object store.</p>
+<p>Support for object storage is experimental and must be explicitly
+enabled in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file by specifying
+the <code class="docutils literal notranslate"><span class="pre">keyspace-storage-options</span></code> option:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">experimental_features</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keyspace-storage-options</span>
+</pre></div>
+</div>
+<p>Before creating keyspaces with object storage, you also need to
+<a class="reference internal" href="#object-storage-configuration"><span class="std std-ref">configure</span></a> the object storage
+credentials and endpoint.</p>
+</section>
+<section id="views-with-tablets">
+<span id="admin-views-with-tablets"></span><h3>Views with tablets<a class="headerlink" href="#views-with-tablets" title="Link to this heading">¶</a></h3>
+<p>By default, Materialized Views (MV) and Secondary Indexes (SI)
+are disabled in keyspaces that use tablets.</p>
+<p>Support for MV and SI with tablets is experimental and must be explicitly
+enabled in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file by specifying
+the <code class="docutils literal notranslate"><span class="pre">views-with-tablets</span></code> option:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">experimental_features</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">views-with-tablets</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="monitoring">
 <h2>Monitoring<a class="headerlink" href="#monitoring" title="Link to this heading">¶</a></h2>
@@ -709,7 +784,7 @@ The API is by default bound to an internal IP (127.0.0.1), blocked for external 
 <ol class="arabic">
 <li><p>Run:</p>
 <blockquote>
-<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>some-scylla<span class="w"> </span>-p<span class="w"> </span><span class="m">10000</span>:10000<span class="w"> </span>-d<span class="w"> </span>scylladb/scylla:5.0.4<span class="w"> </span>--api-address<span class="w"> </span><span class="m">0</span>.0.0.0
+<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>some-scylla<span class="w"> </span>-p<span class="w"> </span><span class="m">10000</span>:10000<span class="w"> </span>-d<span class="w"> </span>scylladb/scylla:latest<span class="w"> </span>--api-address<span class="w"> </span><span class="m">0</span>.0.0.0
 </pre></div>
 </div>
 </div></blockquote>
@@ -816,7 +891,7 @@ with the ScyllaDB REST API.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Administration Guide&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/operating-scylla/admin%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Administration Guide&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/admin%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -885,7 +960,7 @@ with the ScyllaDB REST API.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Administration Guide&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/operating-scylla/admin%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Administration Guide&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/admin%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -922,6 +997,9 @@ with the ScyllaDB REST API.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#ipv6-addresses">IPv6 Addresses</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-object-storage-experimental">Configuring Object Storage <span class="label label--caution">Experimental</span></a><ul>
 <li><a class="reference internal" href="#compression">Compression</a><ul>
 <li><a class="reference internal" href="#client-node-compression">Client - Node Compression</a></li>
 <li><a class="reference internal" href="#internode-compression">Internode Compression</a></li>
@@ -934,7 +1012,11 @@ with the ScyllaDB REST API.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#schedule-fstrim">Schedule fstrim</a></li>
-<li><a class="reference internal" href="#experimental-features">Experimental Features</a></li>
+<li><a class="reference internal" href="#experimental-features">Experimental Features</a><ul>
+<li><a class="reference internal" href="#keyspace-storage-options">Keyspace storage options</a></li>
+<li><a class="reference internal" href="#views-with-tablets">Views with tablets</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#monitoring">Monitoring</a><ul>
 <li><a class="reference internal" href="#monitoring-interfaces">Monitoring Interfaces</a></li>
 <li><a class="reference internal" href="#monitoring-stack">Monitoring Stack</a></li>
@@ -986,7 +1068,7 @@ with the ScyllaDB REST API.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1000,13 +1082,7 @@ with the ScyllaDB REST API.</p>
             
                 
                     <li>
-                        <a href="../../branch-2025.1/operating-scylla/admin.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="admin.html">6.2</a>
+                        <a href="admin.html">2025.1</a>
                     </li>
                 
             
@@ -1023,7 +1099,7 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1035,7 +1111,7 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -1091,10 +1167,14 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l3"><a class="reference internal" href="security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1121,11 +1201,8 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="system-configuration/index.html">System Configuration</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
@@ -1175,6 +1252,7 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1182,6 +1260,7 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1203,6 +1282,7 @@ with the ScyllaDB REST API.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1298,6 +1378,7 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l2"><a class="reference internal" href="../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -1333,8 +1414,8 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>

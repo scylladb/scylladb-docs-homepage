@@ -337,7 +337,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#id1">Size-tiered compaction strategy (STCS)</a> - (default setting) triggered when the system has enough similarly sized SSTables.</p></li>
 <li><p><a class="reference internal" href="#id2">Leveled compaction strategy (LCS)</a> - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.</p></li>
-<li><p><a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental compaction strategy (ICS)</span></a> - <span class="label label--tip">ScyllaDB Enterprise</span> Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers, similar to STCS size-tiers. If you are an Enterprise customer ICS is an updated strategy meant to replace STCS. It has the same read and write amplification, but has lower space amplification due to the reduction of temporary space overhead is reduced to a constant manageable level.</p></li>
+<li><p><a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental compaction strategy (ICS)</span></a> - Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers, similar to STCS size-tiers. ICS is an updated strategy meant to replace STCS. It has the same read and write amplification, but has lower space amplification due to the reduction of temporary space overhead is reduced to a constant manageable level.</p></li>
 <li><p><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> - designed for time series data and puts data in time order. TWCS uses STCS to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.</p></li>
 </ul>
 <section id="how-to-set-a-compaction-strategy">
@@ -397,9 +397,51 @@ Following the compaction, the tables are merged, resulting in one larger SSTable
 <p>Likewise, when <a class="reference internal" href="../reference/glossary.html#term-Bootstrap"><span class="xref std std-term">bootstrapping</span></a> a new node, SSTables are streamed from other nodes. The level of the remote SSTable is kept to avoid many compactions until after the bootstrap is done. During the bootstrap, the new node receives regular write requests while it is streaming the data from the remote node. Just like any other write, these writes are flushed to L0. If ScyllaDB did an LCS compaction on these L0 SSTables and created SSTables in higher level, this could have blocked the remote SSTables from going to the correct level (remember that SSTables in a run must not have overlapping key ranges). To remedy this from happening, ScyllaDB compacts the tables using STCS only in L0 until the bootstrap process is complete. Once done, all resumes as normal under LCS.</p>
 </section>
 </section>
-<section id="incremental-compaction-strategy-ics-scylladb-enterprise">
-<span id="incremental-compaction-strategy-ics"></span><h2>Incremental Compaction Strategy (ICS) <span class="label label--tip">ScyllaDB Enterprise</span><a class="headerlink" href="#incremental-compaction-strategy-ics-scylladb-enterprise" title="Link to this heading">¶</a></h2>
-<p>ICS is only available in ScyllaDB Enterprise. See the <a class="reference external" href="https://enterprise.docs.scylladb.com/stable/kb/compaction.html">ScyllaDB Enetrpise documentation</a> for details.</p>
+<section id="incremental-compaction-strategy-ics">
+<span id="id4"></span><h2>Incremental Compaction Strategy (ICS)<a class="headerlink" href="#incremental-compaction-strategy-ics" title="Link to this heading">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2019.1.4.</span></p>
+</div>
+<p>One of the issues with Size-tiered compaction is that it needs temporary space because SSTables are not removed until they are fully compacted. ICS takes a different approach and splits each large SSTable into a run of sorted, fixed-size (by default 1 GB) SSTables (a.k.a. fragments) in the same way that LCS does, except it treats the entire run and not the individual SSTables as the sizing file for STCS. As the run-fragments are small, the SSTables compact quickly, allowing individual SSTables to be removed as soon as they are compacted.  This approach uses low amounts of memory and temporary disk space.</p>
+<p>ICS uses the same philosophy as STCS, where the SSTables are sorted in buckets according to their size. However, unlike STCS, ICS compaction uses SSTable runs as input, and produces a new run as output. It doesn’t matter if a run is composed of only one fragment that could have come from STCS migration. From an incremental compaction perspective, everything is a run.</p>
+<p>The strategy works as follows:</p>
+<ol class="arabic simple">
+<li><p>ICS looks for candidates for compaction that are similar in size. These candidates are called <code class="docutils literal notranslate"><span class="pre">Input</span> <span class="pre">Runs</span></code>.</p>
+<ul class="simple">
+<li><p>The input runs may contain one or more SSTables each.</p></li>
+</ul>
+</li>
+<li><p>ICS compacts two or more similar-sized input runs into a single <code class="docutils literal notranslate"><span class="pre">Output</span> <span class="pre">run</span></code> (* See <a class="reference internal" href="#note">note</a> ).</p></li>
+<li><p>Incremental Compaction progressively works on two or more fragments at a time, one from each input run.</p>
+<ul class="simple">
+<li><p>It reads mutations from all input fragments and merges them together into a single output fragment.</p></li>
+<li><p>As long as the resulting fragment is smaller than the <code class="docutils literal notranslate"><span class="pre">sstable_size_in_mb</span></code>, no further action is needed.</p></li>
+<li><p>If the fragment is larger than the <code class="docutils literal notranslate"><span class="pre">sstable_size_in_mb</span></code>:</p>
+<ol class="arabic simple">
+<li><p>Stop when the size threshold is reached, and seal the output fragment.</p></li>
+<li><p>Create a new run fragment and continue compacting the remaining input fragments, until the size threshold is reached.</p></li>
+<li><p>When an input fragment is exhausted, take it out of the list of SSTables to compact, and delete it from disk.</p></li>
+<li><p>Repeat until there are no input fragments left.</p></li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>Take all of the output fragments and feed them back into compaction as an SSTable run.</p></li>
+<li><p>Stop when all fragments from input runs were exhausted and released.</p></li>
+</ol>
+<div class="admonition note" id="note">
+<p class="admonition-title">Note</p>
+<p>To prevent data resurrection in case scylla crashes in the middle of compaction, ICS may possibly write an auxiliary run containing purgeable tombstones in addition to the output run containing live data.
+These tombstones are kept on disk while there are SSTables containing data that the tombstones may shadow. Once compaction is done, deleting all shadowed data from all SSTables, the purgeable tombstones are purged and the SSTables holding them are removed from storage.</p>
+</div>
+<img alt="../_images/ics-incremental-compaction.png" src="../_images/ics-incremental-compaction.png" />
+<section id="incremental-compaction-as-a-solution-for-temporary-space-overhead-in-stcs">
+<h3>Incremental compaction as a solution for temporary space overhead in STCS<a class="headerlink" href="#incremental-compaction-as-a-solution-for-temporary-space-overhead-in-stcs" title="Link to this heading">¶</a></h3>
+<p>We fixed the temporary space overhead on STCS by applying the incremental compaction approach to it, which resulted in the creation of Incremental Compaction Strategy (ICS). The compacted SSTables, that become increasingly larger over time with STCS, are replaced with sorted runs of SSTable fragments, together called “SSTable runs” – which is a concept borrowed from Leveled Compaction Strategy (LCS).</p>
+<p>Each fragment is a roughly fixed size (aligned to partition boundaries) SSTable and it holds a unique range of keys, a portion of the whole SSTable run. Note that as the SSTable-runs in ICS hold exactly the same data as the corresponding SSTables created by STCS, they become increasingly longer over time (holding more fragments), in the same way that SSTables grow in size with STCS, yet the ICS SSTable fragments’ size remains the same.</p>
+<p>For example, when compacting two SSTables (or SSTable runs) holding 7GB each: instead of writing up to 14GB into a single SSTable file, we’ll break the output SSTable into a run of 14 x 1GB fragments (fragment size is 1GB by default).</p>
+<img alt="../_images/compaction-incremental.png" src="../_images/compaction-incremental.png" />
+</section>
 </section>
 <section id="time-window-compaction-strategy-twcs">
 <span id="time-window-compactionstrategy-twcs"></span><h2>Time-window Compaction Strategy (TWCS)<a class="headerlink" href="#time-window-compaction-strategy-twcs" title="Link to this heading">¶</a></h2>
@@ -499,7 +541,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -568,7 +610,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -601,7 +643,10 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li><a class="reference internal" href="#temporary-fallback-to-stcs">Temporary Fallback to STCS</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#incremental-compaction-strategy-ics-scylladb-enterprise">Incremental Compaction Strategy (ICS) <span class="label label--tip">ScyllaDB Enterprise</span></a></li>
+<li><a class="reference internal" href="#incremental-compaction-strategy-ics">Incremental Compaction Strategy (ICS)</a><ul>
+<li><a class="reference internal" href="#incremental-compaction-as-a-solution-for-temporary-space-overhead-in-stcs">Incremental compaction as a solution for temporary space overhead in STCS</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window Compaction Strategy (TWCS)</a><ul>
 <li><a class="reference internal" href="#when-time-series-data-gets-out-of-order">When time-series data gets out of order</a></li>
 </ul>
@@ -645,7 +690,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -659,13 +704,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
             
                 
                     <li>
-                        <a href="../../branch-2025.1/kb/compaction.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="compaction.html">6.2</a>
+                        <a href="compaction.html">2025.1</a>
                     </li>
                 
             
@@ -682,7 +721,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -694,7 +733,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -750,10 +789,14 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -780,11 +823,8 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -834,6 +874,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -841,6 +882,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l1 has-children"><a class="reference internal" href="../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -862,6 +904,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -957,6 +1000,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -992,8 +1036,8 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>

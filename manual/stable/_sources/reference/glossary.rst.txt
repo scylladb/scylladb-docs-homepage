@@ -58,6 +58,9 @@ Glossary
     Keyspace
       A collection of tables with attributes which define how data is replicated on nodes. See :doc:`Ring Architecture </architecture/ringarchitecture/index>`.
     
+    Key Management Interoperability Protocol (KMIP)
+      :abbr:`KMIP (Key Management Interoperability Protocol)` is a communication protocol that defines message formats for storing keys on a key management server (KMIP server). You can use a KMIP server to protect your keys when using Encryption at Rest. See :doc:`Encryption at Rest</operating-scylla/security/encryption-at-rest/>`.
+
     Leveled compaction strategy (LCS)
       :abbr:`LCS (Leveled compaction strategy)` uses small, fixed-size (by default 160 MB) SSTables divided into different levels. See :doc:`Compaction Strategies</architecture/compaction/compaction-strategies/>`.
 
@@ -124,6 +127,12 @@ Glossary
       RBNO is enabled by default for a subset node operations. 
       See :doc:`Repair Based Node Operations </operating-scylla/procedures/cluster-management/repair-based-node-operation>` for details.
 
+    RF-rack-valid keyspace
+      A keyspace with :doc:`tablets </architecture/tablets>` enabled is RF-rack-valid if all of its data centers
+      have the :term:`Replication Factor (RF) <Replication Factor (RF)>` of 0, 1, or the number of racks in that data center.
+
+      Keyspaces with tablets disabled are always deemed RF-rack-valid, even if they do not satisfy the aforementioned condition.
+
     Shard
       Each ScyllaDB node is internally split into *shards*, an independent thread bound to a dedicated core.
       Each shard of data is allotted CPU, RAM, persistent storage, and networking resources which it uses as efficiently as possible.
@@ -184,8 +193,8 @@ Glossary
        Cache dummy rows are entries in the row set, which have a clustering position, although they do not represent CQL rows written by users.  ScyllaDB cache uses them to mark boundaries of population ranges, to represent the information that the whole range is complete, and there is no need to go to sstables to read the gaps between existing row entries when scanning.
       
     Workload
-      A database category that allows you to manage different sources of database activities, such as requests or administrative activities. By defining workloads, you can specify how ScyllaDB will process those activities. For example, `ScyllaDB Enterprise <https://enterprise.docs.scylladb.com/>`_
-      ships with a feature that allows you to prioritize one workload over another (e.g., user requests over administrative activities). See `Workload Prioritization <https://enterprise.docs.scylladb.com/stable/using-scylla/workload-prioritization.html>`_.
+      A database category that allows you to manage different sources of database activities, such as requests or administrative activities. By defining workloads, you can specify how ScyllaDB will process those activities. For example, ScyllaDB
+      ships with a feature that allows you to prioritize one workload over another (e.g., user requests over administrative activities). See :doc:`Workload Prioritization </features/workload-prioritization/>`.
 
     MurmurHash3
        A hash function `created by Austin Appleby <https://en.wikipedia.org/wiki/MurmurHash>`_, and used by the :term:`Partitioner` to distribute the partitions between nodes.

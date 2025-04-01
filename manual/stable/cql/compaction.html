@@ -432,8 +432,91 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 </section>
 <section id="incremental-compaction-strategy-ics">
 <span id="ics"></span><h2>Incremental Compaction Strategy (ICS)<a class="headerlink" href="#incremental-compaction-strategy-ics" title="Link to this heading">¶</a></h2>
-<p>ICS is only available in ScyllaDB Enterprise. See the <a class="reference external" href="https://enterprise.docs.scylladb.com/stable/cql/compaction.html">ScyllaDB Enetrpise documentation</a> for details.</p>
+<p>When using ICS, SSTable runs are put in different buckets depending on their size.
+When an SSTable run is bucketed, the average size of the runs in the bucket is compared to the new run, as well as the <code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> and <code class="docutils literal notranslate"><span class="pre">bucket_low</span></code> levels.</p>
+<p>The database compares each SSTable-run size to the average of all SSTable-run sizes on all buckets in the node.
+It calculates <code class="docutils literal notranslate"><span class="pre">bucket_low</span> <span class="pre">*</span> <span class="pre">avg_bucket_size</span></code> and <code class="docutils literal notranslate"><span class="pre">bucket_high</span> <span class="pre">*</span> <span class="pre">avg_bucket_size</span></code> and then compares the result with the <code class="docutils literal notranslate"><span class="pre">average</span> <span class="pre">SSTable-run</span> <span class="pre">size</span></code>.
+The conditions set for <code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> and <code class="docutils literal notranslate"><span class="pre">bucket_low</span></code> dictate if successive runs will be added to the same bucket.
+When compaction begins it merges SSTable runs whose size in KB are within <code class="docutils literal notranslate"><span class="pre">[average-size</span> <span class="pre">*</span> <span class="pre">bucket_low]</span></code> and <code class="docutils literal notranslate"><span class="pre">[average-size</span> <span class="pre">*</span> <span class="pre">bucket_high]</span></code>.</p>
+<p>Once there are multiple runs in a bucket, minor compaction begins.
+The minimum number of SSTable runs that triggers minor compaction is either 2 or <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code>, if the <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold</span></code>
+configuration option is set in the scylla.yaml configuration file.</p>
+<section id="ics-options">
+<span id="id4"></span><h3>ICS options<a class="headerlink" href="#ics-options" title="Link to this heading">¶</a></h3>
+<p>The following options only apply to IncrementalCompactionStrategy:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;IncrementalCompactionStrategy&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;bucket_high&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="s1">&#39;bucket_low&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="s1">&#39;min_sstable_size&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">&#39;min_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
+  <span class="s1">&#39;max_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
+  <span class="s1">&#39;sstable_size_in_mb&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">&#39;space_amplification_goal&#39;</span> <span class="p">:</span> <span class="nb">double</span><span class="p">}</span>
+</pre></div>
+</div>
 <hr class="docutils" />
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> (default: 1.5)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is <strong>less than</strong>
+bucket_high * the average size of that bucket (and if the bucket_low condition also holds).
+For example, if <strong>‘bucket_high = 1.5’</strong> and the <strong>SSTable size = 14MB</strong>, does the SSTable belong to a bucket with an average size of 10MB?
+Yes, because the <strong>SSTable size = 14</strong>, which is <strong>less</strong> than <strong>‘bucket_high’ * average bucket size = 15</strong>.
+So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">bucket_low</span></code> (default: 0.5)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is <strong>more than</strong>
+bucket_low * the average size of that bucket (and if the bucket_high condition also holds).
+For example, if <strong>‘bucket_high = 0.5’</strong> and the <strong>SSTable size is 10MB</strong>, does the SSTable belong to a bucket with an average size of 15MB?
+Yes, because the <strong>SSTable size = 10</strong>, which is <strong>more</strong> than <strong>‘bucket_low’ * average bucket size = 7.5</strong>.
+So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> (default: 50)</dt><dd><p>All SSTables smaller than this number of megabytes are put into the same bucket.</p>
+<p>Unlike Apache Cassandra, scylla uses <strong>uncompressed</strong> size when bucketing similar-sized tiers together.
+Since compaction works on uncompressed data, SSTables containing similar amounts of data should be compacted together, even when they have different compression ratios.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> (default: 4)</dt><dd><p>Minimum number of SSTable runs that need to belong to the same size bucket before compaction is triggered on that bucket.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enforcement of <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> is controlled by the <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold</span></code> configuration option in the scylla.yaml configuration settings.
+By default, <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold=false</span></code>, meaning the Incremental Compaction Strategy will compact any bucket containing 2 or more SSTable runs.
+Otherwise, if <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold=true</span></code>, the value of <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> is considered and only those buckets that contain at
+least <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> SSTable runs will be compacted.</p>
+</div>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">max_threshold</span></code> (default: 32)</dt><dd><p>Maximum number of SSTables that will be compacted together in one compaction step.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sstable_size_in_mb</span></code> (default: 1000)</dt><dd><p>This is the target size in megabytes, that will be used as the goal for an SSTable size (fragment size) following a compression.</p>
+</dd>
+</dl>
+<hr class="docutils" id="sag" />
+<p><code class="docutils literal notranslate"><span class="pre">space_amplification_goal</span></code> (default: null)</p>
+<blockquote>
+<div><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2020.1.6.</span></p>
+</div>
+<p>This is a threshold of the ratio of the sum of the sizes of the two largest tiers to the size of the largest tier,
+above which ICS will automatically compact the second largest and largest tiers together to eliminate stale data that may have been overwritten, expired, or deleted.
+The space_amplification_goal is given as a double-precision floating point number that must be greater than 1.0.</p>
+<p>For example, if <strong>‘space_amplification_goal = 1.25’</strong> and the largest tier holds <strong>1000GB</strong>,
+when the second-largest tier accumulates SSTables with the total size of 250GB or more,
+the <code class="docutils literal notranslate"><span class="pre">space_amplification_goal</span></code> threshold is crossed and all the SSTables in the largest and second-largest tiers will be compacted together.</p>
+</div></blockquote>
+<hr class="docutils" />
+</section>
 </section>
 <section id="time-window-compactionstrategy-twcs">
 <span id="twcs"></span><h2>Time Window CompactionStrategy (TWCS)<a class="headerlink" href="#time-window-compactionstrategy-twcs" title="Link to this heading">¶</a></h2>
@@ -452,7 +535,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <p>Avoid overwriting data and deleting data explicitly at all costs, as this can potentially block an expired SSTable from being purged, due to the checks that are performed to avoid data resurrection.</p>
 </div>
 <section id="twcs-options">
-<span id="id4"></span><h3>TWCS options<a class="headerlink" href="#twcs-options" title="Link to this heading">¶</a></h3>
+<span id="id5"></span><h3>TWCS options<a class="headerlink" href="#twcs-options" title="Link to this heading">¶</a></h3>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;TimeWindowCompactionStrategy&#39;</span><span class="p">,</span>
   <span class="s1">&#39;compaction_window_unit&#39;</span> <span class="p">:</span> <span class="n">string</span><span class="p">,</span>
@@ -539,7 +622,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/cql/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/cql/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -608,7 +691,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/cql/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/cql/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -637,7 +720,10 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li><a class="reference internal" href="#lcs-options">LCS options</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#incremental-compaction-strategy-ics">Incremental Compaction Strategy (ICS)</a></li>
+<li><a class="reference internal" href="#incremental-compaction-strategy-ics">Incremental Compaction Strategy (ICS)</a><ul>
+<li><a class="reference internal" href="#ics-options">ICS options</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#time-window-compactionstrategy-twcs">Time Window CompactionStrategy (TWCS)</a><ul>
 <li><a class="reference internal" href="#twcs-options">TWCS options</a></li>
 </ul>
@@ -674,7 +760,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -688,13 +774,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
             
                 
                     <li>
-                        <a href="../../branch-2025.1/cql/compaction.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="compaction.html">6.2</a>
+                        <a href="compaction.html">2025.1</a>
                     </li>
                 
             
@@ -711,7 +791,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -723,7 +803,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -779,10 +859,14 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -809,11 +893,8 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -863,6 +944,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -870,6 +952,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l1 has-children"><a class="reference internal" href="../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -891,6 +974,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -986,6 +1070,7 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l2"><a class="reference internal" href="../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -1021,8 +1106,8 @@ Although SSTable sizes should be less or equal to sstable_size_in_mb, it is poss
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>

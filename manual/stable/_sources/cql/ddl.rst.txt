@@ -203,18 +203,6 @@ An example that excludes a datacenter while using ``replication_factor``::
     DESCRIBE KEYSPACE excalibur
         CREATE KEYSPACE excalibur WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': '3'} AND durable_writes = true;
 
-
-
-.. only:: opensource
-  
-  Keyspace storage options :label-caution:`Experimental`
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  By default, SStables of a keyspace are stored locally.
-  As an alternative, you can configure your keyspace to be stored
-  on Amazon S3 or another S3-compatible object store.
-  See :ref:`Keyspace storage options <keyspace-storage-options>` for details.
-
 .. _tablets:
 
 The ``tablets`` property
@@ -232,7 +220,15 @@ sub-option                             type  description
 ``'initial'``                          int   The number of tablets to start with
 ===================================== ====== =============================================
 
-.. scylladb_include_flag:: tablets-default.rst
+By default, a keyspace is created with tablets enabled. You can use the ``tablets`` option 
+to opt out a keyspace from tablets-based distribution.
+
+You may want to opt out if you plan to use features that are not supported for keyspaces
+with tablets enabled. Keyspaces using tablets must also remain :term:`RF-rack-valid <RF-rack-valid keyspace>`
+throughout their lifetime. See :ref:`Limitations and Unsupported Features <tablets-limitations>`
+for details.
+
+**The ``initial`` sub-option (deprecated)**
 
 A good rule of thumb to calculate initial tablets is to divide the expected total storage used
 by tables in this keyspace by (``replication_factor`` * 5GB). For example, if you expect a 30TB
@@ -252,6 +248,14 @@ An example that creates a keyspace with 2048 tablets per table::
 
 
 See :doc:`Data Distribution with Tablets </architecture/tablets>` for more information about tablets.
+
+Keyspace storage options :label-caution:`Experimental`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, SStables of a keyspace are stored locally.
+As an alternative, you can configure your keyspace to be stored
+on Amazon S3 or another S3-compatible object store.
+See :ref:`Keyspace storage options <admin-keyspace-storage-options>` for details.
 
 .. _use-statement:        
         
@@ -285,8 +289,8 @@ For instance::
 
 The supported options are the same as :ref:`creating a keyspace <create-keyspace-statement>`.
 
-ALTER KEYSPACE with Tablets :label-caution:`Experimental`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ALTER KEYSPACE with Tablets 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Modifying a keyspace with tablets enabled is possible and doesn't require any special CQL syntax. However, there are some limitations:
 
@@ -295,6 +299,7 @@ Modifying a keyspace with tablets enabled is possible and doesn't require any sp
 - If there's any other ongoing global topology operation, executing the ``ALTER`` statement will fail (with an explicit and specific error) and needs to be repeated.
 - The ``ALTER`` statement may take longer than the regular query timeout, and even if it times out, it will continue to execute in the background.
 - The replication strategy cannot be modified, as keyspaces with tablets only support ``NetworkTopologyStrategy``.
+- The ``ALTER`` statement will fail if it would make the keyspace :term:`RF-rack-invalid <RF-rack-valid keyspace>`.
 
 .. _drop-keyspace-statement:
 
@@ -597,6 +602,11 @@ options of a table are described in the following sections.
 Compact tables
 ``````````````
 
+Support for compact tables has been deprecated.
+By default, new tables cannot be created with the ``COMPACT STORAGE`` option, but existing tables continue to work as before.
+To allow creating new COMPACT STORAGE tables, set the ``enable_create_table_with_compact_storage`` option to ``true`` in ``scylla.yaml``,
+yet beware that support for compact tables is planned to be permanently removed in a future version.
+
 ..
    .. caution:: Since Apache Cassandra 3.0, compact tables have the exact same layout internally than non compact ones (for the
       same schema obviously), and declaring a table compact **only** creates artificial limitations on the table definition
@@ -684,6 +694,18 @@ A table supports the following options:
      - simple
      - 0
      - The default expiration time (“TTL”) in seconds for a table.
+   * - ``memtable_flush_period_in_ms``
+     - simple
+     - 0
+     - Flush the memtables associated with this table every ``memtable_flush_period_in_ms`` milliseconds. When set to ``0``, periodic flush is disabled. Cannot set to values lower than ``60000`` (1 minute). Default: ``0``.
+   * - ``min_index_interval``
+     - simple
+     - 128
+     - Minimum gap between summary entries: ScyllaDB will create summary entries with at least this amount of partitions between them. Controls the maximums density of the summary.
+   * - ``max_index_interval``
+     - simple
+     - 2048
+     - Not implemented (option value is ignored).
    * - ``compaction``
      - map
      - see below
@@ -744,7 +766,7 @@ Custom strategy can be provided by specifying the full class name as a :ref:`str
 <constants>`.
 
 All default strategies support a number of common options, as well as options specific to
-the strategy chosen (see the section corresponding to your strategy for details: :ref:`STCS <stcs-options>`, :ref:`LCS <lcs-options>`, and :ref:`TWCS <twcs-options>`).
+the strategy chosen (see the section corresponding to your strategy for details: :ref:`STCS <stcs-options>`, :ref:`LCS <lcs-options>`, :ref:`ICS <ics-options>`, and :ref:`TWCS <twcs-options>`).
 
 .. _cql-compression-options:
 
@@ -763,14 +785,10 @@ available:
                                            defines the size (in KB) of the block. Bigger values may improve the
                                            compression rate, but increases the minimum size of data to be read from disk
                                            for a read. Allowed values are powers of two between 1 and 128.
+ ``crc_check_chance``      1.0             Not implemented (option value is ignored).
 ========================= =============== =============================================================================
 
-.. ``crc_check_chance``      1.0             When compression is enabled, each compressed block includes a checksum of
-..                                           that block for the purpose of detecting disk bitrot and avoiding the
-..                                           propagation of corruption to other replicas. This option defines the
-..                                           probability with which those checksums are checked during read. By default
-..                                           they are always checked. Set to 0 to disable checksum checking and to 0.5 for
-..                                           instance to check them every other read   |
+.. crc_check_chance was promoted to a top-level table option since Cassandra 3.0, but we didn't do this.
 
 For example, to enable compression:
 

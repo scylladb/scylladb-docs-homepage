@@ -327,18 +327,13 @@ generating a histogram, validating the content of SStables, and more. See <a cla
 </section>
 <section id="schema">
 <h2>Schema<a class="headerlink" href="#schema" title="Link to this heading">¶</a></h2>
-<p>All operations need a schema to interpret the SStables with.
-This tool tries to auto-detect the location of the ScyllaDB data directories and the name of the table the SStable belongs to.
-If the SStable is located in a ScyllaDB data directory, it works out-of-the-box, without any additional input from the user.
-If the SStable is located at an external path, you need to specify the names of the keyspace and table to which the SStable belongs. In addition, some hints as to where the ScyllaDB data directory is located may also be required.</p>
-<p>The schema can be obtained in the following ways:</p>
+<p>All operations need a schema to interpret the SStables with. By default the tool tries to auto-detect the schema of the SSTable. This should work out-of-the-box in most cases.</p>
+<p>Although the tool tries to auto-detect the schema of the SStable by default, it provides options for the user to control where it obtains the schema from. The following schema-sources can be provided (more details on each one below):</p>
 <ul class="simple">
-<li><p>Auto-detected - If the SStable is located in the table’s directory within the ScyllaDB data directory.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--keyspace=KEYSPACE</span> <span class="pre">--table=TABLE</span></code> - If the SStable is located at an external location, but the ScyllaDB data directory or the config file are located at the standard location. The tool also reads the <code class="docutils literal notranslate"><span class="pre">SCYLLA_CONF</span></code> and <code class="docutils literal notranslate"><span class="pre">SCYLLA_HOME</span></code> environment variables to try to locate the configuration file.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--schema-file</span> <span class="pre">FILENAME</span></code> - Read the schema definition from a file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--schema-file</span> <span class="pre">FILENAME</span></code> - Read the schema definition from a file containing DDL for the table and optionally the keyspace.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--system-schema</span> <span class="pre">--keyspace=KEYSPACE</span> <span class="pre">--table=TABLE</span></code> - Use the known definition of built-in tables (only works for system tables).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--scylla-data-dir</span> <span class="pre">SCYLLA_DATA_DIR_PATH</span> <span class="pre">--keyspace=KEYSPACE</span> <span class="pre">--table=TABLE</span></code> - Read the schema tables from the data directory at the provided location, needs the keyspace and table name to be provided with <code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">--table</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--scylla-yaml-file</span> <span class="pre">SCYLLA_YAML_FILE_PATH</span> <span class="pre">--keyspace=KEYSPACE</span> <span class="pre">--table=TABLE</span></code> - Read the schema tables from the data directory path obtained from the configuration, needs the keyspace and table name to be provided with <code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">--table</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--schema-tables</span> <span class="pre">[--keyspace</span> <span class="pre">KEYSPACE_NAME</span> <span class="pre">--table</span> <span class="pre">TABLE_NAME]</span> <span class="pre">[--scylla-yaml-file</span> <span class="pre">SCYLLA_YAML_FILE_PATH]</span> <span class="pre">[--scylla-data-dir</span> <span class="pre">SCYLLA_DATA_DIR_PATH]</span></code> - Read the schema tables from the data directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--sstable-schema</span> <span class="pre">--keyspace=KEYSPACE</span> <span class="pre">--table=TABLE</span></code> - Read the schema from the SSTable’s own serialization headers (statistics component).</p></li>
 </ul>
 <p>By default (no schema-related options are provided), the tool will try the following sequence:</p>
 <ul class="simple">
@@ -348,11 +343,12 @@ If the SStable is located at an external path, you need to specify the names of 
 <code class="docutils literal notranslate"><span class="pre">SCYLLA_CONF</span></code> and <code class="docutils literal notranslate"><span class="pre">SCYLLA_HOME</span></code> environment variables are also checked.
 If the configuration file cannot be located, the default ScyllaDB data directory path (<code class="docutils literal notranslate"><span class="pre">/var/lib/scylla</span></code>) is used.
 For this to succeed, the table name has to be provided via <code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">--table</span></code>.</p></li>
+<li><p>Try to load the schema from the SSTable serialization headers.</p></li>
 </ul>
 <p>The tool stops after the first successful attempt. If none of the above succeed, an error message will be printed.
 A user provided schema in <code class="docutils literal notranslate"><span class="pre">schema.cql</span></code> (if present) always takes precedence over other methods. This is deliberate, to allow to manually override the schema to be used.</p>
-<section id="schema-cql">
-<h3>schema.cql<a class="headerlink" href="#schema-cql" title="Link to this heading">¶</a></h3>
+<section id="schema-file">
+<h3>Schema file<a class="headerlink" href="#schema-file" title="Link to this heading">¶</a></h3>
 <p>The schema file should contain all definitions needed to interpret data belonging to the table.</p>
 <p>Example <code class="docutils literal notranslate"><span class="pre">schema.cql</span></code>:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;mydc1&#39;</span><span class="p">:</span> <span class="mf">1</span><span class="p">,</span> <span class="s1">&#39;mydc2&#39;</span><span class="p">:</span> <span class="mf">4</span><span class="p">};</span>
@@ -376,6 +372,7 @@ A user provided schema in <code class="docutils literal notranslate"><span class
 <li><p>In addition to the table itself, the definition also has to includes any user defined types the table uses.</p></li>
 <li><p>The keyspace definition is optional, if missing one will be auto-generated.</p></li>
 <li><p>The schema file doesn’t have to be called <code class="docutils literal notranslate"><span class="pre">schema.cql</span></code>, this is just the default name. Any file name is supported (with any extension).</p></li>
+<li><p>The schema file is allowed to contain a single <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> statement. If the table is a view, the schema file can contain a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> and a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code> or <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code> statements.</p></li>
 </ul>
 <section id="dropped-columns">
 <h4>Dropped columns<a class="headerlink" href="#dropped-columns" title="Link to this heading">¶</a></h4>
@@ -400,12 +397,33 @@ Dropped columns can be provided to the tool in the form of insert statements int
 </div>
 </section>
 </section>
-<section id="system-tables">
-<h3>System tables<a class="headerlink" href="#system-tables" title="Link to this heading">¶</a></h3>
-<p>If the examined table is a system table – it belongs to one of the system keyspaces (<code class="docutils literal notranslate"><span class="pre">system</span></code>, <code class="docutils literal notranslate"><span class="pre">system_schema</span></code>, <code class="docutils literal notranslate"><span class="pre">system_distributed</span></code> or <code class="docutils literal notranslate"><span class="pre">system_distributed_everywhere</span></code>) – you can just tell the tool to use the known built-in definition of said table. This is possible with the <code class="docutils literal notranslate"><span class="pre">--system-schema</span></code> flag. Example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data --system-schema system.local ./path/to/md-123456-big-Data.db</span>
+<section id="system-schema">
+<h3>System schema<a class="headerlink" href="#system-schema" title="Link to this heading">¶</a></h3>
+<p>If the examined table is a system table – it belongs to one of the system keyspaces (<code class="docutils literal notranslate"><span class="pre">system</span></code>, <code class="docutils literal notranslate"><span class="pre">system_schema</span></code>, <code class="docutils literal notranslate"><span class="pre">system_distributed</span></code> or <code class="docutils literal notranslate"><span class="pre">system_distributed_everywhere</span></code>) – the tool can be instructed to use the known built-in definition of said table. This is possible with the <code class="docutils literal notranslate"><span class="pre">--system-schema</span></code> flag. Example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data --system-schema --keyspace system --table local ./path/to/md-123456-big-Data.db</span>
 </pre></div>
 </div>
+</section>
+<section id="schema-tables">
+<h3>Schema tables<a class="headerlink" href="#schema-tables" title="Link to this heading">¶</a></h3>
+<p>Load the schema from ScyllaDB’s schema tables, located on the disk. The tool has to be able to locate ScyllaDB data directory for this to work. The path to the data directory can be provided the following ways:</p>
+<ul class="simple">
+<li><p>Deduced from the SSTable’s path. This only works if the SSTable itself is located in the ScyllaDB’s data directory.</p></li>
+<li><p>Provided directly via <code class="docutils literal notranslate"><span class="pre">--scylla-data-dir</span></code> parameter.</p></li>
+<li><p>Provided indirectly via <code class="docutils literal notranslate"><span class="pre">--scylla-yaml-file</span></code> parameter. The path to the data directory is obtained from the configuration.</p></li>
+<li><p>Provided indirectly via the <code class="docutils literal notranslate"><span class="pre">SCYLLA_HOME</span></code> environment variable. The <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file is expected to be found at the <code class="docutils literal notranslate"><span class="pre">SCYLLA_HOME/conf/scylla.yaml</span></code> path.</p></li>
+<li><p>Provided indirectly via the <code class="docutils literal notranslate"><span class="pre">SCYLLA_CONF</span></code> environment variable. The <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file is expected to be found at the <code class="docutils literal notranslate"><span class="pre">SCYLLA_CONF/scylla.yaml</span></code> path.</p></li>
+</ul>
+<p>In all except the first case, the keyspace and table names have to be provided via the <code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">--table</span></code> parameters respectively.</p>
+<p>Common problems:</p>
+<ul class="simple">
+<li><p>If the schema tables are read while the ScyllaDB node is running, ScyllaDB might compact an SStable that the tool is trying to read, resulting in failure to load the schema. The simplest solution is to retry the operation. To avoid the problem, disable autocompation on the <code class="docutils literal notranslate"><span class="pre">system_schema</span></code> keyspace, or stop the node. This is intrusive and might not be possible, in this case use another schema source.</p></li>
+<li><p>The schema of the SSTable could be still in memtables, not yet flushed to disk. In this case, simply flush the <code class="docutils literal notranslate"><span class="pre">system_schema</span></code> keyspace memtables and retry the operation.</p></li>
+</ul>
+</section>
+<section id="sstable-schema">
+<h3>SStable schema<a class="headerlink" href="#sstable-schema" title="Link to this heading">¶</a></h3>
+<p>Each SStable contains a schema in its Statistics component. This schema is incomplete: it doesn’t contain names for primary key columns and contains no schema options. That said, this schema is good enough for most operations and is always available.</p>
 </section>
 </section>
 <section id="sstable-content">
@@ -744,6 +762,7 @@ $SSTABLE := {
     &quot;scylla_build_id&quot;: String
     &quot;scylla_version&quot;: String
     &quot;ext_timestamp_stats&quot;: {&quot;$key&quot;: int64, ...}
+    &quot;sstable_identifier&quot;: String, // UUID
 }
 
 $SHARDING_METADATA := {
@@ -820,13 +839,15 @@ Note that scrub will be aborted if an SStable cannot be written because its gene
 The digest and the per-chunk checksum of uncompressed SStables are currently not checked on any code paths.</p>
 <p>This operation reads the entire <code class="docutils literal notranslate"><span class="pre">Data.db</span></code> and validates both kinds of checksums against the data.
 Errors found are logged to stderr. The output contains an object for each SStable that indicates if the SStable has checksums (false only for uncompressed SStables
-for which <code class="docutils literal notranslate"><span class="pre">CRC.db</span></code> is not present in <code class="docutils literal notranslate"><span class="pre">TOC.txt</span></code>), and if the SStable matches all checksums.</p>
+for which <code class="docutils literal notranslate"><span class="pre">CRC.db</span></code> is not present in <code class="docutils literal notranslate"><span class="pre">TOC.txt</span></code>), if the SStable has a digest, and if the SStable matches all checksums and the digest. If no digest is available,
+validation will proceed using only the per-chunk checksums.</p>
 <p>The content is dumped in JSON, using the following schema:</p>
 <div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $RESULT, ... }
 
 $RESULT := {
     &quot;has_checksums&quot;: Bool,
-    &quot;valid_checksums&quot;: Bool, // optional
+    &quot;has_digest&quot;: Bool,
+    &quot;valid&quot;: Bool, // optional
 }
 </pre></div>
 </div>
@@ -1404,7 +1425,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1473,7 +1494,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1496,11 +1517,13 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#schema">Schema</a><ul>
-<li><a class="reference internal" href="#schema-cql">schema.cql</a><ul>
+<li><a class="reference internal" href="#schema-file">Schema file</a><ul>
 <li><a class="reference internal" href="#dropped-columns">Dropped columns</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#system-tables">System tables</a></li>
+<li><a class="reference internal" href="#system-schema">System schema</a></li>
+<li><a class="reference internal" href="#schema-tables">Schema tables</a></li>
+<li><a class="reference internal" href="#sstable-schema">SStable schema</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#sstable-content">SStable Content</a></li>
@@ -1598,7 +1621,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1612,13 +1635,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
             
                 
                     <li>
-                        <a href="../../../branch-2025.1/operating-scylla/admin-tools/scylla-sstable.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="scylla-sstable.html">6.2</a>
+                        <a href="scylla-sstable.html">2025.1</a>
                     </li>
                 
             
@@ -1635,7 +1652,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1647,7 +1664,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l2"><a class="reference internal" href="../../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -1703,10 +1720,14 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l3"><a class="reference internal" href="../security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Admin Tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
@@ -1733,11 +1754,8 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1787,6 +1805,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1794,6 +1813,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1815,6 +1835,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1910,6 +1931,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l2"><a class="reference internal" href="../../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -1945,8 +1967,8 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">ScyllaDB FAQ</a></li>

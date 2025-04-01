@@ -311,21 +311,11 @@ on your private cluster. Whereas DynamoDB allows you to “provision” the
 number of requests per second you’ll need - or at an extra cost not even
 provision that - Scylla requires you to provision your cluster. You need
 to reason about the number and size of your nodes - not the throughput.</p>
-<p>When creating a table, the BillingMode and ProvisionedThroughput options
-are ignored by Scylla. Tables default to a Billing mode of <code class="docutils literal notranslate"><span class="pre">PAY_PER_REQUEST</span></code>
-and <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> API calls will return a value of 0 for the RCUs, WCUs
-and NumberOfDecreasesToday within the response.</p>
-</section>
-<section id="scan-ordering">
-<h2>Scan ordering<a class="headerlink" href="#scan-ordering" title="Link to this heading">¶</a></h2>
-<p>In DynamoDB, the Hash key (or partition key) determines where the item will
-be stored within DynamoDB’s internal storage. Another notable difference between
-DynamoDB and Scylla comes down to the underlying hashing algorithm.
-While DynamoDB uses a proprietary hashing function, ScyllaDB implements the well-known
-<a class="reference external" href="https://docs.scylladb.com/stable/glossary.html#term-Partitioner">Murmur3</a> algorithm.</p>
-<p>Even though regular users should not typically care about the underlying
-implementation details, particularly such difference causes Scan operations
-to return results in a different order between DynamoDB and Alternator.</p>
+<p>Moreover, DynamoDB’s per-table provisioning (<code class="docutils literal notranslate"><span class="pre">BillingMode=PROVISIONED</span></code>) is
+not yet supported by Scylla. The BillingMode and ProvisionedThroughput options
+on a table need to be valid but are ignored, and Scylla behaves like DynamoDB’s
+<code class="docutils literal notranslate"><span class="pre">BillingMode=PAY_PER_REQUEST</span></code>: All requests are accepted without a per-table
+throughput cap.</p>
 </section>
 <section id="load-balancing">
 <h2>Load balancing<a class="headerlink" href="#load-balancing" title="Link to this heading">¶</a></h2>
@@ -356,10 +346,11 @@ it could use LWT only for the read-modify-write operations.</p>
 <p>Therefore, Alternator must be explicitly configured to tell it which of the
 above assumptions it may make on the write workload. This configuration is
 mandatory, and described in the “Write isolation policies” section of
-alternator.md. One of the options, <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code>, is always safe, but the
-other options result in significantly better write performance and should be
-considered when the workload involves pure writes (e.g., ingestion of new
-data) or if pure writes and read-modify-writes go to distinct items.</p>
+<a class="reference internal" href="new-apis.html"><span class="std std-doc">Alternator-specific APIs</span></a>. One of the options, <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code>,
+is always safe, but the other options result in significantly better write
+performance and should be considered when the workload involves pure writes
+(e.g., ingestion of new data) or if pure writes and read-modify-writes go
+to distinct items.</p>
 </section>
 <section id="avoiding-write-reordering">
 <h2>Avoiding write reordering<a class="headerlink" href="#avoiding-write-reordering" title="Link to this heading">¶</a></h2>
@@ -405,7 +396,7 @@ other - instead of being just one or the other.</p>
 and any request from any connected client will be allowed. To enforce
 client authentication, and authorization of which client is allowed
 to do what, configure the following in ScyllaDB’s configuration:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`alternator_enforce_authorization: true`
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">alternator_enforce_authorization</span><span class="p">:</span> <span class="n">true</span>
 </pre></div>
 </div>
 <p>Alternator implements the same <a class="reference external" href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">signature protocol</a>
@@ -423,21 +414,20 @@ which authenticated user is allowed to do which operation, such as reading
 or writing to a specific table. The way this is supported in Alternator is
 currently <em>not</em> compatible with DynamoDB’s APIs (IAM or PutResourcePolicy).
 Instead, one needs to grant permissions to specific roles using CQL, with
-the “GRANT” command. For example, an Alternator table “xyz” is visible to
+the <code class="docutils literal notranslate"><span class="pre">GRANT</span></code> command. For example, an Alternator table “xyz” is visible to
 CQL as <code class="docutils literal notranslate"><span class="pre">alternator_xyz.xyz</span></code>, and the following command will allow requests
 from user “myrole” to read this table (with GetItem and other read operations):
 <code class="docutils literal notranslate"><span class="pre">GRANT</span> <span class="pre">SELECT</span> <span class="pre">ON</span> <span class="pre">alternator_xyz.xyz</span> <span class="pre">TO</span> <span class="pre">myrole</span></code>. Refer to the CQL documentation
-on how to use GRANT and REVOKE to control permissions, and which permissions
-exist:
+on how to use GRANT and REVOKE to control permissions:
 <a class="reference external" href="https://docs.scylladb.com/stable/operating-scylla/security/authorization.html">https://docs.scylladb.com/stable/operating-scylla/security/authorization.html</a></p>
 <p>The following permissions are needed to run the following API operations:</p>
 <ul class="simple">
-<li><p>SELECT:      GetItem, Query, Scan, BatchGetItem, GetRecords</p></li>
-<li><p>MODIFY:      PutItem, DeleteItem, UpdateItem, BatchWriteItem</p></li>
-<li><p>CREATE:      CreateTable</p></li>
-<li><p>DROP:        DeleteTable</p></li>
-<li><p>ALTER:       UpdateTable, TagResource, UntagResource, UpdateTimeToLive</p></li>
-<li><p>none needed: ListTables, DescribeTable, DescribeEndpoints,
+<li><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code>:      GetItem, Query, Scan, BatchGetItem, GetRecords</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MODIFY</span></code>:      PutItem, DeleteItem, UpdateItem, BatchWriteItem</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CREATE</span></code>:      CreateTable</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DROP</span></code>:        DeleteTable</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ALTER</span></code>:       UpdateTable, TagResource, UntagResource, UpdateTimeToLive</p></li>
+<li><p><em>none needed</em>: ListTables, DescribeTable, DescribeEndpoints,
 ListTagsOfResource, DescribeTimeToLive,
 DescribeContinuousBackups, ListStreams, DescribeStream,
 GetShardIterator</p></li>
@@ -454,6 +444,34 @@ name of GSI “abc” of Alternator table “xyz” is <code class="docutils lit
 If you don’t know the name of the table, you can try a forbidden operation
 and the AccessDeniedException error will contain the name of the table
 that was lacking permissions.</p>
+</section>
+<section id="workload-isolation">
+<h2>Workload Isolation<a class="headerlink" href="#workload-isolation" title="Link to this heading">¶</a></h2>
+<p>In DynamoDB read/write capacity of each table can be defined either to a fixed
+value (provisioned mode) or to be adaptive (on-demand). On top of that requests
+are also subject to per table and per account quotas.</p>
+<p>Due to the nature of Alternator deployment the whole cluster is available to serve
+user requests and underlying hardware can be utilized to its full capacity. When
+there is a need to allow more resources to given workload on the expense of some competing
+one we offer feature called <strong>Workload Prioritization</strong>.</p>
+<p>To use this feature define service level with a fixed amount of shares
+(higher value means proportionally more capacity) and attach it to a role
+which then will be used to authorize requests. This can be currently done
+only via CQL API, here is an example on how to do that:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;abcd&#39;</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;abcd&#39;</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="n">SERVICE_LEVEL</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">olap</span> <span class="k">WITH</span> <span class="n">SHARES</span> <span class="o">=</span> <span class="mf">100</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="n">SERVICE_LEVEL</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">oltp</span> <span class="k">WITH</span> <span class="n">SHARES</span> <span class="o">=</span> <span class="mf">1000</span><span class="p">;</span>
+
+<span class="n">ATTACH</span> <span class="n">SERVICE_LEVEL</span> <span class="n">olap</span> <span class="k">TO</span> <span class="n">alice</span><span class="p">;</span>
+<span class="n">ATTACH</span> <span class="n">SERVICE_LEVEL</span> <span class="n">oltp</span> <span class="k">TO</span> <span class="n">bob</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">alternator_enforce_authorization</span></code> has to be enabled in Scylla configuration.</p>
+<p>See <a class="reference internal" href="##Authorization"><span class="xref myst">Authorization</span></a> section to learn more about roles and authorization.
+See <a class="reference internal" href="../features/workload-prioritization.html"><span class="doc std std-doc">Workload Prioritization</span></a>
+to read about Workload Prioritization in detail.</p>
 </section>
 <section id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Link to this heading">¶</a></h2>
@@ -478,10 +496,18 @@ The default is 24 hours.</p>
 events appear in the Streams API as normal deletions - without the
 distinctive marker on deletions which are really expirations.
 See <a class="reference external" href="https://github.com/scylladb/scylla/issues/5060">https://github.com/scylladb/scylla/issues/5060</a>.</p>
-<!--- REMOVE IN FUTURE VERSIONS - Remove the note below in version 5.3/2023.1 -->
-<blockquote>
-<div><p><strong>Note</strong> This feature is experimental in versions earlier than ScyllaDB Open Source 5.2 and ScyllaDB Enterprise 2022.2.</p>
-</div></blockquote>
+</section>
+<section id="scan-ordering">
+<h2>Scan ordering<a class="headerlink" href="#scan-ordering" title="Link to this heading">¶</a></h2>
+<p>In DynamoDB, scanning the <em>entire</em> table returns the partitions sorted by
+some undocumented hash function of the partition key - which is why this key
+is also sometimes called the <em>hash key</em>. Alternator uses a different hash
+function, Cassandra’s variant of the 128-bit Mumur3 hash function.
+So <code class="docutils literal notranslate"><span class="pre">Scan</span></code>ing the same data on DynamoDB and Alternator will return the same
+data in different partition order. Applications mustn’t rely on that
+undocumented order.</p>
+<p>Note that inside each partition, the individual items will be sorted the same
+in DynamoDB and Scylla - determined by the <em>sort key</em> defined for that table.</p>
 </section>
 <hr class="docutils" />
 <section id="experimental-api-features">
@@ -526,11 +552,6 @@ behave the same in Alternator. However, there are a few features which we have
 not implemented yet. Unimplemented features return an error when used, so
 they should be easy to detect. Here is a list of these unimplemented features:</p>
 <ul class="simple">
-<li><p>Currently in Alternator, a GSI (Global Secondary Index) can only be added
-to a table at table creation time. DynamoDB allows adding a GSI (but not an
-LSI) to an existing table using an UpdateTable operation, and similarly it
-allows removing a GSI from a table.
-<a class="reference external" href="https://github.com/scylladb/scylla/issues/11567">https://github.com/scylladb/scylla/issues/11567</a></p></li>
 <li><p>GSI (Global Secondary Index) and LSI (Local Secondary Index) may be
 configured to project only a subset of the base-table attributes to the
 index. This option is not yet respected by Alternator - all attributes
@@ -566,7 +587,7 @@ or Scylla Manager.
 supported: UpdateContinuousBackups, DescribeContinuousBackups,
 RestoreTableToPointInTime</p></li>
 <li><p>DynamoDB’s encryption-at-rest settings are not supported. The Encryption-
-at-rest feature is available in Scylla Enterprise, but needs to be
+at-rest feature is available in ScyllaDB, but needs to be
 enabled and configured separately, not through the DynamoDB API.</p></li>
 <li><p>No support for throughput accounting or capping. As mentioned above, the
 BillingMode option is ignored by Alternator, and if a provisioned throughput
@@ -578,7 +599,7 @@ available in for Alternator. Anyway, it should not be necessary - Scylla’s
 internal cache is already rather advanced and there is no need to place
 another cache in front of the it. We wrote more about this here:
 <a class="reference external" href="https://www.scylladb.com/2017/07/31/database-caches-not-good/">https://www.scylladb.com/2017/07/31/database-caches-not-good/</a></p></li>
-<li><p>The DescribeTable is missing information about creation data and size
+<li><p>The DescribeTable is missing information about creation date and size
 estimates, and also part of the information about indexes enabled on
 the table.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/5013">https://github.com/scylladb/scylla/issues/5013</a>
@@ -616,6 +637,15 @@ to DynamoDB in December 2021.
 that can be used to forbid table deletion. This table option was added to
 DynamoDB in March 2023.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/14482">https://github.com/scylladb/scylla/issues/14482</a></p></li>
+<li><p>Alternator does not support the table option WarmThroughput that can be
+used to check or guarantee that the database has “warmed” to handle a
+particular throughput. This table option was added to DynamoDB in
+November 2024.
+<a class="reference external" href="https://github.com/scylladb/scylladb/issues/21853">https://github.com/scylladb/scylladb/issues/21853</a></p></li>
+<li><p>Alternator does not support the table option MultiRegionConsistency
+that can be used to achieve consistent reads on global (multi-region) tables.
+This table option was added as a preview to DynamoDB in December 2024.
+<a class="reference external" href="https://github.com/scylladb/scylladb/issues/21852">https://github.com/scylladb/scylladb/issues/21852</a></p></li>
 </ul>
 </section>
 </section>
@@ -652,7 +682,7 @@ DynamoDB in March 2023.
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -699,9 +729,9 @@ DynamoDB in March 2023.
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="../features/index.html">
+            <a class="navigation__link" href="new-apis.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Features
+                    <span class="colored">NEXT</span> <br />Alternator-specific APIs
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -721,7 +751,7 @@ DynamoDB in March 2023.
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -742,13 +772,14 @@ DynamoDB in March 2023.
             <ul>
 <li><a class="reference internal" href="#">ScyllaDB Alternator for DynamoDB users</a><ul>
 <li><a class="reference internal" href="#provisioning">Provisioning</a></li>
-<li><a class="reference internal" href="#scan-ordering">Scan ordering</a></li>
 <li><a class="reference internal" href="#load-balancing">Load balancing</a></li>
 <li><a class="reference internal" href="#write-isolation-policies">Write isolation policies</a></li>
 <li><a class="reference internal" href="#avoiding-write-reordering">Avoiding write reordering</a></li>
 <li><a class="reference internal" href="#authentication-and-authorization">Authentication and Authorization</a></li>
+<li><a class="reference internal" href="#workload-isolation">Workload Isolation</a></li>
 <li><a class="reference internal" href="#metrics">Metrics</a></li>
 <li><a class="reference internal" href="#time-to-live-ttl">Time To Live (TTL)</a></li>
+<li><a class="reference internal" href="#scan-ordering">Scan ordering</a></li>
 <li><a class="reference internal" href="#experimental-api-features">Experimental API features</a></li>
 <li><a class="reference internal" href="#unimplemented-api-features">Unimplemented API features</a></li>
 </ul>
@@ -782,7 +813,7 @@ DynamoDB in March 2023.
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -796,13 +827,7 @@ DynamoDB in March 2023.
             
                 
                     <li>
-                        <a href="../../branch-2025.1/index.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="compatibility.html">6.2</a>
+                        <a href="compatibility.html">2025.1</a>
                     </li>
                 
             
@@ -819,7 +844,7 @@ DynamoDB in March 2023.
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -831,7 +856,7 @@ DynamoDB in March 2023.
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -887,10 +912,14 @@ DynamoDB in March 2023.
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -917,11 +946,8 @@ DynamoDB in March 2023.
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -971,6 +997,7 @@ DynamoDB in March 2023.
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -978,6 +1005,7 @@ DynamoDB in March 2023.
 <li class="toctree-l1 current has-children"><a class="reference internal" href="alternator.html">Alternator: DynamoDB API in Scylla</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -999,6 +1027,7 @@ DynamoDB in March 2023.
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1094,6 +1123,7 @@ DynamoDB in March 2023.
 <li class="toctree-l2"><a class="reference internal" href="../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -1129,8 +1159,8 @@ DynamoDB in March 2023.
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>

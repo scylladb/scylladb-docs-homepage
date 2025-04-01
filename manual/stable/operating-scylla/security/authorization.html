@@ -363,6 +363,42 @@ If the option is used and the role exists, the statement is a no-op:</p>
 </pre></div>
 </div>
 </section>
+<section id="creating-a-role-with-a-hashed-password">
+<h4>Creating a role with a hashed password<a class="headerlink" href="#creating-a-role-with-a-hashed-password" title="Link to this heading">¶</a></h4>
+<p>When you create a role with a password, the password is hashed by ScyllaDB and only then inserted into the database.
+However, there also exists a version of the statement allowing you to create a role with a pre-hashed password; the syntax:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_role_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">ROLE</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="o">`</span><span class="n">role_name</span><span class="o">`</span>
+                     <span class="p">:</span> <span class="k">WITH</span> <span class="n">HASHED</span> <span class="k">PASSWORD</span> <span class="o">`</span><span class="n">hashed_password</span><span class="o">`</span>
+                     <span class="p">:</span>     <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">role_option</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span>
+<span class="n">hashed_password</span><span class="p">:</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span>
+<span class="n">role_option</span><span class="p">:</span> <span class="k">LOGIN</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
+           <span class="p">:</span><span class="o">|</span> <span class="k">SUPERUSER</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
+           <span class="p">:</span><span class="o">|</span> <span class="k">OPTIONS</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span>
+</pre></div>
+</div>
+<p>When that statement is executed, ScyllaDB will not hash the provided hashed password; it will be inserted into
+the database directly, with no additional processing of it. The statement only works with an authenticator that
+uses passwords, e.g. PasswordAuthenticator. It can only be executed by a role with the superuser privilege.</p>
+<p>The provided hashed password must be an encrypted string using the library function <cite>crypt(3)</cite> specified by POSIX,
+and it must use one of the encryption algorithms that ScyllaDB supports: bcrypt, sha512crypt, sha256crypt, md5crypt.
+If the hashed password doesn’t satisfy those requirements, logging in as the role may be impossible.</p>
+<p>Example how to generate a hashed password using <cite>crypt(3)</cite>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;crypt.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Generate a hashed password using sha256.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">pwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crypt</span><span class="p">(</span><span class="s">&quot;myPassword&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$5$&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;The hashed password is %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pwd</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Example how to create a role with a hashed password:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="n">HASHED</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;$5$$QdpObVOY40UOyo.BuWdpRq0Cr/DPkw7ckBEs2NqWVn5&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="alter-role">
 <span id="alter-role-statement"></span><h3>ALTER ROLE<a class="headerlink" href="#alter-role" title="Link to this heading">¶</a></h3>
@@ -744,7 +780,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -813,7 +849,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-6.2/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -837,6 +873,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li><a class="reference internal" href="#create-role">CREATE ROLE</a><ul>
 <li><a class="reference internal" href="#setting-credentials-for-internal-authentication">Setting credentials for internal authentication</a></li>
 <li><a class="reference internal" href="#creating-a-role-conditionally">Creating a role conditionally</a></li>
+<li><a class="reference internal" href="#creating-a-role-with-a-hashed-password">Creating a role with a hashed password</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#alter-role">ALTER ROLE</a></li>
@@ -898,7 +935,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                6.2
+                2025.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -912,13 +949,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 
                     <li>
-                        <a href="../../../branch-2025.1/operating-scylla/security/authorization.html">2025.1</a>
-                    </li>
-                
-            
-                
-                    <li>
-                        <a href="authorization.html">6.2</a>
+                        <a href="authorization.html">2025.1</a>
                     </li>
                 
             
@@ -935,7 +966,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-jmx.html">Install scylla-jmx Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -947,7 +978,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l2"><a class="reference internal" href="../../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/os-support.html">OS Support by Linux Distributions and Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/os-support.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -1003,10 +1034,14 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="certificate-authentication.html">Certificate-based Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1033,11 +1068,8 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/scylladb-versioning.html">ScyllaDB Versioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-opensource/index.html">ScyllaDB Open Source Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-to-enterprise/index.html">ScyllaDB Open Source to ScyllaDB Enterprise Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/ami-upgrade.html">ScyllaDB Image</a></li>
-<li class="toctree-l3"><a class="reference external" href="https://enterprise.docs.scylladb.com/stable/upgrade/upgrade-enterprise/index.html">ScyllaDB Enterprise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1087,6 +1119,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1094,6 +1127,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1115,6 +1149,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-attributes.html">Workload Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/workload-prioritization.html">Workload Prioritization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1210,6 +1245,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l2"><a class="reference internal" href="../../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gossip.html">Gossip in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
@@ -1245,8 +1281,8 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference (BETA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics (BETA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">ScyllaDB FAQ</a></li>
