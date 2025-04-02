@@ -2774,6 +2774,93 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-sstable-compression-dictionaries-enable-writing">
+<dt class="sig sig-object std" id="confval-sstable_compression_dictionaries_enable_writing">
+<span class="sig-name descname"><span class="pre">sstable_compression_dictionaries_enable_writing</span></span><a class="headerlink" href="#confval-sstable_compression_dictionaries_enable_writing" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><dl class="simple">
+<dt>Enables SSTable compression with shared dictionaries (for tables which opt in). If set to false, this node won’t write any new SSTables using dictionary compression.</dt><dd><p>Option meant not for regular usage, but for unforeseen problems that call for disabling dictionaries without modifying table schema.</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-sstable-compression-dictionaries-memory-budget-fraction">
+<dt class="sig sig-object std" id="confval-sstable_compression_dictionaries_memory_budget_fraction">
+<span class="sig-name descname"><span class="pre">sstable_compression_dictionaries_memory_budget_fraction</span></span><a class="headerlink" href="#confval-sstable_compression_dictionaries_memory_budget_fraction" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Fall back to compression without dictionaries if RAM usage by dictionaries is greater or equal to this fraction of the shard’s memory.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0.01</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-sstable-compression-dictionaries-retrain-period-in-seconds">
+<dt class="sig sig-object std" id="confval-sstable_compression_dictionaries_retrain_period_in_seconds">
+<span class="sig-name descname"><span class="pre">sstable_compression_dictionaries_retrain_period_in_seconds</span></span><a class="headerlink" href="#confval-sstable_compression_dictionaries_retrain_period_in_seconds" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Minimum age of the current compression dictionary before another dictionary for this table is trained.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">86400</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-sstable-compression-dictionaries-autotrainer-tick-period-in-seconds">
+<dt class="sig sig-object std" id="confval-sstable_compression_dictionaries_autotrainer_tick_period_in_seconds">
+<span class="sig-name descname"><span class="pre">sstable_compression_dictionaries_autotrainer_tick_period_in_seconds</span></span><a class="headerlink" href="#confval-sstable_compression_dictionaries_autotrainer_tick_period_in_seconds" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The period with which automatic dictionary training is attempted.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">900</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-sstable-compression-dictionaries-min-training-dataset-bytes">
+<dt class="sig sig-object std" id="confval-sstable_compression_dictionaries_min_training_dataset_bytes">
+<span class="sig-name descname"><span class="pre">sstable_compression_dictionaries_min_training_dataset_bytes</span></span><a class="headerlink" href="#confval-sstable_compression_dictionaries_min_training_dataset_bytes" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The minimum size a table has to reach before dictionaries will be trained for it.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1*1024*1024*1024</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-sstable-compression-dictionaries-min-training-improvement-factor">
+<dt class="sig sig-object std" id="confval-sstable_compression_dictionaries_min_training_improvement_factor">
+<span class="sig-name descname"><span class="pre">sstable_compression_dictionaries_min_training_improvement_factor</span></span><a class="headerlink" href="#confval-sstable_compression_dictionaries_min_training_improvement_factor" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>New dictionaries will be only published if the estimated compression ratio is smaller than current ratio multiplied by this factor.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0.95</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-uuid-sstable-identifiers-enabled">
 <dt class="sig sig-object std" id="confval-uuid_sstable_identifiers_enabled">
 <span class="sig-name descname"><span class="pre">uuid_sstable_identifiers_enabled</span></span><a class="headerlink" href="#confval-uuid_sstable_identifiers_enabled" title="Link to this definition">¶</a></dt>
@@ -4853,7 +4940,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Apr 2025.
+                        Last updated on 02 Apr 2025.
                     
                 </div>
             
