@@ -520,6 +520,16 @@ undocumented order.</p>
 in DynamoDB and Scylla - determined by the <em>sort key</em> defined for that table.</p>
 </section>
 <hr class="docutils" />
+<section id="configurable-or-different-limits">
+<h2>Configurable or different limits<a class="headerlink" href="#configurable-or-different-limits" title="Link to this heading">¶</a></h2>
+<p>Some features have fixed limits in DynamoDB, but the limit does not exist,
+is different, or can be configured in Alternator:</p>
+<ul class="simple">
+<li><p>DynamoDB limits each BatchWriteItem request to 25 items. In Alternator,
+this limit defaults to 100 but can be changed with
+the alternator_max_items_in_batch_write configuration parameter.</p></li>
+</ul>
+</section>
 <section id="experimental-api-features">
 <h2>Experimental API features<a class="headerlink" href="#experimental-api-features" title="Link to this heading">¶</a></h2>
 <p>Some DynamoDB API features are supported by Alternator, but considered
@@ -790,6 +800,7 @@ This table option was added as a preview to DynamoDB in December 2024.
 <li><a class="reference internal" href="#metrics">Metrics</a></li>
 <li><a class="reference internal" href="#time-to-live-ttl">Time To Live (TTL)</a></li>
 <li><a class="reference internal" href="#scan-ordering">Scan ordering</a></li>
+<li><a class="reference internal" href="#configurable-or-different-limits">Configurable or different limits</a></li>
 <li><a class="reference internal" href="#experimental-api-features">Experimental API features</a></li>
 <li><a class="reference internal" href="#unimplemented-api-features">Unimplemented API features</a></li>
 </ul>
@@ -1224,7 +1235,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Apr 2025.
+                        Last updated on 03 Apr 2025.
                     
                 </div>
             

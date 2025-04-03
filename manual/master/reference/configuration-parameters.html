@@ -2861,20 +2861,6 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-uuid-sstable-identifiers-enabled">
-<dt class="sig sig-object std" id="confval-uuid_sstable_identifiers_enabled">
-<span class="sig-name descname"><span class="pre">uuid_sstable_identifiers_enabled</span></span><a class="headerlink" href="#confval-uuid_sstable_identifiers_enabled" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>If set to true, each newly created sstable will have a UUID     based generation identifier, and such files are not readable by previous Scylla versions.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
 <dl class="std confval" id="confprop-table-digest-insensitive-to-expiry">
 <dt class="sig sig-object std" id="confval-table_digest_insensitive_to_expiry">
 <span class="sig-name descname"><span class="pre">table_digest_insensitive_to_expiry</span></span><a class="headerlink" href="#confval-table_digest_insensitive_to_expiry" title="Link to this definition">¶</a></dt>
@@ -3448,6 +3434,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-alternator-max-items-in-batch-write">
+<dt class="sig sig-object std" id="confval-alternator_max_items_in_batch_write">
+<span class="sig-name descname"><span class="pre">alternator_max_items_in_batch_write</span></span><a class="headerlink" href="#confval-alternator_max_items_in_batch_write" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Maximum amount of items in single BatchItemWrite call.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-abort-on-ebadf">
 <dt class="sig sig-object std" id="confval-abort_on_ebadf">
 <span class="sig-name descname"><span class="pre">abort_on_ebadf</span></span><a class="headerlink" href="#confval-abort_on_ebadf" title="Link to this definition">¶</a></dt>
@@ -3832,20 +3832,6 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-object-storage-config-file">
-<dt class="sig sig-object std" id="confval-object_storage_config_file">
-<span class="sig-name descname"><span class="pre">object_storage_config_file</span></span><a class="headerlink" href="#confval-object_storage_config_file" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Optionally, read object-storage endpoints config from file.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
 <dl class="std confval" id="confprop-live-updatable-config-params-changeable-via-cql">
 <dt class="sig sig-object std" id="confval-live_updatable_config_params_changeable_via_cql">
 <span class="sig-name descname"><span class="pre">live_updatable_config_params_changeable_via_cql</span></span><a class="headerlink" href="#confval-live_updatable_config_params_changeable_via_cql" title="Link to this definition">¶</a></dt>
@@ -4192,6 +4178,20 @@ The change will take effect without a node restart, changing the value in the co
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-object-storage-endpoints">
+<dt class="sig sig-object std" id="confval-object_storage_endpoints">
+<span class="sig-name descname"><span class="pre">object_storage_endpoints</span></span><a class="headerlink" href="#confval-object_storage_endpoints" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Object storage endpoints configuration.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;object_storage_endpoint_param&gt;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -4940,7 +4940,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Apr 2025.
+                        Last updated on 03 Apr 2025.
                     
                 </div>
             

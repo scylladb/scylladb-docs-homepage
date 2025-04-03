@@ -341,9 +341,6 @@
 <tr class="row-even"><td><p><code class="code docutils literal notranslate"><span class="pre">/etc/scylla/cassandra-rackdc.properties</span></code></p></td>
 <td><p>Rack &amp; dc configuration file</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="code docutils literal notranslate"><span class="pre">/etc/scylla/object_storage.yaml</span></code></p></td>
-<td><p>Object storage configuration file</p></td>
-</tr>
 </tbody>
 </table>
 <section id="check-your-current-version-of-scylladb">
@@ -546,32 +543,32 @@ For example:</p>
 <p>Scylla has the ability to communicate directly with S3-compatible storage. This
 feature enables various functionalities, but requires proper configuration of
 storage endpoints.</p>
-<p>To enable S3-compatible storage features, you need to describe the endpoints and credentials
+<p>To enable S3-compatible storage features, you need to describe the endpoints
 where SSTable files can be stored. This is done using a YAML configuration file.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code> file should follow this format:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+<p>The relevant <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> section should follow this format:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;endpoint_address_or_domain_name&gt;</span>
 <span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;port_number&gt;</span>
 <span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;true_or_false&gt;</span><span class="w"> </span><span class="c1"># optional</span>
 <span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;region_name&gt;</span><span class="w"> </span><span class="c1"># optional, e.g. us-east-1</span>
-<span class="w">    </span><span class="nt">aws_access_key_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;access_key&gt;</span><span class="w"> </span><span class="c1"># optional</span>
-<span class="w">    </span><span class="nt">aws_secret_access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;secret_access_key&gt;</span><span class="w"> </span><span class="c1"># optional</span>
-<span class="w">    </span><span class="nt">aws_session_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;session_token&gt;</span><span class="w"> </span><span class="c1"># optional</span>
+<span class="w">    </span><span class="nt">iam_role_arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;iam_role&gt;</span><span class="w"> </span><span class="c1"># optional</span>
 </pre></div>
 </div>
-<p>The AWS-related options (<code class="docutils literal notranslate"><span class="pre">aws_region</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_access_key_id</span></code>,
-<code class="docutils literal notranslate"><span class="pre">aws_secret_access_key</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code>) can be configured in two ways:</p>
-<ul class="simple">
-<li><p>Directly in the YAML file (as shown above).</p></li>
-<li><p>Using environment variables:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_DEFAULT_REGION</span></code></p></li>
+<p>The <code class="docutils literal notranslate"><span class="pre">aws_region</span></code> option can also be specified using
+the <code class="docutils literal notranslate"><span class="pre">AWS_DEFAULT_REGION</span></code> environment variable.</p>
+<p>The AWS-related credentials options (<code class="docutils literal notranslate"><span class="pre">aws_access_key_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">aws_secret_access_key</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code>) can be configured using
+the following environment variables:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">AWS_ACCESS_KEY_ID</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">AWS_SECRET_ACCESS_KEY</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">AWS_SESSION_TOKEN</span></code></p></li>
 </ul>
-</li>
-</ul>
+</div></blockquote>
+<p>The Scylla S3 client will first attempt to access credentials from environment variables.
+If it fails to obtain credentials, it will then try to retrieve them from the
+AWS Security Token Service (STS) or the EC2 Instance Metadata Service.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
@@ -580,17 +577,10 @@ where SSTable files can be stored. This is done using a YAML configuration file.
 <li><p>If not set, requests are sent unsigned, which may not be accepted by all servers.</p></li>
 </ul>
 </div>
-<p>By default, Scylla looks for the configuration file named <code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code>
-in the same directory as <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>. You can override this location using the
-<a class="reference internal" href="../reference/configuration-parameters.html#confval-object_storage_config_file"><code class="xref std std-confval docutils literal notranslate"><span class="pre">object_storage_config_file</span></code></a> option in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_config_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object_storage.yaml</span>
-</pre></div>
-</div>
 <section id="configuring-aws-s3-access">
 <span id="aws-s3-configuration"></span><h3>Configuring AWS S3 access<a class="headerlink" href="#configuring-aws-s3-access" title="Link to this heading">¶</a></h3>
-<p>You can define endpoint details and authentication tokens in the
-<code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code> file. For example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+<p>You can define endpoint details in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file. For example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-1.amazonaws.com</span>
 <span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
 <span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -599,28 +589,17 @@ in the same directory as <code class="docutils literal notranslate"><span class=
 </div>
 <section id="local-development-environment">
 <h4>Local/Development Environment<a class="headerlink" href="#local-development-environment" title="Link to this heading">¶</a></h4>
-<p>In a local or development environment, you usually need to add
-authentication tokens to this file to ensure the client works properly.
+<p>In a local or development environment, you usually need to set authentication
+tokens in environment variables to ensure the client works properly.
 For instance:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-2.amazonaws.com</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
-<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-2</span>
-<span class="w">    </span><span class="nt">aws_access_key_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_ACCESS_KEY_ID</span>
-<span class="w">    </span><span class="nt">aws_secret_access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_SECRET_ACCESS_KEY</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>EXAMPLE_ACCESS_KEY_ID
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>EXAMPLE_SECRET_ACCESS_KEY
 </pre></div>
 </div>
-<p>Additionally, you may include an <code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code>, although this is
-not typically necessary for local or development environments:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-2.amazonaws.com</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
-<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-2</span>
-<span class="w">    </span><span class="nt">aws_access_key_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_ACCESS_KEY_ID</span>
-<span class="w">    </span><span class="nt">aws_secret_access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_SECRET_ACCESS_KEY</span>
-<span class="w">    </span><span class="nt">aws_session_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_TEMPORARY_SESSION_TOKEN</span>
+<p>Additionally, you may include an <cite>aws_session_token</cite>, although this is not typically necessary for local or development environments:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>EXAMPLE_ACCESS_KEY_ID
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>EXAMPLE_SECRET_ACCESS_KEY
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span>EXAMPLE_TEMPORARY_SESSION_TOKEN
 </pre></div>
 </div>
 </section>
@@ -634,8 +613,8 @@ retrieve them from the AWS Security Token Service (STS) or the EC2
 Instance Metadata Service.</p>
 <p>For the EC2 Instance Metadata Service to function correctly, no
 additional configuration is required. However, STS requires the IAM Role
-ARN to be defined in the <code class="docutils literal notranslate"><span class="pre">object_storage.yaml</span></code> file, as shown below:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">endpoints</span><span class="p">:</span>
+ARN to be defined in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file, as shown below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-1.amazonaws.com</span>
 <span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
 <span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -1543,7 +1522,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Apr 2025.
+                        Last updated on 03 Apr 2025.
                     
                 </div>
             
