@@ -373,13 +373,13 @@ especially for data models that contain small cells.</p>
 <span id="tablets-enable-tablets"></span><h2>Enabling Tablets<a class="headerlink" href="#enabling-tablets" title="Link to this heading">¶</a></h2>
 <p>ScyllaDB now uses tablets by default for data distribution.
 Enabling tablets by default when creating new keyspaces is
-controlled by the <a class="reference internal" href="../reference/configuration-parameters.html#confval-enable_tablets"><code class="xref std std-confval docutils literal notranslate"><span class="pre">enable_tablets</span></code></a> option. However, tablets only work if
+controlled by the <a class="reference internal" href="../reference/configuration-parameters.html#confval-tablets_mode_for_new_keyspaces"><code class="xref std std-confval docutils literal notranslate"><span class="pre">tablets_mode_for_new_keyspaces</span></code></a> option. However, tablets only work if
 supported on all nodes within the cluster.</p>
 <p>When creating a new keyspace with tablets enabled by default, you can still opt-out
-on a per-keyspace basis. The recommended <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code> for keyspaces
+on a per-keyspace basis using <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span> <span class="pre">&lt;ks&gt;</span> <span class="pre">WITH</span> <span class="pre">tablets</span> <span class="pre">=</span> <span class="pre">{'enabled':</span> <span class="pre">false}</span></code>,
+unless the <a class="reference internal" href="../reference/configuration-parameters.html#confval-tablets_mode_for_new_keyspaces"><code class="xref std std-confval docutils literal notranslate"><span class="pre">tablets_mode_for_new_keyspaces</span></code></a> option is set to <code class="docutils literal notranslate"><span class="pre">enforced</span></code>.</p>
+<p>Note: The recommended <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code> for keyspaces
 remains <em>required</em> even if tablets are disabled.</p>
-<p>You can create a keyspace with tablets
-disabled with the <code class="docutils literal notranslate"><span class="pre">tablets</span> <span class="pre">=</span> <span class="pre">{'enabled':</span> <span class="pre">false}</span></code> option:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">my_keyspace</span>
 <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span>
@@ -1009,7 +1009,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Apr 2025.
+                        Last updated on 06 Apr 2025.
                     
                 </div>
             
