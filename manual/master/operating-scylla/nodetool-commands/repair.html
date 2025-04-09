@@ -327,10 +327,17 @@
                         
                         <section id="nodetool-repair">
 <h1>Nodetool repair<a class="headerlink" href="#nodetool-repair" title="Link to this heading">¶</a></h1>
-<p><strong>Repair</strong> - a process that runs in the background and synchronizes the data between nodes.</p>
+<p><strong>Repair</strong> - A process that runs in the background and synchronizes the data between nodes. It only repairs keyspaces with tablets disabled (vnode-based).
+To repair keyspaces with tablets, see <a class="reference internal" href="cluster/repair.html"><span class="doc">nodetool cluster repair</span></a>.</p>
 <p>When running <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code> on a <strong>single node</strong>, it acts as the <strong>repair master</strong>. Only the data contained in the master node and its replications will be repaired.
 Typically, this subset of data is replicated on many nodes in the cluster, often all, and the repair process syncs between all the replicas until the master data subset is in-sync.</p>
 <p>To repair <strong>all</strong> of the data in the cluster, you need to run a repair on <strong>all</strong> of the nodes in the cluster, or let <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a> do it for you.</p>
+<p>To synchronize all data in clusters that have both tablets- and vnodes-based keyspaces, run <a class="reference internal" href="#"><span class="doc">nodetool repair -pr</span></a> on <strong>all</strong>
+of the nodes in the cluster, and <a class="reference internal" href="cluster/repair.html"><span class="doc">nodetool cluster repair</span></a> on <strong>any</strong> of the nodes in the cluster.</p>
+<p>To check if a keyspace enables tablets, use:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Run the <a class="reference internal" href="#"><span class="doc">nodetool repair</span></a> command regularly. If you delete data frequently, it should be more often than the value of <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> (by default: 10 days), for example, every week. Use the <strong>nodetool repair -pr</strong> on each node in the cluster, sequentially.</p>

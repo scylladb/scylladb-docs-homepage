@@ -4092,10 +4092,29 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-enable_tablets">
 <span class="sig-name descname"><span class="pre">enable_tablets</span></span><a class="headerlink" href="#confval-enable_tablets" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Enable tablets for newly created keyspaces.</p>
+<div><p>Enable tablets for newly created keyspaces. (deprecated)</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-tablets-mode-for-new-keyspaces">
+<dt class="sig sig-object std" id="confval-tablets_mode_for_new_keyspaces">
+<span class="sig-name descname"><span class="pre">tablets_mode_for_new_keyspaces</span></span><a class="headerlink" href="#confval-tablets_mode_for_new_keyspaces" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><dl class="simple">
+<dt>Control tablets for new keyspaces.  Can be set to the following values:</dt><dd><p>tdisabled: New keyspaces use vnodes by default, unless enabled by the tablets={‘enabled’:true} option
+tenabled:  New keyspaces use tablets by default, unless disabled by the tablets={‘disabled’:true} option
+tenforced: New keyspaces must use tablets. Tablets cannot be disabled using the CREATE KEYSPACE option</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">enum_option&lt;tablets_mode_t&gt;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">tablets_mode_t::mode::unset</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
