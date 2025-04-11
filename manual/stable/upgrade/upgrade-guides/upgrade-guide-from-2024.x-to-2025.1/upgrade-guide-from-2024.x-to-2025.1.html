@@ -375,6 +375,8 @@ nodes. See <a class="reference external" href="https://manager.docs.scylladb.com
 ScyllaDB Manager’s scheduled or running repairs.</p></li>
 <li><p>Not to apply schema changes.</p></li>
 </ul>
+<p><strong>After</strong> the upgrade, you may need to enable consistent topology updates.
+See <a class="reference internal" href="#upgrade-2024-x-2025-1-after-upgrading-nodes"><span class="std std-ref">After Upgrading Every Node</span></a> for details.</p>
 </section>
 <section id="upgrade-steps">
 <h2>Upgrade Steps<a class="headerlink" href="#upgrade-steps" title="Link to this heading">¶</a></h2>
@@ -511,6 +513,20 @@ to validate there are no new errors in the log.</p></li>
 </ol>
 <p>Once you are sure the node upgrade was successful, move to the next node in the cluster.</p>
 </section>
+</section>
+<section id="after-upgrading-every-node">
+<span id="upgrade-2024-x-2025-1-after-upgrading-nodes"></span><h2>After Upgrading Every Node<a class="headerlink" href="#after-upgrading-every-node" title="Link to this heading">¶</a></h2>
+<p>This step applies if:</p>
+<ul class="simple">
+<li><p>You’re upgrading from ScyllaDB Enterprise <strong>2024.1</strong> to ScyllaDB 2025.1.</p></li>
+<li><p>You previously upgraded from 2024.1 to 2024.2 without enabling consistent
+topology updates (see the <a class="reference external" href="https://enterprise.docs.scylladb.com/branch-2024.2/upgrade/upgrade-enterprise/upgrade-guide-from-2024.1-to-2024.2/enable-consistent-topology.html">2024.2 upgrade guide</a>
+for reference).</p></li>
+</ul>
+<p>After you have upgraded every node, you must enable the Raft-based consistent
+topology updates feature. See
+<a class="reference internal" href="enable-consistent-topology.html"><span class="doc">Enable Consistent Topology Updates</span></a>
+for instructions.</p>
 </section>
 <section id="rollback-procedure">
 <h2>Rollback Procedure<a class="headerlink" href="#rollback-procedure" title="Link to this heading">¶</a></h2>
@@ -740,9 +756,9 @@ is successful, move to the next node in the cluster.</p>
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="metric-update-2024.x-to-2025.1.html">
+            <a class="navigation__link" href="enable-consistent-topology.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Metrics Update Between 2024.x and 2025.1
+                    <span class="colored">NEXT</span> <br />Enable Consistent Topology Updates
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -794,6 +810,7 @@ is successful, move to the next node in the cluster.</p>
 <li><a class="reference internal" href="#validate">Validate</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#after-upgrading-every-node">After Upgrading Every Node</a></li>
 <li><a class="reference internal" href="#rollback-procedure">Rollback Procedure</a></li>
 <li><a class="reference internal" href="#rollback-steps">Rollback Steps</a><ul>
 <li><a class="reference internal" href="#drain-and-gracefully-stop-the-node">Drain and gracefully stop the node</a></li>
