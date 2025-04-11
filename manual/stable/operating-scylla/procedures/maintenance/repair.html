@@ -338,11 +338,13 @@
 <p>Data stored on nodes may become inconsistent with other replicas over time. For this reason, repairs are a necessary part of database maintenance.</p>
 <p>ScyllaDB repair is a process that runs in the background and synchronizes the data between nodes so that all the replicas hold the same data.
 Running repairs is necessary to ensure that data on a given node is consistent with the other nodes in the cluster.
-You can manually run the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code> command or schedule repair with <a class="reference external" href="https://manager.docs.scylladb.com/stable/repair">ScyllaDB Manager</a>,
+You can manually run the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code> and <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">cluster</span> <span class="pre">repair</span></code> commands or schedule repair with <a class="reference external" href="https://manager.docs.scylladb.com/stable/repair">ScyllaDB Manager</a>,
 which can run repairs for you.</p>
+<p>To synchronize all data in clusters that have both tablets- and vnodes-based keyspaces, run <a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair -pr</span></a> on <strong>all</strong>
+of the nodes in the cluster, and <a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a> on  <strong>any</strong> of the nodes in the cluster.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Run the <a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair</span></a> command regularly. If you delete data frequently, it should be more often than the value of <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> (by default: 10 days), for example, every week. Use the <strong>nodetool repair -pr</strong> on each node in the cluster, sequentially.</p>
+<p>Run the <a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair</span></a> and <a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a> command regularly. If you delete data frequently, it should be more often than the value of <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> (by default: 10 days), for example, every week. Use the <strong>nodetool repair -pr</strong> on each node in the cluster, sequentially.</p>
 </div>
 <p>In most cases, the proportion of data that is out of sync is very small.  In a few cases, for example, if a node was down for a day, the difference might be more significant.</p>
 </section>
