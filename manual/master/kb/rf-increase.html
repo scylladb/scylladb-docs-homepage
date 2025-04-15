@@ -317,11 +317,13 @@
 <h1>How to Safely Increase the Replication Factor<a class="headerlink" href="#how-to-safely-increase-the-replication-factor" title="Link to this heading">¶</a></h1>
 <p><strong>Topic: What can happen when you increase RF</strong></p>
 <p><strong>Audience: ScyllaDB administrators</strong></p>
-<section id="issue">
-<h2>Issue<a class="headerlink" href="#issue" title="Link to this heading">¶</a></h2>
+<section id="issues">
+<h2>Issues<a class="headerlink" href="#issues" title="Link to this heading">¶</a></h2>
 <p>When a Replication Factor (RF) is increased, using the <a class="reference internal" href="../cql/ddl.html#alter-keyspace-statement"><span class="std std-ref">ALTER KEYSPACE</span></a> command, the data consistency is effectively dropped
 by the difference of the RF_new value and the RF_old value for all pre-existing data.
 Consistency will only be restored after running a repair.</p>
+<p>Another issue occurs in keyspaces with tablets enabled and is driver-related. Due to limitations in the current protocol used to pass tablet data to drivers, drivers will not pick
+up new replicas after replication factor is increased. This will cause them to avoid routing requests to those replicas, causing imbalance.</p>
 </section>
 <section id="resolution">
 <h2>Resolution<a class="headerlink" href="#resolution" title="Link to this heading">¶</a></h2>
@@ -329,6 +331,7 @@ Consistency will only be restored after running a repair.</p>
 <p>As a result, in order to make sure that you can keep on reading the old data with the same level of consistency, increase the read Consistency Level (CL) according to the following formula:</p>
 <p><code class="docutils literal notranslate"><span class="pre">CL_new</span> <span class="pre">=</span> <span class="pre">CL_old</span> <span class="pre">+</span> <span class="pre">RF_new</span> <span class="pre">-</span> <span class="pre">RF_old</span></code></p>
 <p>After you run a repair, you can decrease the CL. If RF has only been changed in a particular Data Center (DC) only the nodes in that DC have to be repaired.</p>
+<p>To resolve the driver-related issue, restart the client applications after the ALTER statement that changes the RF completes successfully.</p>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
 <p>In this example your five node cluster RF is 3 and your CL is TWO. You want to increase your RF from 3 to 5.</p>
@@ -474,7 +477,7 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">How to Safely Increase the Replication Factor</a><ul>
-<li><a class="reference internal" href="#issue">Issue</a></li>
+<li><a class="reference internal" href="#issues">Issues</a></li>
 <li><a class="reference internal" href="#resolution">Resolution</a><ul>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
@@ -918,7 +921,7 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 Apr 2025.
+                        Last updated on 15 Apr 2025.
                     
                 </div>
             
