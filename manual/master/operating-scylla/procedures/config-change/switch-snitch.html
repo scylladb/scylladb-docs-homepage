@@ -333,38 +333,17 @@
 <h1>How to Switch Snitches<a class="headerlink" href="#how-to-switch-snitches" title="Link to this heading">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Switching from one type of snitch to another is NOT supported for clusters
-where one or more keyspaces have tablets enabled.</p>
-<p>NOTE: If you <a class="reference internal" href="../../../cql/ddl.html#create-keyspace-statement"><span class="std std-ref">create a new keyspace</span></a>,
-it has tablets enabled by default.</p>
+<p>Changing the network topology by switching to another type of snitch
+is no longer supported. The new snitch must specify the same DC and rack
+as the previous one.</p>
 </div>
 <p>This procedure describes the steps that need to be done when switching from one type of snitch to another.
 Such a scenario can be when increasing the cluster and adding more data-centers in different locations.
 Snitches are responsible for specifying how ScyllaDB distributes the replicas. The procedure is dependent on any changes in the cluster topology.</p>
 <p><strong>Note</strong> - Switching a snitch requires a full cluster shutdown, so It is highly recommended to choose the <a class="reference internal" href="../../system-configuration/snitch.html"><span class="doc">right snitch</span></a> for your needs at the cluster setup phase.</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Cluster Status</p></th>
-<th class="head"><p>Needed Procedure</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>No change in network topology</p></td>
-<td><p>Set the new snitch</p></td>
-</tr>
-<tr class="row-odd"><td><p>Network topology was changed</p></td>
-<td><p>Set the new snitch and run repair</p></td>
-</tr>
-</tbody>
-</table>
-<p>Changes in network topology mean that there are changes in the racks or data-centers where the nodes are located.</p>
 <p>For example:</p>
-<p><strong>No topology changes</strong></p>
 <p>Original cluster: three nodes cluster on a single data-center with <a class="reference internal" href="../../system-configuration/snitch.html#snitch-simple-snitch"><span class="std std-ref">Simplesnitch</span></a> or <a class="reference internal" href="../../system-configuration/snitch.html#snitch-ec2-snitch"><span class="std std-ref">Ec2snitch</span></a>.</p>
 <p>Change to: three nodes in one data-center and one rack using a <a class="reference internal" href="../../system-configuration/snitch.html#snitch-gossiping-property-file-snitch"><span class="std std-ref">GossipingPropertyFileSnitch</span></a> or <a class="reference internal" href="../../system-configuration/snitch.html#snitch-ec2-multi-region-snitch"><span class="std std-ref">Ec2multiregionsnitch</span></a>.</p>
-<p><strong>Topology changes</strong></p>
-<p>Original cluster: three nodes using the <a class="reference internal" href="../../system-configuration/snitch.html#snitch-simple-snitch"><span class="std std-ref">Simplesnitch</span></a> or <a class="reference internal" href="../../system-configuration/snitch.html#snitch-ec2-snitch"><span class="std std-ref">Ec2snitch</span></a> in a single data-center.</p>
-<p>Change to: nine nodes in two data-centers using the <a class="reference internal" href="../../system-configuration/snitch.html#snitch-gossiping-property-file-snitch"><span class="std std-ref">GossipingPropertyFileSnitch</span></a> or <a class="reference internal" href="../../system-configuration/snitch.html#snitch-ec2-multi-region-snitch"><span class="std std-ref">Ec2multiregionsnitch</span></a> (add a new data-center).</p>
 <section id="procedure">
 <h2>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
@@ -967,7 +946,7 @@ Snitches are responsible for specifying how ScyllaDB distributes the replicas. T
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Apr 2025.
+                        Last updated on 22 Apr 2025.
                     
                 </div>
             
