@@ -328,9 +328,14 @@
                         <section id="nodetool-restore">
 <h1>Nodetool restore<a class="headerlink" href="#nodetool-restore" title="Link to this heading">¶</a></h1>
 <p><strong>restore</strong> - Load SSTables from a designated bucket in object store into a specified keyspace or table</p>
-<p>Note that status of restore can be checked for <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> seconds after the operation is done.
-You can set the ttl using <a class="reference internal" href="tasks/user-ttl.html"><span class="doc">nodetool tasks user-ttl</span></a>.
-If <code class="docutils literal notranslate"><span class="pre">--nowait</span></code> flag is not set, the command relies on <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> internally.</p>
+<p>The status of a restore operation is retained for a period defined by <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code>,
+allowing you to query the status even after the operation completes.
+You can configure the TTL duration using the <a class="reference internal" href="tasks/user-ttl.html"><span class="doc">nodetool tasks user-ttl</span></a> command.</p>
+<p>When you run a restore operation, it always executes as a background task. You have two ways to interact with this task:</p>
+<ul class="simple">
+<li><p><strong>Without the ``–nowait`` flag (default)</strong>: The command waits for the restore operation to complete and returns the final status. This approach relies on the <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> setting. If <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> is set too low (especially if set to 0), the task record might be removed before the status can be checked, potentially causing the command to fail in reporting the result.</p></li>
+<li><p><strong>With the ``–nowait`` flag</strong>: The command immediately returns a task ID without waiting for the operation to complete. You can use this task ID with the <a class="reference internal" href="tasks/index.html"><span class="doc">nodetool tasks</span></a> command to monitor the progress of the restore operation or to cancel it if needed. The task information remains available for the duration specified by <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> after completion.</p></li>
+</ul>
 <section id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Link to this heading">¶</a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool [(-h &lt;host&gt; | --host &lt;host&gt;)] [(-p &lt;port&gt; | --port &lt;port&gt;)]</span>
@@ -954,7 +959,7 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 12 May 2025.
+                        Last updated on 13 May 2025.
                     
                 </div>
             
