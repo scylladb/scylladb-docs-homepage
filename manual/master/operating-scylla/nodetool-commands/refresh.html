@@ -351,6 +351,14 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
 <li><p>You can place sstable from every node to every node</p></li>
 <li><p>No need to run nodetool cleanup to remove unused data</p></li>
 </ul>
+</section>
+<section id="skip-cleanup">
+<h2>Skip cleanup<a class="headerlink" href="#skip-cleanup" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">cleanup</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>When loading an SSTable, Scylla will cleanup it from keys that the node is not responsible for. To skip this step, use the <cite>–skip-cleanup</cite> option.
+See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span class="std std-ref">nodetool cleanup</span></a>.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
 </section>
 </section>
@@ -477,6 +485,7 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
             <ul>
 <li><a class="reference internal" href="#">Nodetool refresh</a><ul>
 <li><a class="reference internal" href="#load-and-stream">Load and Stream</a></li>
+<li><a class="reference internal" href="#skip-cleanup">Skip cleanup</a></li>
 </ul>
 </li>
 </ul>
@@ -920,7 +929,7 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 May 2025.
+                        Last updated on 15 May 2025.
                     
                 </div>
             
