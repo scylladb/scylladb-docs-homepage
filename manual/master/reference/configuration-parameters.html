@@ -71,7 +71,7 @@
             
         
             
-                <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1a953dd0" />
+                <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5a6d8084" />
             
         
     
@@ -1654,12 +1654,16 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-maintenance_socket">
 <span class="sig-name descname"><span class="pre">maintenance_socket</span></span><a class="headerlink" href="#confval-maintenance_socket" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><dl class="simple">
-<dt>The Unix Domain Socket the node uses for maintenance socket.</dt><dd><p>The possible options are:
-tignore         the node will not open the maintenance socket.
-tworkdir        the node will open the maintenance socket on the path &lt;scylla’s workdir&gt;/cql.m,
-t               where &lt;scylla’s workdir&gt; is a path defined by the workdir configuration option
-t&lt;socket path&gt;  the node will open the maintenance socket on the path &lt;socket path&gt;</p>
+<div><dl>
+<dt>The Unix Domain Socket the node uses for maintenance socket.</dt><dd><p>The possible options are:</p>
+<blockquote>
+<div><p>ignore         the node will not open the maintenance socket.</p>
+<p>workdir        the node will open the maintenance socket on the path &lt;scylla’s workdir&gt;/cql.m,</p>
+<blockquote>
+<div><p>where &lt;scylla’s workdir&gt; is a path defined by the workdir configuration option</p>
+</div></blockquote>
+<p>&lt;socket path&gt;  the node will open the maintenance socket on the path &lt;socket path&gt;</p>
+</div></blockquote>
 </dd>
 </dl>
 <ul class="simple">
@@ -4064,9 +4068,9 @@ The change will take effect without a node restart, changing the value in the co
 <dd><blockquote>
 <div><p>Controls the audit feature:</p>
 <blockquote>
-<div><p>tnone   : No auditing enabled.
-tsyslog : Audit messages sent to Syslog.
-ttable  : Audit messages written to column family named audit.audit_log.</p>
+<div><p>none   : No auditing enabled.</p>
+<p>syslog : Audit messages sent to Syslog.</p>
+<p>table  : Audit messages written to column family named audit.audit_log.</p>
 </div></blockquote>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
@@ -4263,12 +4267,12 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-tablets_mode_for_new_keyspaces">
 <span class="sig-name descname"><span class="pre">tablets_mode_for_new_keyspaces</span></span><a class="headerlink" href="#confval-tablets_mode_for_new_keyspaces" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><dl class="simple">
-<dt>Control tablets for new keyspaces.  Can be set to the following values:</dt><dd><p>tdisabled: New keyspaces use vnodes by default, unless enabled by the tablets={‘enabled’:true} option
-tenabled:  New keyspaces use tablets by default, unless disabled by the tablets={‘disabled’:true} option
-tenforced: New keyspaces must use tablets. Tablets cannot be disabled using the CREATE KEYSPACE option</p>
-</dd>
-</dl>
+<div><p>Control tablets for new keyspaces.  Can be set to the following values:</p>
+<blockquote>
+<div><p>disabled: New keyspaces use vnodes by default, unless enabled by the tablets={‘enabled’:true} option</p>
+<p>enabled:  New keyspaces use tablets by default, unless disabled by the tablets={‘disabled’:true} option</p>
+<p>enforced: New keyspaces must use tablets. Tablets cannot be disabled using the CREATE KEYSPACE option</p>
+</div></blockquote>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">enum_option&lt;tablets_mode_t&gt;</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">tablets_mode_t::mode::unset</span></code></p></li>
@@ -4944,7 +4948,30 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/authorization-cache.html">Authorization Cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/cache-service.html">Cache Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/collectd.html">Collectd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/column-family.html">Column Family</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/commit-log.html">Commit Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/compaction-manager.html">Compaction Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/endpoint-snitch-info.html">Endpoint Snitch Info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/error-injection.html">Error Injection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/failure-detector.html">Failure Detector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gossiper.html">Gossiper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/hinted-handoff.html">Hinted Handoff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/lsa.html">LSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/messaging-service.html">Messaging Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/raft.html">Raft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/storage-proxy.html">Storage Proxy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/storage-service.html">Storage Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/stream-manager.html">Stream Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/system.html">System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/task-manager-test.html">Task Manager Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/task-manager.html">Task Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/tasks.html">Tasks</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
 </ul>
 </li>

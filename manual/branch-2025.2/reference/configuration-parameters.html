@@ -71,7 +71,7 @@
             
         
             
-                <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1a953dd0" />
+                <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5a6d8084" />
             
         
     
@@ -1654,12 +1654,16 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-maintenance_socket">
 <span class="sig-name descname"><span class="pre">maintenance_socket</span></span><a class="headerlink" href="#confval-maintenance_socket" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><dl class="simple">
-<dt>The Unix Domain Socket the node uses for maintenance socket.</dt><dd><p>The possible options are:
-tignore         the node will not open the maintenance socket.
-tworkdir        the node will open the maintenance socket on the path &lt;scylla’s workdir&gt;/cql.m,
-t               where &lt;scylla’s workdir&gt; is a path defined by the workdir configuration option
-t&lt;socket path&gt;  the node will open the maintenance socket on the path &lt;socket path&gt;</p>
+<div><dl>
+<dt>The Unix Domain Socket the node uses for maintenance socket.</dt><dd><p>The possible options are:</p>
+<blockquote>
+<div><p>ignore         the node will not open the maintenance socket.</p>
+<p>workdir        the node will open the maintenance socket on the path &lt;scylla’s workdir&gt;/cql.m,</p>
+<blockquote>
+<div><p>where &lt;scylla’s workdir&gt; is a path defined by the workdir configuration option</p>
+</div></blockquote>
+<p>&lt;socket path&gt;  the node will open the maintenance socket on the path &lt;socket path&gt;</p>
+</div></blockquote>
 </dd>
 </dl>
 <ul class="simple">
@@ -4064,9 +4068,9 @@ The change will take effect without a node restart, changing the value in the co
 <dd><blockquote>
 <div><p>Controls the audit feature:</p>
 <blockquote>
-<div><p>tnone   : No auditing enabled.
-tsyslog : Audit messages sent to Syslog.
-ttable  : Audit messages written to column family named audit.audit_log.</p>
+<div><p>none   : No auditing enabled.</p>
+<p>syslog : Audit messages sent to Syslog.</p>
+<p>table  : Audit messages written to column family named audit.audit_log.</p>
 </div></blockquote>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
@@ -4263,12 +4267,12 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-tablets_mode_for_new_keyspaces">
 <span class="sig-name descname"><span class="pre">tablets_mode_for_new_keyspaces</span></span><a class="headerlink" href="#confval-tablets_mode_for_new_keyspaces" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><dl class="simple">
-<dt>Control tablets for new keyspaces.  Can be set to the following values:</dt><dd><p>tdisabled: New keyspaces use vnodes by default, unless enabled by the tablets={‘enabled’:true} option
-tenabled:  New keyspaces use tablets by default, unless disabled by the tablets={‘disabled’:true} option
-tenforced: New keyspaces must use tablets. Tablets cannot be disabled using the CREATE KEYSPACE option</p>
-</dd>
-</dl>
+<div><p>Control tablets for new keyspaces.  Can be set to the following values:</p>
+<blockquote>
+<div><p>disabled: New keyspaces use vnodes by default, unless enabled by the tablets={‘enabled’:true} option</p>
+<p>enabled:  New keyspaces use tablets by default, unless disabled by the tablets={‘disabled’:true} option</p>
+<p>enforced: New keyspaces must use tablets. Tablets cannot be disabled using the CREATE KEYSPACE option</p>
+</div></blockquote>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">enum_option&lt;tablets_mode_t&gt;</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">tablets_mode_t::mode::unset</span></code></p></li>
@@ -4671,7 +4675,6 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l3"><a class="reference internal" href="../using-scylla/integrations/integration-mindsdb.html">Integrate ScyllaDB with MindsDB</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../getting-started/tutorials.html">Tutorials</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../operating-scylla/index.html">ScyllaDB for Administrators</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -4950,7 +4953,6 @@ The change will take effect without a node restart, changing the value in the co
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">ScyllaDB FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute to ScyllaDB</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://enterprise.docs.scylladb.com/branch-2024.2/">2024.2 and earlier documentation</a></li>
 </ul>
 
