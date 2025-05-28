@@ -113,6 +113,7 @@ html_css_files = [
 # documentation.
 html_theme_options = {
     "conf_py_path": "docs/",
+    "hide_ai_chatbot": "false",
     "default_branch": "main",
     "hide_banner": "true",
     "hide_version_dropdown": UNSTABLE_VERSIONS,
