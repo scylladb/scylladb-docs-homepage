@@ -318,26 +318,50 @@
                         
                         <section id="how-to-safely-increase-the-replication-factor">
 <h1>How to Safely Increase the Replication Factor<a class="headerlink" href="#how-to-safely-increase-the-replication-factor" title="Link to this heading">¶</a></h1>
-<p><strong>Topic: What can happen when you increase RF</strong></p>
-<p><strong>Audience: ScyllaDB administrators</strong></p>
-<section id="issues">
-<h2>Issues<a class="headerlink" href="#issues" title="Link to this heading">¶</a></h2>
-<p>When a Replication Factor (RF) is increased, using the <a class="reference internal" href="../cql/ddl.html#alter-keyspace-statement"><span class="std std-ref">ALTER KEYSPACE</span></a> command, the data consistency is effectively dropped
-by the difference of the RF_new value and the RF_old value for all pre-existing data.
-Consistency will only be restored after running a repair.</p>
-<p>Another issue occurs in keyspaces with tablets enabled and is driver-related. Due to limitations in the current protocol used to pass tablet data to drivers, drivers will not pick
-up new replicas after replication factor is increased. This will cause them to avoid routing requests to those replicas, causing imbalance.</p>
+<p>A replication factor (RF) is configured per keyspace. You can change the RF
+using the <a class="reference internal" href="../cql/ddl.html#alter-keyspace-statement"><span class="std std-ref">ALTER KEYSPACE</span></a> command.</p>
+<p>To increase the RF safely, ensure you follow the guidelines below.
+The guidelines differ depending on whether your a keyspace is tablets-based
+(the default) or has tablets disabled. See <a class="reference internal" href="../architecture/tablets.html"><span class="doc">Data Distribution with Tablets</span></a>
+for more information about tablets.</p>
+<section id="increasing-the-rf-in-tablets-based-keyspaces">
+<h2>Increasing the RF in Tablets-based Keyspaces<a class="headerlink" href="#increasing-the-rf-in-tablets-based-keyspaces" title="Link to this heading">¶</a></h2>
+<p>If a keyspace has tablets enabled (the default), changing the RF does not
+impact data consistency in the cluster.</p>
+<p>However, due to limitations in the current protocol used to pass tablet data
+to drivers, drivers will not pick up new replicas after the RF is increased.
+As a result, drivers will not route requests to new replicas, causing imbalance.</p>
+<p>To avoid this issue, restart the client applications after the ALTER statement
+that changes the RF completes successfully.</p>
 </section>
+<section id="increasing-the-rf-in-keyspaces-with-tablets-disabled">
+<h2>Increasing the RF in Keyspaces with Tablets Disabled<a class="headerlink" href="#increasing-the-rf-in-keyspaces-with-tablets-disabled" title="Link to this heading">¶</a></h2>
+<p>If you <a class="reference internal" href="../architecture/tablets.html#tablets-enable-tablets"><span class="std std-ref">opted out of tablets when creating a keyspace</span></a>,
+so your keyspace is vnodes-based, increasing the RF will impact data consistency.</p>
+<p>Data consistency in your cluster is effectively dropped by the difference
+between the RF_new value and the RF_old value for all pre-existing data.
+Consistency will only be restored after running a repair.</p>
 <section id="resolution">
-<h2>Resolution<a class="headerlink" href="#resolution" title="Link to this heading">¶</a></h2>
-<p>When one increases an RF, one should consider that the pre-existing data will <strong>not be streamed</strong> to new replicas (a common misconception).</p>
-<p>As a result, in order to make sure that you can keep on reading the old data with the same level of consistency, increase the read Consistency Level (CL) according to the following formula:</p>
-<p><code class="docutils literal notranslate"><span class="pre">CL_new</span> <span class="pre">=</span> <span class="pre">CL_old</span> <span class="pre">+</span> <span class="pre">RF_new</span> <span class="pre">-</span> <span class="pre">RF_old</span></code></p>
-<p>After you run a repair, you can decrease the CL. If RF has only been changed in a particular Data Center (DC) only the nodes in that DC have to be repaired.</p>
-<p>To resolve the driver-related issue, restart the client applications after the ALTER statement that changes the RF completes successfully.</p>
+<h3>Resolution<a class="headerlink" href="#resolution" title="Link to this heading">¶</a></h3>
+<p>When you increase the RF, you should be aware that the pre-existing data will
+<strong>not be streamed</strong> to new replicas (a common misconception).</p>
+<p>As a result, in order to make sure that you can keep on reading the old data
+with the same level of consistency:</p>
+<ol class="arabic">
+<li><p>Increase the read Consistency Level (CL) according to the following formula:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CL_new</span> <span class="o">=</span> <span class="n">CL_old</span> <span class="o">+</span> <span class="n">RF_new</span> <span class="o">-</span> <span class="n">RF_old</span>
+</pre></div>
+</div>
+</li>
+<li><p>Run repair.</p></li>
+<li><p>Decrease the CL.</p></li>
+</ol>
+<p>If RF has only been changed in a particular Datacenter (DC), only the nodes in
+that DC have to be repaired.</p>
+</section>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
-<p>In this example your five node cluster RF is 3 and your CL is TWO. You want to increase your RF from 3 to 5.</p>
+<p>In this example, your five-node cluster RF is 3 and your CL is TWO. You want to increase your RF from 3 to 5.</p>
 <ol class="arabic simple">
 <li><p>Increase the read CL by a RF_new - RF_old value.
 Following the example the RF_new is 5 and the RF_old is 3 so, 5-3 =2. You need to increase the CL by 2.
@@ -346,11 +370,11 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
 <li><p>Repair all tables of the corresponding keyspace. If RF has only been changed in a particular Data Center (DC), only the DC nodes have to be repaired.</p></li>
 <li><p>Restore the reads CL to the originally intended value. For this example, QUORUM.</p></li>
 </ol>
-<p>If you do not follow the procedure above you may start reading stale or null data after increasing the RF.</p>
+<p>If you do not follow the procedure above, you may start reading stale or null data after increasing the RF.</p>
 </section>
 </section>
-<section id="more-information">
-<h2>More Information<a class="headerlink" href="#more-information" title="Link to this heading">¶</a></h2>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../architecture/architecture-fault-tolerance.html"><span class="doc">Fault Tolerance</span></a></p></li>
 <li><p><a class="reference internal" href="../cql/ddl.html#create-keyspace-statement"><span class="std std-ref">Set the RF (first time)</span></a></p></li>
@@ -480,12 +504,13 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">How to Safely Increase the Replication Factor</a><ul>
-<li><a class="reference internal" href="#issues">Issues</a></li>
-<li><a class="reference internal" href="#resolution">Resolution</a><ul>
+<li><a class="reference internal" href="#increasing-the-rf-in-tablets-based-keyspaces">Increasing the RF in Tablets-based Keyspaces</a></li>
+<li><a class="reference internal" href="#increasing-the-rf-in-keyspaces-with-tablets-disabled">Increasing the RF in Keyspaces with Tablets Disabled</a><ul>
+<li><a class="reference internal" href="#resolution">Resolution</a></li>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#more-information">More Information</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -929,7 +954,7 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 May 2025.
+                        Last updated on 31 May 2025.
                     
                 </div>
             
