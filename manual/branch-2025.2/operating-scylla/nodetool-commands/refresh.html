@@ -344,7 +344,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span> <span class="pre">nba</span> <span class="pre">player_stats</span></code></p>
 <section id="load-and-stream">
 <span id="nodetool-refresh-load-and-stream"></span><h2>Load and Stream<a class="headerlink" href="#load-and-stream" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">scope</span> <span class="o">&lt;</span><span class="n">scope</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>The Load and Stream feature extends nodetool refresh. The new <code class="docutils literal notranslate"><span class="pre">-las</span></code> option loads arbitrary sstables that do not belong to a node into the cluster. It loads the sstables from the disk and calculates the data’s owning nodes, and streams automatically.
@@ -354,6 +354,21 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
 <li><p>You can place sstable from every node to every node</p></li>
 <li><p>No need to run nodetool cleanup to remove unused data</p></li>
 </ul>
+</section>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading">¶</a></h2>
+<p>The <cite>scope</cite> parameter describes the subset of cluster nodes where you want to load data:</p>
+<ul class="simple">
+<li><p><cite>node</cite> - On the local node.</p></li>
+<li><p><cite>rack</cite> - On the local rack.</p></li>
+<li><p><cite>dc</cite> - In the datacenter (DC) where the local node lives.</p></li>
+<li><p><cite>all</cite> (default) - Everywhere across the cluster.</p></li>
+</ul>
+<p>Scope supports a variety of options for filtering out the destination nodes.
+On one extreme, one node is given all SStables with the scope <code class="docutils literal notranslate"><span class="pre">all</span></code>; on the other extreme, all
+nodes are loading only their own SStables with the scope <code class="docutils literal notranslate"><span class="pre">node</span></code>. In between, you can choose
+a subset of nodes to load only SStables that belong to the rack or DC.</p>
+<p>This option is only valid when using the <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
 </section>
 </section>
@@ -480,6 +495,7 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
             <ul>
 <li><a class="reference internal" href="#">Nodetool refresh</a><ul>
 <li><a class="reference internal" href="#load-and-stream">Load and Stream</a></li>
+<li><a class="reference internal" href="#scope">Scope</a></li>
 </ul>
 </li>
 </ul>
@@ -923,7 +939,7 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jun 2025.
+                        Last updated on 06 Jun 2025.
                     
                 </div>
             
