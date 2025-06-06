@@ -369,6 +369,14 @@ On one extreme, one node is given all SStables with the scope <code class="docut
 nodes are loading only their own SStables with the scope <code class="docutils literal notranslate"><span class="pre">node</span></code>. In between, you can choose
 a subset of nodes to load only SStables that belong to the rack or DC.</p>
 <p>This option is only valid when using the <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option.</p>
+</section>
+<section id="skip-cleanup">
+<h2>Skip cleanup<a class="headerlink" href="#skip-cleanup" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">cleanup</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>When loading an SSTable, Scylla will cleanup it from keys that the node is not responsible for. To skip this step, use the <cite>–skip-cleanup</cite> option.
+See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span class="std std-ref">nodetool cleanup</span></a>.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
 </section>
 </section>
@@ -496,6 +504,7 @@ a subset of nodes to load only SStables that belong to the rack or DC.</p>
 <li><a class="reference internal" href="#">Nodetool refresh</a><ul>
 <li><a class="reference internal" href="#load-and-stream">Load and Stream</a></li>
 <li><a class="reference internal" href="#scope">Scope</a></li>
+<li><a class="reference internal" href="#skip-cleanup">Skip cleanup</a></li>
 </ul>
 </li>
 </ul>

@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Metrics Update Between 2024.x and 2025.1 | ScyllaDB Docs 
+             Metrics Update Between 2025.1 and 2025.2 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/metric-update-2024.x-to-2025.1.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/metric-update-2025.1-to-2025.2.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -306,11 +306,11 @@
     
         <span class="bread__item">
             <a href="index.html" class="bread__highlight">
-                Upgrade - ScyllaDB Enterprise 2024.x to ScyllaDB 2025.1
+                Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Metrics Update Between 2024.x and 2025.1</span>
+    <span class="bread__item bread__item--last">Metrics Update Between 2025.1 and 2025.2</span>
 </div>
                     </div>
                 
@@ -328,18 +328,20 @@
             
                 You're viewing documentation for an unstable version of ScyllaDB Manual.
             
-            <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/metric-update-2024.x-to-2025.1.html">Switch to the latest stable version.</a>
+            <a href="../../../../stable/index.html">Switch to the latest stable version.</a>
         </p>
     </div>
 
                         
                         
                         <section id="metrics-update-between-src-version-and-new-version">
-<h1>Metrics Update Between 2024.x and 2025.1<a class="headerlink" href="#metrics-update-between-src-version-and-new-version" title="Link to this heading">¶</a></h1>
-<p>ScyllaDB Enterprise 2025.1 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
+<h1>Metrics Update Between 2025.1 and 2025.2<a class="headerlink" href="#metrics-update-between-src-version-and-new-version" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>ScyllaDB 2025.2 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
 <section id="new-metrics">
 <h2>New Metrics<a class="headerlink" href="#new-metrics" title="Link to this heading">¶</a></h2>
-<p>The following metrics are new in ScyllaDB 2025.1 compared to 2024.x:</p>
+<p>The following metrics are new in ScyllaDB 2025.2 compared to 2025.1:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 14.3%" />
@@ -351,82 +353,46 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>scylla_alternator_batch_item_count</p></td>
-<td><p>The total number of items processed across all batches.</p></td>
+<tr class="row-even"><td><p>scylla_alternator_batch_item_count_histogram</p></td>
+<td><p>A histogram of the number of items in a batch request.</p></td>
 </tr>
-<tr class="row-odd"><td><p>scylla_hints_for_views_manager_sent_bytes_total</p></td>
-<td><p>The total size of the sent hints (in bytes).</p></td>
+<tr class="row-odd"><td><p>scylla_database_total_view_updates_failed_pairing</p></td>
+<td><p>Total number of view updates for which we failed base/view pairing.</p></td>
 </tr>
-<tr class="row-even"><td><p>scylla_hints_manager_sent_bytes_total</p></td>
-<td><p>The total size of the sent hints (in bytes).</p></td>
+<tr class="row-even"><td><p>scylla_group_name_cross_rack_collocations</p></td>
+<td><p>The number of co-locating migrations that move replica across racks.</p></td>
 </tr>
-<tr class="row-odd"><td><p>scylla_io_queue_activations</p></td>
-<td><p>The number of times the class was woken up from idle.</p></td>
+<tr class="row-odd"><td><p>scylla_network_bytes_received</p></td>
+<td><p>The number of bytes received from network sockets.</p></td>
 </tr>
-<tr class="row-even"><td><p>scylla_raft_apply_index</p></td>
-<td><p>The applied index.</p></td>
+<tr class="row-even"><td><p>scylla_network_bytes_sent</p></td>
+<td><p>The number of bytes written to network sockets.</p></td>
 </tr>
-<tr class="row-odd"><td><p>scylla_raft_commit_index</p></td>
-<td><p>The commit index.</p></td>
+<tr class="row-odd"><td><p>scylla_reactor_awake_time_ms_total</p></td>
+<td><p>Total reactor awake time (wall_clock).</p></td>
 </tr>
-<tr class="row-even"><td><p>scylla_raft_log_last_index</p></td>
-<td><p>The index of the last log entry.</p></td>
+<tr class="row-even"><td><p>scylla_reactor_cpu_used_time_ms</p></td>
+<td><p>Total reactor thread CPU time (from CLOCK_THREAD_CPUTIME).</p></td>
 </tr>
-<tr class="row-odd"><td><p>scylla_raft_log_last_term</p></td>
-<td><p>The term of the last log entry.</p></td>
+<tr class="row-odd"><td><p>scylla_reactor_sleep_time_ms_total</p></td>
+<td><p>Total reactor sleep time (wall clock).</p></td>
 </tr>
-<tr class="row-even"><td><p>scylla_raft_snapshot_last_index</p></td>
-<td><p>The index of the snapshot.</p></td>
+<tr class="row-even"><td><p>scylla_sstable_compression_dicts_total_live_memory_bytes</p></td>
+<td><p>Total amount of memory consumed by SSTable compression dictionaries in RAM.</p></td>
 </tr>
-<tr class="row-odd"><td><p>scylla_raft_snapshot_last_term</p></td>
-<td><p>The term of the snapshot.</p></td>
+<tr class="row-odd"><td><p>scylla_transport_connections_blocked</p></td>
+<td><p>Holds an incrementing counter with the CQL connections that were blocked
+before being processed due to threshold configured via
+uninitialized_connections_semaphore_cpu_concurrency.Blocks are normal
+when we have multiple connections initialized at once. If connectionsare
+timing out and this value is high it indicates either connections storm
+or unusually slow processing.</p></td>
 </tr>
-<tr class="row-even"><td><p>scylla_raft_state</p></td>
-<td><p>The current state: 0 - follower, 1 - candidate, 2 - leader</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_rpc_client_delay_samples</p></td>
-<td><p>The total number of delay samples.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_rpc_client_delay_total</p></td>
-<td><p>The total delay in seconds.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_storage_proxy_replica_received_hints_bytes_total</p></td>
-<td><p>The total size of hints and MV hints received by this node.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_storage_proxy_replica_received_hints_total</p></td>
-<td><p>The number of hints and MV hints received by this node.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="renamed-metrics">
-<h2>Renamed Metrics<a class="headerlink" href="#renamed-metrics" title="Link to this heading">¶</a></h2>
-<p>The following metrics are renamed in ScyllaDB 2025.1 compared to 2024.x:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 14.3%" />
-<col style="width: 85.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>2024.2</p></th>
-<th class="head"><p>2025.1</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>scylla_hints_for_views_manager_sent</p></td>
-<td><p>scylla_hints_for_views_manager_sent_total</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_hints_manager_sent</p></td>
-<td><p>scylla_hints_manager_sent_total</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_forward_service_requests_dispatched_to_other_nodes</p></td>
-<td><p>scylla_mapreduce_service_requests_dispatched_to_other_nodes</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_forward_service_requests_dispatched_to_own_shards</p></td>
-<td><p>scylla_mapreduce_service_requests_dispatched_to_own_shards</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_forward_service_requests_executed</p></td>
-<td><p>scylla_mapreduce_service_requests_executed</p></td>
+<tr class="row-even"><td><p>scylla_transport_connections_shed</p></td>
+<td><p>Holds an incrementing counter with the CQL connections that were shed
+due to concurrency semaphore timeout (threshold configured via
+uninitialized_connections_semaphore_cpu_concurrency). This typically can
+happen during connection.</p></td>
 </tr>
 </tbody>
 </table>
@@ -465,7 +431,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2024.x and 2025.1&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/metric-update-2024.x-to-2025.1%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.1 and 2025.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/metric-update-2025.1-to-2025.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -500,12 +466,12 @@
                             <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="enable-consistent-topology.html">
+            <a class="navigation__link" href="upgrade-guide-from-2025.1-to-2025.2.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Enable Consistent Topology Updates
+                    <span class="colored">PREVIOUS</span> <br />Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2
                 </div>
             </a>
         
@@ -534,14 +500,14 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2024.x and 2025.1&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/metric-update-2024.x-to-2025.1%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.1 and 2025.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/metric-update-2025.1-to-2025.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/metric-update-2024.x-to-2025.1.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/metric-update-2025.1-to-2025.2.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -553,9 +519,8 @@
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Metrics Update Between 2024.x and 2025.1</a><ul>
+<li><a class="reference internal" href="#">Metrics Update Between 2025.1 and 2025.2</a><ul>
 <li><a class="reference internal" href="#new-metrics">New Metrics</a></li>
-<li><a class="reference internal" href="#renamed-metrics">Renamed Metrics</a></li>
 </ul>
 </li>
 </ul>
@@ -595,19 +560,19 @@
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/metric-update-2025.1-to-2025.2.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="metric-update-2024.x-to-2025.1.html">2025.2</a>
+                        <a href="metric-update-2025.1-to-2025.2.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/metric-update-2024.x-to-2025.1.html">2025.1</a>
+                        <a href="../../../../stable/index.html">2025.1</a>
                     </li>
                 
             
