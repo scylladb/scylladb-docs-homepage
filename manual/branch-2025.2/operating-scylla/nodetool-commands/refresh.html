@@ -381,6 +381,13 @@ a subset of nodes to load only SStables that belong to the rack or DC.</p>
 </div>
 <p>When loading an SSTable, Scylla will cleanup it from keys that the node is not responsible for. To skip this step, use the <cite>–skip-cleanup</cite> option.
 See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span class="std std-ref">nodetool cleanup</span></a>.</p>
+</section>
+<section id="skip-reshape">
+<h2>Skip reshape<a class="headerlink" href="#skip-reshape" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">reshape</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>When refreshing, the SSTables to load might be out of shape, Scylla will attempt to reshape them if that’s the case. To skip this step, use the <cite>–skip-reshape</cite> option.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
 </section>
 </section>
@@ -509,6 +516,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li><a class="reference internal" href="#load-and-stream">Load and Stream</a></li>
 <li><a class="reference internal" href="#scope">Scope</a></li>
 <li><a class="reference internal" href="#skip-cleanup">Skip cleanup</a></li>
+<li><a class="reference internal" href="#skip-reshape">Skip reshape</a></li>
 </ul>
 </li>
 </ul>
@@ -952,7 +960,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Jun 2025.
+                        Last updated on 14 Jun 2025.
                     
                 </div>
             
