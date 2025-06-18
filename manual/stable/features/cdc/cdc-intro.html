@@ -370,10 +370,6 @@ change at 2020-01-29 14:37:40: UPDATE ks.t SET v = 0 WHERE pk = 0 AND ck = 1; &l
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CREATE TABLE ks.t (pk int, ck int, v int, PRIMARY KEY (pk, ck, v)) WITH cdc = {&#39;enabled&#39;:true};
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you enabled CDC and later decide to disable it, you need to <strong>stop all writes</strong> to the base table before issuing the <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span> <span class="pre">...</span> <span class="pre">WITH</span> <span class="pre">cdc</span> <span class="pre">=</span> <span class="pre">{'enabled':false};</span></code> command.</p>
-</div>
 </section>
 <section id="cdc-parameters">
 <h2>CDC Parameters<a class="headerlink" href="#cdc-parameters" title="Link to this heading">¶</a></h2>
