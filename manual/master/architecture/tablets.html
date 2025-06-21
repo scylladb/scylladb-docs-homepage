@@ -434,23 +434,19 @@ throughout its lifetime. Failing to keep that invariant satisfied may result in 
 performance problems, or other issues.</p>
 </div>
 <p>The following ScyllaDB features are not supported if a keyspace has tablets
-enabled:</p>
+enabled. If you plan to use any of the features listed below, CREATE your keyspace
+<a class="reference internal" href="#tablets-enable-tablets"><span class="std std-ref">with tablets disabled</span></a>.</p>
 <ul class="simple">
 <li><p>Counters</p></li>
 <li><p>Change Data Capture (CDC)</p></li>
 <li><p>Lightweight Transactions (LWT)</p></li>
 <li><p>Alternator (as it uses LWT)</p></li>
+<li><p>Materialized Views (MV) <code class="docutils literal notranslate"><span class="pre">*</span></code></p></li>
+<li><p>Secondary indexes (SI, as it depends on MV) <code class="docutils literal notranslate"><span class="pre">*</span></code></p></li>
 </ul>
-<p>If you plan to use any of the above features, CREATE your keyspace
-<a class="reference internal" href="#tablets-enable-tablets"><span class="std std-ref">with tablets disabled</span></a>.</p>
-<p>The following ScyllaDB features are disabled by default when used with a keyspace
-that has tablets enabled:</p>
-<ul class="simple">
-<li><p>Materialized Views (MV)</p></li>
-<li><p>Secondary indexes (SI, as it depends on MV)</p></li>
-</ul>
-<p>To enable MV and SI for tablet keyspaces, use the <cite>–experimental-features=views-with-tablets</cite>
-configuration option.  See <a class="reference internal" href="../operating-scylla/admin.html#admin-views-with-tablets"><span class="std std-ref">Views with tablets</span></a> for details.</p>
+<p><code class="docutils literal notranslate"><span class="pre">*</span></code> You can enable experimental support for MV and SI using
+the <code class="docutils literal notranslate"><span class="pre">--experimental-features=views-with-tablets</span></code> configuration option.
+See <a class="reference internal" href="../operating-scylla/admin.html#admin-views-with-tablets"><span class="std std-ref">Views with tablets</span></a> for details.</p>
 <p>Resharding in keyspaces with tablets enabled has the following limitations:</p>
 <ul class="simple">
 <li><p>ScyllaDB does not support reducing the number of shards after node restart.</p></li>
@@ -1057,7 +1053,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 Jun 2025.
+                        Last updated on 21 Jun 2025.
                     
                 </div>
             
