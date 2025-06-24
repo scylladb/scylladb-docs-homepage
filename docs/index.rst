@@ -126,6 +126,16 @@
 
   Easily run and manage your ScyllaDB cluster on Kubernetes.
 
+
+.. topic-box::
+  :title: ScyllaDB Migrator
+  :link: https://migrator.docs.scylladb.com
+  :link_target: _self
+  :image: /_static/img/mascots/scylla-migrator.svg
+  :class: topic-box--product,large-4,small-6
+
+  Migrate data extract using Spark to ScyllaDB.
+
 .. raw:: html
 
   </div></div></div>
