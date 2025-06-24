@@ -347,12 +347,12 @@ See <a class="reference internal" href="../troubleshooting/handling-node-failure
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">keyspace_name</span><span class="p">:</span> <span class="o">`</span><span class="n">name</span><span class="o">`</span>
 <span class="n">table_name</span><span class="p">:</span> <span class="p">[</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span> <span class="s1">&#39;.&#39;</span> <span class="p">]</span> <span class="o">`</span><span class="n">name</span><span class="o">`</span>
 <span class="n">name</span><span class="p">:</span> <span class="o">`</span><span class="n">unquoted_name</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">quoted_name</span><span class="o">`</span>
-<span class="n">unquoted_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z_0-9]{1, 48}&#39;</span><span class="p">)</span>
+<span class="n">unquoted_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z_0-9]{1, 192}&#39;</span><span class="p">)</span>
 <span class="n">quoted_name</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">`</span><span class="n">unquoted_name</span><span class="o">`</span> <span class="s1">&#39;&quot;&#39;</span>
 </pre></div>
 </div>
 <p>Both keyspace and table names consist of only alphanumeric characters, cannot be empty, and are limited in
-size to 48 characters (that limit exists mostly to avoid filenames, which may include the keyspace and table name, to go
+size to 192 characters (that limit exists mostly to avoid filenames, which may include the keyspace and table name, to go
 over the limits of certain file systems). By default, keyspace and table names are case insensitive (<code class="docutils literal notranslate"><span class="pre">myTable</span></code> is
 equivalent to <code class="docutils literal notranslate"><span class="pre">mytable</span></code>), but case sensitivity can be forced by using double-quotes (<code class="docutils literal notranslate"><span class="pre">&quot;myTable&quot;</span></code> is different from
 <code class="docutils literal notranslate"><span class="pre">mytable</span></code>).</p>
@@ -2030,7 +2030,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Jun 2025.
+                        Last updated on 24 Jun 2025.
                     
                 </div>
             
