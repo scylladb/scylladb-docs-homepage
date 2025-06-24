@@ -5,7 +5,7 @@ Why ScyllaDB?
 What is ScyllaDB?
 --------------------
 
-ScyllaDB is a high-performance, open-source NoSQL database optimized for speed 
+ScyllaDB is a high-performance NoSQL database optimized for speed 
 and scalability. It is designed to efficiently handle large volumes of data 
 with minimal latency, making it ideal for data-intensive applications. ScyllaDB 
 uses a shared-nothing architecture, contributing to its excellent performance 
