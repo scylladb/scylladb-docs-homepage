@@ -324,16 +324,16 @@
 <h1>Administration Guide<a class="headerlink" href="#administration-guide" title="Link to this heading">¶</a></h1>
 <p>For training material, also check out the <a class="reference external" href="https://university.scylladb.com/courses/scylla-operations/lessons/admin-procedures-and-basic-monitoring/">Admin Procedures lesson</a> on ScyllaDB University.</p>
 <section id="system-requirements">
-<h2>System requirements<a class="headerlink" href="#system-requirements" title="Link to this heading">¶</a></h2>
+<h2>System Requirements<a class="headerlink" href="#system-requirements" title="Link to this heading">¶</a></h2>
 <p>Make sure you have met the <a class="reference internal" href="../getting-started/system-requirements.html"><span class="doc">System Requirements</span></a>  before you install and configure ScyllaDB.</p>
 </section>
 <section id="download-and-install">
 <h2>Download and Install<a class="headerlink" href="#download-and-install" title="Link to this heading">¶</a></h2>
 <p>See the <a class="reference internal" href="../getting-started/index.html"><span class="doc">getting started page</span></a> for info on installing ScyllaDB on your platform.</p>
-</section>
 <section id="system-configuration">
-<h2>System configuration<a class="headerlink" href="#system-configuration" title="Link to this heading">¶</a></h2>
+<h3>System Configuration<a class="headerlink" href="#system-configuration" title="Link to this heading">¶</a></h3>
 <p>See <a class="reference internal" href="../getting-started/system-configuration.html#system-configuration-files-and-scripts"><span class="std std-ref">System Configuration Guide</span></a> for details on optimum OS settings for ScyllaDB. (These settings are performed automatically in the ScyllaDB packages, Docker containers, and Amazon AMIs.)</p>
+</section>
 </section>
 <section id="scylladb-configuration">
 <span id="admin-scylla-configuration"></span><h2>ScyllaDB Configuration<a class="headerlink" href="#scylladb-configuration" title="Link to this heading">¶</a></h2>
@@ -638,12 +638,13 @@ ARN to be defined in the <code class="docutils literal notranslate"><span class=
 </div>
 </section>
 </section>
+</section>
 <section id="compression">
-<span id="admin-compression"></span><h3>Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h3>
+<span id="admin-compression"></span><h2>Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h2>
 <p>In ScyllaDB, you can configure compression at rest and compression in transit.
 For compression in transit, you can configure compression between nodes or between the client and the node.</p>
 <section id="client-node-compression">
-<span id="admin-client-node-compression"></span><h4>Client - Node Compression<a class="headerlink" href="#client-node-compression" title="Link to this heading">¶</a></h4>
+<span id="admin-client-node-compression"></span><h3>Client - Node Compression<a class="headerlink" href="#client-node-compression" title="Link to this heading">¶</a></h3>
 <p>Compression between the client and the node is set by the driver that the application is using to access ScyllaDB.</p>
 <p>For example:</p>
 <ul class="simple">
@@ -654,7 +655,7 @@ For compression in transit, you can configure compression between nodes or betwe
 <p>Refer to the <a class="reference internal" href="../using-scylla/drivers/index.html"><span class="doc">Drivers Page</span></a> for more drivers.</p>
 </section>
 <section id="internode-compression">
-<span id="id2"></span><h4>Internode Compression<a class="headerlink" href="#internode-compression" title="Link to this heading">¶</a></h4>
+<span id="id2"></span><h3>Internode Compression<a class="headerlink" href="#internode-compression" title="Link to this heading">¶</a></h3>
 <p>Internode compression is configured in the scylla.yaml</p>
 <p>internode_compression controls whether traffic between nodes is compressed.</p>
 <ul class="simple">
@@ -665,11 +666,11 @@ For compression in transit, you can configure compression between nodes or betwe
 </section>
 </section>
 <section id="configuring-tls-ssl-in-scylla-yaml">
-<h3>Configuring TLS/SSL in scylla.yaml<a class="headerlink" href="#configuring-tls-ssl-in-scylla-yaml" title="Link to this heading">¶</a></h3>
-<p>ScyllaDB versions 1.1 and greater support encryption between nodes and between client and node. See the ScyllaDB <a class="reference internal" href="security/index.html"><span class="doc">ScyllaDB TLS/SSL guide:</span></a> for configuration settings.</p>
+<h2>Configuring TLS/SSL in scylla.yaml<a class="headerlink" href="#configuring-tls-ssl-in-scylla-yaml" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB supports encryption between nodes and between client and node. See the ScyllaDB <a class="reference internal" href="security/index.html"><span class="doc">ScyllaDB TLS/SSL guide:</span></a> for configuration settings.</p>
 </section>
 <section id="networking">
-<span id="cqlsh-networking"></span><h3>Networking<a class="headerlink" href="#networking" title="Link to this heading">¶</a></h3>
+<span id="cqlsh-networking"></span><h2>Networking<a class="headerlink" href="#networking" title="Link to this heading">¶</a></h2>
 <p>The ScyllaDB ports are detailed in the table below. For ScyllaDB Manager ports, see the <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager Documentation</a>.</p>
 <img alt="../_images/Scylla-Ports2.png" src="../_images/Scylla-Ports2.png" />
 <p id="networking-ports">ScyllaDB uses the following ports:</p>
@@ -724,7 +725,6 @@ For compression in transit, you can configure compression between nodes or betwe
 <p>For ScyllaDB Manager ports, see the <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a> documentation.</p>
 </div>
 <p>All ports above need to be open to external clients (CQL) and other nodes (RPC). REST API port can be kept closed for incoming external connections.</p>
-</section>
 <section id="advanced-networking">
 <h3>Advanced networking<a class="headerlink" href="#advanced-networking" title="Link to this heading">¶</a></h3>
 <p>It is possible that a client, or another node, may need to use a different IP address to connect to a ScyllaDB node from the address that the node is listening on. This is the case when a node is behind port forwarding. ScyllaDB allows for setting alternate IP addresses.</p>
@@ -767,11 +767,11 @@ For compression in transit, you can configure compression between nodes or betwe
 <p>For tips and examples on how to configure these addresses, refer to <a class="reference internal" href="../kb/yaml-address.html"><span class="doc">How to Properly Set Address Values in scylla.yaml</span></a></p>
 </div>
 </section>
+</section>
 <section id="core-dumps">
-<span id="admin-core-dumps"></span><h3>Core dumps<a class="headerlink" href="#core-dumps" title="Link to this heading">¶</a></h3>
+<span id="admin-core-dumps"></span><h2>Core dumps<a class="headerlink" href="#core-dumps" title="Link to this heading">¶</a></h2>
 <p>On RHEL and CentOS, the <a class="reference external" href="https://abrt.readthedocs.io/en/latest/">Automatic Bug Reporting Tool</a> conflicts with ScyllaDB coredump configuration. Remove it before installing ScyllaDB: <code class="code docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">yum</span> <span class="pre">remove</span> <span class="pre">-y</span> <span class="pre">abrt</span></code></p>
 <p>ScyllaDB places any core dumps in <code class="code docutils literal notranslate"><span class="pre">var/lib/scylla/coredump</span></code>. They are not visible with the <code class="code docutils literal notranslate"><span class="pre">coredumpctl</span></code> command. See the <a class="reference internal" href="../getting-started/system-configuration.html"><span class="doc">System Configuration Guide</span></a> for details on core dump configuration scripts. Check with ScyllaDB support before sharing any core dump, as they may contain sensitive data.</p>
-</section>
 </section>
 <section id="schedule-fstrim">
 <h2>Schedule fstrim<a class="headerlink" href="#schedule-fstrim" title="Link to this heading">¶</a></h2>
@@ -784,8 +784,9 @@ discard, or trim, any blocks no longer in use by the filesystem.</p>
 <p>ScyllaDB uses experimental flags to expose non-production-ready features safely. These features are not stable enough to be used in production, and their API will likely change, breaking backward or forward compatibility.</p>
 <p>In recent ScyllaDB versions, these features are controlled by the <code class="docutils literal notranslate"><span class="pre">experimental_features</span></code> list in scylla.yaml, allowing one to choose which experimental to enable.
 Use <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">--help</span></code> to get the list of experimental features.</p>
+</section>
 <section id="keyspace-storage-options">
-<span id="admin-keyspace-storage-options"></span><h3>Keyspace storage options<a class="headerlink" href="#keyspace-storage-options" title="Link to this heading">¶</a></h3>
+<span id="admin-keyspace-storage-options"></span><h2>Keyspace storage options<a class="headerlink" href="#keyspace-storage-options" title="Link to this heading">¶</a></h2>
 <p>By default, SStables of a keyspace are stored in a local directory.
 As an alternative, you can configure your keyspace to be stored
 on Amazon S3 or another S3-compatible object store.</p>
@@ -801,7 +802,7 @@ the <code class="docutils literal notranslate"><span class="pre">keyspace-storag
 credentials and endpoint.</p>
 </section>
 <section id="views-with-tablets">
-<span id="admin-views-with-tablets"></span><h3>Views with tablets<a class="headerlink" href="#views-with-tablets" title="Link to this heading">¶</a></h3>
+<span id="admin-views-with-tablets"></span><h2>Views with Tablets<a class="headerlink" href="#views-with-tablets" title="Link to this heading">¶</a></h2>
 <p>By default, Materialized Views (MV) and Secondary Indexes (SI)
 are disabled in keyspaces that use tablets.</p>
 <p>Support for MV and SI with tablets is experimental and must be explicitly
@@ -811,7 +812,6 @@ the <code class="docutils literal notranslate"><span class="pre">views-with-tabl
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">views-with-tablets</span>
 </pre></div>
 </div>
-</section>
 </section>
 <section id="monitoring">
 <h2>Monitoring<a class="headerlink" href="#monitoring" title="Link to this heading">¶</a></h2>
@@ -824,8 +824,9 @@ the <code class="docutils literal notranslate"><span class="pre">views-with-tabl
 <h3>Monitoring Stack<a class="headerlink" href="#monitoring-stack" title="Link to this heading">¶</a></h3>
 <p><a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a></p>
 </section>
+</section>
 <section id="admin-rest-api">
-<h3>Admin REST API<a class="headerlink" href="#admin-rest-api" title="Link to this heading">¶</a></h3>
+<h2>Admin REST API<a class="headerlink" href="#admin-rest-api" title="Link to this heading">¶</a></h2>
 <p>ScyllaDB exposes a REST API to retrieve administrative information from a node and execute
 administrative operations. For example, it allows you to check or update configuration,
 retrieve cluster-level information, and more.</p>
@@ -833,7 +834,7 @@ retrieve cluster-level information, and more.</p>
 to interact with the ScyllaDB process.</p>
 <p>You can interact with the REST API directly using <code class="code docutils literal notranslate"><span class="pre">curl</span></code>, ScyllaDB’s CLI for REST API, or the Swagger UI.</p>
 <section id="swagger-ui">
-<h4>Swagger UI<a class="headerlink" href="#swagger-ui" title="Link to this heading">¶</a></h4>
+<h3>Swagger UI<a class="headerlink" href="#swagger-ui" title="Link to this heading">¶</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Do not expose the REST API externally for production systems.</p>
@@ -859,7 +860,7 @@ The API is by default bound to an internal IP (127.0.0.1), blocked for external 
 </ol>
 </section>
 <section id="cli-for-rest-api">
-<h4>CLI for REST API<a class="headerlink" href="#cli-for-rest-api" title="Link to this heading">¶</a></h4>
+<h3>CLI for REST API<a class="headerlink" href="#cli-for-rest-api" title="Link to this heading">¶</a></h3>
 <p>ScyllaDB ships with <code class="docutils literal notranslate"><span class="pre">scylla-api-client</span></code>, a lightweight tool that provides a command-line interface
 for the ScyllaDB API. The tool allows you to:</p>
 <ul class="simple">
@@ -872,10 +873,8 @@ to print the results in the JSON format.</p>
 <p>To avoid errors, you should prefer <code class="docutils literal notranslate"><span class="pre">scylla-api-client</span></code> over <code class="docutils literal notranslate"><span class="pre">curl</span></code> and similar HTTP tools for interacting
 with the ScyllaDB REST API.</p>
 </section>
-</section>
-</section>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h3>
 <p>Run <code class="docutils literal notranslate"><span class="pre">scylla-api-client</span> <span class="pre">--help</span></code> for information about all the available options.</p>
 <p><strong>Examples:</strong></p>
 <ul class="simple">
@@ -884,18 +883,20 @@ with the ScyllaDB REST API.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">scylla-api-client</span> <span class="pre">system</span> <span class="pre">uptime_ms</span></code> - Gets the system uptime (in milliseconds).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scylla-api-client</span> <span class="pre">system</span> <span class="pre">log</span> <span class="pre">POST</span> <span class="pre">--message</span> <span class="pre">&quot;hello</span> <span class="pre">world&quot;</span> <span class="pre">--level</span> <span class="pre">warn</span></code> - Writes the “hello world” message to the ScyllaDB log using the “warn” logging level.</p></li>
 </ul>
+</section>
+</section>
 <section id="un-contents">
-<h3>Un-contents<a class="headerlink" href="#un-contents" title="Link to this heading">¶</a></h3>
+<h2>Un-contents<a class="headerlink" href="#un-contents" title="Link to this heading">¶</a></h2>
 <p>ScyllaDB is designed for high performance before tuning, for fewer layers that interact in unpredictable ways, and to use better algorithms that do not require manual tuning. The following items are found in the manuals for other data stores but do not need to appear here.</p>
 <section id="configuration-un-contents">
-<h4>Configuration un-contents<a class="headerlink" href="#configuration-un-contents" title="Link to this heading">¶</a></h4>
+<h3>Configuration un-contents<a class="headerlink" href="#configuration-un-contents" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Generating tokens</p></li>
 <li><p>Configuring virtual nodes</p></li>
 </ul>
 </section>
 <section id="operations-un-contents">
-<h4>Operations un-contents<a class="headerlink" href="#operations-un-contents" title="Link to this heading">¶</a></h4>
+<h3>Operations un-contents<a class="headerlink" href="#operations-un-contents" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Tuning Bloom filters</p></li>
 <li><p>Data caching</p></li>
@@ -905,12 +906,11 @@ with the ScyllaDB REST API.</p>
 </ul>
 </section>
 <section id="testing-compaction-and-compression">
-<h4>Testing compaction and compression<a class="headerlink" href="#testing-compaction-and-compression" title="Link to this heading">¶</a></h4>
+<h3>Testing compaction and compression<a class="headerlink" href="#testing-compaction-and-compression" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Tuning Java resources</p></li>
 <li><p>Purging gossip state on a node</p></li>
 </ul>
-</section>
 </section>
 </section>
 <section id="help-with-scylladb">
@@ -1042,9 +1042,11 @@ with the ScyllaDB REST API.</p>
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">Administration Guide</a><ul>
-<li><a class="reference internal" href="#system-requirements">System requirements</a></li>
-<li><a class="reference internal" href="#download-and-install">Download and Install</a></li>
-<li><a class="reference internal" href="#system-configuration">System configuration</a></li>
+<li><a class="reference internal" href="#system-requirements">System Requirements</a></li>
+<li><a class="reference internal" href="#download-and-install">Download and Install</a><ul>
+<li><a class="reference internal" href="#system-configuration">System Configuration</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#scylladb-configuration">ScyllaDB Configuration</a><ul>
 <li><a class="reference internal" href="#check-your-current-version-of-scylladb">Check your current version of ScyllaDB</a></li>
 <li><a class="reference internal" href="#address-configuration-in-scylladb">Address Configuration in ScyllaDB</a></li>
@@ -1067,40 +1069,38 @@ with the ScyllaDB REST API.</p>
 <li><a class="reference internal" href="#important-note">Important Note</a></li>
 </ul>
 </li>
+</ul>
+</li>
 <li><a class="reference internal" href="#compression">Compression</a><ul>
 <li><a class="reference internal" href="#client-node-compression">Client - Node Compression</a></li>
 <li><a class="reference internal" href="#internode-compression">Internode Compression</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuring-tls-ssl-in-scylla-yaml">Configuring TLS/SSL in scylla.yaml</a></li>
-<li><a class="reference internal" href="#networking">Networking</a></li>
+<li><a class="reference internal" href="#networking">Networking</a><ul>
 <li><a class="reference internal" href="#advanced-networking">Advanced networking</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#core-dumps">Core dumps</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#schedule-fstrim">Schedule fstrim</a></li>
-<li><a class="reference internal" href="#experimental-features">Experimental Features</a><ul>
+<li><a class="reference internal" href="#experimental-features">Experimental Features</a></li>
 <li><a class="reference internal" href="#keyspace-storage-options">Keyspace storage options</a></li>
-<li><a class="reference internal" href="#views-with-tablets">Views with tablets</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#views-with-tablets">Views with Tablets</a></li>
 <li><a class="reference internal" href="#monitoring">Monitoring</a><ul>
 <li><a class="reference internal" href="#monitoring-interfaces">Monitoring Interfaces</a></li>
 <li><a class="reference internal" href="#monitoring-stack">Monitoring Stack</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#admin-rest-api">Admin REST API</a><ul>
 <li><a class="reference internal" href="#swagger-ui">Swagger UI</a></li>
 <li><a class="reference internal" href="#cli-for-rest-api">CLI for REST API</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a class="reference internal" href="#usage">Usage</a><ul>
 <li><a class="reference internal" href="#un-contents">Un-contents</a><ul>
 <li><a class="reference internal" href="#configuration-un-contents">Configuration un-contents</a></li>
 <li><a class="reference internal" href="#operations-un-contents">Operations un-contents</a></li>
 <li><a class="reference internal" href="#testing-compaction-and-compression">Testing compaction and compression</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#help-with-scylladb">Help with ScyllaDB</a></li>
@@ -1570,7 +1570,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Jun 2025.
+                        Last updated on 30 Jun 2025.
                     
                 </div>
             
