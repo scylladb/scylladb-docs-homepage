@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Upgrade - ScyllaDB Enterprise 2024.x to ScyllaDB 2025.1 | ScyllaDB Docs 
+             Shared-Dictionary Compression for SSTables | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -21,11 +21,12 @@
 
         
             
+            
         
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/sstable-dictionary-compression.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -290,24 +291,24 @@
     </span>
     
         <span class="bread__item">
-            <a href="../../../operating-scylla/index.html" class="bread__highlight">
+            <a href="../../index.html" class="bread__highlight">
                 ScyllaDB for Administrators
             </a>
         </span>
     
         <span class="bread__item">
-            <a href="../../index.html" class="bread__highlight">
-                Upgrade ScyllaDB
+            <a href="../index.html" class="bread__highlight">
+                Procedures
             </a>
         </span>
     
         <span class="bread__item">
-            <a href="../index.html" class="bread__highlight">
-                Upgrade ScyllaDB
+            <a href="index.html" class="bread__highlight">
+                ScyllaDB Configuration Procedures
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Upgrade - ScyllaDB Enterprise 2024.x to ScyllaDB 2025.1</span>
+    <span class="bread__item bread__item--last">Shared-Dictionary Compression for SSTables</span>
 </div>
                     </div>
                 
@@ -321,15 +322,73 @@
                             
                         
                         
-                        <section id="upgrade-scylladb-enterprise-2024-x-to-scylladb-2025-1">
-<h1>Upgrade - ScyllaDB Enterprise 2024.x to ScyllaDB 2025.1<a class="headerlink" href="#upgrade-scylladb-enterprise-2024-x-to-scylladb-2025-1" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
+                        <section id="shared-dictionary-compression-for-sstables">
+<h1>Shared-Dictionary Compression for SSTables<a class="headerlink" href="#shared-dictionary-compression-for-sstables" title="Link to this heading">¶</a></h1>
+<p>Scylla now supports dictionary-based compression for SSTables, which improves compression ratios by sharing compression dictionaries across compression chunks.</p>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">¶</a></h2>
+<p>Traditional SSTable compression works on a chunk-by-chunk basis, with each chunk compressed independently. Dictionary-based compression improves this by using a shared dictionary across all compression chunks, providing better compression ratios by leveraging patterns that appear across chunks.</p>
+</section>
+<section id="benefits">
+<h2>Benefits<a class="headerlink" href="#benefits" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="upgrade-guide-from-2024.x-to-2025.1.html"><span class="doc">Upgrade from ScyllaDB Enterprise 2024.x.y to ScyllaDB 2025.1.y</span></a></p></li>
-<li><p><a class="reference internal" href="enable-consistent-topology.html"><span class="doc">Enable Consistent Topology Updates</span></a></p></li>
-<li><p><a class="reference internal" href="metric-update-2024.x-to-2025.1.html"><span class="doc">Metrics Update Between 2024.x and 2025.1</span></a></p></li>
+<li><p>Better compression ratios</p></li>
+<li><p>Optimized for specific table data patterns</p></li>
 </ul>
+</section>
+<section id="how-to-use-dictionary-compression">
+<h2>How to Use Dictionary Compression<a class="headerlink" href="#how-to-use-dictionary-compression" title="Link to this heading">¶</a></h2>
+<section id="enabling-dictionary-compression">
+<h3>Enabling Dictionary Compression<a class="headerlink" href="#enabling-dictionary-compression" title="Link to this heading">¶</a></h3>
+<p>To enable dictionary compression for a table, set its <code class="docutils literal notranslate"><span class="pre">sstable_compression</span></code> property to one of the following values, depending on your choice of algorithm:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LZ4WithDictsCompressor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZstdWithDictsCompressor</span></code></p></li>
+</ul>
+<p>For example, using CQL:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">keyspace</span><span class="o">.</span><span class="n">table</span>
+<span class="n">WITH</span> <span class="n">compression</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sstable_compression&#39;</span><span class="p">:</span> <span class="s1">&#39;ZstdWithDictsCompressor&#39;</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>Once enabled, Scylla will automatically train a dictionary for the table when sufficient data is available.</p>
+</section>
+<section id="manual-dictionary-training">
+<h3>Manual Dictionary Training<a class="headerlink" href="#manual-dictionary-training" title="Link to this heading">¶</a></h3>
+<p>You can manually trigger dictionary training using the REST API:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="s2">&quot;http://node-address:10000/storage_service/retrain_dict?keyspace=mykeyspace&amp;table=mytable&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="estimating-compression-ratios">
+<h3>Estimating Compression Ratios<a class="headerlink" href="#estimating-compression-ratios" title="Link to this heading">¶</a></h3>
+<p>To choose the best compression configuration, you can estimate compression ratios using the REST API:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">GET</span> <span class="s2">&quot;http://node-address:10000/storage_service/estimate_compression_ratios?keyspace=mykeyspace&amp;table=mytable&quot;</span>
+</pre></div>
+</div>
+<p>This will return a report with estimated compression ratios for various combinations of compression
+parameters (algorithm, chunk size, zstd level, dictionary).</p>
+</section>
+</section>
+<section id="configuration-options">
+<h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading">¶</a></h2>
+<p>Several options related to this feature are available in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>,
+but they shouldn’t be useful during regular usage. Most of them control the
+frequency of automatic dictionary training in various ways.</p>
+<p>Refer to <a class="reference internal" href="../../../reference/configuration-parameters.html"><span class="doc">Configuration Parameters</span></a>
+for details.</p>
+</section>
+<section id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Link to this heading">¶</a></h2>
+<p>SSTables compressed with dictionary compression are not readable by older
+Scylla versions or by Cassandra. If a downgrade to a backward-compatible format
+is necessary:</p>
+<ol class="arabic simple">
+<li><p>Disable dictionary compression for new SSTables by switching all
+dictionary-compressed tables to Cassandra-compatible compressors.</p></li>
+<li><p>Apply the new setting by using <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">-a</span></code> to rewrite
+all SSTables.</p></li>
+</ol>
+</section>
 </section>
 
                     </div>
@@ -364,7 +423,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB Enterprise 2024.x to ScyllaDB 2025.1&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Shared-Dictionary Compression for SSTables&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/procedures/config-change/sstable-dictionary-compression%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -399,21 +458,21 @@
                             <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="../upgrade-guide-from-6.2-to-2025.1/metric-update-6.2-to-2025.1.html">
+            <a class="navigation__link" href="advanced-internode-compression.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Metrics Update Between 6.2 and 2025.1
+                    <span class="colored">PREVIOUS</span> <br />Advanced Internode (RPC) Compression
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="upgrade-guide-from-2024.x-to-2025.1.html">
+            <a class="navigation__link" href="../maintenance/index.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Upgrade from ScyllaDB Enterprise 2024.x to ScyllaDB 2025.1
+                    <span class="colored">NEXT</span> <br />ScyllaDB Maintenance Procedures
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -433,14 +492,14 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB Enterprise 2024.x to ScyllaDB 2025.1&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Shared-Dictionary Compression for SSTables&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/procedures/config-change/sstable-dictionary-compression%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/index.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/operating-scylla/procedures/config-change/sstable-dictionary-compression.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -448,6 +507,26 @@
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">Shared-Dictionary Compression for SSTables</a><ul>
+<li><a class="reference internal" href="#background">Background</a></li>
+<li><a class="reference internal" href="#benefits">Benefits</a></li>
+<li><a class="reference internal" href="#how-to-use-dictionary-compression">How to Use Dictionary Compression</a><ul>
+<li><a class="reference internal" href="#enabling-dictionary-compression">Enabling Dictionary Compression</a></li>
+<li><a class="reference internal" href="#manual-dictionary-training">Manual Dictionary Training</a></li>
+<li><a class="reference internal" href="#estimating-compression-ratios">Estimating Compression Ratios</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+<li><a class="reference internal" href="#compatibility">Compatibility</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                         </div>
@@ -474,7 +553,7 @@
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -482,19 +561,19 @@
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/operating-scylla/procedures/config-change/sstable-dictionary-compression.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../branch-2025.2/index.html">2025.2</a>
+                        <a href="sstable-dictionary-compression.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="index.html">2025.1</a>
+                        <a href="../../../../branch-2025.1/index.html">2025.1</a>
                     </li>
                 
             
@@ -529,7 +608,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../using-scylla/migrate-scylla.html">Migrate to ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migration Process from Cassandra to ScyllaDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cassandra-to-scylla-migration-process.html">Migration Process from Cassandra to ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/cassandra-compatibility.html">ScyllaDB and Apache Cassandra Compatibility</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/mig-tool-review.html">Migration Tools Overview</a></li>
 </ul>
@@ -554,76 +633,76 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../operating-scylla/index.html">ScyllaDB for Administrators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/admin.html">Administration Guide</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/procedures/index.html">Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cluster-management/index.html">Cluster Management</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/backup-restore/index.html">Backup &amp; Restore</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/config-change/index.html">Change Configuration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/maintenance/index.html">Maintenance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">ScyllaDB for Administrators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../admin.html">Administration Guide</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">Procedures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../cluster-management/index.html">Cluster Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backup-restore/index.html">Backup &amp; Restore</a></li>
+<li class="toctree-l3 current current-page"><a class="reference internal" href="index.html">Change Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../maintenance/index.html">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tips/index.html">Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/security-checklist.html">ScyllaDB Security Checklist</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/authentication.html">Enable Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/create-superuser.html">Creating a Custom Superuser</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../security/security-checklist.html">ScyllaDB Security Checklist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/authentication.html">Enable Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/enable-authorization.html">Enable Authorization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/authorization.html">Grant Authorization CQL Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/auditing.html">ScyllaDB Auditing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/nodetool.html">Nodetool Reference</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../nodetool.html">Nodetool Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cql/cqlsh.html">CQLSh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/rest.html">Admin REST API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rest.html">Admin REST API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/tracing.html">Tracing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/scylla-types.html">ScyllaDB Types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstableloader.html">SSTableLoader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/cassandra-stress.html">cassandra-stress</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstabledump.html">SSTabledump</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstablemetadata.html">SSTableMetadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/scylla-types.html">ScyllaDB Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/sstableloader.html">SSTableLoader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/cassandra-stress.html">cassandra-stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/sstabledump.html">SSTabledump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/sstablemetadata.html">SSTableMetadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/logging.html">ScyllaDB Logs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/perftune.html">Seastar Perftune</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/virtual-tables.html">Virtual Tables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/select-from-mutation-fragments.html">Reading mutation fragments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/perftune.html">Seastar Perftune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/virtual-tables.html">Virtual Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/select-from-mutation-fragments.html">Reading mutation fragments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-socket.html">Maintenance socket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-mode.html">Maintenance mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/task-manager.html">Task manager</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">Upgrade Procedures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../../about-upgrade.html">About Upgrade</a></li>
-<li class="toctree-l3 current current-page"><a class="reference internal" href="../index.html">Upgrade Guides</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/system-configuration.html">System Configuration Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin.html">scylla.yaml</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin.html">scylla.yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../system-configuration/snitch.html">ScyllaDB Snitches</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/diagnostics.html">ScyllaDB Diagnostic Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagnostics.html">ScyllaDB Diagnostic Tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../using-scylla/index.html">ScyllaDB for Developers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -704,7 +783,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../architecture/anti-entropy/index.html">ScyllaDB Anti-Entropy</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label for="toctree-checkbox-20"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../architecture/anti-entropy/hinted-handoff.html">ScyllaDB Hinted Handoff</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../architecture/anti-entropy/read-repair.html">ScyllaDB Read Repair</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/maintenance/repair.html">ScyllaDB Repair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../maintenance/repair.html">ScyllaDB Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../architecture/sstable/index.html">SSTable</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

@@ -345,8 +345,8 @@ meaning that pre-existing values for those columns will be preserved.</p>
 <p>Where possible, ScyllaDB will represent and accept data types in their native <code class="docutils literal notranslate"><span class="pre">JSON</span></code> representation. ScyllaDB will
 also accept string representations matching the CQL literal format for all single-field types. For example, floats,
 ints, UUIDs, and dates can be represented by CQL literal strings. However, compound types, such as collections, tuples,
-and user-defined types, must be represented by native <code class="docutils literal notranslate"><span class="pre">JSON</span></code> collections (maps and lists) or a JSON-encoded string
-representation of the collection.</p>
+vectors, and user-defined types, must be represented by native <code class="docutils literal notranslate"><span class="pre">JSON</span></code> collections (maps and lists) or a JSON-encoded
+string representation of the collection.</p>
 <p>The following table describes the encodings that ScyllaDB will accept in <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">JSON</span></code> values (and <code class="docutils literal notranslate"><span class="pre">fromJson()</span></code>
 arguments) as well as the format ScyllaDB will use when returning data for <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">JSON</span></code> statements (and
 <code class="docutils literal notranslate"><span class="pre">fromJson()</span></code>):</p>
@@ -483,6 +483,11 @@ as dates</span></a>. Datestamps with format <code class="docutils literal notran
 <td><p>Variable length; may overflow 32 or 64 bit integers in
 client-side decoder</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector</span></code></p></td>
+<td><p>list, string</p></td>
+<td><p>list</p></td>
+<td><p>Uses JSON’s native list representation</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -537,7 +542,7 @@ in the selection clause of a <code class="docutils literal notranslate"><span cl
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page JSON Support&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/cql/json%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page JSON Support&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/cql/json%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -606,7 +611,7 @@ in the selection clause of a <code class="docutils literal notranslate"><span cl
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page JSON Support&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/cql/json%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page JSON Support&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/cql/json%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -662,7 +667,7 @@ in the selection clause of a <code class="docutils literal notranslate"><span cl
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -676,13 +681,13 @@ in the selection clause of a <code class="docutils literal notranslate"><span cl
             
                 
                     <li>
-                        <a href="../../branch-2025.2/cql/json.html">2025.2</a>
+                        <a href="json.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="json.html">2025.1</a>
+                        <a href="../../branch-2025.1/cql/json.html">2025.1</a>
                     </li>
                 
             

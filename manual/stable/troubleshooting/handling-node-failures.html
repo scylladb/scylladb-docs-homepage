@@ -327,8 +327,8 @@ then starts serving queries.</p>
 are down, depending on the number of nodes  and DCs in your cluster.</p>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Cluster A: 1 datacenter, 3 nodes</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Cluster A: 1 datacenter, 3 nodes</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 20.0%" />
 <col style="width: 40.0%" />
@@ -351,8 +351,8 @@ are down, depending on the number of nodes  and DCs in your cluster.</p>
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default" id="id3">
-<caption><span class="caption-text">Cluster B: 2 datacenters, 6  nodes (3 nodes per DC)</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Cluster B: 2 datacenters, 6  nodes (3 nodes per DC)</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 20.0%" />
 <col style="width: 40.0%" />
@@ -379,8 +379,8 @@ are down, depending on the number of nodes  and DCs in your cluster.</p>
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default" id="id4">
-<caption><span class="caption-text">Cluster C: 3 datacenter, 9  nodes (3 nodes per DC)</span><a class="headerlink" href="#id4" title="Link to this table">¶</a></caption>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Cluster C: 3 datacenter, 9  nodes (3 nodes per DC)</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 20.0%" />
 <col style="width: 40.0%" />
@@ -410,30 +410,19 @@ are down, depending on the number of nodes  and DCs in your cluster.</p>
 </section>
 <section id="manual-recovery-procedure">
 <span id="recovery-procedure"></span><h2>Manual Recovery Procedure<a class="headerlink" href="#manual-recovery-procedure" title="Link to this heading">¶</a></h2>
-<p>You can follow the manual recovery procedure when:</p>
-<ul class="simple">
-<li><p>The majority of nodes (for example, 2 out of 3) failed and are irrecoverable.</p></li>
-<li><p><a class="reference internal" href="../architecture/raft.html#verify-raft-procedure"><span class="std std-ref">The Raft upgrade procedure</span></a>
-or <a class="reference external" href="https://opensource.docs.scylladb.com/branch-6.0/upgrade/upgrade-opensource/upgrade-guide-from-5.4-to-6.0/enable-consistent-topology.html">the procedure for enabling consistent topology changes</a>
-got stuck because one of the nodes failed in the middle of the procedure and is irrecoverable.</p></li>
-</ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Perform the manual recovery procedure <strong>only</strong> if you’re dealing with
-<strong>irrecoverable</strong> nodes. If possible, restart your nodes, and use the manual
-recovery procedure as a last resort.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This recovery procedure assumes that consistent topology changes are enabled for your cluster, which is mandatory in
+versions 2025.2 and later. If you failed to enable consistent topology changes during the upgrade to 2025.2, you need
+to follow the <a class="reference external" href="https://docs.scylladb.com/manual/branch-2025.1/troubleshooting/handling-node-failures.html#manual-recovery-procedure">previous recovery procedure</a>.</p>
+<p>See <a class="reference internal" href="../architecture/raft.html#verifying-consistent-topology-changes-enabled"><span class="std std-ref">Verifying that consistent topology changes are enabled</span></a>.</p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The manual recovery procedure is not supported <a class="reference internal" href="../architecture/tablets.html"><span class="doc">if tablets are enabled on any of your keyspaces</span></a>.
-In such a case, you need to <a class="reference internal" href="../operating-scylla/procedures/backup-restore/restore.html"><span class="doc">restore from backup</span></a>.</p>
-</div>
-<p>During the manual recovery procedure you’ll enter a special <code class="docutils literal notranslate"><span class="pre">RECOVERY</span></code> mode, remove
-all faulty nodes (using the standard <a class="reference internal" href="../operating-scylla/procedures/cluster-management/remove-node.html"><span class="doc">node removal procedure</span></a>),
-delete the internal Raft data, and restart the cluster. This will cause the cluster to
-perform the Raft upgrade procedure again, initializing the Raft algorithm from scratch.</p>
-<p>The manual recovery procedure is applicable both to clusters that were not running Raft
-in the past and then had Raft enabled, and to clusters that were bootstrapped using Raft.</p>
+<p>You can follow the manual recovery procedure when the majority of nodes (for example, 2 out of 3) failed and are irrecoverable.</p>
+<p>During the manual recovery procedure you’ll restart live nodes in a special recovery mode, which will cause the
+cluster to initialize the Raft algorithm from scratch. However, this time, faulty nodes will not participate in the
+algorithm. Then, you will replace all faulty nodes (using the standard
+<a class="reference internal" href="../operating-scylla/procedures/cluster-management/replace-dead-node.html"><span class="doc">node replacement procedure</span></a>). Finally, you
+will leave the recovery mode and remove the obsolete internal Raft data.</p>
 <p><strong>Prerequisites</strong></p>
 <ul>
 <li><p>Before proceeding, make sure that the irrecoverable nodes are truly dead, and not,
@@ -444,49 +433,79 @@ interfere with the recovery procedure and cause unpredictable problems.</p>
 to life and communicate with the rest of the cluster, setup firewall rules or otherwise
 isolate your alive nodes to reject any communication attempts from these dead nodes.</p>
 </li>
-<li><p>Prepare your service for downtime before proceeding.
-Entering <code class="docutils literal notranslate"><span class="pre">RECOVERY</span></code> mode requires a node restart. Restarting an additional node while
-some nodes are already dead may lead to unavailability of data queries (assuming that
-you haven’t lost it already). For example, if you’re using the standard RF=3,
-CL=QUORUM setup, and you’re recovering from a stuck upgrade procedure because one
-of your nodes is dead, restarting another node will cause temporary data query
+<li><p>Ensure all live nodes are in the normal state using
+<a class="reference internal" href="../operating-scylla/nodetool-commands/status.html"><span class="doc">nodetool status</span></a>. If there is a node
+that is joining or leaving, it cannot be recovered. You must permanently stop it. After
+performing the recovery procedure, use
+<a class="reference internal" href="../operating-scylla/nodetool-commands/status.html"><span class="doc">nodetool status</span></a> ony any other node.
+If the stopped node appears in the output, it means that other nodes still consider it
+a member of the cluster, and you should remove it with the
+<a class="reference internal" href="../operating-scylla/procedures/cluster-management/remove-node.html"><span class="doc">node removal procedure</span></a>.</p></li>
+<li><p>Check if the cluster lost data. If the number of dead nodes is equal or larger than your
+keyspaces RF, then some of the data is lost, and you need to retrieve it from backup. After
+completing the manual recovery procedure
+<a class="reference internal" href="../operating-scylla/procedures/backup-restore/restore.html"><span class="doc">restore the data from backup</span></a>.</p></li>
+<li><p>Decide whether to shut down your service for the manual recovery procedure. ScyllaDB
+serves data queries during the procedure, however, you may not want to rely on it if:</p>
+<ul class="simple">
+<li><p>you lost some data, or</p></li>
+<li><p>restarting a single node could lead to unavailability of data queries (the procedure involves
+a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a>). For
+example, if you are using the standard RF=3, CL=QUORUM setup, you have two datacenters, all
+nodes in one of the datacenters are dead and one node in the other datacenter is dead,
+restarting another node in the other datacenter will cause temporary data query
 unavailability (until the node finishes restarting).</p></li>
+</ul>
+</li>
 </ul>
 <p><strong>Procedure</strong></p>
 <ol class="arabic">
-<li><p>Perform the following query on <strong>every alive node</strong> in the cluster, using e.g. <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">UPDATE</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">SET</span> <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;recovery&#39;</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;group0_upgrade_state&#39;</span><span class="p">;</span>
+<li><p>Perform a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a> of your live nodes.</p></li>
+<li><p>Find the group 0 ID by performing the following query on any live node, using e.g. <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code>:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>The group 0 ID is needed in the following steps.</p>
 </li>
-<li><p>Perform a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a> of your alive nodes.</p></li>
-<li><p>Verify that all the nodes have entered <code class="docutils literal notranslate"><span class="pre">RECOVERY</span></code> mode when restarting; look for one of the following messages in their logs:</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">group0_client - RECOVERY mode.</span>
-<span class="go">raft_group0 - setup_group0: Raft RECOVERY mode, skipping group 0 setup.</span>
-<span class="go">raft_group0_upgrade - RECOVERY mode. Not attempting upgrade.</span>
+<li><p>Find <code class="docutils literal notranslate"><span class="pre">commit_idx</span></code> of all live nodes by performing the following query on <strong>every live node</strong>:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="n">commit_idx</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">raft</span> <span class="k">WHERE</span> <span class="n">group_id</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">group</span> <span class="mf">0</span> <span class="n">ID</span><span class="o">&gt;</span><span class="p">;</span>
 </pre></div>
 </div>
-</div></blockquote>
+<p>Choose a node with the largest <code class="docutils literal notranslate"><span class="pre">commit_idx</span></code>. If there are multiple such nodes, choose any of them.
+The chosen node will be the <em>recovery leader</em>.</p>
 </li>
-<li><p>Remove all your dead nodes using the <a class="reference internal" href="../operating-scylla/procedures/cluster-management/remove-node.html"><span class="doc">node removal procedure</span></a>.</p></li>
-<li><p>Remove existing Raft cluster data by performing the following queries on <strong>every alive node</strong> in the cluster, using e.g. <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">topology</span><span class="p">;</span>
-<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">discovery</span><span class="p">;</span>
-<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">group0_history</span><span class="p">;</span>
+<li><p>Perform the following queries on <strong>every live node</strong>:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">discovery</span><span class="p">;</span>
 <span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
 </li>
-<li><p>Make sure that schema is synchronized in the cluster by executing <a class="reference internal" href="../operating-scylla/nodetool-commands/describecluster.html"><span class="doc">nodetool describecluster</span></a> on each node and verifying that the schema version is the same on all nodes.</p></li>
-<li><p>We can now leave <code class="docutils literal notranslate"><span class="pre">RECOVERY</span></code> mode. On <strong>every alive node</strong>, perform the following query:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;group0_upgrade_state&#39;</span><span class="p">;</span>
+<li><p>Add the <code class="docutils literal notranslate"><span class="pre">recovery_leader</span></code> property to the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file and set it to the host ID of the recovery leader on
+<strong>every live node</strong>. Make sure the change is applied on all nodes by sending the <code class="docutils literal notranslate"><span class="pre">SIGHUP</span></code> signal to all ScyllaDB
+processes.</p></li>
+<li><p>Perform a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a> of all live nodes,
+however, this time <strong>the recovery leader must be restarted first</strong>.</p>
+<p>After completing this step, Raft should be fully functional.</p>
+</li>
+<li><p>Replace all dead nodes from the cluster using the
+<a class="reference internal" href="../operating-scylla/procedures/cluster-management/replace-dead-node.html"><span class="doc">node replacement procedure</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Removing some of the dead nodes with the
+<a class="reference internal" href="../operating-scylla/procedures/cluster-management/remove-node.html"><span class="doc">node removal procedure</span></a> is also possible,
+but it may require decreasing RF of your keyspaces. With tablets enabled, <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">removenode</span></code> is rejected
+if there are not enough nodes to satisfy RF of any tablet keyspace in the node’s datacenter.</p>
+</div>
+</li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">recovery_leader</span></code> property from the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file on all nodes. Send the <code class="docutils literal notranslate"><span class="pre">SIGHUP</span></code> signal to all
+ScyllaDB processes to ensure the change is applied.</p></li>
+<li><p>Perform the following queries on <strong>every live node</strong>:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">raft</span> <span class="k">WHERE</span> <span class="n">group_id</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">group</span> <span class="mf">0</span> <span class="n">ID</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">raft_snapshots</span> <span class="k">WHERE</span> <span class="n">group_id</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">group</span> <span class="mf">0</span> <span class="n">ID</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">raft_snapshot_config</span> <span class="k">WHERE</span> <span class="n">group_id</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">group</span> <span class="mf">0</span> <span class="n">ID</span><span class="o">&gt;</span><span class="p">;</span>
 </pre></div>
 </div>
 </li>
-<li><p>Perform a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a> of your alive nodes.</p></li>
-<li><p>The Raft upgrade procedure will start anew. <a class="reference internal" href="../architecture/raft.html#verify-raft-procedure"><span class="std std-ref">Verify</span></a> that it finishes successfully.</p></li>
-<li><p>Perform <a class="reference external" href="https://opensource.docs.scylladb.com/branch-6.0/upgrade/upgrade-opensource/upgrade-guide-from-5.4-to-6.0/enable-consistent-topology.html">the procedure for enabling consistent topology changes</a>.</p></li>
 </ol>
 </section>
 </section>
@@ -523,7 +542,7 @@ unavailability (until the node finishes restarting).</p></li>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Handling Node Failures&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/troubleshooting/handling-node-failures%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Handling Node Failures&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/troubleshooting/handling-node-failures%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -592,7 +611,7 @@ unavailability (until the node finishes restarting).</p></li>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Handling Node Failures&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/troubleshooting/handling-node-failures%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Handling Node Failures&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/troubleshooting/handling-node-failures%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -645,7 +664,7 @@ unavailability (until the node finishes restarting).</p></li>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -659,13 +678,13 @@ unavailability (until the node finishes restarting).</p></li>
             
                 
                     <li>
-                        <a href="../../branch-2025.2/troubleshooting/handling-node-failures.html">2025.2</a>
+                        <a href="handling-node-failures.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="handling-node-failures.html">2025.1</a>
+                        <a href="../../branch-2025.1/troubleshooting/handling-node-failures.html">2025.1</a>
                     </li>
                 
             

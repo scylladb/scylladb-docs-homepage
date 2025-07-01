@@ -813,6 +813,14 @@
                           "allowMultiple":false,
                           "type":"string",
                           "paramType":"query"
+                      },
+                      {
+                          "name":"move_files",
+                          "description":"Move component files instead of copying them",
+                          "required":false,
+                          "allowMultiple":false,
+                          "type":"boolean",
+                          "paramType":"query"
                       }
                   ]
               }
@@ -2136,6 +2144,31 @@
                      "allowMultiple":false,
                      "type":"string",
                      "paramType":"query"
+                  },
+                  {
+                     "name":"skip_cleanup",
+                     "description":"Don't cleanup keys from loaded sstables. Invalid if load_and_stream is true",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"skip_reshape",
+                     "description":"Don't reshape the loaded sstables. Invalid if load_and_stream is true",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"scope",
+                     "description":"Defines the set of nodes to which mutations can be streamed",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query",
+                     "enum": ["all", "dc", "rack", "node"]
                   }
                ]
             }
@@ -3020,6 +3053,73 @@
          ]
       },
       {
+         "path":"/storage_service/retrain_dict",
+         "operations":[
+            {
+               "method":"POST",
+               "summary":"Retrain the SSTable compression dictionary for the target table.",
+               "type":"void",
+               "nickname":"retrain_dict",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"keyspace",
+                     "description":"Name of the keyspace containing the target table.",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"cf",
+                     "description":"Name of the target table.",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "path":"/storage_service/estimate_compression_ratios",
+         "operations":[
+            {
+               "method":"GET",
+               "summary":"Compute an estimated compression ratio for SSTables of the given table, for various compression configurations.",
+               "type":"array",
+               "items":{
+                  "type":"compression_config_result"
+               },
+               "nickname":"estimate_compression_ratios",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"keyspace",
+                     "description":"Name of the keyspace containing the target table.",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"cf",
+                     "description":"Name of the target table.",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  }
+               ]
+            }
+         ]
+      },
+      {
          "path":"/storage_service/raft_topology/reload",
          "operations":[
             {
@@ -3320,6 +3420,32 @@
                 "type":"string"
             }
         }
+      },
+      "compression_config_result":{
+         "id":"compression_config_result",
+         "description":"Compression ratio estimation result for one config",
+         "properties":{
+            "level":{
+               "type":"long",
+               "description":"The used value of `compression_level`"
+            },
+            "chunk_length_in_kb":{
+               "type":"long",
+               "description":"The used value of `chunk_length_in_kb`"
+            },
+            "dict":{
+               "type":"string",
+               "description":"The used dictionary: `none`, `past` (== current), or `future`"
+            },
+            "sstable_compression":{
+               "type":"string",
+               "description":"The used compressor name (aka `sstable_compression`)"
+            },
+            "ratio":{
+               "type":"float",
+               "description":"The resulting compression ratio (estimated on a random sample of files)"
+            }
+         }
       }
    }
 }

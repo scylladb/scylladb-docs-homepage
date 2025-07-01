@@ -13,8 +13,15 @@ for more information about tablets.
 Increasing the RF in Tablets-based Keyspaces
 -------------------------------------------------
 
-If a keyspace has tablets enabled (the default), changing the RF is safe and
-does not impact data consistency in the cluster.
+If a keyspace has tablets enabled (the default), changing the RF does not
+impact data consistency in the cluster.
+
+However, due to limitations in the current protocol used to pass tablet data
+to drivers, drivers will not pick up new replicas after the RF is increased.
+As a result, drivers will not route requests to new replicas, causing imbalance.
+
+To avoid this issue, restart the client applications after the ALTER statement
+that changes the RF completes successfully.
 
 Increasing the RF in Keyspaces with Tablets Disabled
 ----------------------------------------------------------
@@ -25,6 +32,7 @@ so your keyspace is vnodes-based, increasing the RF will impact data consistency
 Data consistency in your cluster is effectively dropped by the difference
 between the RF_new value and the RF_old value for all pre-existing data.
 Consistency will only be restored after running a repair.
+
 
 Resolution
 ========================
@@ -47,6 +55,7 @@ with the same level of consistency:
 
 If RF has only been changed in a particular Datacenter (DC), only the nodes in
 that DC have to be repaired.
+
 
 Example
 =======

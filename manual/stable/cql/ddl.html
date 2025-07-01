@@ -337,12 +337,12 @@ See <a class="reference internal" href="../troubleshooting/handling-node-failure
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">keyspace_name</span><span class="p">:</span> <span class="o">`</span><span class="n">name</span><span class="o">`</span>
 <span class="n">table_name</span><span class="p">:</span> <span class="p">[</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span> <span class="s1">&#39;.&#39;</span> <span class="p">]</span> <span class="o">`</span><span class="n">name</span><span class="o">`</span>
 <span class="n">name</span><span class="p">:</span> <span class="o">`</span><span class="n">unquoted_name</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">quoted_name</span><span class="o">`</span>
-<span class="n">unquoted_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z_0-9]{1, 48}&#39;</span><span class="p">)</span>
+<span class="n">unquoted_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z_0-9]{1, 192}&#39;</span><span class="p">)</span>
 <span class="n">quoted_name</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">`</span><span class="n">unquoted_name</span><span class="o">`</span> <span class="s1">&#39;&quot;&#39;</span>
 </pre></div>
 </div>
 <p>Both keyspace and table names consist of only alphanumeric characters, cannot be empty, and are limited in
-size to 48 characters (that limit exists mostly to avoid filenames, which may include the keyspace and table name, to go
+size to 192 characters (that limit exists mostly to avoid filenames, which may include the keyspace and table name, to go
 over the limits of certain file systems). By default, keyspace and table names are case insensitive (<code class="docutils literal notranslate"><span class="pre">myTable</span></code> is
 equivalent to <code class="docutils literal notranslate"><span class="pre">mytable</span></code>), but case sensitivity can be forced by using double-quotes (<code class="docutils literal notranslate"><span class="pre">&quot;myTable&quot;</span></code> is different from
 <code class="docutils literal notranslate"><span class="pre">mytable</span></code>).</p>
@@ -523,7 +523,7 @@ for a keyspace.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'initial'</span></code></p></td>
 <td><p>int</p></td>
-<td><p>The number of tablets to start with</p></td>
+<td><p>The number of tablets to start with (deprecated)</p></td>
 </tr>
 </tbody>
 </table>
@@ -549,6 +549,8 @@ The calculation applies to every table in the keyspace.</p>
 <span class="p">};</span>
 </pre></div>
 </div>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablets option was deprecated.
+Please use <a class="reference internal" href="#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> instead.</p>
 <p>See <a class="reference internal" href="../architecture/tablets.html"><span class="doc">Data Distribution with Tablets</span></a> for more information about tablets.</p>
 </section>
 <section id="keyspace-storage-options-experimental">
@@ -590,6 +592,7 @@ keyspace name). A <code class="docutils literal notranslate"><span class="pre">U
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement may take longer than the regular query timeout, and even if it times out, it will continue to execute in the background.</p></li>
 <li><p>The replication strategy cannot be modified, as keyspaces with tablets only support <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code>.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement will fail if it would make the keyspace <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-invalid</span></a>.</p></li>
+<li><p>After the <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement that increases the RF finishes, client applications should be restarted. Without a restart, drivers will not know about new replicas, which may cause request imbalance.</p></li>
 </ul>
 </section>
 </section>
@@ -636,9 +639,17 @@ operation is a no-op.</p>
                 <span class="p">:</span> <span class="o">|</span> <span class="k">CLUSTERING</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">clustering_order</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span> <span class="p">[</span> <span class="k">AND</span> <span class="o">`</span><span class="n">table_options</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="o">|</span> <span class="n">scylla_encryption_options</span><span class="p">:</span> <span class="s1">&#39;=&#39;</span> <span class="s1">&#39;{&#39;</span><span class="p">[</span><span class="o">`</span><span class="n">cipher_algorithm</span><span class="o">`</span> <span class="p">:</span> <span class="o">&lt;</span><span class="n">hash</span><span class="o">&gt;</span><span class="p">]</span><span class="s1">&#39;,&#39;</span><span class="p">[</span><span class="o">`</span><span class="n">secret_key_strength</span><span class="o">`</span> <span class="p">:</span> <span class="o">&lt;</span><span class="n">len</span><span class="o">&gt;</span><span class="p">]</span><span class="s1">&#39;,&#39;</span><span class="p">[</span><span class="o">`</span><span class="n">key_provider</span><span class="o">`</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">provider</span><span class="o">&gt;</span><span class="p">]</span><span class="s1">&#39;}&#39;</span>
                 <span class="p">:</span> <span class="o">|</span> <span class="n">caching</span>  <span class="s1">&#39;=&#39;</span> <span class="s1">&#39; {&#39;</span><span class="n">caching_options</span><span class="s1">&#39;}&#39;</span>
+                <span class="p">:</span> <span class="o">|</span> <span class="n">tablets</span> <span class="s1">&#39;=&#39;</span> <span class="s1">&#39;{&#39;</span> <span class="o">`</span><span class="n">tablet_options</span><span class="o">`</span> <span class="s1">&#39;}&#39;</span>
                 <span class="p">:</span> <span class="o">|</span> <span class="o">`</span><span class="k">options</span><span class="o">`</span>
 
 <span class="n">clustering_order</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span><span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span><span class="p">)</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span><span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span><span class="p">)</span> <span class="p">)</span><span class="o">*</span>
+
+<span class="n">tablet_options</span><span class="p">:</span> <span class="o">`</span><span class="n">tablet_option</span><span class="o">`</span> <span class="p">[</span><span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">tablet_option</span><span class="o">`</span><span class="p">]</span>
+              <span class="p">:</span> <span class="o">|</span>
+
+<span class="n">tablet_option</span><span class="p">:</span> <span class="s1">&#39;expected_data_size_in_gb&#39;</span> <span class="s1">&#39;:&#39;</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>
+          <span class="p">:</span> <span class="o">|</span> <span class="s1">&#39;min_per_shard_tablet_count&#39;</span> <span class="s1">&#39;:&#39;</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span>
+          <span class="p">:</span> <span class="o">|</span> <span class="s1">&#39;min_tablet_count&#39;</span> <span class="s1">&#39;:&#39;</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>For instance:</p>
@@ -978,6 +989,11 @@ it is an optimization to declare a descending clustering order.</p></li>
 <td><p>see below</p></td>
 <td><p><a class="reference internal" href="#cdc-options"><span class="std std-ref">CDC Options</span></a></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tablet_options</span></code></p></td>
+<td><p>map</p></td>
+<td><p>see below</p></td>
+<td><p><a class="reference internal" href="#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a></p></td>
+</tr>
 </tbody>
 </table>
 <section id="speculative-retry-options">
@@ -1184,6 +1200,72 @@ mode is set by default.</p>
 </tbody>
 </table>
 </section>
+<section id="per-table-tablet-options">
+<span id="cql-per-table-tablet-options"></span><h5>Per-table tablet options<a class="headerlink" href="#per-table-tablet-options" title="Link to this heading">¶</a></h5>
+<p>By default, ScyllaDB will allocate the initial number of tablets automatically.
+Then on, tables may be automatically split if their average size is greater than twice
+the <code class="docutils literal notranslate"><span class="pre">target_tablet_size_in_bytes</span></code>, or merged if the average tablet size is less than
+half the <code class="docutils literal notranslate"><span class="pre">target_tablet_size_in_bytes</span></code>.</p>
+<p>Other considerations, like the total number of tablet replicas per-shard, may also affect the tablet count.
+Since each tablet replica has a constant memory overhead, ScyllaDB may limit the number of tablets to prevent
+shards from running out-of-memory, in the presence of many tables.</p>
+<p>The following per-table <code class="docutils literal notranslate"><span class="pre">tablets</span></code> options can be used to tune the tablet allocation logic for the table
+if its data size, or performance requirements are known in advance.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">expected_data_size_in_gb</span></code></p></td>
+<td><p>0</p></td>
+<td><p>This option provides a hint for the anticipated table size, before replication.
+ScyllaDB will generate a tablets topology that matches that expectation (see details below).
+It can be set when the table is created to allocate more tablets for it,
+as if it already occupies that size.  This will prevent unnecessary tablet splits
+and tablet migrations during data ingestion.
+It can also be changed later in the table life cycle to induce tablet splits or merges
+to fit the new expected size.
+The minimum tablet count is calculated by dividing the expected data
+size by the <code class="docutils literal notranslate"><span class="pre">target_tablet_size_in_bytes</span></code> config option.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">min_per_shard_tablet_count</span></code></p></td>
+<td><p>0</p></td>
+<td><p>Used for ensuring that the table workload is well balanced in the whole cluster in a
+topology-independent way. A higher number of tablet replicas per shard may help balance
+the table workload more evenly across shards and across nodes in the cluster.
+For example, setting this to 10 means that shard overcommit is limited to 10%, regardless
+of cluster size.
+Note that <code class="docutils literal notranslate"><span class="pre">min_per_shard_tablet_count</span></code> supports floating point values and can be set to
+a value less than 1.  This is useful for clusters with large number of shards where the
+average number of tablet replicas owned by each shard is less than 1.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">min_tablet_count</span></code></p></td>
+<td><p>0</p></td>
+<td><p>Determines the minimum number of tablets to allocate for the table.
+The hint is based on the deprecated keyspace <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablets option.
+Note that the actual number of tablet replicas that are owned by each shard is a
+function of the tablet count, the replication factor in the datacenter, and the number
+of nodes and shards in the datacenter.  It is recommended to use higher-level options
+such as <code class="docutils literal notranslate"><span class="pre">expected_data_size_in_gb</span></code> or <code class="docutils literal notranslate"><span class="pre">min_per_shard_tablet_count</span></code> instead.</p></td>
+</tr>
+</tbody>
+</table>
+<p>When allocating tablets for a new table, ScyllaDB uses the maximum of the <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablets configured for the keyspace
+and the minimum tablet count calculated from the table’s <code class="docutils literal notranslate"><span class="pre">tablets</span></code> options, if any.
+If multiple tablet options are provided, ScyllaDB uses the maximum tablet count derived by each option individually.
+If the keyspace <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablets is set to zero and no <code class="docutils literal notranslate"><span class="pre">tablets</span></code> options are provided,
+ScyllaDB automatically calculates the number of tablets so that each shard would own at least one tablet replica,
+scaled up by the <code class="docutils literal notranslate"><span class="pre">tablets_initial_scale_factor</span></code> configuration option.</p>
+<p>Unlike the <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablet count configured for the keyspace, ScyllaDB will not merge tablets when their
+average size drops below half the <code class="docutils literal notranslate"><span class="pre">target_tablet_size_in_bytes</span></code> if that would cause the table’s tablet count
+to go below the minimum tablet count, or the per-shard tablet-count as per the above options.
+This is useful for tables that go through rapid growth and shrink cycles.
+If the table is shrunk for the long term and there are no special performance needs for the tablet, it is recommended
+to drop the tablet options or to adjust them respectively, to fit the new requirements.</p>
+</section>
 <section id="other-considerations">
 <h5>Other considerations:<a class="headerlink" href="#other-considerations" title="Link to this heading">¶</a></h5>
 <ul class="simple">
@@ -1360,7 +1442,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1429,7 +1511,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1483,6 +1565,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#cdc-options">CDC options</a></li>
 <li><a class="reference internal" href="#caching-options">Caching options</a></li>
 <li><a class="reference internal" href="#tombstones-gc-options">Tombstones GC options</a></li>
+<li><a class="reference internal" href="#per-table-tablet-options">Per-table tablet options</a></li>
 <li><a class="reference internal" href="#other-considerations">Other considerations:</a></li>
 </ul>
 </li>
@@ -1525,7 +1608,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1539,13 +1622,13 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 
                     <li>
-                        <a href="../../branch-2025.2/cql/ddl.html">2025.2</a>
+                        <a href="ddl.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="ddl.html">2025.1</a>
+                        <a href="../../branch-2025.1/cql/ddl.html">2025.1</a>
                     </li>
                 
             

@@ -362,19 +362,19 @@ have a parent or cover an operation that is invoked internally.</p></li>
 <section id="example-output">
 <h2>Example output<a class="headerlink" href="#example-output" title="Link to this heading">¶</a></h2>
 <p>For single list:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>task_id<span class="w">                              </span><span class="nb">type</span><span class="w">   </span>kind<span class="w"> </span>scope<span class="w">    </span>state<span class="w"> </span>sequence_number<span class="w"> </span>keyspace<span class="w"> </span>table<span class="w"> </span>entity
-5116ddb6-85b5-4c3e-94fb-72128f15d7b4<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">  </span><span class="m">3</span><span class="w">               </span>abc
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>task_id<span class="w">                              </span><span class="nb">type</span><span class="w">   </span>kind<span class="w"> </span>scope<span class="w">    </span>state<span class="w"> </span>sequence_number<span class="w"> </span>keyspace<span class="w"> </span>table<span class="w"> </span>entity<span class="w"> </span>shard<span class="w"> </span>start_time<span class="w">           </span>end_time
+5116ddb6-85b5-4c3e-94fb-72128f15d7b4<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">  </span><span class="m">3</span><span class="w">               </span>abc<span class="w">                   </span><span class="m">0</span><span class="w">     </span><span class="m">2025</span>-01-16T16:12:11Z<span class="w"> </span><span class="m">2025</span>-01-16T16:12:13Z
 </pre></div>
 </div>
 <p>With repetition:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>task_id<span class="w">                              </span><span class="nb">type</span><span class="w">   </span>kind<span class="w"> </span>scope<span class="w">    </span>state<span class="w"> </span>sequence_number<span class="w"> </span>keyspace<span class="w"> </span>table<span class="w"> </span>entity
-d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">  </span><span class="m">5</span><span class="w">               </span>abc
-1e028cb8-31a3-45ed-8728-af7a1ab586f6<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">  </span><span class="m">4</span><span class="w">               </span>abc
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>task_id<span class="w">                              </span><span class="nb">type</span><span class="w">   </span>kind<span class="w"> </span>scope<span class="w">    </span>state<span class="w">   </span>sequence_number<span class="w"> </span>keyspace<span class="w"> </span>table<span class="w"> </span>entity<span class="w"> </span>shard<span class="w"> </span>start_time<span class="w">           </span>end_time
+d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span>running<span class="w"> </span><span class="m">5</span><span class="w">               </span>abc<span class="w">                   </span><span class="m">0</span><span class="w">     </span><span class="m">2025</span>-01-16T16:12:57Z
+1e028cb8-31a3-45ed-8728-af7a1ab586f6<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">    </span><span class="m">4</span><span class="w">               </span>abc<span class="w">                   </span><span class="m">0</span><span class="w">     </span><span class="m">2025</span>-01-16T16:12:45Z<span class="w"> </span><span class="m">2025</span>-01-16T16:12:47Z
 
-task_id<span class="w">                              </span><span class="nb">type</span><span class="w">   </span>kind<span class="w"> </span>scope<span class="w">    </span>state<span class="w"> </span>sequence_number<span class="w"> </span>keyspace<span class="w"> </span>table<span class="w"> </span>entity
-1e535f9b-97fa-4788-a956-8f3216a6ea8d<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">  </span><span class="m">6</span><span class="w">               </span>abc
-d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">  </span><span class="m">5</span><span class="w">               </span>abc
-1e028cb8-31a3-45ed-8728-af7a1ab586f6<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">  </span><span class="m">4</span><span class="w">               </span>abc
+task_id<span class="w">                              </span><span class="nb">type</span><span class="w">   </span>kind<span class="w"> </span>scope<span class="w">    </span>state<span class="w">   </span>sequence_number<span class="w"> </span>keyspace<span class="w"> </span>table<span class="w"> </span>entity<span class="w"> </span>shard<span class="w"> </span>start_time<span class="w">           </span>end_time
+1e535f9b-97fa-4788-a956-8f3216a6ea8d<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span>created<span class="w"> </span><span class="m">6</span><span class="w">               </span>abc<span class="w">                   </span><span class="m">0</span>
+d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span>running<span class="w"> </span><span class="m">5</span><span class="w">               </span>abc<span class="w">                   </span><span class="m">0</span><span class="w">     </span><span class="m">2025</span>-01-16T16:12:57Z
+1e028cb8-31a3-45ed-8728-af7a1ab586f6<span class="w"> </span>repair<span class="w"> </span>node<span class="w"> </span>keyspace<span class="w"> </span><span class="k">done</span><span class="w">    </span><span class="m">4</span><span class="w">               </span>abc<span class="w">                   </span><span class="m">0</span><span class="w">     </span><span class="m">2025</span>-01-16T16:12:45Z<span class="w"> </span><span class="m">2025</span>-01-16T16:12:47Z
 </pre></div>
 </div>
 </section>
@@ -418,7 +418,7 @@ d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool tasks list&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/nodetool-commands/tasks/list%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool tasks list&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/tasks/list%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -487,7 +487,7 @@ d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool tasks list&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/nodetool-commands/tasks/list%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool tasks list&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/tasks/list%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -542,7 +542,7 @@ d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -556,13 +556,13 @@ d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w
             
                 
                     <li>
-                        <a href="../../../../branch-2025.2/operating-scylla/nodetool-commands/tasks/list.html">2025.2</a>
+                        <a href="list.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="list.html">2025.1</a>
+                        <a href="../../../../branch-2025.1/operating-scylla/nodetool-commands/tasks/list.html">2025.1</a>
                     </li>
                 
             

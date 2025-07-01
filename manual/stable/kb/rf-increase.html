@@ -320,8 +320,13 @@ The guidelines differ depending on whether your a keyspace is tablets-based
 for more information about tablets.</p>
 <section id="increasing-the-rf-in-tablets-based-keyspaces">
 <h2>Increasing the RF in Tablets-based Keyspaces<a class="headerlink" href="#increasing-the-rf-in-tablets-based-keyspaces" title="Link to this heading">¶</a></h2>
-<p>If a keyspace has tablets enabled (the default), changing the RF is safe and
-does not impact data consistency in the cluster.</p>
+<p>If a keyspace has tablets enabled (the default), changing the RF does not
+impact data consistency in the cluster.</p>
+<p>However, due to limitations in the current protocol used to pass tablet data
+to drivers, drivers will not pick up new replicas after the RF is increased.
+As a result, drivers will not route requests to new replicas, causing imbalance.</p>
+<p>To avoid this issue, restart the client applications after the ALTER statement
+that changes the RF completes successfully.</p>
 </section>
 <section id="increasing-the-rf-in-keyspaces-with-tablets-disabled">
 <h2>Increasing the RF in Keyspaces with Tablets Disabled<a class="headerlink" href="#increasing-the-rf-in-keyspaces-with-tablets-disabled" title="Link to this heading">¶</a></h2>
@@ -404,7 +409,7 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page How to Safely Increase the Replication Factor&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/kb/rf-increase%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page How to Safely Increase the Replication Factor&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/kb/rf-increase%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -473,7 +478,7 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page How to Safely Increase the Replication Factor&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/kb/rf-increase%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page How to Safely Increase the Replication Factor&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/kb/rf-increase%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -531,7 +536,7 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -545,13 +550,13 @@ As the CL is currently TWO, increasing it more would be QUORUM, but QUORUM would
             
                 
                     <li>
-                        <a href="../../branch-2025.2/kb/rf-increase.html">2025.2</a>
+                        <a href="rf-increase.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="rf-increase.html">2025.1</a>
+                        <a href="../../branch-2025.1/kb/rf-increase.html">2025.1</a>
                     </li>
                 
             

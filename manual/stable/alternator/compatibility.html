@@ -344,7 +344,7 @@ Instructions for doing this can be found in:
 <section id="write-isolation-policies">
 <h2>Write isolation policies<a class="headerlink" href="#write-isolation-policies" title="Link to this heading">¶</a></h2>
 <p>Scylla was designed to optimize the performance of pure write operations -
-writes which do not need to read the the previous value of the item.
+writes which do not need to read the previous value of the item.
 In CQL, writes which do need the previous value of the item must explicitly
 use the slower LWT (“LightWeight Transaction”) feature to be correctly
 isolated from each other. It is not allowed to mix LWT and non-LWT writes
@@ -395,12 +395,12 @@ two requests to two different nodes.</p></li>
 <li><p>Consider using the <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> write isolation policy.
 It is slower, but has better guarantees.</p></li>
 </ol>
-<p>Another guarantee that that <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> can make and other write
+<p>Another guarantee that <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> can make and other write
 isolation modes do not is that writes to the same item are <em>serialized</em>:
 Even if the two write are sent at exactly the same time to two different
 nodes, the result will appear as if one write happened first, and then
 the other. But in other modes (with non-LWT writes), two writes can get
-exactly the same microsecond-resolution timestamp, the the result may be
+exactly the same microsecond-resolution timestamp, the result may be
 a mixture of both writes - some attributes from one and some from the
 other - instead of being just one or the other.</p>
 </section>
@@ -524,6 +524,16 @@ undocumented order.</p>
 in DynamoDB and Scylla - determined by the <em>sort key</em> defined for that table.</p>
 </section>
 <hr class="docutils" />
+<section id="configurable-or-different-limits">
+<h2>Configurable or different limits<a class="headerlink" href="#configurable-or-different-limits" title="Link to this heading">¶</a></h2>
+<p>Some features have fixed limits in DynamoDB, but the limit does not exist,
+is different, or can be configured in Alternator:</p>
+<ul class="simple">
+<li><p>DynamoDB limits each BatchWriteItem request to 25 items. In Alternator,
+this limit defaults to 100 but can be changed with
+the alternator_max_items_in_batch_write configuration parameter.</p></li>
+</ul>
+</section>
 <section id="experimental-api-features">
 <h2>Experimental API features<a class="headerlink" href="#experimental-api-features" title="Link to this heading">¶</a></h2>
 <p>Some DynamoDB API features are supported by Alternator, but considered
@@ -696,7 +706,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -765,7 +775,7 @@ This table option was added as a preview to DynamoDB in December 2024.
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -794,6 +804,7 @@ This table option was added as a preview to DynamoDB in December 2024.
 <li><a class="reference internal" href="#metrics">Metrics</a></li>
 <li><a class="reference internal" href="#time-to-live-ttl">Time To Live (TTL)</a></li>
 <li><a class="reference internal" href="#scan-ordering">Scan ordering</a></li>
+<li><a class="reference internal" href="#configurable-or-different-limits">Configurable or different limits</a></li>
 <li><a class="reference internal" href="#experimental-api-features">Experimental API features</a></li>
 <li><a class="reference internal" href="#unimplemented-api-features">Unimplemented API features</a></li>
 </ul>
@@ -827,7 +838,7 @@ This table option was added as a preview to DynamoDB in December 2024.
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -841,13 +852,13 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 
                     <li>
-                        <a href="../../branch-2025.2/alternator/compatibility.html">2025.2</a>
+                        <a href="compatibility.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="compatibility.html">2025.1</a>
+                        <a href="../../branch-2025.1/alternator/compatibility.html">2025.1</a>
                     </li>
                 
             

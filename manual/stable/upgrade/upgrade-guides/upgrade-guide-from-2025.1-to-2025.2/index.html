@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Handling Cluster Membership Change Failures | ScyllaDB Docs 
+             Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -21,12 +21,11 @@
 
         
             
-            
         
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/handling-membership-change-failures.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -291,24 +290,24 @@
     </span>
     
         <span class="bread__item">
-            <a href="../../index.html" class="bread__highlight">
+            <a href="../../../operating-scylla/index.html" class="bread__highlight">
                 ScyllaDB for Administrators
             </a>
         </span>
     
         <span class="bread__item">
-            <a href="../index.html" class="bread__highlight">
-                Procedures
+            <a href="../../index.html" class="bread__highlight">
+                Upgrade ScyllaDB
             </a>
         </span>
     
         <span class="bread__item">
-            <a href="index.html" class="bread__highlight">
-                Cluster Management Procedures
+            <a href="../index.html" class="bread__highlight">
+                Upgrade ScyllaDB
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Handling Cluster Membership Change Failures</span>
+    <span class="bread__item bread__item--last">Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2</span>
 </div>
                     </div>
                 
@@ -322,136 +321,14 @@
                             
                         
                         
-                        <section id="handling-cluster-membership-change-failures">
-<h1>Handling Cluster Membership Change Failures<a class="headerlink" href="#handling-cluster-membership-change-failures" title="Link to this heading">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This page only applies to clusters where consistent topology updates are not enabled.
-Consistent topology updates are mandatory, so <strong>this page serves troubleshooting purposes</strong>.</p>
-<p>The page does NOT apply if you:</p>
+                        <section id="upgrade-scylladb-2025-1-to-scylladb-2025-2">
+<h1>Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2<a class="headerlink" href="#upgrade-scylladb-2025-1-to-scylladb-2025-2" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <ul class="simple">
-<li><p>Created a cluster with ScyllaDB 6.0 or later (consistent topology updates are automatically enabled).</p></li>
-<li><p><a class="reference external" href="https://opensource.docs.scylladb.com/branch-6.0/upgrade/upgrade-opensource/upgrade-guide-from-5.4-to-6.0/enable-consistent-topology.html">Manually enabled consistent topology updates</a>
-after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
+<li><p><a class="reference internal" href="upgrade-guide-from-2025.1-to-2025.2.html"><span class="doc">Upgrade from ScyllaDB 2025.1.x to ScyllaDB 2025.2.y</span></a></p></li>
+<li><p><a class="reference internal" href="metric-update-2025.1-to-2025.2.html"><span class="doc">Metrics Update Between 2025.1 and 2025.2</span></a></p></li>
 </ul>
-</div>
-<p>A failure may happen in the middle of a cluster membership change (that is bootstrap, decommission, removenode, or replace), such as loss of power. If that happens, you should ensure that the cluster is brought back to a consistent state as soon as possible. Further membership changes might be impossible until you do so.</p>
-<p>For example, a node that crashed in the middle of decommission might leave the cluster in a state where it considers the node to still be a member, but the node itself will refuse to restart and communicate with the cluster. This particular case is very unlikely - it requires a specifically timed crash to happen, after the data streaming phase of decommission finishes but before the node commits that it left. But if it happens, you won’t be able to bootstrap other nodes (they will try to contact the partially-decommissioned node and fail) until you remove the remains of the node that crashed.</p>
-<section id="handling-a-failed-bootstrap">
-<h2>Handling a Failed Bootstrap<a class="headerlink" href="#handling-a-failed-bootstrap" title="Link to this heading">¶</a></h2>
-<p>If a failure happens when trying to bootstrap a new node to the cluster, you can try bootstrapping the node again by restarting it.</p>
-<p>If the failure persists or you decided that you don’t want to bootstrap the node anymore, follow the instructions in the <a class="reference internal" href="#cleaning-up-after-change"><span class="std std-ref">cleaning up after a failed membership change</span></a> section to remove the remains of the bootstrapping node. You can then clear the node’s data directories and attempt to bootstrap it again.</p>
-</section>
-<section id="handling-a-failed-decommission">
-<h2>Handling a Failed Decommission<a class="headerlink" href="#handling-a-failed-decommission" title="Link to this heading">¶</a></h2>
-<p>There are two cases.</p>
-<p>Most likely the failure happened during the data repair/streaming phase - before the node tried to leave the token ring. Look for a log message containing “leaving token ring” in the logs of the node that you tried to decommission. For example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">INFO  2023-03-14 13:08:38,323 [shard 0] storage_service - decommission[5b2e752e-964d-4f36-871f-254491f4e8cc]: leaving token ring</span>
-</pre></div>
-</div>
-<p>If the message is <strong>not</strong> present, the failure happened before the node tried to leave the token ring. In that case you can simply restart the node and attempt to decommission it again.</p>
-<p>If the message is present, the node attempted to leave the token ring, but it might have left the cluster only partially before the failure. <strong>Do not try to restart the node</strong>. Instead, you must make sure that the node is dead and remove any leftovers using the <a class="reference internal" href="../../nodetool-commands/removenode.html"><span class="doc">removenode operation</span></a>. See <a class="reference internal" href="#cleaning-up-after-change"><span class="std std-ref">cleaning up after a failed membership change</span></a>. Trying to restart the node after such failure results in unpredictable behavior - it may restart normally, it may refuse to restart, or it may even try to rebootstrap.</p>
-<p>If you don’t have access to the node’s logs anymore, assume the second case (the node might have attempted to leave the token ring), <strong>do not try to restart the node</strong>, instead follow the <a class="reference internal" href="#cleaning-up-after-change"><span class="std std-ref">cleaning up after a failed membership change</span></a> section.</p>
-</section>
-<section id="handling-a-failed-removenode">
-<h2>Handling a Failed Removenode<a class="headerlink" href="#handling-a-failed-removenode" title="Link to this heading">¶</a></h2>
-<p>Simply retry the removenode operation.</p>
-<p>If you somehow lost the host ID of the node that you tried to remove, follow the instructions in <a class="reference internal" href="#cleaning-up-after-change"><span class="std std-ref">cleaning up after a failed membership change</span></a>.</p>
-</section>
-<section id="handling-a-failed-replace">
-<h2>Handling a Failed Replace<a class="headerlink" href="#handling-a-failed-replace" title="Link to this heading">¶</a></h2>
-<p>Replace is a special case of bootstrap, but the bootstrapping node tries to take the place of another dead node. You can retry a failed replace operation by restarting the replacing node.</p>
-<p>If the failure persists or you decided that you don’t want to perform the replace anymore, follow the instructions in  <a class="reference internal" href="#cleaning-up-after-change"><span class="std std-ref">cleaning up after a failed membership change</span></a> section to remove the remains of the replacing node. You can then clear the node’s data directories and attempt to replace again. Alternatively, you can remove the dead node which you initially tried to replace using <a class="reference internal" href="../../nodetool-commands/removenode.html"><span class="doc">removenode</span></a>, and perform a regular bootstrap.</p>
-</section>
-<section id="cleaning-up-after-a-failed-membership-change">
-<span id="cleaning-up-after-change"></span><h2>Cleaning up after a Failed Membership Change<a class="headerlink" href="#cleaning-up-after-a-failed-membership-change" title="Link to this heading">¶</a></h2>
-<p>After a failed membership change, the cluster may contain remains of a node that tried to leave or join - other nodes may consider the node a member, possibly in a transitioning state. It is important to remove any such “ghost” members. Their presence may reduce the cluster’s availability, performance, or prevent further membership changes.</p>
-<p>You need to determine the host IDs of any potential ghost members, then remove them using the <a class="reference internal" href="../../nodetool-commands/removenode.html"><span class="doc">removenode operation</span></a>. Note that after a failed replace, there may be two different host IDs that you’ll want to find and run <code class="docutils literal notranslate"><span class="pre">removenode</span></code> on: the new replacing node and the old node that you tried to replace. (Or you can remove the new node only, then try to replace the old node again.)</p>
-<section id="step-one-determining-host-ids-of-ghost-members">
-<h3>Step One: Determining Host IDs of Ghost Members<a class="headerlink" href="#step-one-determining-host-ids-of-ghost-members" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p>After a failed bootstrap, you need to determine the host ID of the node that tried to bootstrap, if it managed to generate a host ID (it might not have chosen the host ID yet if it failed very early in the procedure, in which case there’s nothing to remove). Look for a message containing <code class="docutils literal notranslate"><span class="pre">system_keyspace</span> <span class="pre">-</span> <span class="pre">Setting</span> <span class="pre">local</span> <span class="pre">host</span> <span class="pre">id</span> <span class="pre">to</span></code> in the node’s logs, which will contain the node’s host ID. For example: <code class="docutils literal notranslate"><span class="pre">system_keyspace</span> <span class="pre">-</span> <span class="pre">Setting</span> <span class="pre">local</span> <span class="pre">host</span> <span class="pre">id</span> <span class="pre">to</span> <span class="pre">f180b78b-6094-434d-8432-7327f4d4b38d</span></code>. If you don’t have access to the node’s logs, read the generic method below.</p></li>
-<li><p>After a failed decommission, you need to determine the host ID of the node that tried to decommission. You can search the node’s logs as in the failed bootstrap case (see above), or you can use the generic method below.</p></li>
-<li><p>After a failed removenode, you need to determine the host ID of the node that you tried to remove. You should already have it, since executing a removenode requires the host ID in the first place. But if you lost it somehow, read the generic method below.</p></li>
-<li><p>After a failed replace, you need to determine the host ID of the replacing node. Search the node’s logs as in the failed bootstrap case (see above), or you can use the generic method below. You may also want to determine the host ID of the replaced node - either to attempt replacing it again after removing the remains of the previous replacing node, or to remove it using <a class="reference internal" href="../../nodetool-commands/removenode.html"><span class="doc">nodetool removenode</span></a>. You should already have the host ID of the replaced node if you used the <code class="docutils literal notranslate"><span class="pre">replace_node_first_boot</span></code> option to perform the replace.</p></li>
-</ul>
-<p>If you cannot determine the ghost members’ host ID using the suggestions above, use the method described below.</p>
-<ol class="arabic">
-<li><p>Make sure there are no ongoing membership changes.</p></li>
-<li><p>Execute the following CQL query on one of your nodes to retrieve the Raft group 0 ID:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">value</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">where</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span>
-</pre></div>
-</div>
-<p>For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="n">value</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">where</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span><span class="p">;</span>
-
- <span class="n">value</span>
-<span class="c1">--------------------------------------</span>
- <span class="m">607fef80-c276-11ed-a6f6-3075f294cc65</span>
-</pre></div>
-</div>
-</li>
-<li><p>Use the obtained Raft group 0 ID to query the set of all cluster members’ host IDs (which includes the ghost members), by executing the following query:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">server_id</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">raft_state</span> <span class="k">where</span> <span class="n">group_id</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">group0_id</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p>replace <code class="docutils literal notranslate"><span class="pre">&lt;group0_id&gt;</span></code> with the group 0 ID that you obtained. For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="n">server_id</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">raft_state</span> <span class="k">where</span> <span class="n">group_id</span> <span class="o">=</span> <span class="m">607fef80-c276-11ed-a6f6-3075f294cc65</span><span class="p">;</span>
-
- <span class="n">server_id</span>
-<span class="c1">--------------------------------------</span>
- <span class="m">26a9badc-6e96-4b86-a8df-5173e5ab47fe</span>
- <span class="m">7991e7f5-692e-45a0-8ae5-438be5bc7c4f</span>
- <span class="m">aff11c6d-fbe7-4395-b7ca-3912d7dba2c6</span>
-</pre></div>
-</div>
-</li>
-<li><p>Execute the following CQL query to obtain the host IDs of all token ring members:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">host_id</span><span class="p">,</span> <span class="n">up</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">cluster_status</span><span class="p">;</span>
-</pre></div>
-</div>
-<p>For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="n">peer</span><span class="p">,</span> <span class="n">host_id</span><span class="p">,</span> <span class="n">up</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">cluster_status</span><span class="p">;</span>
-
- <span class="n">peer</span>      <span class="o">|</span> <span class="n">host_id</span>                              <span class="o">|</span> <span class="n">up</span>
-<span class="c1">-----------+--------------------------------------+-------</span>
- <span class="mf">127.0.0.3</span> <span class="o">|</span>                                 <span class="k">null</span> <span class="o">|</span> <span class="n">False</span>
- <span class="mf">127.0.0.1</span> <span class="o">|</span> <span class="m">26a9badc-6e96-4b86-a8df-5173e5ab47fe</span> <span class="o">|</span>  <span class="n">True</span>
- <span class="mf">127.0.0.2</span> <span class="o">|</span> <span class="m">7991e7f5-692e-45a0-8ae5-438be5bc7c4f</span> <span class="o">|</span>  <span class="n">True</span>
-</pre></div>
-</div>
-<p>The output of this query is similar to the output of <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">status</span></code>.</p>
-<p>We included the <code class="docutils literal notranslate"><span class="pre">up</span></code> column to see which nodes are down and the <code class="docutils literal notranslate"><span class="pre">peer</span></code> column to see their IP addresses.</p>
-<p>In this example, one of the nodes tried to decommission and crashed as soon as it left the token ring but before it left the Raft group. Its entry will show up in <code class="docutils literal notranslate"><span class="pre">system.cluster_status</span></code> queries with <code class="docutils literal notranslate"><span class="pre">host_id</span> <span class="pre">=</span> <span class="pre">null</span></code>, like above, until the cluster is restarted.</p>
-</li>
-<li><p>A host ID belongs to a ghost member if:</p>
-<ul class="simple">
-<li><p>It appears in the <code class="docutils literal notranslate"><span class="pre">system.raft_state</span></code> query but not in the <code class="docutils literal notranslate"><span class="pre">system.cluster_status</span></code> query,</p></li>
-<li><p>Or it appears in the <code class="docutils literal notranslate"><span class="pre">system.cluster_status</span></code> query but does not correspond to any remaining node in your cluster.</p></li>
-</ul>
-<p>In our example, the ghost member’s host ID was <code class="docutils literal notranslate"><span class="pre">aff11c6d-fbe7-4395-b7ca-3912d7dba2c6</span></code> because it appeared in the <code class="docutils literal notranslate"><span class="pre">system.raft_state</span></code> query but not in the <code class="docutils literal notranslate"><span class="pre">system.cluster_status</span></code> query.</p>
-<p>If you’re unsure whether a given row in the <code class="docutils literal notranslate"><span class="pre">system.cluster_status</span></code> query corresponds to a node in your cluster, you can connect to each node in the cluster and execute <code class="docutils literal notranslate"><span class="pre">select</span> <span class="pre">host_id</span> <span class="pre">from</span> <span class="pre">system.local</span></code> (or search the node’s logs) to obtain that node’s host ID, collecting the host IDs of all nodes in your cluster. Then check if each host ID from the <code class="docutils literal notranslate"><span class="pre">system.cluster_status</span></code> query appears in your collected set; if not, it’s a ghost member.</p>
-<p>A good rule of thumb is to look at the members marked as down (<code class="docutils literal notranslate"><span class="pre">up</span> <span class="pre">=</span> <span class="pre">False</span></code> in <code class="docutils literal notranslate"><span class="pre">system.cluster_status</span></code>) - ghost members are eventually marked as down by the remaining members of the cluster. But remember that a real member might also be marked as down if it was shutdown or partitioned away from the rest of the cluster. If in doubt, connect to each node and collect their host IDs, as described in the previous paragraph.</p>
-</li>
-</ol>
-<p>In some cases, even after a failed topology change, there may be no ghost members left - for example, if a bootstrapping node crashed very early in the procedure or a decommissioning node crashed after it committed the membership change but before it finalized its own shutdown steps.</p>
-<p>If any ghost members are present, proceed to the next step.</p>
-</section>
-<section id="step-two-removing-the-ghost-members">
-<h3>Step Two: Removing the Ghost Members<a class="headerlink" href="#step-two-removing-the-ghost-members" title="Link to this heading">¶</a></h3>
-<p>Given the host IDs of ghost members, you can remove them using <code class="docutils literal notranslate"><span class="pre">removenode</span></code>; follow the <a class="reference internal" href="../../nodetool-commands/removenode.html"><span class="doc">documentation for removenode operation</span></a>.</p>
-<p>If you’re executing <code class="docutils literal notranslate"><span class="pre">removenode</span></code> too quickly after a failed membership change, an error similar to the following might pop up:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool: ScyllaDB API server HTTP POST to URL &#39;/storage_service/remove_node&#39; failed: seastar::rpc::remote_verb_error (node_ops_cmd_check: Node 127.0.0.2 rejected node_ops_cmd=removenode_abort from node=127.0.0.1 with ops_uuid=0ba0a5ab-efbd-4801-a31c-034b5f55487c, pending_node_ops={b47523f2-de6a-4c38-8490-39127dba6b6a}, pending node ops is in progress)</span>
-</pre></div>
-</div>
-<p>In that case simply wait for 2 minutes before trying <code class="docutils literal notranslate"><span class="pre">removenode</span></code> again.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">removenode</span></code> returns an error like:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool: ScyllaDB API server HTTP POST to URL &#39;/storage_service/remove_node&#39; failed: std::runtime_error (removenode[12e7e05b-d1ae-4978-b6a6-de0066aa80d8]: Host ID 42405b3b-487e-4759-8590-ddb9bdcebdc5 not found in the cluster)</span>
-</pre></div>
-</div>
-<p>and you’re sure that you’re providing the correct Host ID, it means that the member was already removed and you don’t have to clean up after it.</p>
-</section>
-</section>
 </section>
 
                     </div>
@@ -486,7 +363,7 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Handling Cluster Membership Change Failures&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/procedures/cluster-management/handling-membership-change-failures%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -521,21 +398,21 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
                             <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="safe-start.html">
+            <a class="navigation__link" href="../index.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Start Clusters Cleanly
+                    <span class="colored">PREVIOUS</span> <br />Upgrade ScyllaDB
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="repair-based-node-operation.html">
+            <a class="navigation__link" href="upgrade-guide-from-2025.1-to-2025.2.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Repair-Based Node Operations (RBNO)
+                    <span class="colored">NEXT</span> <br />Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -555,14 +432,14 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Handling Cluster Membership Change Failures&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/procedures/cluster-management/handling-membership-change-failures%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/operating-scylla/procedures/cluster-management/handling-membership-change-failures.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/index.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -570,25 +447,6 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
         
     </ul>
 
-    
-        <div class="secondary-side-nav__content">
-            <p class="topic-title">On this page</p>
-            <ul>
-<li><a class="reference internal" href="#">Handling Cluster Membership Change Failures</a><ul>
-<li><a class="reference internal" href="#handling-a-failed-bootstrap">Handling a Failed Bootstrap</a></li>
-<li><a class="reference internal" href="#handling-a-failed-decommission">Handling a Failed Decommission</a></li>
-<li><a class="reference internal" href="#handling-a-failed-removenode">Handling a Failed Removenode</a></li>
-<li><a class="reference internal" href="#handling-a-failed-replace">Handling a Failed Replace</a></li>
-<li><a class="reference internal" href="#cleaning-up-after-a-failed-membership-change">Cleaning up after a Failed Membership Change</a><ul>
-<li><a class="reference internal" href="#step-one-determining-host-ids-of-ghost-members">Step One: Determining Host IDs of Ghost Members</a></li>
-<li><a class="reference internal" href="#step-two-removing-the-ghost-members">Step Two: Removing the Ghost Members</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-        </div>
     
 </div>
                         </div>
@@ -615,7 +473,7 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -623,19 +481,19 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/index.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../branch-2025.2/index.html">2025.2</a>
+                        <a href="index.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="handling-membership-change-failures.html">2025.1</a>
+                        <a href="../../../../branch-2025.1/index.html">2025.1</a>
                     </li>
                 
             
@@ -670,7 +528,7 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../using-scylla/migrate-scylla.html">Migrate to ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../cassandra-to-scylla-migration-process.html">Migration Process from Cassandra to ScyllaDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migration Process from Cassandra to ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/cassandra-compatibility.html">ScyllaDB and Apache Cassandra Compatibility</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/mig-tool-review.html">Migration Tools Overview</a></li>
 </ul>
@@ -695,76 +553,76 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">ScyllaDB for Administrators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../admin.html">Administration Guide</a></li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">Procedures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l3 current current-page"><a class="reference internal" href="index.html">Cluster Management</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../backup-restore/index.html">Backup &amp; Restore</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../config-change/index.html">Change Configuration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../maintenance/index.html">Maintenance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tips/index.html">Best Practices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../operating-scylla/index.html">ScyllaDB for Administrators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/admin.html">Administration Guide</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/procedures/index.html">Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cluster-management/index.html">Cluster Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/backup-restore/index.html">Backup &amp; Restore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/config-change/index.html">Change Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/maintenance/index.html">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../security/security-checklist.html">ScyllaDB Security Checklist</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/authentication.html">Enable Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/create-superuser.html">Creating a Custom Superuser</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/security-checklist.html">ScyllaDB Security Checklist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/authentication.html">Enable Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/enable-authorization.html">Enable Authorization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/authorization.html">Grant Authorization CQL Reference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/certificate-authentication.html">Certificate-based Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/auditing.html">ScyllaDB Auditing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/encryption-at-rest.html">Encryption at Rest</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authentication.html">LDAP Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../nodetool.html">Nodetool Reference</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/nodetool.html">Nodetool Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cql/cqlsh.html">CQLSh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../rest.html">Admin REST API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/rest.html">Admin REST API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/tracing.html">Tracing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/scylla-types.html">ScyllaDB Types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/sstableloader.html">SSTableLoader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/cassandra-stress.html">cassandra-stress</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/sstabledump.html">SSTabledump</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/sstablemetadata.html">SSTableMetadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/scylla-types.html">ScyllaDB Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstableloader.html">SSTableLoader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/cassandra-stress.html">cassandra-stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstabledump.html">SSTabledump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstablemetadata.html">SSTableMetadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/logging.html">ScyllaDB Logs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/perftune.html">Seastar Perftune</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/virtual-tables.html">Virtual Tables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/select-from-mutation-fragments.html">Reading mutation fragments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-socket.html">Maintenance socket</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-mode.html">Maintenance mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/perftune.html">Seastar Perftune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/virtual-tables.html">Virtual Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/select-from-mutation-fragments.html">Reading mutation fragments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../upgrade/about-upgrade.html">About Upgrade</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">Upgrade Procedures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3 current current-page"><a class="reference internal" href="../index.html">Upgrade Guides</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/system-configuration.html">System Configuration Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../admin.html">scylla.yaml</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin.html">scylla.yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../diagnostics.html">ScyllaDB Diagnostic Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/diagnostics.html">ScyllaDB Diagnostic Tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../using-scylla/index.html">ScyllaDB for Developers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -845,7 +703,7 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../architecture/anti-entropy/index.html">ScyllaDB Anti-Entropy</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label for="toctree-checkbox-20"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../architecture/anti-entropy/hinted-handoff.html">ScyllaDB Hinted Handoff</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../architecture/anti-entropy/read-repair.html">ScyllaDB Read Repair</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../maintenance/repair.html">ScyllaDB Repair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/maintenance/repair.html">ScyllaDB Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../architecture/sstable/index.html">SSTable</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

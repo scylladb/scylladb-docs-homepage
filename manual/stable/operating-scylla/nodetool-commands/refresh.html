@@ -338,7 +338,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span> <span class="pre">nba</span> <span class="pre">player_stats</span></code></p>
 <section id="load-and-stream">
 <span id="nodetool-refresh-load-and-stream"></span><h2>Load and Stream<a class="headerlink" href="#load-and-stream" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">scope</span> <span class="o">&lt;</span><span class="n">scope</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>The Load and Stream feature extends nodetool refresh. The new <code class="docutils literal notranslate"><span class="pre">-las</span></code> option loads arbitrary sstables that do not belong to a node into the cluster. It loads the sstables from the disk and calculates the data’s owning nodes, and streams automatically.
@@ -348,6 +348,36 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
 <li><p>You can place sstable from every node to every node</p></li>
 <li><p>No need to run nodetool cleanup to remove unused data</p></li>
 </ul>
+</section>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading">¶</a></h2>
+<p>The <cite>scope</cite> parameter describes the subset of cluster nodes where you want to load data:</p>
+<ul class="simple">
+<li><p><cite>node</cite> - On the local node.</p></li>
+<li><p><cite>rack</cite> - On the local rack.</p></li>
+<li><p><cite>dc</cite> - In the datacenter (DC) where the local node lives.</p></li>
+<li><p><cite>all</cite> (default) - Everywhere across the cluster.</p></li>
+</ul>
+<p>Scope supports a variety of options for filtering out the destination nodes.
+On one extreme, one node is given all SStables with the scope <code class="docutils literal notranslate"><span class="pre">all</span></code>; on the other extreme, all
+nodes are loading only their own SStables with the scope <code class="docutils literal notranslate"><span class="pre">node</span></code>. In between, you can choose
+a subset of nodes to load only SStables that belong to the rack or DC.</p>
+<p>This option is only valid when using the <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option.</p>
+</section>
+<section id="skip-cleanup">
+<h2>Skip cleanup<a class="headerlink" href="#skip-cleanup" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">cleanup</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>When loading an SSTable, Scylla will cleanup it from keys that the node is not responsible for. To skip this step, use the <cite>–skip-cleanup</cite> option.
+See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span class="std std-ref">nodetool cleanup</span></a>.</p>
+</section>
+<section id="skip-reshape">
+<h2>Skip reshape<a class="headerlink" href="#skip-reshape" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">reshape</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>When refreshing, the SSTables to load might be out of shape, Scylla will attempt to reshape them if that’s the case. To skip this step, use the <cite>–skip-reshape</cite> option.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
 </section>
 </section>
@@ -384,7 +414,7 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -453,7 +483,7 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -474,6 +504,9 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
             <ul>
 <li><a class="reference internal" href="#">Nodetool refresh</a><ul>
 <li><a class="reference internal" href="#load-and-stream">Load and Stream</a></li>
+<li><a class="reference internal" href="#scope">Scope</a></li>
+<li><a class="reference internal" href="#skip-cleanup">Skip cleanup</a></li>
+<li><a class="reference internal" href="#skip-reshape">Skip reshape</a></li>
 </ul>
 </li>
 </ul>
@@ -505,7 +538,7 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.1
+                2025.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -519,13 +552,13 @@ For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. We
             
                 
                     <li>
-                        <a href="../../../branch-2025.2/operating-scylla/nodetool-commands/refresh.html">2025.2</a>
+                        <a href="refresh.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="refresh.html">2025.1</a>
+                        <a href="../../../branch-2025.1/operating-scylla/nodetool-commands/refresh.html">2025.1</a>
                     </li>
                 
             
