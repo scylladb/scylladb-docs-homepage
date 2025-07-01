@@ -541,7 +541,19 @@ is different, or can be configured in Alternator:</p>
 <ul class="simple">
 <li><p>DynamoDB limits each BatchWriteItem request to 25 items. In Alternator,
 this limit defaults to 100 but can be changed with
-the alternator_max_items_in_batch_write configuration parameter.</p></li>
+the <code class="docutils literal notranslate"><span class="pre">alternator_max_items_in_batch_write</span></code> configuration parameter.</p></li>
+<li><p>DynamoDB limits the name of tables, GSIs and LSIs, to 255 characters each.
+In Alternator, the limit is different:</p>
+<ul>
+<li><p>A table’s name is limited to 222 characters.</p></li>
+<li><p>For a GSI, the sum of the length of the table name and the GSI name,
+plus one, is limited to 222 characters.</p></li>
+<li><p>For an LSI, the sum of the length of the table name and the LSI name,
+plus two, is limited to 222 characters.
+This means that if you create a table whose name’s length is close to 222
+characters, you may not be able to create a GSI or LSI on it.</p></li>
+</ul>
+</li>
 </ul>
 </section>
 <section id="experimental-api-features">
@@ -1012,7 +1024,7 @@ This table option was added as a preview to DynamoDB in December 2024.
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../cql/index.html">CQL Reference</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cqlsh.html">CQLSh: the CQL shell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/appendices.html">Appendices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/appendices.html">Reserved CQL Keywords and Types (Appendices)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/compaction.html">Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/consistency.html">Consistency Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/consistency-calculator.html">Consistency Level Calculator</a></li>
@@ -1033,8 +1045,6 @@ This table option was added as a preview to DynamoDB in December 2024.
 <li class="toctree-l2"><a class="reference internal" href="../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
@@ -1281,7 +1291,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Jun 2025.
+                        Last updated on 01 Jul 2025.
                     
                 </div>
             
