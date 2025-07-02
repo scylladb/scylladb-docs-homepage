@@ -808,7 +808,8 @@ once created, a UDT is simply referred to by its name:</p>
 </pre></div>
 </div>
 <p>A UDT has a name (<code class="docutils literal notranslate"><span class="pre">udt_name</span></code>), which is used to declare columns of that type and is a set of named and typed fields. The <code class="docutils literal notranslate"><span class="pre">udt_name</span></code> can be any
-type, including collections or other UDTs. UDTs and collections inside collections must always be frozen (no matter which version of ScyllaDB you are using).</p>
+type, including collections or other UDTs.
+Similar to collections, a UDT can be frozen or non-frozen. A frozen UDT is immutable and can only be updated as a whole. Nested UDTs or UDTs used in keys must always be frozen.</p>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">full_name</span> <span class="p">(</span>
   <span class="n">first</span> <span class="nb">text</span><span class="p">,</span>
@@ -831,7 +832,7 @@ type, including collections or other UDTs. UDTs and collections inside collectio
 
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">superheroes</span> <span class="p">(</span>
      <span class="n">name</span> <span class="k">frozen</span><span class="o">&lt;</span><span class="n">full_name</span><span class="o">&gt;</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-     <span class="n">home</span> <span class="k">frozen</span><span class="o">&lt;</span><span class="n">address</span><span class="o">&gt;</span>
+     <span class="n">home</span> <span class="n">address</span>
 <span class="p">);</span>
 </pre></div>
 </div>
@@ -840,18 +841,7 @@ type, including collections or other UDTs. UDTs and collections inside collectio
 <ul class="simple">
 <li><p>Attempting to create an already existing type will result in an error unless the <code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">NOT</span> <span class="pre">EXISTS</span></code> option is used. If it is used, the statement will be a no-op if the type already exists.</p></li>
 <li><p>A type is intrinsically bound to the keyspace in which it is created and can only be used in that keyspace. At creation, if the type name is prefixed by a keyspace name, it is created in that keyspace. Otherwise, it is created in the current keyspace.</p></li>
-<li><p>As of ScyllaDB Open Source 3.2, UDTs not inside collections do not have to be frozen, but in all versions prior to ScyllaDB Open Source 3.2, and in all ScyllaDB Enterprise versions, UDTs <strong>must</strong> be frozen.</p></li>
 </ul>
-</div>
-<p>A non-frozen UDT example with ScyllaDB Open Source 3.2 and higher:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">ut</span> <span class="p">(</span><span class="n">a</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span> <span class="nb">int</span><span class="p">);</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">cf</span> <span class="p">(</span><span class="n">a</span> <span class="nb">int</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span> <span class="n">b</span> <span class="n">ut</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>Same UDT in versions prior:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">ut</span> <span class="p">(</span><span class="n">a</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span> <span class="nb">int</span><span class="p">);</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">cf</span> <span class="p">(</span><span class="n">a</span> <span class="nb">int</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span> <span class="n">b</span> <span class="k">frozen</span><span class="o">&lt;</span><span class="n">ut</span><span class="o">&gt;</span><span class="p">);</span>
-</pre></div>
 </div>
 </section>
 <section id="udt-literals">
@@ -1280,6 +1270,7 @@ frozen UDT in a vector, you need to explicitly wrap them using <cite>frozen</cit
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1601,7 +1592,7 @@ frozen UDT in a vector, you need to explicitly wrap them using <cite>frozen</cit
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Jul 2025.
+                        Last updated on 02 Jul 2025.
                     
                 </div>
             
