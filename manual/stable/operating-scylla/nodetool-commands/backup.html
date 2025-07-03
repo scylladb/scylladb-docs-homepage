@@ -335,12 +335,13 @@ If <code class="docutils literal notranslate"><span class="pre">--nowait</span><
 <span class="go">            [--snapshot &lt;snapshot&gt;]</span>
 <span class="go">            --endpoint &lt;endpoint&gt; --bucket &lt;bucket&gt; --prefix &lt;prefix&gt;</span>
 <span class="go">            [--nowait]</span>
+<span class="go">            [--move-files]</span>
 </pre></div>
 </div>
 </section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool backup --endpoint s3.us-east-2.amazonaws.com  --bucket bucket-foo --prefix foo/bar/baz --keyspace ks --table table --snapshot ss</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool backup --endpoint s3.us-east-2.amazonaws.com  --bucket bucket-foo --prefix foo/bar/baz --keyspace ks --table table --snapshot ss --move-files</span>
 </pre></div>
 </div>
 </section>
@@ -356,6 +357,7 @@ This should be configured as per <a class="reference internal" href="../admin.ht
 <li><p><code class="docutils literal notranslate"><span class="pre">--bucket</span></code> - Name of the bucket to backup SSTables to</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--prefix</span></code> - Prefix to backup SSTables to</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--nowait</span></code> - Don’t wait on the backup process</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--move-files</span></code> - Move files instead of copying them. This will delete the files from the local disk after they are uploaded to the object storage.</p></li>
 </ul>
 <p>See also</p>
 <p><a class="reference internal" href="restore.html"><span class="doc">Nodetool restore</span></a></p>
@@ -936,7 +938,7 @@ This should be configured as per <a class="reference internal" href="../admin.ht
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Jul 2025.
+                        Last updated on 03 Jul 2025.
                     
                 </div>
             
