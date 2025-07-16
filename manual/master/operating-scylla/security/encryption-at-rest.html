@@ -605,6 +605,7 @@ sudo -u scylla /usr/bin/scylla local-file-key-generator generate -a AES -b CBC -
 <span class="w">       </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;aws region&gt; (optional if `endpoint` is specified)</span>
 <span class="w">       </span><span class="nt">aws_access_key_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;aws access key id&gt; (optional)</span>
 <span class="w">       </span><span class="nt">aws_secret_access_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;aws secret access key&gt; (optional)</span>
+<span class="w">       </span><span class="nt">aws_session_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;aws session token&gt; (optional)</span>
 <span class="w">       </span><span class="nt">aws_profile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;aws credentials profile to use&gt; (optional)</span>
 <span class="w">       </span><span class="nt">aws_use_ec2_credentials: (bool </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default false)</span>
 <span class="w">       </span><span class="nt">aws_use_ec2_region: (bool </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default false)</span>
@@ -626,6 +627,7 @@ sudo -u scylla /usr/bin/scylla local-file-key-generator generate -a AES -b CBC -
 <li><p><code class="docutils literal notranslate"><span class="pre">aws_region</span></code> - An AWS region. If not provided, <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> is used for connection.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aws_access_key_id</span></code> - AWS access key used for authentication. If not specified, the provider reads it from your AWS credentials.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aws_secret_access_key</span></code> - AWS secret access key used for authentication. If not specified, the provider reads it from your AWS credentials.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code> - AWS session token. Used for authentication with temporary security credentials, along with access key id and secret access key.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aws_profile</span></code> - AWS profile to use if reading credentials from file</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aws_use_ec2_credentials</span></code> - If true, KMS queries will use the credentials provided by ec2 instance role metadata as initial access key.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aws_use_ec2_region</span></code> - If true, KMS queries will use the AWS region indicated by ec2 instance metadata.</p></li>
@@ -1711,7 +1713,7 @@ Once this encryption is enabled, it is used for all system data.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Jul 2025.
+                        Last updated on 16 Jul 2025.
                     
                 </div>
             
