@@ -352,6 +352,7 @@ You can configure the TTL duration using the <a class="reference internal" href=
 <span class="go">            --table &lt;table&gt;</span>
 <span class="go">            [--nowait]</span>
 <span class="go">            [--scope &lt;scope&gt;]</span>
+<span class="go">            [--sstables-file-list &lt;file&gt;]</span>
 <span class="go">            &lt;sstables&gt;...</span>
 </pre></div>
 </div>
@@ -377,6 +378,7 @@ This should be configured as per <a class="reference internal" href="../admin.ht
 <li><p><code class="docutils literal notranslate"><span class="pre">--table</span></code> - Name of the table to load SSTables into</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--nowait</span></code> - Don’t wait on the restore process</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--scope</span> <span class="pre">&lt;scope&gt;</span></code> - Use specified load-and-stream scope</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--sstables-file-list</span> <span class="pre">&lt;file&gt;</span></code> - restore the sstables listed in the given &lt;file&gt;. the list should be new-line seperated.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;sstables&gt;</span></code> - Remainder of keys of the TOC (Table of Contents) components of SSTables to restore, relative to the specified prefix</p></li>
 </ul>
 <p>The <cite>scope</cite> parameter describes the subset of cluster nodes where you want to load data:</p>
@@ -386,6 +388,7 @@ This should be configured as per <a class="reference internal" href="../admin.ht
 <li><p><cite>dc</cite> - In the datacenter (DC) where the local node lives.</p></li>
 <li><p><cite>all</cite> (default) - Everywhere across the cluster.</p></li>
 </ul>
+<p><cite>–sstables-file-list &lt;file&gt;</cite> and <cite>&lt;sstable&gt;</cite> can be combined together, <cite>nodetool restore</cite> will attempt to restore the combined list. duplicates are _not_ removed</p>
 <p>To fully restore a cluster, you should combine the <code class="docutils literal notranslate"><span class="pre">scope</span></code> parameter with the correct list of
 SStables to restore to each node.
 On one extreme, one node is given all SStables with the scope <code class="docutils literal notranslate"><span class="pre">all</span></code>; on the other extreme, all
@@ -992,7 +995,7 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Jul 2025.
+                        Last updated on 23 Jul 2025.
                     
                 </div>
             
