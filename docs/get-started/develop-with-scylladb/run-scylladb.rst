@@ -130,7 +130,7 @@ Self-deploy in the Cloud or On-premise
 ---------------------------------------------
 
 You can install ScyllaDB on your Linux machine using a platform-agnostic installation
-script we refer to as `ScyllaDB Web Installer for Linux <https://opensource.docs.scylladb.com/master/getting-started/installation-common/scylla-web-installer.html>`_.
+script we refer to as `ScyllaDB Web Installer for Linux <https://docs.scylladb.com/manual/stable/getting-started/installation-common/scylla-web-installer.html>`_.
 
 Run the following command to install ScyllaDB:
 

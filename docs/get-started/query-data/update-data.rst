@@ -33,7 +33,7 @@ the statement specifies the affected partition key, which is mandatory.
   Unlike in SQL, ``UPDATE`` does not check the prior existence of the row by default:
   the row is created if none existed before, and updated otherwise.
   This behavior can be changed by using ScyllaDB's
-  `Lightweight Transaction <https://opensource.docs.scylladb.com/stable/using-scylla/lwt.html>`_
+  `Lightweight Transaction <https://docs.scylladb.com/manual/stable/features/lwt.html>`_
   ``IF NOT EXISTS`` or ``IF EXISTS`` clauses.
 
 In summary, the ``UPDATE`` statement in ScyllaDB is used to modify existing 
@@ -42,5 +42,5 @@ to target the specific rows you want to update, and specify the changes you
 want to make using the SET clause. This helps you ensure the accuracy and 
 precision of your updates.
 
-See the details about the `UPDATE statement <https://opensource.docs.scylladb.com/stable/cql/dml/update.html>`_ 
+See the details about the `UPDATE statement <https://docs.scylladb.com/manual/stable/cql/dml/update.html>`_ 
 in the ScyllaDB documentation.

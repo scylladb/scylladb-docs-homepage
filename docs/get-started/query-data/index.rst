@@ -18,4 +18,4 @@ To perform these basic operations, you will use CQL.
 
 .. note::
 
-  If you are looking to query data with a DynamoDB compatible API, we recommend using `ScyllaDB Alternator <https://opensource.docs.scylladb.com/stable/alternator/getting-started.html>`_.
+  If you are looking to query data with a DynamoDB compatible API, we recommend using `ScyllaDB Alternator <https://docs.scylladb.com/manual/stable/alternator/getting-started.html>`_.

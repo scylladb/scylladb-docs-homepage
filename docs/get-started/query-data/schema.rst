@@ -128,5 +128,5 @@ table, ``order_id`` determines the partition.
 Learn More
 --------------
 
-* See `Data Definition <https://opensource.docs.scylladb.com/stable/cql/ddl>`_ 
+* See `Data Definition <https://docs.scylladb.com/manual/stable/cql/ddl.html>`_ 
   in the ScyllaDB documentation to learn more about defining a schema in ScyllaDB.

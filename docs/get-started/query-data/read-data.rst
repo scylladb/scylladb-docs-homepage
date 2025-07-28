@@ -39,5 +39,5 @@ a table within a keyspace. You can specify which columns to retrieve and apply
 filtering restrictions using the ``WHERE`` clause to fetch specific rows that 
 match your criteria.
 
-See the details about the `SELECT statement <https://opensource.docs.scylladb.com/stable/cql/dml/select.html>`_ 
+See the details about the `SELECT statement <https://docs.scylladb.com/manual/stable/cql/dml/select.html>`_ 
 in the ScyllaDB documentation.
