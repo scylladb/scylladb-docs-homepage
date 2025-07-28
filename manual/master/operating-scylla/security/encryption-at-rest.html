@@ -384,6 +384,8 @@ When ScyllaDB reads an encrypted system table, it fetches the system table encry
 <li><p>Replicated Key Provider - encrypted_keys table</p></li>
 <li><p>KMIP Key Provider - KMIP server</p></li>
 <li><p>KMS Key Provider - AWS</p></li>
+<li><p>GCP Key Provider - GCP</p></li>
+<li><p>Azure Key Provider - Azure</p></li>
 <li><p>Local Key Provider - in a local file with multiple keys. You can provide your own key or ScyllaDB can make one for you.</p></li>
 </ul>
 <div class="admonition note" id="ear-key-providers">
@@ -428,6 +430,10 @@ encryption key available in case you need to restore from backup.</p>
 <tr class="row-even"><td><p>GCP Key Provider</p></td>
 <td><p>GcpKeyProviderFactory</p></td>
 <td><p>Used key(s) provided by the GCP KMS service.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Azure Key Provider</p></td>
+<td><p>AzureKeyProviderFactory</p></td>
+<td><p>Used key(s) provided by the Azure Key Vault service.</p></td>
 </tr>
 </tbody>
 </table>
@@ -726,6 +732,109 @@ sudo -u scylla /usr/bin/scylla local-file-key-generator generate -a AES -b CBC -
 <p>(without restarting <em>some-scylla</em> container)</p>
 </div></div>
 </section>
+<section id="set-the-azure-host">
+<span id="encryption-at-rest-set-azure"></span><h2>Set the Azure Host<a class="headerlink" href="#set-the-azure-host" title="Link to this heading">¶</a></h2>
+<p>If you are using Azure Key Vault to encrypt tables or system information, you need to add the Azure information to the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file.</p>
+<section id="what-you-ll-need">
+<h3>What You’ll Need<a class="headerlink" href="#what-you-ll-need" title="Link to this heading">¶</a></h3>
+<p>Before configuring Azure Key Vault integration, ensure you have:</p>
+<ul class="simple">
+<li><p>A Vault key.</p></li>
+<li><p>An Azure identity to authenticate ScyllaDB against the Vault key. Choose one of:</p>
+<ul>
+<li><p><strong>Managed Identity</strong> (recommended for production) - No credentials are needed. ScyllaDB will automatically detect and use the default managed identity of the Azure VM.</p></li>
+<li><p><strong>Service Principal</strong> - Requires providing a tenant ID, client ID, and a secret or certificate.</p></li>
+</ul>
+</li>
+<li><p>Sufficient permissions to perform the <code class="docutils literal notranslate"><span class="pre">wrapkey</span></code> and <code class="docutils literal notranslate"><span class="pre">unwrapkey</span></code> operations on the key.
+If you are using RBAC, you can assign the “Key Vault Crypto User” role to your identity.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ScyllaDB can also authenticate indirectly through a preconfigured Azure CLI, but this is offered only for testing purposes.</p>
+</div>
+</section>
+<section id="procedure">
+<h3>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Edit the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file located in <code class="docutils literal notranslate"><span class="pre">/etc/scylla/</span></code> to add a new host in the Azure host(s) section:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">azure_hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">&lt;name&gt;</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">azure_tenant_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;tenant ID&gt; (optional)</span>
+<span class="w">      </span><span class="nt">azure_client_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ID of your service principal&gt; (optional)</span>
+<span class="w">      </span><span class="nt">azure_client_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;secret of the service principal&gt; (optional)</span>
+<span class="w">      </span><span class="nt">azure_client_certificate_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;path to PEM-encoded certificate and private key of the service principal&gt; (optional)</span>
+<span class="w">      </span><span class="nt">master_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;vaultname&gt;/&lt;keyname&gt; - named Vault key for encrypting data keys (optional)</span>
+<span class="w">      </span><span class="nt">truststore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;PEM file with CA certificates for TLS&gt; (optional)</span>
+<span class="w">      </span><span class="nt">priority_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;TLS priority string&gt; (optional)</span>
+<span class="w">      </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt; (optional)</span>
+<span class="w">      </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt; (optional)</span>
+<span class="c1">#   &lt;name&gt;:</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;name&gt;</span></code> - The name to identify the Azure host. You have to provide this name to encrypt a <a class="reference internal" href="#ear-create-table"><span class="std std-ref">new</span></a> or <a class="reference internal" href="#ear-alter-table"><span class="std std-ref">existing</span></a> table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">azure_tenant_id</span></code> - The ID of the Azure tenant. Required only for authentication with a service principal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">azure_client_id</span></code> - The client ID of your service principal. Required only for authentication with a service principal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">azure_client_secret</span></code> - The secret of your service principal. Required only for authentication with a service principal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">azure_client_certificate_path</span></code> - The path to the PEM-encoded certificate and private key file of your service principal. Can be used instead of a secret.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">master_key</span></code> - The &lt;vaultname&gt;/&lt;keyname&gt; of your key. This parameter can be omitted if you specify it through the <a class="reference internal" href="#ear-create-table-master-key-override"><span class="std std-ref">encryption options</span></a> of the table schema.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">truststore</span></code> - Path to a PEM file with CA certificates to validate the server’s TLS certificate.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority_string</span></code> - The TLS priority string for TLS handshakes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from Azure Key Vault. Default is 600s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which the cache is checked for expired entries. Default is 1200s.</p></li>
+</ul>
+<p>Example:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-TWFuYWdlZCBJZGVudGl0eSAoUmVjb21tZW5kZWQgZm9yIFByb2R1Y3Rpb24p" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-TWFuYWdlZCBJZGVudGl0eSAoUmVjb21tZW5kZWQgZm9yIFByb2R1Y3Rpb24p" name="TWFuYWdlZCBJZGVudGl0eSAoUmVjb21tZW5kZWQgZm9yIFByb2R1Y3Rpb24p" role="tab" tabindex="0">Managed Identity (Recommended for Production)</button><button aria-controls="panel-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBTZWNyZXQ=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBTZWNyZXQ=" name="U2VydmljZSBQcmluY2lwYWwgd2l0aCBTZWNyZXQ=" role="tab" tabindex="-1">Service Principal with Secret</button><button aria-controls="panel-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBDZXJ0aWZpY2F0ZQ==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBDZXJ0aWZpY2F0ZQ==" name="U2VydmljZSBQcmluY2lwYWwgd2l0aCBDZXJ0aWZpY2F0ZQ==" role="tab" tabindex="-1">Service Principal with Certificate</button></div><div aria-labelledby="tab-3-TWFuYWdlZCBJZGVudGl0eSAoUmVjb21tZW5kZWQgZm9yIFByb2R1Y3Rpb24p" class="sphinx-tabs-panel group-tab" id="panel-3-TWFuYWdlZCBJZGVudGl0eSAoUmVjb21tZW5kZWQgZm9yIFByb2R1Y3Rpb24p" name="TWFuYWdlZCBJZGVudGl0eSAoUmVjb21tZW5kZWQgZm9yIFByb2R1Y3Rpb24p" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">azure_hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my-azure1</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">master_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mykeyvault/mykey</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBTZWNyZXQ=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBTZWNyZXQ=" name="U2VydmljZSBQcmluY2lwYWwgd2l0aCBTZWNyZXQ=" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">azure_hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my-azure1</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">azure_tenant_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00000000-1111-2222-3333-444444444444</span>
+<span class="w">      </span><span class="nt">azure_client_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">55555555-6666-7777-8888-999999999999</span>
+<span class="w">      </span><span class="nt">azure_client_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysecret</span>
+<span class="w">      </span><span class="nt">master_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mykeyvault/mykey</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Alternatively, ScyllaDB can obtain these credentials from the following environment variables:
+<code class="docutils literal notranslate"><span class="pre">AZURE_TENANT_ID</span></code>, <code class="docutils literal notranslate"><span class="pre">AZURE_CLIENT_ID</span></code>, and <code class="docutils literal notranslate"><span class="pre">AZURE_CLIENT_SECRET</span></code>.</p>
+</div>
+</div><div aria-labelledby="tab-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBDZXJ0aWZpY2F0ZQ==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-U2VydmljZSBQcmluY2lwYWwgd2l0aCBDZXJ0aWZpY2F0ZQ==" name="U2VydmljZSBQcmluY2lwYWwgd2l0aCBDZXJ0aWZpY2F0ZQ==" role="tabpanel" tabindex="0"><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">azure_hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my-azure1</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">azure_tenant_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00000000-1111-2222-3333-444444444444</span>
+<span class="w">      </span><span class="nt">azure_client_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">55555555-6666-7777-8888-999999999999</span>
+<span class="w">      </span><span class="nt">azure_client_certificate_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/certificate.pem</span>
+<span class="w">      </span><span class="nt">master_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mykeyvault/mykey</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Alternatively, ScyllaDB can obtain these credentials from the following environment variables:
+<code class="docutils literal notranslate"><span class="pre">AZURE_TENANT_ID</span></code>, <code class="docutils literal notranslate"><span class="pre">AZURE_CLIENT_ID</span></code>, and <code class="docutils literal notranslate"><span class="pre">AZURE_CLIENT_CERTIFICATE_PATH</span></code>.</p>
+</div>
+</div></div>
+</li>
+<li><p>Save the file.</p></li>
+<li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a></p></li>
+<li><p>Restart the scylla-server service.</p></li>
+</ol>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-4-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-4-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-4-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-4-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-4-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-4-RG9ja2Vy" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-4-RG9ja2Vy" name="RG9ja2Vy" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>some-scylla<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>scylla
+</pre></div>
+</div>
+<p>(without restarting <em>some-scylla</em> container)</p>
+</div></div>
+</section>
+</section>
 <section id="encrypt-tables">
 <h2>Encrypt Tables<a class="headerlink" href="#encrypt-tables" title="Link to this heading">¶</a></h2>
 <p>ScyllaDB allows you to enable or disable default encryption of tables.
@@ -740,6 +849,7 @@ for details.</p>
 <li><p>If you are using AWS KMS, <a class="reference internal" href="#encryption-at-rest-set-kms"><span class="std std-ref">set the KMS Host</span></a>.</p></li>
 <li><p>If you are using KMIP, <a class="reference internal" href="#encryption-at-rest-set-kmip"><span class="std std-ref">set the KMIP Host</span></a>.</p></li>
 <li><p>If you are using Google GCP KMS, <a class="reference internal" href="#encryption-at-rest-set-gcp"><span class="std std-ref">set the GCP Host</span></a>.</p></li>
+<li><p>If you are using Azure Key Vault, <a class="reference internal" href="#encryption-at-rest-set-azure"><span class="std std-ref">set the Azure Host</span></a>.</p></li>
 <li><p>If you want to create your own key, follow the procedure in <a class="reference internal" href="#ear-create-encryption-key"><span class="std std-ref">Create Encryption Keys</span></a>.</p></li>
 <li><p>If you do not create your own key, use the following procedure for ScyllaDB
 to create a key for you (the default location <code class="docutils literal notranslate"><span class="pre">/etc/scylla/data_encryption_keys</span></code> may cause
@@ -765,6 +875,7 @@ the <code class="docutils literal notranslate"><span class="pre">user_info_encry
 <span class="w"> </span><span class="nt">kmip_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;your kmip_host&gt;</span>
 <span class="w"> </span><span class="nt">kms_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;your kms_host&gt;</span>
 <span class="w"> </span><span class="nt">gcp_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;your gcp_host&gt;</span>
+<span class="w"> </span><span class="nt">azure_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;your azure_host&gt;</span>
 </pre></div>
 </div>
 <p>Where:</p>
@@ -785,6 +896,8 @@ Required if you use KMIP.</p></li>
 Required if you use KMS.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gcp_host</span></code> - The name of your <a class="reference internal" href="#encryption-at-rest-set-gcp"><span class="std std-ref">gcp_host</span></a> group.
 Required if you use GCP.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">azure_host</span></code> - The name of your <a class="reference internal" href="#encryption-at-rest-set-azure"><span class="std std-ref">azure_host</span></a> group.
+Required if you use Azure.</p></li>
 </ul>
 <p><strong>Example</strong></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">user_info_encryption</span><span class="p">:</span>
@@ -886,7 +999,10 @@ sudo chmod -R 700 /etc/scylla/encryption_keys
 <span class="p">;</span>
 </pre></div>
 </div>
-<p>You can specify a different master key than the one configured for <code class="docutils literal notranslate"><span class="pre">kms_host</span></code> in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file:</p>
+</li>
+</ol>
+<blockquote id="ear-create-table-master-key-override">
+<div><p>You can specify a different master key than the one configured for <code class="docutils literal notranslate"><span class="pre">kms_host</span></code> in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">myks</span><span class="mf">.</span><span class="n">mytable</span> <span class="p">(</span><span class="mf">...</span><span class="o">&lt;</span><span class="n">columns</span><span class="o">&gt;</span><span class="mf">...</span><span class="p">)</span> <span class="k">WITH</span>
   <span class="n">scylla_encryption_options</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;key_provider&#39;</span><span class="p">:</span> <span class="s1">&#39;KmsKeyProviderFactory&#39;</span><span class="p">,</span>
@@ -896,7 +1012,8 @@ sudo chmod -R 700 /etc/scylla/encryption_keys
 <span class="p">;</span>
 </pre></div>
 </div>
-</li>
+</div></blockquote>
+<ol class="arabic">
 <li><p>From this point, every new SSTable created for the <code class="docutils literal notranslate"><span class="pre">atrest</span></code> table is encrypted, using the <code class="docutils literal notranslate"><span class="pre">data_encryption_keys</span></code> key located in <code class="docutils literal notranslate"><span class="pre">/etc/scylla/encryption_keys/</span></code>. This table will remain encrypted with this key until you either change the key, change the key properties, or disable encryption.</p></li>
 <li><p>To ensure all SSTables for this table on every node are encrypted, run the <a class="reference internal" href="../nodetool-commands/upgradesstables.html"><span class="doc">Nodetool upgradesstables</span></a> command. If not, the SSTables remain unencrypted until they are compacted or flushed from MemTables.</p>
 <p>For Example:</p>
@@ -1052,6 +1169,16 @@ Once this encryption is enabled, it is used for all system data.</p>
 </pre></div>
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">gcp_host</span></code> is the unique name of the GCP host specified in the scylla.yaml file.</p>
+<p>Example for Azure:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>system_info_encryption:
+   enabled: True
+   cipher_algorithm: AES/CBC/PKCS5Padding
+   secret_key_strength: 128
+   key_provider: AzureKeyProviderFactory
+   azure_host: myScylla
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">azure_host</span></code> is the unique name of the Azure host specified in the scylla.yaml file.</p>
 </li>
 <li><p>Do not close the yaml file. Change the system key directory location according to your settings.</p>
 <ul class="simple">
@@ -1065,10 +1192,10 @@ Once this encryption is enabled, it is used for all system data.</p>
 <li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a></p></li>
 <li><p>Restart the scylla-server service.</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-3-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-3-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-3-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-5-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-5-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-5-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-5-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-5-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-5-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-3-RG9ja2Vy" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-RG9ja2Vy" name="RG9ja2Vy" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>some-scylla<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>scylla
+</div><div aria-labelledby="tab-5-RG9ja2Vy" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-5-RG9ja2Vy" name="RG9ja2Vy" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>some-scylla<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>scylla
 </pre></div>
 </div>
 <p>(without restarting <em>some-scylla</em> container)</p>
@@ -1234,6 +1361,11 @@ Once this encryption is enabled, it is used for all system data.</p>
 <li><a class="reference internal" href="#set-the-kmip-host">Set the KMIP Host</a></li>
 <li><a class="reference internal" href="#set-the-kms-host">Set the KMS Host</a></li>
 <li><a class="reference internal" href="#set-the-gcp-host">Set the GCP Host</a></li>
+<li><a class="reference internal" href="#set-the-azure-host">Set the Azure Host</a><ul>
+<li><a class="reference internal" href="#what-you-ll-need">What You’ll Need</a></li>
+<li><a class="reference internal" href="#procedure">Procedure</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#encrypt-tables">Encrypt Tables</a></li>
 <li><a class="reference internal" href="#encrypt-a-single-table">Encrypt a Single Table</a><ul>
 <li><a class="reference internal" href="#update-encryption-properties-of-existing-tables">Update Encryption Properties of Existing Tables</a></li>
@@ -1713,7 +1845,7 @@ Once this encryption is enabled, it is used for all system data.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 27 Jul 2025.
+                        Last updated on 28 Jul 2025.
                     
                 </div>
             
