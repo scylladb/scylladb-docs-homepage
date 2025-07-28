@@ -39,7 +39,7 @@ the ``age`` column (without quotes) as it is an ``int`` data type.
   Unlike in SQL, ``INSERT INTO`` does not check the prior existence of the row by default:
   the row is created if none existed before, and updated otherwise.
   This behavior can be changed by using ScyllaDB's
-  `Lightweight Transaction <https://opensource.docs.scylladb.com/stable/using-scylla/lwt.html>`_
+  `Lightweight Transaction <https://docs.scylladb.com/manual/stable/features/lwt.html>`_
   ``IF NOT EXISTS`` or ``IF EXISTS`` clauses.
 
 In summary, the ``INSERT INTO`` statement in ScyllaDB is used to insert a new 
@@ -48,5 +48,5 @@ the keyspace, table, column names, and the corresponding values that you want
 to insert into those columns. This allows you to add data to your tables in 
 ScyllaDB for subsequent retrieval and querying.
 
-See the details about the `INSERT statement <https://opensource.docs.scylladb.com/stable/cql/dml/insert.html>`_ 
+See the details about the `INSERT statement <https://docs.scylladb.com/manual/stable/cql/dml/insert.html>`_ 
 in the ScyllaDB documentation.

@@ -9,7 +9,7 @@ to be simple and intuitive, making it easier for those familiar with SQL to
 transition to working with ScyllaDB.
 
 Learning and mastering CQL is crucial for designing queries. 
-See the `ScyllaDB documentation <https://opensource.docs.scylladb.com/stable/cql/index.html>`_
+See the `ScyllaDB documentation <https://docs.scylladb.com/manual/stable/cql/index.html>`_
 for CQL reference and CQL-related topics.
 
 Using cqlsh
@@ -36,5 +36,5 @@ The output of this command will look something like this:
     Use HELP for help.
     cqlsh>
 
-See `CQLSh: the CQL shell <https://opensource.docs.scylladb.com/master/cql/cqlsh.html>`_ 
+See `CQLSh: the CQL shell <https://docs.scylladb.com/manual/stable/cql/cqlsh.html>`_ 
 for details.

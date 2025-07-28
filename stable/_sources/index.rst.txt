@@ -83,7 +83,7 @@
 
 .. topic-box::
   :title: ScyllaDB Alternator
-  :link: https://opensource.docs.scylladb.com/stable/alternator/alternator.html
+  :link: https://docs.scylladb.com/manual/stable/alternator/alternator.html
   :link_target: _self
   :image: /_static/img/mascots-2/alternator.svg
   :class: topic-box--product,large-4,small-6
@@ -110,7 +110,7 @@
 
 .. topic-box::
   :title: ScyllaDB Drivers
-  :link: https://opensource.docs.scylladb.com/stable/using-scylla/drivers/
+  :link: https://docs.scylladb.com/manual/stable/using-scylla/drivers/
   :link_target: _self
   :image: /_static/img/mascots-2/driver.svg
   :class: topic-box--product,large-4,small-6

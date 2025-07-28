@@ -53,7 +53,7 @@ introduced the basic concept of primary keys, which can be made up of two
 parts: the partition key and optional clustering columns.
 
 ScyllaDB also supports
-`secondary indexes <https://opensource.docs.scylladb.com/stable/using-scylla/secondary-indexes.html>`_
+`secondary indexes <https://docs.scylladb.com/manual/stable/features/secondary-indexes.html>`_
 for non-primary key columns. Secondary indexes can improve query flexibility, but it’s
 important to consider their impact on performance. For example:
 
@@ -65,8 +65,8 @@ This index allows querying activities by date regardless of the user. However, s
 indexes might lead to additional overhead and should be used when necessary.
 
 Secondary indexes are built on top of
-`materialized views <https://opensource.docs.scylladb.com/stable/cql/mv.html>`_, which
+`materialized views <https://docs.scylladb.com/manual/stable/cql/mv.html>`_, which
 keep a separate, indexed table based on the base table's data. They can be more performant for reads.
 
 ScyllaDB supports CQL for querying data. Learning and mastering CQL is crucial for designing queries.
-For more detailed instructions, please see our `documentation <https://opensource.docs.scylladb.com/stable/cql/>`_.
+For more detailed instructions, please see our `documentation <https://docs.scylladb.com/manual/stable/cql/>`_.

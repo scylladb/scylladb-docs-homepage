@@ -10,7 +10,7 @@ This further reinforces the concept of adopting a query-first data model.
 
 **Data Types**
 
-Selecting the appropriate `data type <https://opensource.docs.scylladb.com/stable/cql/types.html>`_
+Selecting the appropriate `data type <https://docs.scylladb.com/manual/stable/cql/types.html>`_
 for your columns is critical to your application semantics in your data model.
 You will need to consider factors such as data size, indexing, and sorting.
 
