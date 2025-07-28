@@ -101,7 +101,7 @@ retrieval.
 
             go mod tidy
 
-    * See the `Go Driver documentation <https://opensource.docs.scylladb.com/stable/using-scylla/drivers/cql-drivers/scylla-go-driver.html>`_ for details.
+    * See the `Go Driver documentation <https://docs.scylladb.com/manual/stable/using-scylla/drivers/cql-drivers/scylla-go-driver.html>`_ for details.
     * `Learn how to use Go with ScyllaDB <https://university.scylladb.com/courses/using-scylla-drivers/lessons/golang-and-scylla-part-1/>`_ on ScyllaDB University.
 
   .. group-tab:: JavaScript
@@ -121,5 +121,5 @@ retrieval.
 
   .. group-tab:: Other Languages
     
-    See `ScyllaDB CQL Drivers <https://opensource.docs.scylladb.com/master/using-scylla/drivers/cql-drivers/index.html>`_ 
+    See `ScyllaDB CQL Drivers <https://docs.scylladb.com/manual/stable/using-scylla/drivers/cql-drivers/index.html>`_ 
     for a full list of drivers supported by ScyllaDB.

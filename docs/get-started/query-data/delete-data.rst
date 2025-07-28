@@ -30,7 +30,7 @@ prevent accidental deletions of the wrong data in the table.
 
   Similar to ``INSERT`` and ``UPDATE`` statements, a ``DELETE`` operation can be conditional
   using ScyllaDB's
-  `Lightweight Transaction <https://opensource.docs.scylladb.com/stable/using-scylla/lwt.html>`_
+  `Lightweight Transaction <https://docs.scylladb.com/manual/stable/features/lwt.html>`_
   `IF EXISTS`` clause.
 
 In summary, the ``DELETE`` statement in ScyllaDB is used to remove existing 
@@ -39,5 +39,5 @@ target the specific rows you want to delete, and ensure that the restriction is
 specific enough to avoid unintended data loss. This approach helps maintain 
 data integrity in your ScyllaDB tables.
 
-See the details about the `DELETE statement <https://opensource.docs.scylladb.com/stable/cql/dml/delete.html>`_ 
+See the details about the `DELETE statement <https://docs.scylladb.com/manual/stable/cql/dml/delete.html>`_ 
 in the ScyllaDB documentation.
