@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2 | ScyllaDB Docs 
+             Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/upgrade-guide-from-2025.1-to-2025.2.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/upgrade-guide-from-2025.2-to-2025.3.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -314,11 +314,11 @@
     
         <span class="bread__item">
             <a href="index.html" class="bread__highlight">
-                Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2
+                Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2</span>
+    <span class="bread__item bread__item--last">Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3</span>
 </div>
                     </div>
                 
@@ -336,16 +336,16 @@
             
                 You're viewing documentation for an unstable version of ScyllaDB Manual.
             
-            <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/upgrade-guide-from-2025.1-to-2025.2.html">Switch to the latest stable version.</a>
+            <a href="../../../../stable/index.html">Switch to the latest stable version.</a>
         </p>
     </div>
 
                         
                         
                         <section id="upgrade-from-scylla-name-src-version-to-scylla-name-new-version">
-<h1>Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2<a class="headerlink" href="#upgrade-from-scylla-name-src-version-to-scylla-name-new-version" title="Link to this heading">¶</a></h1>
-<p>This document describes a step-by-step procedure for upgrading from ScyllaDB 2025.1
-to ScyllaDB 2025.2 and rollback to version 2025.1 if necessary.</p>
+<h1>Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3<a class="headerlink" href="#upgrade-from-scylla-name-src-version-to-scylla-name-new-version" title="Link to this heading">¶</a></h1>
+<p>This document describes a step-by-step procedure for upgrading from ScyllaDB 2025.2
+to ScyllaDB 2025.3 and rollback to version 2025.2 if necessary.</p>
 <p>This guide covers upgrading ScyllaDB on Red Hat Enterprise Linux (RHEL), CentOS, Debian,
 and Ubuntu. See <a class="reference internal" href="../../../getting-started/os-support.html"><span class="doc">OS Support by Platform and Version</span></a>
 for information about supported versions.</p>
@@ -364,14 +364,6 @@ version supports the ScyllaDB version to which you want to upgrade. See
 <p><strong>Check Feature Updates</strong></p>
 <p>See the ScyllaDB Release Notes for the latest updates. The Release Notes are published
 at the <a class="reference external" href="https://forum.scylladb.com/">ScyllaDB Community Forum</a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you previously upgraded from 2024.x to 2025.1 without enabling consistent
-topology updates, ensure you enable the feature before you upgrade to 2025.2.
-For instructions, see
-<a class="reference external" href="https://docs.scylladb.com/manual/branch-2025.1/upgrade/upgrade-guides/upgrade-guide-from-2024.x-to-2025.1/enable-consistent-topology.html">Enable Consistent Topology Updates</a>
-in the upgrade guide for version 2025.1.</p>
-</div>
 </section>
 <section id="upgrade-procedure">
 <h2>Upgrade Procedure<a class="headerlink" href="#upgrade-procedure" title="Link to this heading">¶</a></h2>
@@ -393,7 +385,7 @@ validating that the node you upgraded is up and running the new version.</p>
 </div>
 <p><strong>During</strong> the rolling upgrade, it is highly recommended:</p>
 <ul class="simple">
-<li><p>Not to use the new 2025.2 features.</p></li>
+<li><p>Not to use the new 2025.3 features.</p></li>
 <li><p>Not to run administration functions, such as repairs, refresh, rebuild, or add
 or remove nodes. See <a class="reference external" href="https://manager.docs.scylladb.com/stable/sctool/">sctool</a> for suspending
 ScyllaDB Manager’s scheduled or running repairs.</p></li>
@@ -454,9 +446,9 @@ sudo<span class="w"> </span>cp<span class="w"> </span>/etc/yum.repos.d/scylla.re
 You should take note of the current version in case you want to <a class="reference external" href="./#rollback-procedure">rollback</a> the upgrade.</p>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-RGViaWFuL1VidW50dQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tab" tabindex="0">Debian/Ubuntu</button><button aria-controls="panel-1-UkhFTC9DZW50T1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tab" tabindex="-1">RHEL/CentOS</button><button aria-controls="panel-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" name="RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" role="tab" tabindex="-1">EC2/GCP/Azure Ubuntu Image</button></div><div aria-labelledby="tab-1-RGViaWFuL1VidW50dQ==" class="sphinx-tabs-panel group-tab" id="panel-1-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Update the ScyllaDB deb repo to 2025.2.</p>
+<li><p>Update the ScyllaDB deb repo to 2025.3.</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2025.2.list</span>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2025.3.list</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -473,9 +465,9 @@ You should take note of the current version in case you want to <a class="refere
 </ol>
 <p>Answer ‘y’ to the first two questions.</p>
 </div><div aria-labelledby="tab-1-UkhFTC9DZW50T1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Update the ScyllaDB rpm repo to 2025.2.</p>
+<li><p>Update the ScyllaDB rpm repo to 2025.3.</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2025.2.repo</span>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2025.3.repo</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -538,21 +530,21 @@ validate there are no new errors in the log.</p></li>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The rollback procedure can be applied <strong>only</strong> if some nodes have not been
-upgraded to 2025.2 yet. As soon as the last node in the rolling upgrade
-procedure is started with 2025.2, rollback becomes impossible. At that
-point, the only way to restore a cluster to 2025.1 is by restoring it
+upgraded to 2025.3 yet. As soon as the last node in the rolling upgrade
+procedure is started with 2025.3, rollback becomes impossible. At that
+point, the only way to restore a cluster to 2025.2 is by restoring it
 from backup.</p>
 </div>
-<p>The following procedure describes a rollback from ScyllaDB 2025.2.x to
-2025.1.y. Apply this procedure if an upgrade from 2025.1 to
-2025.2 fails before completing on all nodes.</p>
+<p>The following procedure describes a rollback from ScyllaDB 2025.3.x to
+2025.2.y. Apply this procedure if an upgrade from 2025.2 to
+2025.3 fails before completing on all nodes.</p>
 <ul class="simple">
-<li><p>Use this procedure only on the nodes you upgraded to 2025.2.</p></li>
+<li><p>Use this procedure only on the nodes you upgraded to 2025.3.</p></li>
 <li><p>Execute the following commands one node at a time, moving to the next node
 only after the rollback procedure is completed successfully.</p></li>
 </ul>
 <p>ScyllaDB rollback is a rolling procedure that does <strong>not</strong> require full cluster shutdown.
-For each of the nodes you rollback to 2025.1, serially (i.e., one node
+For each of the nodes you rollback to 2025.2, serially (i.e., one node
 at a time), you will:</p>
 <ul class="simple">
 <li><p>Drain the node and stop ScyllaDB</p></li>
@@ -586,7 +578,7 @@ sudo<span class="w"> </span>service<span class="w"> </span>scylla-server<span cl
 </div>
 </div></blockquote>
 </li>
-<li><p>Restore the 2025.1 packages backed up during the upgrade.</p>
+<li><p>Restore the 2025.2 packages backed up during the upgrade.</p>
 <blockquote>
 <div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>~/scylla.list-backup<span class="w"> </span>/etc/apt/sources.list.d/scylla.list
 sudo<span class="w"> </span>chown<span class="w"> </span>root.root<span class="w"> </span>/etc/apt/sources.list.d/scylla.list
@@ -614,7 +606,7 @@ sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</sp
 </div>
 </div></blockquote>
 </li>
-<li><p>Restore the 2025.1 packages backed up during the upgrade procedure.</p>
+<li><p>Restore the 2025.2 packages backed up during the upgrade procedure.</p>
 <blockquote>
 <div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>~/scylla.repo-backup<span class="w"> </span>/etc/yum.repos.d/scylla.repo
 sudo<span class="w"> </span>chown<span class="w"> </span>root.root<span class="w"> </span>/etc/yum.repos.d/scylla.repo
@@ -638,7 +630,7 @@ tab for upgrade instructions.</p>
 <p>If you’re using your own image and installed ScyllaDB packages for Ubuntu or Debian,
 you need to additionally restore the <code class="docutils literal notranslate"><span class="pre">scylla-machine-image</span></code> package.</p>
 <ol class="arabic">
-<li><p>Restore the 2025.1 packages backed up during the upgrade
+<li><p>Restore the 2025.2 packages backed up during the upgrade
 (see the <strong>Debian/Ubuntu</strong> tab).</p></li>
 <li><p>Install:</p>
 <blockquote>
@@ -716,7 +708,7 @@ rollback is successful, move to the next node in the cluster.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/upgrade-guide-from-2025.1-to-2025.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/upgrade-guide-from-2025.2-to-2025.3%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -756,16 +748,16 @@ rollback is successful, move to the next node in the cluster.</p>
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Upgrade - ScyllaDB 2025.1 to ScyllaDB 2025.2
+                    <span class="colored">PREVIOUS</span> <br />Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="metric-update-2025.1-to-2025.2.html">
+            <a class="navigation__link" href="metric-update-2025.2-to-2025.3.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Metrics Update Between 2025.1 and 2025.2
+                    <span class="colored">NEXT</span> <br />Metrics Update Between 2025.2 and 2025.3
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -785,14 +777,14 @@ rollback is successful, move to the next node in the cluster.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/upgrade-guide-from-2025.1-to-2025.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/upgrade-guide-from-2025.2-to-2025.3%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/upgrade-guide-from-2025.1-to-2025.2.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/upgrade-guide-from-2025.2-to-2025.3.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -804,7 +796,7 @@ rollback is successful, move to the next node in the cluster.</p>
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Upgrade from ScyllaDB 2025.1 to ScyllaDB 2025.2</a><ul>
+<li><a class="reference internal" href="#">Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3</a><ul>
 <li><a class="reference internal" href="#before-you-upgrade-scylladb">Before You Upgrade ScyllaDB</a></li>
 <li><a class="reference internal" href="#upgrade-procedure">Upgrade Procedure</a></li>
 <li><a class="reference internal" href="#upgrade-steps">Upgrade Steps</a><ul>
@@ -866,19 +858,19 @@ rollback is successful, move to the next node in the cluster.</p>
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/upgrade-guide-from-2025.2-to-2025.3.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="upgrade-guide-from-2025.1-to-2025.2.html">2025.3</a>
+                        <a href="upgrade-guide-from-2025.2-to-2025.3.html">2025.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/upgrade-guide-from-2025.1-to-2025.2.html">2025.2</a>
+                        <a href="../../../../stable/index.html">2025.2</a>
                     </li>
                 
             
@@ -1297,7 +1289,7 @@ rollback is successful, move to the next node in the cluster.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 31 Jul 2025.
+                        Last updated on 01 Aug 2025.
                     
                 </div>
             

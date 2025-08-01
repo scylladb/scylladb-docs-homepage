@@ -331,13 +331,64 @@
 </div>
 <section id="scylladb-drivers">
 <h2>ScyllaDB Drivers<a class="headerlink" href="#scylladb-drivers" title="Link to this heading">¶</a></h2>
+<p>The following ScyllaDB drivers are available:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="scylla-python-driver.html"><span class="doc">Python Driver</span></a></p></li>
+<li><p><a class="reference internal" href="scylla-java-driver.html"><span class="doc">Java Driver</span></a></p></li>
+<li><p><a class="reference internal" href="scylla-go-driver.html"><span class="doc">Go Driver</span></a></p></li>
+<li><p><a class="reference internal" href="scylla-gocqlx-driver.html"><span class="doc">Go Extension</span></a></p></li>
+<li><p><a class="reference internal" href="scylla-cpp-driver.html"><span class="doc">C++ Driver</span></a></p></li>
+<li><p><a class="reference external" href="https://github.com/scylladb/cpp-rust-driver">CPP-over-Rust Driver</a></p></li>
+<li><p><a class="reference internal" href="scylla-rust-driver.html"><span class="doc">Rust Driver</span></a></p></li>
+</ul>
 <p>We recommend using ScyllaDB drivers. All ScyllaDB drivers are shard-aware and provide additional
 benefits over third-party drivers.</p>
 <p>ScyllaDB supports the CQL binary protocol version 3, so any Apache Cassandra/CQL driver that implements
 the same version works with ScyllaDB.</p>
-<p>The following table lists the available ScyllaDB drivers, specifying which support
-<a class="reference external" href="https://cloud.docs.scylladb.com/stable/serverless/index.html">ScyllaDB Cloud Serversless</a>
-or include a library for <a class="reference internal" href="../../../features/cdc/cdc-intro.html"><span class="doc">CDC</span></a>.</p>
+</section>
+<section id="cdc-integration-with-scylladb-drivers">
+<h2>CDC Integration with ScyllaDB Drivers<a class="headerlink" href="#cdc-integration-with-scylladb-drivers" title="Link to this heading">¶</a></h2>
+<p>The following table specifies which ScyllaDB drivers include a library for
+<a class="reference internal" href="../../../features/cdc/cdc-intro.html"><span class="doc">CDC</span></a>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ScyllaDB Driver</p></th>
+<th class="head"><p>CDC Connector</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="scylla-python-driver.html"><span class="doc">Python</span></a></p></td>
+<td><p><span class="raw-html"><i class="inline-icon icon-cancel" aria-hidden="true"></i></span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="scylla-java-driver.html"><span class="doc">Java</span></a></p></td>
+<td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="scylla-go-driver.html"><span class="doc">Go</span></a></p></td>
+<td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="scylla-gocqlx-driver.html"><span class="doc">Go Extension</span></a></p></td>
+<td><p><span class="raw-html"><i class="inline-icon icon-cancel" aria-hidden="true"></i></span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="scylla-cpp-driver.html"><span class="doc">C++</span></a></p></td>
+<td><p><span class="raw-html"><i class="inline-icon icon-cancel" aria-hidden="true"></i></span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://github.com/scylladb/cpp-rust-driver">CPP-over-Rust Driver</a></p></td>
+<td><p><span class="raw-html"><i class="inline-icon icon-cancel" aria-hidden="true"></i></span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="scylla-rust-driver.html"><span class="doc">Rust</span></a></p></td>
+<td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="support-for-tablets">
+<h2>Support for Tablets<a class="headerlink" href="#support-for-tablets" title="Link to this heading">¶</a></h2>
+<p>The following table specifies which ScyllaDB drivers support
+<a class="reference internal" href="../../../architecture/tablets.html"><span class="doc">tablets</span></a> and since which version.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -345,38 +396,56 @@ or include a library for <a class="reference internal" href="../../../features/c
 <col style="width: 35.0%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"></th>
-<th class="head"><p>ScyllaDB Driver</p></th>
-<th class="head"><p>CDC Connector</p></th>
+<tr class="row-odd"><th class="head"><p>ScyllaDB Driver</p></th>
+<th class="head"><p>Support for Tablets</p></th>
+<th class="head"><p>Since Version</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="scylla-python-driver.html"><span class="doc">Python</span></a></p></td>
 <td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
-<td><p><span class="raw-html"><i class="inline-icon icon-cancel" aria-hidden="true"></i></span></p></td>
+<td><p>3.26.5</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="scylla-java-driver.html"><span class="doc">Java</span></a></p></td>
 <td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
-<td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
+<td><p>4.18.0 (Java Driver 4.x)</p>
+<p>3.11.5.2 (Java Driver 3.x)</p>
+</td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="scylla-go-driver.html"><span class="doc">Go</span></a></p></td>
 <td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
-<td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
+<td><p>1.13.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="scylla-gocqlx-driver.html"><span class="doc">Go Extension</span></a></p></td>
-<td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
 <td><p><span class="raw-html"><i class="inline-icon icon-cancel" aria-hidden="true"></i></span></p></td>
+<td><p>N/A</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="scylla-cpp-driver.html"><span class="doc">C++</span></a></p></td>
-<td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
 <td><p><span class="raw-html"><i class="inline-icon icon-cancel" aria-hidden="true"></i></span></p></td>
+<td><p>N/A</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="scylla-rust-driver.html"><span class="doc">Rust</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://github.com/scylladb/cpp-rust-driver">CPP-over-Rust Driver</a></p></td>
 <td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
+<td><p>All versions</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="scylla-rust-driver.html"><span class="doc">Rust</span></a></p></td>
 <td><p><span class="raw-html"><i class="inline-icon icon-check" aria-hidden="true"></i></span></p></td>
+<td><p>0.13.0</p></td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="driver-support-policy">
+<h2>Driver Support Policy<a class="headerlink" href="#driver-support-policy" title="Link to this heading">¶</a></h2>
+<p>We support the <strong>two most recent minor releases</strong> of our drivers.</p>
+<ul class="simple">
+<li><p>We test and validate the latest two minor versions.</p></li>
+<li><p>We typically patch only the latest minor release.</p></li>
+</ul>
+<p>We recommend staying up to date with the latest supported versions to receive
+updates and fixes.</p>
+<p>At a minimum, upgrade your driver when upgrading to a new ScyllaDB version
+to ensure compatibility between the driver and the database.</p>
 </section>
 <section id="third-party-drivers">
 <h2>Third-party Drivers<a class="headerlink" href="#third-party-drivers" title="Link to this heading">¶</a></h2>
@@ -527,6 +596,9 @@ cluster. The languages covered include Java, CPP, Rust, Golang, Python, Node.JS,
             <ul>
 <li><a class="reference internal" href="#">ScyllaDB CQL Drivers</a><ul>
 <li><a class="reference internal" href="#scylladb-drivers">ScyllaDB Drivers</a></li>
+<li><a class="reference internal" href="#cdc-integration-with-scylladb-drivers">CDC Integration with ScyllaDB Drivers</a></li>
+<li><a class="reference internal" href="#support-for-tablets">Support for Tablets</a></li>
+<li><a class="reference internal" href="#driver-support-policy">Driver Support Policy</a></li>
 <li><a class="reference internal" href="#third-party-drivers">Third-party Drivers</a></li>
 <li><a class="reference internal" href="#learn-about-scylladb-drivers-on-scylladb-university">Learn about ScyllaDB Drivers on ScyllaDB University</a></li>
 </ul>
@@ -999,7 +1071,7 @@ cluster. The languages covered include Java, CPP, Rust, Golang, Python, Node.JS,
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 31 Jul 2025.
+                        Last updated on 01 Aug 2025.
                     
                 </div>
             
