@@ -383,19 +383,43 @@ and will likely be removed in the future.</p></li>
 </section>
 <section id="accessing-system-tables-from-scylla">
 <h2>Accessing system tables from Scylla<a class="headerlink" href="#accessing-system-tables-from-scylla" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>Scylla exposes lots of useful information via its internal system tables,
+<p>Scylla exposes lots of useful information via its internal system tables,
 which can be found in system keyspaces: ‘system’, ‘system_auth’, etc.
 In order to access to these tables via alternator interface,
 Scan and Query requests can use a special table name:
-.scylla.alternator.KEYSPACE_NAME.TABLE_NAME
-which will return results fetched from corresponding Scylla table.
-This interface can be used only to fetch data from system tables.
+<code class="docutils literal notranslate"><span class="pre">.scylla.alternator.KEYSPACE_NAME.TABLE_NAME</span></code>
+which will return results fetched from corresponding Scylla table.</p>
+<p>This interface can be used only to fetch data from system tables.
 Attempts to read regular tables via the virtual interface will result
-in an error.
-Example: in order to query the contents of Scylla’s system.large_rows,
-pass TableName=’.scylla.alternator.system.large_rows’ to a Query/Scan request.</p></li>
+in an error.</p>
+<p>Example: in order to query the contents of Scylla’s <code class="docutils literal notranslate"><span class="pre">system.large_rows</span></code>,
+pass <code class="docutils literal notranslate"><span class="pre">TableName='.scylla.alternator.system.large_rows'</span></code> to a Query/Scan
+request.</p>
+<p>Note that currently only <code class="docutils literal notranslate"><span class="pre">Scan</span></code> and <code class="docutils literal notranslate"><span class="pre">Query</span></code> on system tables is supported -
+<code class="docutils literal notranslate"><span class="pre">GetItem</span></code> is not (so use <code class="docutils literal notranslate"><span class="pre">Query</span></code> even to read a single item).</p>
+<section id="listing-ongoing-requests">
+<h3>Listing ongoing requests<a class="headerlink" href="#listing-ongoing-requests" title="Link to this heading">¶</a></h3>
+<p>One useful system table to read is <code class="docutils literal notranslate"><span class="pre">.scylla.alternator.system.clients</span></code>,
+which lists the currently active Alternator clients. Reading from this
+virtual table produces an item for each request currently being handled.
+Each item has the following attributes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">client_type</span></code> is always <code class="docutils literal notranslate"><span class="pre">alternator</span></code> for Alternator requests.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">address</span></code> and <code class="docutils literal notranslate"><span class="pre">port</span></code> say where the request came from.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssl_enabled</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> for an HTTPS request, <code class="docutils literal notranslate"><span class="pre">false</span></code> for HTTP.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shard_id</span></code> is the shard (CPU core) handling this request on the server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">driver_name</span></code> is the User-Agent HTTP header sent by the driver.
+This string usually begins with the driver’s name and version, such
+as <code class="docutils literal notranslate"><span class="pre">Boto3/1.38.46</span></code>, <code class="docutils literal notranslate"><span class="pre">aws-sdk-java/1.11.919</span></code> or <code class="docutils literal notranslate"><span class="pre">aws-sdk-java/2.25.31</span></code>,
+and followed by additional information sent by the driver.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">username</span></code> is the username used to sign this request.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scheduling_group</span></code> is the scheduling group handling this request.</p></li>
 </ul>
+<p>The same system table also lists CQL connections if there are any - those
+have <code class="docutils literal notranslate"><span class="pre">client_type</span></code> set to CQL. Note that for CQL, each item describes a
+connection (either active or idle), not necessarily an active request as
+in Alternator.</p>
+</section>
 </section>
 <section id="service-discovery">
 <h2>Service discovery<a class="headerlink" href="#service-discovery" title="Link to this heading">¶</a></h2>
@@ -610,7 +634,10 @@ See <a class="reference external" href="https://github.com/scylladb/scylla/issue
             <ul>
 <li><a class="reference internal" href="#">Alternator-specific APIs</a><ul>
 <li><a class="reference internal" href="#write-isolation-policies">Write isolation policies</a></li>
-<li><a class="reference internal" href="#accessing-system-tables-from-scylla">Accessing system tables from Scylla</a></li>
+<li><a class="reference internal" href="#accessing-system-tables-from-scylla">Accessing system tables from Scylla</a><ul>
+<li><a class="reference internal" href="#listing-ongoing-requests">Listing ongoing requests</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#service-discovery">Service discovery</a></li>
 <li><a class="reference internal" href="#tablets">Tablets</a></li>
 </ul>
@@ -1084,7 +1111,7 @@ See <a class="reference external" href="https://github.com/scylladb/scylla/issue
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 06 Aug 2025.
+                        Last updated on 07 Aug 2025.
                     
                 </div>
             
