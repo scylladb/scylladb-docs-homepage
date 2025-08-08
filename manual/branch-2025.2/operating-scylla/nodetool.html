@@ -339,9 +339,9 @@
 <li><p><a class="reference internal" href="nodetool-commands/cleanup.html"><span class="doc">cleanup</span></a> - Triggers the immediate cleanup of keys no longer belonging to a node.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/clearsnapshot.html"><span class="doc">clearsnapshot</span></a> - This command removes snapshots.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/cluster/index.html"><span class="doc">cluster</span></a> - Run a cluster operation.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/compact.html"><span class="doc">compact</span></a>- Force a (major) compaction on one or more column families.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/compactionhistory.html"><span class="doc">compactionhistory</span></a> - Provides the history of compactions.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/compactionstats.html"><span class="doc">compactionstats</span></a>- Print statistics on compactions.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/compact.html"><span class="doc">compact</span></a>- Force a (major) compaction on one or more column families.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/decommission.html"><span class="doc">decommission</span></a> - Decommission the node.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/describecluster.html"><span class="doc">describecluster</span></a> - Print the name, snitch, partitioner and schema version of a cluster.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/describering.html"><span class="doc">describering</span></a> - <code class="code docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code>- Shows the partition ranges of a given keyspace.</p></li>
@@ -355,9 +355,11 @@
 <li><p><a class="reference internal" href="nodetool-commands/enablebinary.html"><span class="doc">enablebinary</span></a> - Re-enable native transport (binary protocol).</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/enablegossip.html"><span class="doc">enablegossip</span></a> - Re-enable gossip.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/flush.html"><span class="doc">flush</span></a> - Flush one or more column families.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/getcompactionthroughput.html"><span class="doc">getcompactionthroughput</span></a> - Print the throughput cap for compaction in the system</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/getendpoints.html"><span class="doc">getendpoints</span></a> <code class="code docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;key&gt;</span></code>- Print the end points that owns the key.</p></li>
 <li><p><strong>getlogginglevels</strong> - Get the runtime logging levels.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/getsstables.html"><span class="doc">getsstables</span></a> - Print the sstable filenames that own the key.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/getstreamthroughput.html"><span class="doc">getstreamthroughput</span></a> - Print the throughput cap for SSTables streaming in the system</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/gettraceprobability.html"><span class="doc">gettraceprobability</span></a> - Displays the current trace probability value. 0 is disabled 1 is enabled.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/gossipinfo.html"><span class="doc">gossipinfo</span></a> - Shows the gossip information for the cluster.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/help.html"><span class="doc">help</span></a> - Display list of available nodetool commands.</p></li>
@@ -370,30 +372,28 @@
 <li><p><a class="reference internal" href="nodetool-commands/refresh.html"><span class="doc">refresh</span></a>- Load newly placed SSTables to the system without restart</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/removenode.html"><span class="doc">removenode</span></a>- Remove node with the provided ID</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/repair.html"><span class="doc">repair</span></a>  <code class="code docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> - Repair one or more vnode tables.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/restore.html"><span class="doc">restore</span></a> - Load SSTables from a designated bucket in object store into a specified keyspace or table</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/resetlocalschema.html"><span class="doc">resetlocalschema</span></a> - Reset the node’s local schema.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/restore.html"><span class="doc">restore</span></a> - Load SSTables from a designated bucket in object store into a specified keyspace or table</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/ring.html"><span class="doc">ring</span></a> - The nodetool ring command display the token ring information.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/scrub.html"><span class="doc">scrub</span></a> <code class="code docutils literal notranslate"><span class="pre">[-m</span> <span class="pre">mode]</span> <span class="pre">[--no-snapshot]</span> <span class="pre">&lt;keyspace&gt;</span> <span class="pre">[&lt;table&gt;...]</span></code> - Scrub the SSTable files in the specified keyspace or table(s)</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/setcompactionthroughput.html"><span class="doc">setcompactionthroughput</span></a> - Set the throughput cap for compaction in the system</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/setlogginglevel.html"><span class="doc">setlogginglevel</span></a> - sets the logging level threshold for ScyllaDB classes</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/setstreamthroughput.html"><span class="doc">setstreamthroughput</span></a> - Set the throughput cap for SSTables streaming in the system</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/settraceprobability.html"><span class="doc">settraceprobability</span></a> <code class="docutils literal notranslate"><span class="pre">&lt;value&gt;</span></code> - Sets the probability for tracing a request. race probability value</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/snapshot.html"><span class="doc">snapshot</span></a> <code class="code docutils literal notranslate"><span class="pre">[-t</span> <span class="pre">tag]</span> <span class="pre">[-cf</span> <span class="pre">column_family]</span> <span class="pre">&lt;keyspace&gt;</span></code>  - Take a snapshot of specified keyspaces or a snapshot of the specified table.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/sstableinfo.html"><span class="doc">sstableinfo</span></a> - Get information about sstables per keyspace/table.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/status.html"><span class="doc">status</span></a> - Print cluster information.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/statusbackup.html"><span class="doc">statusbackup</span></a> - Status of incremental backup.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/statusbinary.html"><span class="doc">statusbinary</span></a> - Status of native transport (binary protocol).</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/statusgossip.html"><span class="doc">statusgossip</span></a> - Status of gossip.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/status.html"><span class="doc">status</span></a> - Print cluster information.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/stop.html"><span class="doc">stop</span></a> - Stop compaction operation.</p></li>
 <li><p><strong>tablehistograms</strong> see <a class="reference internal" href="nodetool-commands/cfhistograms.html"><span class="doc">cfhistograms</span></a></p></li>
 <li><p><a class="reference internal" href="nodetool-commands/tablestats.html"><span class="doc">tablestats</span></a> - Provides in-depth diagnostics regard table.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/tasks/index.html"><span class="doc">tasks</span></a> - Manage tasks manager tasks.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/toppartitions.html"><span class="doc">toppartitions</span></a> - Samples cluster writes and reads and reports the most active partitions in a specified table and time frame.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/upgradesstables.html"><span class="doc">upgradesstables</span></a> - Upgrades each table that is not running the latest ScyllaDB version, by rewriting SSTables.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/viewbuildstatus.html"><span class="doc">viewbuildstatus</span></a> - Shows the progress of a materialized view build.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/version.html"><span class="doc">version</span></a> - Print the DB version.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/getcompactionthroughput.html"><span class="doc">getcompactionthroughput</span></a> - Print the throughput cap for compaction in the system</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/setcompactionthroughput.html"><span class="doc">setcompactionthroughput</span></a> - Set the throughput cap for compaction in the system</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/getstreamthroughput.html"><span class="doc">getstreamthroughput</span></a> - Print the throughput cap for SSTables streaming in the system</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/setstreamthroughput.html"><span class="doc">setstreamthroughput</span></a> - Set the throughput cap for SSTables streaming in the system</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/viewbuildstatus.html"><span class="doc">viewbuildstatus</span></a> - Shows the progress of a materialized view build.</p></li>
 </ul>
 </section>
 </section>
@@ -970,7 +970,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Aug 2025.
+                        Last updated on 08 Aug 2025.
                     
                 </div>
             

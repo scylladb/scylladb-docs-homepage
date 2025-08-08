@@ -490,11 +490,13 @@ The chosen node will be the <em>recovery leader</em>.</p>
 </pre></div>
 </div>
 </li>
-<li><p>Add the <code class="docutils literal notranslate"><span class="pre">recovery_leader</span></code> property to the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file and set it to the host ID of the recovery leader on
-<strong>every live node</strong>. Make sure the change is applied on all nodes by sending the <code class="docutils literal notranslate"><span class="pre">SIGHUP</span></code> signal to all ScyllaDB
-processes.</p></li>
 <li><p>Perform a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a> of all live nodes,
-however, this time <strong>the recovery leader must be restarted first</strong>.</p>
+but:</p>
+<ul class="simple">
+<li><p><strong>restart the recovery leader first</strong>,</p></li>
+<li><p>before restarting each node, add the <code class="docutils literal notranslate"><span class="pre">recovery_leader</span></code> property to its <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file and set it to the
+host ID of the recovery leader.</p></li>
+</ul>
 <p>After completing this step, Raft should be fully functional.</p>
 </li>
 <li><p>Replace all dead nodes in the cluster using the
@@ -1113,7 +1115,7 @@ ScyllaDB processes to ensure the change is applied.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Aug 2025.
+                        Last updated on 08 Aug 2025.
                     
                 </div>
             
