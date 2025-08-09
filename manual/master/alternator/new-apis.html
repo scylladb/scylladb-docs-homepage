@@ -397,6 +397,11 @@ pass <code class="docutils literal notranslate"><span class="pre">TableName='.sc
 request.</p>
 <p>Note that currently only <code class="docutils literal notranslate"><span class="pre">Scan</span></code> and <code class="docutils literal notranslate"><span class="pre">Query</span></code> on system tables is supported -
 <code class="docutils literal notranslate"><span class="pre">GetItem</span></code> is not (so use <code class="docutils literal notranslate"><span class="pre">Query</span></code> even to read a single item).</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">alternator_allow_system_table_write</span></code> configuration option is set to
+true (by default, it is false), system tables can also be written to. This
+can be useful for, for example, modifying configuration options. Even when
+writing system tables is enabled, the role sending the command must be a
+superuser or the write will be denied.</p>
 <section id="listing-ongoing-requests">
 <h3>Listing ongoing requests<a class="headerlink" href="#listing-ongoing-requests" title="Link to this heading">¶</a></h3>
 <p>One useful system table to read is <code class="docutils literal notranslate"><span class="pre">.scylla.alternator.system.clients</span></code>,
@@ -1111,7 +1116,7 @@ See <a class="reference external" href="https://github.com/scylladb/scylla/issue
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 08 Aug 2025.
+                        Last updated on 09 Aug 2025.
                     
                 </div>
             

@@ -345,7 +345,9 @@
 <p>ScyllaDB 2025.3 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
 <section id="new-metrics">
 <h2>New Metrics<a class="headerlink" href="#new-metrics" title="Link to this heading">¶</a></h2>
-<p>The following metrics are new in ScyllaDB 2025.3 compared to 2025.2:</p>
+<p>The following metrics are new in ScyllaDB 2025.3 compared to 2025.2.</p>
+<section id="alternator-per-table-metrics">
+<h3>Alternator Per-table Metrics<a class="headerlink" href="#alternator-per-table-metrics" title="Link to this heading">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 14.3%" />
@@ -357,11 +359,104 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td></td>
-<td></td>
+<tr class="row-even"><td><p>scylla_alternator_table_batch_item_count</p></td>
+<td><p>The total number of items processed across all batches.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_batch_item_count_histogram</p></td>
+<td><p>A histogram of the number of items in a batch request.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_filtered_rows_dropped_total</p></td>
+<td><p>The number of rows read and dropped during filtering operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_filtered_rows_matched_total</p></td>
+<td><p>The number of rows read and matched during filtering operations.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_filtered_rows_read_total</p></td>
+<td><p>The number of rows read during filtering operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_op_latency</p></td>
+<td><p>A latency histogram of an operation via Alternator API.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_op_latency_summary</p></td>
+<td><p>A latency summary of an operation via Alternator API.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_operation</p></td>
+<td><p>The number of operations via Alternator API.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_rcu_total</p></td>
+<td><p>The total number of consumed read units.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_reads_before_write</p></td>
+<td><p>The number of performed read-before-write operations.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_requests_blocked_memory</p></td>
+<td><p>Counts the number of requests blocked due to memory pressure.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_requests_shed</p></td>
+<td><p>Counts the number of requests shed due to overload.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_shard_bounce_for_lwt</p></td>
+<td><p>The number of writes that had to be bounced from this shard because of LWT requirements.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_total_operations</p></td>
+<td><p>The number of total operations via Alternator API.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_unsupported_operations</p></td>
+<td><p>The number of unsupported operations via Alternator API.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_table_wcu_total</p></td>
+<td><p>The total number of consumed write units.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_table_write_using_lwt</p></td>
+<td><p>The number of writes that used LWT.</p></td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="other-metrics">
+<h3>Other Metrics<a class="headerlink" href="#other-metrics" title="Link to this heading">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14.3%" />
+<col style="width: 85.7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>scylla_batchlog_manager_total_write_replay_attempts</p></td>
+<td><p>Counts write operations issued in a batchlog replay flow.
+A high value of this metric indicates that there is a long batch replay list.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_corrupt_data_entries_reported</p></td>
+<td><p>Counts the number of corrupt data instances reported to the corrupt data handler.
+A non-zero value indicates that the database suffered data corruption.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_memory_oversized_allocs</p></td>
+<td><p>The total count of oversized memory allocations.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_reactor_internal_errors</p></td>
+<td><p>The total number of internal errors (subset of cpp_exceptions) that usually
+indicate a malfunction in the code</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_stall_detector_io_threaded_fallbacks</p></td>
+<td><p>The total number of io-threaded-fallbacks operations.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="removed-metrics">
+<h2>Removed Metrics<a class="headerlink" href="#removed-metrics" title="Link to this heading">¶</a></h2>
+<p>The following metrics have been removed in 2025.3:</p>
+<ul class="simple">
+<li><p>scylla_cql_authorized_prepared_statements_cache_evictions</p></li>
+<li><p>scylla_lsa_large_objects_total_space_bytes</p></li>
+<li><p>scylla_lsa_small_objects_total_space_bytes</p></li>
+<li><p>scylla_lsa_small_objects_used_space_bytes</p></li>
+</ul>
 </section>
 </section>
 
@@ -486,7 +581,12 @@
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">Metrics Update Between 2025.2 and 2025.3</a><ul>
-<li><a class="reference internal" href="#new-metrics">New Metrics</a></li>
+<li><a class="reference internal" href="#new-metrics">New Metrics</a><ul>
+<li><a class="reference internal" href="#alternator-per-table-metrics">Alternator Per-table Metrics</a></li>
+<li><a class="reference internal" href="#other-metrics">Other Metrics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#removed-metrics">Removed Metrics</a></li>
 </ul>
 </li>
 </ul>
@@ -958,7 +1058,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 08 Aug 2025.
+                        Last updated on 09 Aug 2025.
                     
                 </div>
             
