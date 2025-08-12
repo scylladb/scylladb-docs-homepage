@@ -495,8 +495,16 @@ but:</p>
 <ul class="simple">
 <li><p><strong>restart the recovery leader first</strong>,</p></li>
 <li><p>before restarting each node, add the <code class="docutils literal notranslate"><span class="pre">recovery_leader</span></code> property to its <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file and set it to the
-host ID of the recovery leader.</p></li>
+host ID of the recovery leader,</p></li>
+<li><p>after restarting each node, make sure it participated in Raft recovery; look for one of the following messages
+in its logs:</p></li>
 </ul>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">storage_service - Performing Raft-based recovery procedure with recovery leader &lt;host ID of the recovery leader&gt;/&lt;IP address of the recovery leader&gt;</span>
+<span class="go">storage_service - Raft-based recovery procedure - found group 0 with ID &lt;ID of the new group 0; different from the one used in other steps&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
 <p>After completing this step, Raft should be fully functional.</p>
 </li>
 <li><p>Replace all dead nodes in the cluster using the
@@ -1116,7 +1124,7 @@ ScyllaDB processes to ensure the change is applied.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Aug 2025.
+                        Last updated on 12 Aug 2025.
                     
                 </div>
             
