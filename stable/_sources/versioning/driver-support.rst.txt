@@ -28,4 +28,4 @@ The following ScyllaDB drivers are available:
 * `C++ Driver <https://cpp-driver.docs.scylladb.com/>`_
 * `CPP-over-Rust Driver <https://github.com/scylladb/cpp-rust-driver>`_
 * `Rust Driver <https://rust-driver.docs.scylladb.com/>`_
-
+* `C# Driver <https://csharp-driver.docs.scylladb.com/>`_
