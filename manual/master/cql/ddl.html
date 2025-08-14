@@ -414,9 +414,10 @@ details below).</p></td>
 </tr>
 </tbody>
 </table>
-<p>The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property is mandatory and must at least contains the <code class="docutils literal notranslate"><span class="pre">'class'</span></code> sub-option, which defines the
-replication strategy class to use. The rest of the sub-options depend on what replication
-strategy is used. By default, ScyllaDB supports the following <code class="docutils literal notranslate"><span class="pre">'class'</span></code>:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property is mandatory. It contains the <code class="docutils literal notranslate"><span class="pre">'class'</span></code> sub-option, which defines the replication strategy class to use.
+If <code class="docutils literal notranslate"><span class="pre">'class'</span></code> is not specified, it defaults to <code class="docutils literal notranslate"><span class="pre">'NetworkTopologyStrategy'</span></code>.
+The rest of the sub-options depend on what replication strategy is used.
+By default, ScyllaDB supports the following <code class="docutils literal notranslate"><span class="pre">'class'</span></code>:</p>
 <section id="simplestrategy">
 <span id="replication-strategy"></span><h3>SimpleStrategy<a class="headerlink" href="#simplestrategy" title="Link to this heading">¶</a></h3>
 <p>A simple strategy that defines a replication factor for data to be spread
@@ -508,6 +509,14 @@ explicitly zero out the datacenter you want to have zero replicas.</p>
 <p>An example that excludes a datacenter while using <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code>:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
     <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;DC2&#39;</span><span class="p">:</span> <span class="mf">0</span><span class="p">}</span> <span class="p">;</span>
+
+<span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An example that excludes class and uses only datacenter options:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">}</span> <span class="p">;</span>
 
 <span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
     <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
