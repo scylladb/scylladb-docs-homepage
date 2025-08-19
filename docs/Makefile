@@ -13,7 +13,7 @@ PAPEROPT_a4     := -D latex_paper_size=a4
 PAPEROPT_letter := -D latex_paper_size=letter
 ALLSPHINXOPTS   := -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCEDIR) -c $(CONF_PATH)
 TESTSPHINXOPTS  := $(ALLSPHINXOPTS) -W --keep-going
-PROD_OPTS       := -D html_theme_options.collapse_navigation='false' -D html_theme_options.navigation_depth=3 -c $(CONF_PATH)
+PROD_OPTS       := -c $(CONF_PATH)
 
 .PHONY: all
 all: dirhtml
