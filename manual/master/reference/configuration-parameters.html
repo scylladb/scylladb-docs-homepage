@@ -1790,7 +1790,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-rpc_keepalive">
 <span class="sig-name descname"><span class="pre">rpc_keepalive</span></span><a class="headerlink" href="#confval-rpc_keepalive" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Enable or disable keepalive on client connections (CQL native, Redis and the maintenance socket).</p>
+<div><p>Enable or disable keepalive on client connections (CQL native and the maintenance socket).</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -3554,99 +3554,6 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-redis-port">
-<dt class="sig sig-object std" id="confval-redis_port">
-<span class="sig-name descname"><span class="pre">redis_port</span></span><a class="headerlink" href="#confval-redis_port" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Port on which the REDIS transport listens for clients.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-redis-ssl-port">
-<dt class="sig sig-object std" id="confval-redis_ssl_port">
-<span class="sig-name descname"><span class="pre">redis_ssl_port</span></span><a class="headerlink" href="#confval-redis_ssl_port" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Port on which the REDIS TLS native transport listens for clients.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-redis-read-consistency-level">
-<dt class="sig sig-object std" id="confval-redis_read_consistency_level">
-<span class="sig-name descname"><span class="pre">redis_read_consistency_level</span></span><a class="headerlink" href="#confval-redis_read_consistency_level" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Consistency level for read operations for redis.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;LOCAL_QUORUM&quot;</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-redis-write-consistency-level">
-<dt class="sig sig-object std" id="confval-redis_write_consistency_level">
-<span class="sig-name descname"><span class="pre">redis_write_consistency_level</span></span><a class="headerlink" href="#confval-redis_write_consistency_level" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Consistency level for write operations for redis.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;LOCAL_QUORUM&quot;</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-redis-database-count">
-<dt class="sig sig-object std" id="confval-redis_database_count">
-<span class="sig-name descname"><span class="pre">redis_database_count</span></span><a class="headerlink" href="#confval-redis_database_count" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Database count for the redis. You can use the default settings (16).</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">16</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-redis-keyspace-replication-strategy">
-<dt class="sig sig-object std" id="confval-redis_keyspace_replication_strategy">
-<span class="sig-name descname"><span class="pre">redis_keyspace_replication_strategy</span></span><a class="headerlink" href="#confval-redis_keyspace_replication_strategy" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><dl>
-<dt>Set the replication strategy for the redis keyspace. The setting is used by the first node in the boot phase when the keyspace is not exists to create keyspace for redis.</dt><dd><p>The replication strategy determines how many copies of the data are kept in a given data center. This setting impacts consistency, availability and request speed.
-Two strategies are available: SimpleStrategy and NetworkTopologyStrategy.</p>
-<ul class="simple">
-<li><p>class: (Default: SimpleStrategy ). Set the replication strategy for redis keyspace.</p></li>
-<li><p>‘replication_factor’: N, (Default: ‘replication_factor’:1) IFF the class is SimpleStrategy, assign the same replication factor to the entire cluster.</p></li>
-<li><p>‘datacenter_name’: N [,…], (Default: ‘dc1:1’) IFF the class is NetworkTopologyStrategy, assign replication factors to each data center in a comma separated list.</p></li>
-</ul>
-<p>Related information: About replication strategy.</p>
-</dd>
-</dl>
-<ul class="simple">
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
 <dl class="std confval" id="confprop-sanitizer-report-backtrace">
 <dt class="sig sig-object std" id="confval-sanitizer_report_backtrace">
 <span class="sig-name descname"><span class="pre">sanitizer_report_backtrace</span></span><a class="headerlink" href="#confval-sanitizer_report_backtrace" title="Link to this definition">¶</a></dt>
@@ -5104,7 +5011,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Aug 2025.
+                        Last updated on 22 Aug 2025.
                     
                 </div>
             
