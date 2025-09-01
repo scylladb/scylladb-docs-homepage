@@ -587,6 +587,10 @@ example, a single PutItem is represented by a REMOVE + MODIFY event,
 instead of just a single MODIFY or INSERT.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/6930">https://github.com/scylladb/scylla/issues/6930</a>
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/6918">https://github.com/scylladb/scylla/issues/6918</a></p></li>
+<li><p>In GetRecords responses, Alternator sets <code class="docutils literal notranslate"><span class="pre">eventSource</span></code> to
+<code class="docutils literal notranslate"><span class="pre">scylladb:alternator</span></code>, rather than <code class="docutils literal notranslate"><span class="pre">aws:dynamodb</span></code>, and doesn’t set the
+<code class="docutils literal notranslate"><span class="pre">SizeBytes</span></code> subfield inside the <code class="docutils literal notranslate"><span class="pre">dynamodb</span></code> field.
+<a class="reference external" href="https://github.com/scylladb/scylla/issues/6931">https://github.com/scylladb/scylla/issues/6931</a></p></li>
 <li><p>The optional ShardFilter parameter to DescribeStream, added to DynamoDB
 in July 2025 to optimize shard discovery, is not yet implemented in
 Alternator.
@@ -1303,7 +1307,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 31 Aug 2025.
+                        Last updated on 01 Sep 2025.
                     
                 </div>
             
