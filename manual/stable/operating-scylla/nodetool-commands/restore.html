@@ -325,9 +325,14 @@
                         <section id="nodetool-restore">
 <h1>Nodetool restore<a class="headerlink" href="#nodetool-restore" title="Link to this heading">¶</a></h1>
 <p><strong>restore</strong> - Load SSTables from a designated bucket in object store into a specified keyspace or table</p>
-<p>Note that status of restore can be checked for <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> seconds after the operation is done.
-You can set the ttl using <a class="reference internal" href="tasks/user-ttl.html"><span class="doc">nodetool tasks user-ttl</span></a>.
-If <code class="docutils literal notranslate"><span class="pre">--nowait</span></code> flag is not set, the command relies on <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> internally.</p>
+<p>The status of a restore operation is retained for a period defined by <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code>,
+allowing you to query the status even after the operation completes.
+You can configure the TTL duration using the <a class="reference internal" href="tasks/user-ttl.html"><span class="doc">nodetool tasks user-ttl</span></a> command.</p>
+<p>When you run a restore operation, it always executes as a background task. You have two ways to interact with this task:</p>
+<ul class="simple">
+<li><p><strong>Without the ``–nowait`` flag (default)</strong>: The command waits for the restore operation to complete and returns the final status. This approach relies on the <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> setting. If <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> is set too low (especially if set to 0), the task record might be removed before the status can be checked, potentially causing the command to fail in reporting the result.</p></li>
+<li><p><strong>With the ``–nowait`` flag</strong>: The command immediately returns a task ID without waiting for the operation to complete. You can use this task ID with the <a class="reference internal" href="tasks/index.html"><span class="doc">nodetool tasks</span></a> command to monitor the progress of the restore operation or to cancel it if needed. The task information remains available for the duration specified by <code class="docutils literal notranslate"><span class="pre">user_task_ttl</span></code> after completion.</p></li>
+</ul>
 <section id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Link to this heading">¶</a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool [(-h &lt;host&gt; | --host &lt;host&gt;)] [(-p &lt;port&gt; | --port &lt;port&gt;)]</span>
@@ -337,6 +342,7 @@ If <code class="docutils literal notranslate"><span class="pre">--nowait</span><
 <span class="go">            --table &lt;table&gt;</span>
 <span class="go">            [--nowait]</span>
 <span class="go">            [--scope &lt;scope&gt;]</span>
+<span class="go">            [--sstables-file-list &lt;file&gt;]</span>
 <span class="go">            &lt;sstables&gt;...</span>
 </pre></div>
 </div>
@@ -362,6 +368,7 @@ This should be configured as per <a class="reference internal" href="../admin.ht
 <li><p><code class="docutils literal notranslate"><span class="pre">--table</span></code> - Name of the table to load SSTables into</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--nowait</span></code> - Don’t wait on the restore process</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--scope</span> <span class="pre">&lt;scope&gt;</span></code> - Use specified load-and-stream scope</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--sstables-file-list</span> <span class="pre">&lt;file&gt;</span></code> - restore the sstables listed in the given &lt;file&gt;. the list should be new-line seperated.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;sstables&gt;</span></code> - Remainder of keys of the TOC (Table of Contents) components of SSTables to restore, relative to the specified prefix</p></li>
 </ul>
 <p>The <cite>scope</cite> parameter describes the subset of cluster nodes where you want to load data:</p>
@@ -371,6 +378,7 @@ This should be configured as per <a class="reference internal" href="../admin.ht
 <li><p><cite>dc</cite> - In the datacenter (DC) where the local node lives.</p></li>
 <li><p><cite>all</cite> (default) - Everywhere across the cluster.</p></li>
 </ul>
+<p><cite>–sstables-file-list &lt;file&gt;</cite> and <cite>&lt;sstable&gt;</cite> can be combined together, <cite>nodetool restore</cite> will attempt to restore the combined list. duplicates are _not_ removed</p>
 <p>To fully restore a cluster, you should combine the <code class="docutils literal notranslate"><span class="pre">scope</span></code> parameter with the correct list of
 SStables to restore to each node.
 On one extreme, one node is given all SStables with the scope <code class="docutils literal notranslate"><span class="pre">all</span></code>; on the other extreme, all
@@ -414,7 +422,7 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool restore&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool restore&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/nodetool-commands/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -483,7 +491,7 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool restore&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool restore&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/nodetool-commands/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -537,7 +545,7 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.2
+                2025.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -551,13 +559,13 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
             
                 
                     <li>
-                        <a href="../../../branch-2025.3/operating-scylla/nodetool-commands/restore.html">2025.3</a>
+                        <a href="restore.html">2025.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="restore.html">2025.2</a>
+                        <a href="../../../branch-2025.2/operating-scylla/nodetool-commands/restore.html">2025.2</a>
                     </li>
                 
             
@@ -709,7 +717,7 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../cql/index.html">CQL Reference</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cqlsh.html">CQLSh: the CQL shell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cql/appendices.html">Appendices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/appendices.html">Reserved CQL Keywords and Types (Appendices)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/compaction.html">Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/consistency.html">Consistency Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/consistency-calculator.html">Consistency Level Calculator</a></li>
@@ -730,8 +738,6 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
@@ -894,7 +900,30 @@ a subset of nodes to restore only SStables that belong to the rack or DC.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/endpoint-snitch-info.html">Endpoint Snitch Info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/error-injection.html">Error Injection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/failure-detector.html">Failure Detector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/gossiper.html">Gossiper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/hinted-handoff.html">Hinted Handoff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/lsa.html">LSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/messaging-service.html">Messaging Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/raft.html">Raft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/storage-proxy.html">Storage Proxy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/storage-service.html">Storage Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/stream-manager.html">Stream Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/system.html">System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/task-manager-test.html">Task Manager Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/task-manager.html">Task Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/tasks.html">Tasks</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>

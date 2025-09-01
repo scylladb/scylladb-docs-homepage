@@ -328,12 +328,12 @@
 <p>For example:</p>
 <p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">compactionhistory</span></code></p>
 <p>Example output:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">id                                     keyspace_name      columnfamily_name            compacted_at             bytes_in       bytes_out      rows_merged</span>
-<span class="l l-Scalar l-Scalar-Plain">17536e70-5358-11e6-9d5f-000000000000   keyspace1          standard1                    1469554849495             413966109      211273222</span>
-<span class="l l-Scalar l-Scalar-Plain">4e164760-5354-11e6-9d5f-000000000000   system             local                        1469553223382             12804          12639</span>
-<span class="l l-Scalar l-Scalar-Plain">17abc7a0-5358-11e6-9710-000000000001   keyspace1          standard1                    1469554850073             413967233      210742975</span>
-<span class="l l-Scalar l-Scalar-Plain">18537950-5358-11e6-be35-000000000002   keyspace1          standard1                    1469554851173             413973134      210595169</span>
-<span class="l l-Scalar l-Scalar-Plain">19452c50-5358-11e6-8491-000000000003   keyspace1          standard1                    1469554852756             413966390      210388634</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">id                                     shard_id keyspace_name columnfamily_name compaction_name started_at              compacted_at            bytes_in bytes_out rows_merged   sstables_in                                                                                                                                                              sstables_out                                                                          total_tombstone_purge_attempt total_tombstone_purge_failure_due_to_overlapping_with_memtable total_tombstone_purge_failure_due_to_overlapping_with_uncompacting_sstable</span>
+<span class="l l-Scalar l-Scalar-Plain">17536e70-5358-11e6-9d5f-000000000000          0 ks            test              Compact         2024-12-17T16:19:55.914 2024-12-17T16:39:55.914    11000      5583 {1</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">78, 2</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6} [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2a5db691-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5468}, {generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">28c58a60-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5532}]     [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2a5fb260-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compaction, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5583}]  3                             0                                                              1</span>
+<span class="l l-Scalar l-Scalar-Plain">4e164760-5354-11e6-9d5f-000000000000          1 ks            test              Compact         2024-12-17T16:19:55.913 2024-12-17T16:39:55.913    10919      5490 {1</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">56, 2</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2} [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2a5db691-bc8d-11ef-ad72-bbbca77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5433}, {generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">28c58a60-bc8d-11ef-ad72-bbbca77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5486}]     [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2a5f8b50-bc8d-11ef-ad72-bbbca77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compaction, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5490}]  1                             0                                                              0</span>
+<span class="l l-Scalar l-Scalar-Plain">17abc7a0-5358-11e6-9710-000000000001          0 system        raft              Compact         2024-12-17T16:19:52.570 2024-12-17T16:39:52.570   102199     96181 {1</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20, 2</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3} [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">285b08c0-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13683}, {generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2798ca30-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compaction, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">88516}] [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">28614a50-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compaction, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">96181}] 1                             0                                                              0</span>
+<span class="l l-Scalar l-Scalar-Plain">18537950-5358-11e6-be35-000000000002          0 system_schema columns           Compact         2024-12-17T16:19:52.563 2024-12-17T16:39:52.563    25478     19882 {1</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">506}      [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">28545200-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5744}, {generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">279a02b0-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compaction, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">19734}]  [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">286011d0-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compaction, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">19882}] 15                            0                                                              0</span>
+<span class="l l-Scalar l-Scalar-Plain">19452c50-5358-11e6-8491-000000000003          0 system        topology          Compact         2024-12-17T16:19:52.555 2024-12-17T16:39:52.555    22197     14236 {2</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4}        [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00000000-0000-1000-0000-000000000002, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9296}, {generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">285ba501-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memtable, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12901}]    [{generation</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">285e3d10-bc8d-11ef-a5f9-bbbda77f5688, origin</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compaction, size</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">14236}] 0                             0                                                              0</span>
 </pre></div>
 </div>
 <p>Explanation:</p>
@@ -347,20 +347,47 @@
 <tr class="row-even"><td><p>id</p></td>
 <td><p>id of the compaction</p></td>
 </tr>
-<tr class="row-odd"><td><p>keyspace_name</p></td>
+<tr class="row-odd"><td><p>shard_id</p></td>
+<td><p>id of the shard the compaction was executed on</p></td>
+</tr>
+<tr class="row-even"><td><p>keyspace_name</p></td>
 <td><p>keyspace name that the compaction performed on</p></td>
 </tr>
-<tr class="row-even"><td><p>columnfamily_name</p></td>
+<tr class="row-odd"><td><p>columnfamily_name</p></td>
 <td><p>columnfamily name that the compaction performed on</p></td>
 </tr>
-<tr class="row-odd"><td><p>compacted_at</p></td>
-<td><p>timestamp when the compaction starts</p></td>
+<tr class="row-even"><td><p>compaction_type</p></td>
+<td><p>type of compaction, e.g. major, regular, reshard, cleanup, etc.</p></td>
 </tr>
-<tr class="row-even"><td><p>bytes_in</p></td>
+<tr class="row-odd"><td><p>started_at</p></td>
+<td><p>timestamp when the compaction started</p></td>
+</tr>
+<tr class="row-even"><td><p>compacted_at</p></td>
+<td><p>timestamp when the compaction completed</p></td>
+</tr>
+<tr class="row-odd"><td><p>bytes_in</p></td>
 <td><p>SSTable size before the compaction</p></td>
 </tr>
-<tr class="row-odd"><td><p>bytes_out</p></td>
+<tr class="row-even"><td><p>bytes_out</p></td>
 <td><p>SSTable size after the compaction</p></td>
+</tr>
+<tr class="row-odd"><td><p>rows_merged</p></td>
+<td><p>histogram of merged data (takes into account clustering rows, static rows, range tombstones, etc.)</p></td>
+</tr>
+<tr class="row-even"><td><p>sstables_in</p></td>
+<td><p>list of sstables that were the input of the compaction</p></td>
+</tr>
+<tr class="row-odd"><td><p>sstables_out</p></td>
+<td><p>list of sstables that were the output of the compaction (usually one; with ICS/LCS it can be more)</p></td>
+</tr>
+<tr class="row-even"><td><p>total_tombstone_purge_attempt</p></td>
+<td><p>total amount of tombstones that were candidates for garbage-collection</p></td>
+</tr>
+<tr class="row-odd"><td><p>total_tombstone_purge_failure_due_to_overlapping_with_memtable</p></td>
+<td><p>purgeable tombstone which couldn’t be collected because memtable contains possibly shadowed data</p></td>
+</tr>
+<tr class="row-even"><td><p>total_tombstone_purge_failure_due_to_overlapping_with_uncompacting_sstable</p></td>
+<td><p>purgeable tombstone which couldn’t be collected because other sstables contains possibly shadowed data</p></td>
 </tr>
 </tbody>
 </table>
@@ -399,7 +426,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool compactionhistory&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/compactionhistory%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool compactionhistory&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/nodetool-commands/compactionhistory%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -468,7 +495,7 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool compactionhistory&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.2/operating-scylla/nodetool-commands/compactionhistory%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool compactionhistory&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/nodetool-commands/compactionhistory%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -509,7 +536,7 @@
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.2
+                2025.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -523,13 +550,13 @@
             
                 
                     <li>
-                        <a href="../../../branch-2025.3/operating-scylla/nodetool-commands/compactionhistory.html">2025.3</a>
+                        <a href="compactionhistory.html">2025.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="compactionhistory.html">2025.2</a>
+                        <a href="../../../branch-2025.2/operating-scylla/nodetool-commands/compactionhistory.html">2025.2</a>
                     </li>
                 
             
@@ -681,7 +708,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../cql/index.html">CQL Reference</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cqlsh.html">CQLSh: the CQL shell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cql/appendices.html">Appendices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/appendices.html">Reserved CQL Keywords and Types (Appendices)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/compaction.html">Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/consistency.html">Consistency Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/consistency-calculator.html">Consistency Level Calculator</a></li>
@@ -702,8 +729,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cql/non-reserved-keywords.html">Non-Reserved CQL Keywords</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cql/reserved-keywords.html">Reserved CQL Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
@@ -866,7 +891,30 @@
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/api-reference.html">API Reference</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/endpoint-snitch-info.html">Endpoint Snitch Info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/error-injection.html">Error Injection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/failure-detector.html">Failure Detector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/gossiper.html">Gossiper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/hinted-handoff.html">Hinted Handoff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/lsa.html">LSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/messaging-service.html">Messaging Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/raft.html">Raft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/storage-proxy.html">Storage Proxy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/storage-service.html">Storage Service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/stream-manager.html">Stream Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/system.html">System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/task-manager-test.html">Task Manager Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/task-manager.html">Task Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/api/tasks.html">Tasks</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/metrics.html">Metrics</a></li>
 </ul>
 </li>
