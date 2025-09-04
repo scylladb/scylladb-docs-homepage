@@ -485,6 +485,10 @@ may prevent creating tables in that keyspace.</p>
 </tr>
 </tbody>
 </table>
+<p>If no datacenters are specified, and <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code> is left unspecified,
+then every rack in every datacenter receives a replica, except for racks comprised
+of only <a class="reference internal" href="../architecture/zero-token-nodes.html"><span class="doc">zero-token nodes</span></a>. Racks added after
+the keyspace creation do not receive replicas.</p>
 <p>Note that when <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> ing keyspaces and supplying <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code>,
 auto-expansion will only <em>add</em> new datacenters for safety, it will not alter
 existing datacenters or remove any even if they are no longer in the cluster.
@@ -520,6 +524,22 @@ explicitly zero out the datacenter you want to have zero replicas.</p>
 
 <span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
     <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An example that excludes datacenter options and uses only class:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">}</span> <span class="p">;</span>
+
+<span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;DC2&#39;</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An example that excludes both class and datacenter options:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{}</span> <span class="p">;</span>
+
+<span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;DC2&#39;</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -2068,7 +2088,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Sep 2025.
+                        Last updated on 04 Sep 2025.
                     
                 </div>
             
