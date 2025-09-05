@@ -13,6 +13,7 @@
   :image: /_static/img/mascots-2/docs.svg
   :button_icon: icon-arrow-right
   :search_box:
+  :ai_chatbot_id: ddfdo8m94k
 
   ScyllaDB is a high-performance NoSQL database optimized for speed and scalability.
 
