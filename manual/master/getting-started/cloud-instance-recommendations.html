@@ -351,10 +351,7 @@
 </div>
 <section id="amazon-web-services-aws">
 <span id="system-requirements-aws"></span><h2>Amazon Web Services (AWS)<a class="headerlink" href="#amazon-web-services-aws" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>The recommended instance types are <a class="reference internal" href="#system-requirements-i3en-instances"><span class="std std-ref">i3en</span></a>, and <a class="reference internal" href="#system-requirements-i4i-instances"><span class="std std-ref">i4i</span></a>.</p></li>
-<li><p>We recommend using enhanced networking that exposes the physical network cards to the VM.</p></li>
-</ul>
+<p>The recommended instance types are <a class="reference internal" href="#system-requirements-i3en-instances"><span class="std std-ref">i3en</span></a>, <a class="reference internal" href="#system-requirements-i4i-instances"><span class="std std-ref">i4i</span></a>, <a class="reference internal" href="#system-requirements-i7i-instances"><span class="std std-ref">i7i</span></a>, and <a class="reference internal" href="#system-requirements-i7ie-instances"><span class="std std-ref">i7ie</span></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Some of the ScyllaDB configuration features rely on querying instance metadata.
@@ -481,6 +478,123 @@ See <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/lates
 <p>See  <a class="reference external" href="https://aws.amazon.com/ec2/instance-types/i4i/">Amazon EC2 I4i Instances</a> for specification details.</p>
 <p>See <a class="reference external" href="https://www.scylladb.com/2022/05/09/scylladb-on-the-new-aws-ec2-i4i-instances-twice-the-throughput-lower-latency/">ScyllaDB on the New AWS EC2 I4i Instances: Twice the Throughput &amp; Lower Latency</a> to
 learn more about using ScyllaDB with i4i instances.</p>
+</section>
+<section id="i7i-instances">
+<span id="system-requirements-i7i-instances"></span><h3>i7i instances<a class="headerlink" href="#i7i-instances" title="Link to this heading">¶</a></h3>
+<p>The following i7i instances are supported. Larger i7i instances will be
+supported in upcoming releases.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Model</p></th>
+<th class="head"><p>vCPU</p></th>
+<th class="head"><p>Mem (GiB)</p></th>
+<th class="head"><p>Storage (GB)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>i7i.large</p></td>
+<td><p>2</p></td>
+<td><p>16</p></td>
+<td><p>1 x 468 GB</p></td>
+</tr>
+<tr class="row-odd"><td><p>i7i.xlarge</p></td>
+<td><p>4</p></td>
+<td><p>32</p></td>
+<td><p>1 x 937.5 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>i7i.2xlarge</p></td>
+<td><p>8</p></td>
+<td><p>64</p></td>
+<td><p>1 x 1875 GB</p></td>
+</tr>
+</tbody>
+</table>
+<p>All i7i instances have the following specs:</p>
+<ul class="simple">
+<li><p>3.2 GHz all-core turbo Intel® Xeon® Scalable (Emerald Rapids) processors.</p></li>
+<li><p>Up to 100 Gbps of networking bandwidth and 60 Gbps bandwidth to Amazon Elastic Block Store (EBS).</p></li>
+<li><p>Advanced Matrix Extensions (AMX) for accelerating CPU-based machine learning.</p></li>
+</ul>
+<p>See <a class="reference external" href="https://aws.amazon.com/ec2/instance-types/i7i/">Amazon EC2 I7i Instances</a> for details.</p>
+</section>
+<section id="i7ie-instances">
+<span id="system-requirements-i7ie-instances"></span><h3>i7ie instances<a class="headerlink" href="#i7ie-instances" title="Link to this heading">¶</a></h3>
+<p>The following i7ie instances are supported.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Model</p></th>
+<th class="head"><p>vCPU</p></th>
+<th class="head"><p>Mem (GiB)</p></th>
+<th class="head"><p>Storage (GB)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>i7ie.large</p></td>
+<td><p>2</p></td>
+<td><p>16</p></td>
+<td><p>1 x 1,250 GB</p></td>
+</tr>
+<tr class="row-odd"><td><p>i7ie.xlarge</p></td>
+<td><p>4</p></td>
+<td><p>32</p></td>
+<td><p>1 x 2,500 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>i7ie.2xlarge</p></td>
+<td><p>8</p></td>
+<td><p>64</p></td>
+<td><p>2 x 2,500 GB</p></td>
+</tr>
+<tr class="row-odd"><td><p>i7ie.3xlarge</p></td>
+<td><p>12</p></td>
+<td><p>96</p></td>
+<td><p>1 x 7,500 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>i7ie.6xlarge</p></td>
+<td><p>24</p></td>
+<td><p>192</p></td>
+<td><p>2 x 7,500 GB</p></td>
+</tr>
+<tr class="row-odd"><td><p>i7ie.12xlarge</p></td>
+<td><p>48</p></td>
+<td><p>384</p></td>
+<td><p>4 x 7,500 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>i7ie.18xlarge</p></td>
+<td><p>72</p></td>
+<td><p>576</p></td>
+<td><p>6 x 7,500 GB</p></td>
+</tr>
+<tr class="row-odd"><td><p>i7ie.24xlarge</p></td>
+<td><p>96</p></td>
+<td><p>768</p></td>
+<td><p>8 x 7,500 GB</p></td>
+</tr>
+<tr class="row-even"><td><p>i7ie.48xlarge</p></td>
+<td><p>192</p></td>
+<td><p>1,536</p></td>
+<td><p>16 x 7,500 GB</p></td>
+</tr>
+</tbody>
+</table>
+<p>All i7i instances have the following specs:</p>
+<ul class="simple">
+<li><p>3.2 GHz all-core turbo Intel® Xeon® Scalable (Emerald Rapids) processors.</p></li>
+<li><p>Up to 100 Gbps of networking bandwidth and 60 Gbps bandwidth to Amazon Elastic Block Store (EBS).</p></li>
+<li><p>Advanced Matrix Extensions (AMX) for accelerating CPU-based machine learning.</p></li>
+</ul>
+<p>See <a class="reference external" href="https://aws.amazon.com/ec2/instance-types/i7i/">Amazon EC2 I7i Instances</a> for details.</p>
 </section>
 <section id="im4gn-and-is4gen-instances">
 <h3>Im4gn and Is4gen instances<a class="headerlink" href="#im4gn-and-is4gen-instances" title="Link to this heading">¶</a></h3>
@@ -914,6 +1028,8 @@ For Intel Xeon processors, each OCPU corresponds to two hardware execution threa
 <li><a class="reference internal" href="#amazon-web-services-aws">Amazon Web Services (AWS)</a><ul>
 <li><a class="reference internal" href="#i3en-instances">i3en instances</a></li>
 <li><a class="reference internal" href="#i4i-instances">i4i instances</a></li>
+<li><a class="reference internal" href="#i7i-instances">i7i instances</a></li>
+<li><a class="reference internal" href="#i7ie-instances">i7ie instances</a></li>
 <li><a class="reference internal" href="#im4gn-and-is4gen-instances">Im4gn and Is4gen instances</a></li>
 </ul>
 </li>
@@ -1392,7 +1508,7 @@ For Intel Xeon processors, each OCPU corresponds to two hardware execution threa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Sep 2025.
+                        Last updated on 06 Sep 2025.
                     
                 </div>
             
