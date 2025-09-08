@@ -104,6 +104,29 @@
                 <script src="../_static/copybutton.js?v=f281be69"></script>
             
         
+            
+                <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+            
+        
+            
+                <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+            
+        
+            
+                <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+            
+        
+            
+                <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+            
+        
+            
+                <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+            
+        
     
             
                 <!-- Local meta tags -->
@@ -410,10 +433,41 @@ introduce incompatible API changes.</p></li>
 <p>You can only use LTS releases (upgrading to the latest patch release for
 the greatest stability) or follow the feature and LTS releases for the latest
 feature set.</p>
-<p><em>An illustrative example:</em></p>
-<a class="reference internal image-reference" href="../_images/lts-feature-lane.png"><img alt="../_images/lts-feature-lane.png" src="../_images/lts-feature-lane.png" style="width: 600px;" />
-</a>
-</section>
+<pre  class="mermaid">
+        flowchart LR
+
+  %% Style definitions
+  classDef feature fill:#c8dafc,stroke:#036,stroke-width:1px;
+  classDef lts fill:#d5ebd6,stroke:#063,stroke-width:1px;
+
+  %% LTS lane with background
+  subgraph LTSLane[&quot;Long Term Support Lane&quot;]
+    style LTSLane fill:#f7f7d1,stroke:#aaa,stroke-width:1px
+    direction LR
+    LTS_2024_1[&quot;2024.1 LTS&quot;]:::lts
+    LTS_2024_1 --&gt; LTS_2025_1[&quot;2025.1 LTS&quot;]:::lts
+    LTS_2025_1 --&gt; LTS_2026_1[&quot;2026.1 LTS&quot;]:::lts --&gt; LTS_2027_1[&quot;2027.1 LTS&quot;]:::lts
+  end
+
+  %% Feature lane with background
+  subgraph FeatureLane[&quot;Feature Lane&quot;]
+    style FeatureLane fill:#fffad1,stroke:#aaa,stroke-width:1px
+    direction LR
+    F_2024_2[&quot;2024.2&quot;]:::feature
+    F_2025_2[&quot;2025.2&quot;]:::feature --&gt; F_2025_3[&quot;2025.3&quot;]:::feature --&gt; F_2025_4[&quot;2025.4&quot;]:::feature
+    F_2026_2[&quot;2026.2&quot;]:::feature --&gt; F_2026_3[&quot;2026.3&quot;]:::feature --&gt; F_2026_4[&quot;2026.4&quot;]:::feature
+    F_2027_2[&quot;2027.2&quot;]:::feature
+  end
+
+  %% Cross-lane arrows (solid and dashed)
+  LTS_2024_1 --&gt; F_2024_2
+  F_2024_2 --&gt; LTS_2025_1
+  LTS_2025_1 --&gt; F_2025_2
+  F_2025_4 --&gt; LTS_2026_1
+  LTS_2026_1 --&gt; F_2026_2
+  F_2026_4 --&gt; LTS_2027_1
+  LTS_2027_1 --&gt; F_2027_2
+    </pre></section>
 <section id="version-support-policy">
 <span id="id1"></span><h2>Version Support Policy<a class="headerlink" href="#version-support-policy" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -697,7 +751,7 @@ a new major or minor version.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Sep 2025.
+                        Last updated on 08 Sep 2025.
                     
                 </div>
             
