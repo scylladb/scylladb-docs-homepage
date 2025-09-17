@@ -375,10 +375,13 @@ the information about datacenter names and racks may be missing or incorrect, or
 <span id="snitch-simple-snitch"></span><h2>SimpleSnitch<a class="headerlink" href="#simplesnitch" title="Link to this heading">¶</a></h2>
 <p>Use the SimpleSnitch when working with single cluster deployments and all the nodes are under the same datacenter.
 The SimpleSnitch binds all the nodes to the same Rack and datacenter and is recommended to be used only in single datacenter deployments.</p>
+<p>The name of the datacenter is set to <code class="docutils literal notranslate"><span class="pre">datacenter1</span></code>, while the name of the rack—to <code class="docutils literal notranslate"><span class="pre">rack1</span></code>.</p>
 </section>
 <section id="rackinferringsnitch">
 <span id="snitch-rack-inferring-snitch"></span><h2>RackInferringSnitch<a class="headerlink" href="#rackinferringsnitch" title="Link to this heading">¶</a></h2>
-<p>RackInferringSnitch binds nodes to DCs and racks according to their broadcast IP addresses.</p>
+<p>RackInferringSnitch binds nodes to DCs and racks according to their broadcast IP addresses.
+The name of the DC will correspond to the number represented by the second octet of bits
+in the address, while the name of the rack—to the third octet.</p>
 <p>For Example:</p>
 <p>If a node has a Broadcast IP 192.168.100.200; then it would belong to a DC ‘168’ and Rack ‘100’.</p>
 </section>
@@ -394,6 +397,7 @@ In addition, it reads its configuration from the <code class="docutils literal n
 <span class="nv">rack</span><span class="o">=</span>my_rack
 </pre></div>
 </div>
+<p>When using this snitch, it is mandatory to provide both the name of the datacenter and the name of the rack.</p>
 <p>Setting <em>prefer_local</em> to <em>true</em> instructs ScyllaDB to use an internal IP address for interactions with nodes in the same DC.</p>
 <p>An example use case is when your host uses different addresses for LAN and WAN sessions. You want your cluster to be accessible by clients <em>outside</em> the ScyllaDB nodes’ LAN while still allowing ScyllaDB nodes to communicate over internal LAN keeping latency low. In AWS, this is similar to a VM’s “Public” and “Private” addresses.
 To set an internal and external address, set a LAN address as a <em>listen_address</em> and use a WAN address as a <em>broadcast_address</em>.</p>
@@ -1229,7 +1233,7 @@ UN<span class="w">  </span><span class="m">192</span>.0.2.5<span class="w">     
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 12 Sep 2025.
+                        Last updated on 17 Sep 2025.
                     
                 </div>
             

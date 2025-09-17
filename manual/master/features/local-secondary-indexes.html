@@ -356,7 +356,7 @@ In addition, if the view update fails, the client receives a write error.</p>
 When using a Token Aware Driver, the same node is likely the coordinator, and the query does not require any inter-node communication.</p>
 <section id="how-local-secondary-index-queries-work">
 <h2>How Local Secondary Index Queries Work<a class="headerlink" href="#how-local-secondary-index-queries-work" title="Link to this heading">¶</a></h2>
-<p>Lets explore the example above, first with Global Secondary Index (GSI) and then with Local Secondary Index (LSI)</p>
+<p>Let’s explore the example above, first with Global Secondary Index (GSI) and then with Local Secondary Index (LSI)</p>
 <p><strong>Global Secondary Index Example</strong></p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">menus</span> <span class="p">(</span><span class="n">location</span> <span class="nb">text</span><span class="p">,</span>
       <span class="n">name</span> <span class="nb">text</span><span class="p">,</span> <span class="n">price</span> <span class="nb">float</span><span class="p">,</span>
@@ -377,7 +377,7 @@ When using a Token Aware Driver, the same node is likely the coordinator, and th
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">menus</span> <span class="k">WHERE</span> <span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;Warsaw&#39;</span> <span class="k">and</span> <span class="n">dish_type</span> <span class="o">=</span> <span class="s1">&#39;Polish soup&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>With GSI, <code class="docutils literal notranslate"><span class="pre">dish_type</span></code> acts as the partition key of the index table and the query requires two inter-node hops</p>
+<p>With GSI, <code class="docutils literal notranslate"><span class="pre">dish_type</span></code> acts as the partition key of the index table, and the query requires two inter-node hops</p>
 <img alt="../_images/global-sec-index-example.png" src="../_images/global-sec-index-example.png" />
 <p>GSI flow:</p>
 <ul class="simple">
@@ -387,7 +387,7 @@ When using a Token Aware Driver, the same node is likely the coordinator, and th
 </ul>
 <p>Note, that partition keys from the base table and underlying materialized view are different, which means that their data is likely to be stored on different nodes.</p>
 <p><strong>Local Secondary Index Example</strong>
-Now let’s create an LSI, using the base table partition key, in this case <code class="docutils literal notranslate"><span class="pre">location</span></code> as partition key for the Index</p>
+Now let’s create an LSI, using the base table partition key, in this case <code class="docutils literal notranslate"><span class="pre">location</span></code> as the partition key for the Index</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">menus</span><span class="p">((</span><span class="n">location</span><span class="p">),</span> <span class="n">dish_type</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -402,7 +402,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
 <li><p>An indexing subquery (2) is used  to fetch all matching base keys from the underlying materialized view.</p></li>
 <li><p>The coordinator uses the resulting base key set to request appropriate rows from the base table (3), located in the <strong>same node</strong> as the Index</p></li>
 </ul>
-<p>Both the base table and the underlying materialized view have the same partition keys for corresponding rows. That means that their data resides on the same node and can thus be executed locally, without having to contact another node. When using a <strong>token aware policy</strong>, the entire query will be done with zero inter-node communication.</p>
+<p>Both the base table and the underlying materialized view have the same partition keys for corresponding rows. That means that their data resides on the same node and can thus be executed locally, without having to contact another node. When using a <strong>token-aware policy</strong>, the entire query will be executed with zero inter-node communication.</p>
 <img alt="../_images/local-sec-index-token-aware-exaple.png" src="../_images/local-sec-index-token-aware-exaple.png" />
 <p>LSI with Token Aware driver flow:</p>
 <ul class="simple">
@@ -1037,7 +1037,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 12 Sep 2025.
+                        Last updated on 17 Sep 2025.
                     
                 </div>
             
