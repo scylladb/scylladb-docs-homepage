@@ -378,6 +378,10 @@ In addition to standard roles, ScyllaDB users can implement <a class="reference 
 </dl>
 </li>
 </ul>
+<p>Materialized views and CDC logs cannot be granted separate permissions -
+they inherit their permissions from the base table. It is not possible
+to give different permissions to different materialized views of the
+same base table.</p>
 </section>
 <section id="use-case">
 <span id="rbac-usecase-use-case"></span><h2>Use case<a class="headerlink" href="#use-case" title="Link to this heading">¶</a></h2>
@@ -936,7 +940,7 @@ For example, if we list Mary’s permissions, we’ll see they represent what we
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -1161,7 +1165,7 @@ For example, if we list Mary’s permissions, we’ll see they represent what we
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2025.
+                        Last updated on 19 Sep 2025.
                     
                 </div>
             

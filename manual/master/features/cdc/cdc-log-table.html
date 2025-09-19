@@ -417,10 +417,11 @@ Below we explain what the log table’s schema is. For now, to make the explanat
 <p>When a change is performed in the base table, a stream identifier is chosen for the corresponding log entries depending on two things:</p>
 <ul class="simple">
 <li><p>the base write’s partition key,</p></li>
-<li><p>the currently operating <strong>CDC generation</strong> which is a global property of the ScyllaDB cluster (similar to tokens).</p></li>
+<li><p>in a vnode-based keyspace, the currently operating <strong>CDC generation</strong> which is a global property of the ScyllaDB cluster (similar to tokens).</p></li>
+<li><p>in a tablets-based keyspace, the current stream set associated with the base table, which depends on the tablets shape of the base table.</p></li>
 </ul>
 <p>Partitions in the log table are called <em>streams</em>; within one stream, all entries are sorted according to the base table writes’ timestamps, using standard clustering key properties (note that <code class="docutils literal notranslate"><span class="pre">cdc$time</span></code>, which represents the time of the write, is the first part of the clustering key).</p>
-<p>If you want to use CDC efficiently, it’s important to understand how stream IDs are managed and chosen. Consult the <a class="reference internal" href="cdc-streams.html"><span class="doc">CDC Streams</span></a> document for basic definitions and properties, <a class="reference internal" href="cdc-stream-generations.html"><span class="doc">CDC Stream Generations</span></a> document to understand how streams are managed and how they change over time, and finally <a class="reference internal" href="cdc-querying-streams.html"><span class="doc">Querying CDC Streams</span></a> to learn how streams can be queried efficiently, and how to find out which streams to query. Reading these documents is not a prerequisite for understanding the rest of the log table related sections.</p>
+<p>If you want to use CDC efficiently, it’s important to understand how stream IDs are managed and chosen. Consult the <a class="reference internal" href="cdc-streams.html"><span class="doc">CDC Streams</span></a> document for basic definitions and properties, <a class="reference internal" href="cdc-stream-changes.html"><span class="doc">CDC Stream Changes</span></a> document to understand how streams are managed and how they change over time, and finally <a class="reference internal" href="cdc-querying-streams.html"><span class="doc">Querying CDC Streams</span></a> to learn how streams can be queried efficiently, and how to find out which streams to query. Reading these documents is not a prerequisite for understanding the rest of the log table related sections.</p>
 </section>
 <section id="time-column">
 <h3>Time column<a class="headerlink" href="#time-column" title="Link to this heading">¶</a></h3>
@@ -1084,7 +1085,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-preimages.html">Preimages and postimages</a></li>
@@ -1309,7 +1310,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2025.
+                        Last updated on 19 Sep 2025.
                     
                 </div>
             

@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             CDC Stream Generations | ScyllaDB Docs 
+             CDC Stream Changes | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../_static/img/favicon.ico" type="image/x-icon" />
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/features/cdc/cdc-stream-generations.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/features/cdc/cdc-stream-changes.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -318,7 +318,7 @@
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">CDC Stream Generations</span>
+    <span class="bread__item bread__item--last">CDC Stream Changes</span>
 </div>
                     </div>
                 
@@ -336,19 +336,19 @@
             
                 You're viewing documentation for an unstable version of ScyllaDB Manual.
             
-            <a href="../../../stable/features/cdc/cdc-stream-generations.html">Switch to the latest stable version.</a>
+            <a href="../../../stable/index.html">Switch to the latest stable version.</a>
         </p>
     </div>
 
                         
                         
-                        <section id="cdc-stream-generations">
-<h1>CDC Stream Generations<a class="headerlink" href="#cdc-stream-generations" title="Link to this heading">¶</a></h1>
-<p>Stream IDs used for CDC log entries change over time. A single base partition key might be mapped to one stream in the log today, but to a different stream tomorrow. If you build a query which follows changes made to your favorite partition by using a <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause to specify the proper stream ID, you might need to update the query due to a CDC generation change. The good news is:</p>
-<ul class="simple">
-<li><p>stream IDs will only change if you join a new node to the cluster,</p></li>
-<li><p>it is easy to learn what the used stream IDs are (<a class="reference internal" href="cdc-querying-streams.html"><span class="doc">Querying CDC Streams</span></a>).</p></li>
-</ul>
+                        <section id="cdc-stream-changes">
+<h1>CDC Stream Changes<a class="headerlink" href="#cdc-stream-changes" title="Link to this heading">¶</a></h1>
+<p>Stream IDs used for CDC log entries change over time. A single base partition key might be mapped to one stream in the log today, but to a different stream tomorrow. If you build a query which follows changes made to your favorite partition by using a <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause to specify the proper stream ID, you might need to update the query due to CDC streams changes.</p>
+<p>The good news is, it is easy to learn what the used stream IDs are (<a class="reference internal" href="cdc-querying-streams.html"><span class="doc">Querying CDC Streams</span></a>). The method depends on whether the keyspace is vnode-based or tablets-based.</p>
+<section id="cdc-stream-generations-vnodes-based-keyspaces">
+<h2>CDC Stream Generations (vnodes-based keyspaces)<a class="headerlink" href="#cdc-stream-generations-vnodes-based-keyspaces" title="Link to this heading">¶</a></h2>
+<p>In a vnode-based keyspace, stream IDs will change if you join a new node to the cluster or by running the <code class="docutils literal notranslate"><span class="pre">checkAndRepairCdcStreams</span></code> command (<a class="reference internal" href="../../operating-scylla/nodetool-commands/checkandrepaircdcstreams.html"><span class="doc">Nodetool checkAndRepairCdcStreams</span></a>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Stream IDs are chosen to maintain the following invariant:</p>
@@ -370,11 +370,11 @@
 <p>The tables mentioned in the following sections: <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_generation_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_streams_descriptions_v2</span></code> have been introduced in ScyllaDB 4.4. It is highly recommended to upgrade to 4.4 for efficient CDC usage. The last section explains how to run the below examples in ScyllaDB 4.3.</p>
 </div>
 <section id="when-cdc-generations-change">
-<h2>When CDC generations change<a class="headerlink" href="#when-cdc-generations-change" title="Link to this heading">¶</a></h2>
+<h3>When CDC generations change<a class="headerlink" href="#when-cdc-generations-change" title="Link to this heading">¶</a></h3>
 <p>When you start a fresh cluster, the first generation is created. It has a timestamp chosen using the local clock of the node; it is stored in the <code class="docutils literal notranslate"><span class="pre">time</span></code> column of the <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_generation_timestamps</span></code> table. The stream IDs used in this generation are stored in the <code class="docutils literal notranslate"><span class="pre">streams</span></code> column of the <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_streams_descriptions_v2</span></code> table. Whenever you bootstrap a new node, you will see a new row appear in <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> containing the new generation’s timestamp and a new partition in <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions_v2</span></code> containing the stream IDs of that new generation.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> table is a single-partition table; all timestamps are stored in the <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">'timestamps'</span></code> partition.</p>
 <section id="example-the-next-generation">
-<span id="next-gen"></span><h3>Example: The Next Generation<a class="headerlink" href="#example-the-next-generation" title="Link to this heading">¶</a></h3>
+<span id="next-gen"></span><h4>Example: The Next Generation<a class="headerlink" href="#example-the-next-generation" title="Link to this heading">¶</a></h4>
 <ol class="arabic">
 <li><p>Start a new cluster. Query the <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> table to see the available generations:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">;</span>
@@ -450,10 +450,10 @@
 </section>
 </section>
 <section id="the-first-generation-s-timestamp">
-<h2>The first generation’s timestamp<a class="headerlink" href="#the-first-generation-s-timestamp" title="Link to this heading">¶</a></h2>
+<h3>The first generation’s timestamp<a class="headerlink" href="#the-first-generation-s-timestamp" title="Link to this heading">¶</a></h3>
 <p>The first generation’s timestamp is chosen by the first starting node by taking the current time (on the node’s clock) shifted forward by a small duration (around a minute). Therefore you won’t be able to perform writes to CDC-enabled tables immediately after starting the first node: there is no CDC generation operating <em>yet</em>.</p>
 <section id="example-could-not-find-any-cdc-stream">
-<h3>Example: “could not find any CDC stream”<a class="headerlink" href="#example-could-not-find-any-cdc-stream" title="Link to this heading">¶</a></h3>
+<h4>Example: “could not find any CDC stream”<a class="headerlink" href="#example-could-not-find-any-cdc-stream" title="Link to this heading">¶</a></h4>
 <p>Suppose a node was started at 17:59:35 UTC+1 time, as reported by the node’s logs:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>INFO  2020-02-06 17:59:35,087 [shard 0] init - ScyllaDB version 666.development-0.20200206.9eae0b57a with build-id 052adc1eb0601af2 starting ...
 </pre></div>
@@ -486,13 +486,157 @@
 Make sure to upgrade all nodes <strong>before</strong> you start doing CDC writes: one of the nodes will be responsible for creating the first CDC generation and informing other nodes about it.</p>
 </section>
 </section>
-<section id="differences-in-scylladb-4-3">
-<h2>Differences in ScyllaDB 4.3<a class="headerlink" href="#differences-in-scylladb-4-3" title="Link to this heading">¶</a></h2>
-<p>In ScyllaDB 4.3 the tables <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions_v2</span></code> don’t exist. Instead there is the <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions</span></code> table. To retrieve all generation timestamps, instead of querying the <code class="docutils literal notranslate"><span class="pre">time</span></code> column of <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> using a single-partition query (i.e. using <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">key</span> <span class="pre">=</span> <span class="pre">'timestamps'</span></code>), you would query the <code class="docutils literal notranslate"><span class="pre">time</span></code> column of <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions</span></code> with a full range scan (without specifying a single partition):</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_streams_descriptions</span><span class="p">;</span>
+</section>
+<section id="cdc-stream-changes-in-tablets-based-keyspaces">
+<h2>CDC Stream Changes in tablets-based keyspaces<a class="headerlink" href="#cdc-stream-changes-in-tablets-based-keyspaces" title="Link to this heading">¶</a></h2>
+<p>In a tablets-based keyspace, each base table has its own set of streams operating at any given moment, determined by the current shape of the table’s tablets.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Stream IDs are chosen to maintain the following invariant:</p>
+<ul class="simple">
+<li><p>Given a base write with partition key <code class="docutils literal notranslate"><span class="pre">pk</span></code>, the corresponding log table entries will have partition key <code class="docutils literal notranslate"><span class="pre">s_id</span></code> such that the token of <code class="docutils literal notranslate"><span class="pre">pk</span></code> is in the same tablet as the token of <code class="docutils literal notranslate"><span class="pre">s_id</span></code>.</p></li>
+</ul>
+</div>
+<section id="when-cdc-streams-change">
+<h3>When CDC streams change<a class="headerlink" href="#when-cdc-streams-change" title="Link to this heading">¶</a></h3>
+<p>When a CDC log table is first created, a new stream set is created for it, with a single stream ID corresponding to each tablet of the base table.
+As the base table grows or shrinks, its tablets may be split or merged.
+When that happens, a new CDC stream set is created for the table, with a new stream ID for each new tablet, and it replaces the old stream set.
+Each stream set has an associated timestamp that indicates when the stream set starts operating.</p>
+<section id="example-tablet-split">
+<h4>Example: Tablet Split<a class="headerlink" href="#example-tablet-split" title="Link to this heading">¶</a></h4>
+<ol class="arabic">
+<li><p>Create a table and insert a row:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;min_tablet_count&#39;</span><span class="p">:</span> <span class="mf">2</span><span class="p">};</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Unfortunately, the <code class="docutils literal notranslate"><span class="pre">time</span></code> column is the partition key column of this table. Therefore the values are not sorted, unlike the values of the <code class="docutils literal notranslate"><span class="pre">time</span></code> column of the <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> table (in which <code class="docutils literal notranslate"><span class="pre">time</span></code> is the clustering key). You will have to sort them yourselves in order to learn the timestamp of the last generation. Furthermore, querying the table with a full range scan like above requires the coordinator to contact the entire cluster, potentially increasing resource usage and latency. Thus we recommend upgrading to ScyllaDB 4.4 and use the new description tables instead.</p>
+</li>
+<li><p>Query the CDC timestamps:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_timestamps</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>returns:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span> <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">table_name</span> <span class="o">|</span> <span class="nb">timestamp</span>
+<span class="c1">---------------+------------+---------------------------------</span>
+            <span class="n">ks</span> <span class="o">|</span>          <span class="n">t</span> <span class="o">|</span> <span class="mf">2025</span><span class="o">-</span><span class="mf">09</span><span class="o">-</span><span class="mf">09</span> <span class="mf">14</span><span class="p">:</span><span class="mf">41</span><span class="p">:</span><span class="mf">36.977000</span><span class="o">+</span><span class="mf">0000</span>
+
+<span class="p">(</span><span class="mf">1</span> <span class="n">rows</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Query the CDC streams:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>returns:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span> keyspace_name | table_name | timestamp                       | stream_state | stream_id
+---------------+------------+---------------------------------+--------------+------------------------------------
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            0 | 0xffffffffffffffff50e84c99d4000001
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            0 | 0x7fffffffffffffff55ebbda510000001
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            2 | 0xffffffffffffffff50e84c99d4000001
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            2 | 0x7fffffffffffffff55ebbda510000001
+
+(4 rows)
+</pre></div>
+</div>
+</div></blockquote>
+<p>We see that we have a single stream set with an associated timestamp and it has two streams - one for each tablet of the base table.</p>
+<p>The stream kind value <code class="docutils literal notranslate"><span class="pre">0</span></code> indicates that these streams are the current streams for this timestamps, and the stream kind value <code class="docutils literal notranslate"><span class="pre">2</span></code> indicates that these are newly opened streams in this timestamp.</p>
+</li>
+<li><p>Query the CDC log table:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span><span class="p">,</span> <span class="n">pk</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>returns:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span> cdc$stream_id                      | pk
+------------------------------------+----
+ 0xffffffffffffffff50e84c99d4000001 |  0
+
+(1 rows)
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Now trigger a tablet split:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="k">WITH</span> <span class="n">tablets</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_tablet_count&#39;</span><span class="p">:</span><span class="mf">4</span><span class="p">};</span>
+</pre></div>
+</div>
+</li>
+<li><p>Wait for tablet split to complete and a new CDC timestamp to be created:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_timestamps</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>eventually a new timestamp appears:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span> keyspace_name | table_name | timestamp
+---------------+------------+---------------------------------
+            ks |          t | 2025-09-09 14:44:47.820000+0000
+            ks |          t | 2025-09-09 14:41:36.977000+0000
+
+(2 rows)
+</pre></div>
+</div>
+</div></blockquote>
+<p>note the timestamps are sorted in descending order to make it easy to check for new timestamps.</p>
+</li>
+<li><p>Query the CDC streams again:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>returns:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span> keyspace_name | table_name | timestamp                       | stream_state | stream_id
+---------------+------------+---------------------------------+--------------+------------------------------------
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            0 | 0xffffffffffffffff50e84c99d4000001
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            0 | 0x7fffffffffffffff55ebbda510000001
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            2 | 0xffffffffffffffff50e84c99d4000001
+            ks |          t | 2025-09-09 14:41:36.977000+0000 |            2 | 0x7fffffffffffffff55ebbda510000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            0 | 0xbfffffffffffffffa67123f568000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            0 | 0xffffffffffffffffe28e96d4f4000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            0 | 0x3fffffffffffffff296a1c0f24000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            0 | 0x7fffffffffffffff9573ad2614000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            1 | 0xffffffffffffffff50e84c99d4000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            1 | 0x7fffffffffffffff55ebbda510000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            2 | 0xbfffffffffffffffa67123f568000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            2 | 0xffffffffffffffffe28e96d4f4000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            2 | 0x3fffffffffffffff296a1c0f24000001
+            ks |          t | 2025-09-09 14:44:47.820000+0000 |            2 | 0x7fffffffffffffff9573ad2614000001
+
+(14 rows)
+</pre></div>
+</div>
+</div></blockquote>
+<p>Now, for the new timestamp, we have 4 new streams that are indicated as the current streams and also as newly opened streams by their stream_state value.
+We also see that the two streams from the previous timestamps are now indicated as closed by the stream_state value <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</li>
+<li><p>Insert a row to the table again:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p>Query the log table:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span><span class="p">,</span> <span class="n">pk</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>returns:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span> cdc$stream_id                      | pk
+------------------------------------+----
+ 0xffffffffffffffff50e84c99d4000001 |  0
+ 0xffffffffffffffffe28e96d4f4000001 |  0
+
+(2 rows)
+</pre></div>
+</div>
+</div></blockquote>
+<p>The new entry is written to one of the new streams.</p>
+</li>
+</ol>
+</section>
+</section>
 </section>
 </section>
 
@@ -528,7 +672,7 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Stream Generations&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/features/cdc/cdc-stream-generations%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Stream Changes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/features/cdc/cdc-stream-changes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -597,14 +741,14 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Stream Generations&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/features/cdc/cdc-stream-generations%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Stream Changes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/features/cdc/cdc-stream-changes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/features/cdc/cdc-stream-generations.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/features/cdc/cdc-stream-changes.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -616,7 +760,8 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">CDC Stream Generations</a><ul>
+<li><a class="reference internal" href="#">CDC Stream Changes</a><ul>
+<li><a class="reference internal" href="#cdc-stream-generations-vnodes-based-keyspaces">CDC Stream Generations (vnodes-based keyspaces)</a><ul>
 <li><a class="reference internal" href="#when-cdc-generations-change">When CDC generations change</a><ul>
 <li><a class="reference internal" href="#example-the-next-generation">Example: The Next Generation</a></li>
 </ul>
@@ -625,7 +770,15 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
 <li><a class="reference internal" href="#example-could-not-find-any-cdc-stream">Example: “could not find any CDC stream”</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#differences-in-scylladb-4-3">Differences in ScyllaDB 4.3</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cdc-stream-changes-in-tablets-based-keyspaces">CDC Stream Changes in tablets-based keyspaces</a><ul>
+<li><a class="reference internal" href="#when-cdc-streams-change">When CDC streams change</a><ul>
+<li><a class="reference internal" href="#example-tablet-split">Example: Tablet Split</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -665,25 +818,25 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
             
                 
                     <li>
-                        <a href="cdc-stream-generations.html">master</a>
+                        <a href="cdc-stream-changes.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../stable/features/cdc/cdc-stream-generations.html">2025.3</a>
+                        <a href="../../../stable/index.html">2025.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../branch-2025.2/features/cdc/cdc-stream-generations.html">2025.2</a>
+                        <a href="../../../branch-2025.2/index.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../branch-2025.1/features/cdc/cdc-stream-generations.html">2025.1</a>
+                        <a href="../../../branch-2025.1/index.html">2025.1</a>
                     </li>
                 
             
@@ -873,7 +1026,7 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
 <li class="toctree-l3"><a class="reference internal" href="cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">CDC Stream Generations</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-preimages.html">Preimages and postimages</a></li>
@@ -1098,7 +1251,7 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2025.
+                        Last updated on 19 Sep 2025.
                     
                 </div>
             

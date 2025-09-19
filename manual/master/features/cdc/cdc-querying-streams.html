@@ -354,17 +354,77 @@
 </pre></div>
 </div>
 <p>With the above approach you can, for instance, build a distributed CDC consumer, where each of the consumer nodes queries only streams that are replicated to ScyllaDB nodes in proximity to the consumer node. This allows efficient, concurrent querying of streams, without putting strain on a single node due to a partition scan.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>The tables mentioned in the following sections: <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_generation_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_streams_descriptions_v2</span></code> have been introduced in ScyllaDB 4.4. It is highly recommended to upgrade to 4.4 for efficient CDC usage. The last section explains how to run the below examples in ScyllaDB 4.3.</p>
-<p>If you use CDC in ScyllaDB 4.3 and your application is constantly querying CDC log tables and using the old description table to learn about new generations and stream IDs, you should upgrade your application before upgrading to 4.4. The upgraded application should dynamically switch from using the old description table to the new description tables when the cluster is upgraded from 4.3 to 4.4. We present an example algorithm that the application can perform in the last section.</p>
+<section id="reacting-to-stream-changes">
+<h2>Reacting to stream changes<a class="headerlink" href="#reacting-to-stream-changes" title="Link to this heading">¶</a></h2>
+<p>As explained in <a class="reference internal" href="cdc-stream-changes.html"><span class="doc">CDC Stream Changes</span></a>, the set of used CDC stream IDs may change due to some events. You should then query the CDC description table to read the new set of stream IDs and the corresponding timestamp.</p>
+<p>If you’re periodically querying streams and you don’t want to miss any writes that are sent to the old generation, you should query it at least one time <strong>after</strong> the old generation stops operating (which happens when the new generation starts operating).</p>
+<p>Keep in mind that time is relative: every node has its own clock. Therefore you should make sure that the old generation stops operating <strong>from the point of view of every node</strong> in the cluster <strong>before</strong> you query it one last time and start querying the new generation.</p>
+<section id="example-switching-streams">
+<h3>Example: switching streams<a class="headerlink" href="#example-switching-streams" title="Link to this heading">¶</a></h3>
+<p>Suppose that <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> contains the following entries:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> time
+---------------------------------
+ 2020-03-25 16:05:29.484000+0000
+ 2020-03-25 12:44:43.006000+0000
+
+(2 rows)
+</pre></div>
+</div>
+<p>The currently operating generation’s timestamp is <code class="docutils literal notranslate"><span class="pre">2020-03-25</span> <span class="pre">16:05:29.484000+0000</span></code> — the highest one in the above list. You’ve been periodically querying all streams in this generation. In the meantime, a new node is bootstrapped, hence a new generation appears:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> time
+---------------------------------
+ 2020-03-25 17:21:45.360000+0000
+ 2020-03-25 16:05:29.484000+0000
+ 2020-03-25 12:44:43.006000+0000
+
+(3 rows)
+</pre></div>
+</div>
+<p>You should keep querying streams from generation <code class="docutils literal notranslate"><span class="pre">2020-03-25</span> <span class="pre">16:05:29.484000+0000</span></code> until after you make sure that every node’s clock moved past <code class="docutils literal notranslate"><span class="pre">2020-03-25</span> <span class="pre">17:21:45.360000+0000</span></code>. One way to do that is to connect to each node and use the <code class="docutils literal notranslate"><span class="pre">now()</span></code> function:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ cqlsh 127.0.0.1
+Connected to  at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.0.8 | CQL spec 3.3.1 | Native protocol v4]
+Use HELP for help.
+cqlsh&gt; select totimestamp(now()) from system.local;
+
+ system.totimestamp(system.now())
+----------------------------------
+  2020-03-25 17:24:34.104000+0000
+
+(1 rows)
+cqlsh&gt;
+$ cqlsh 127.0.0.4
+Connected to  at 127.0.0.4:9042.
+[cqlsh 5.0.1 | Cassandra 3.0.8 | CQL spec 3.3.1 | Native protocol v4]
+Use HELP for help.
+cqlsh&gt; select totimestamp(now()) from system.local;
+
+ system.totimestamp(system.now())
+----------------------------------
+  2020-03-25 17:24:42.038000+0000
+
+(1 rows)
+</pre></div>
+</div>
+<p>and so on. After you make sure that every node uses the new generation, you can query streams from the previous generation one last time, and then switch to querying streams from the new generation.</p>
+</section>
+</section>
+<section id="id1">
+<h2>Querying CDC Streams<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p>The system tables used for CDC stream descriptions differ depending on whether your keyspace uses vnodes or tablets. The following sections describe how to query CDC streams for each keyspace type:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#vnode-based-keyspaces"><span class="std std-ref">Vnode-based keyspaces</span></a></p></li>
+<li><p><a class="reference internal" href="#tablets-based-keyspaces"><span class="std std-ref">Tablets-based keyspaces</span></a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>We highly recommend using the newest releases of our client CDC libraries (<a class="reference external" href="https://github.com/scylladb/scylla-cdc-java">Java CDC library</a>, <a class="reference external" href="https://github.com/scylladb/scylla-cdc-go">Go CDC library</a>, <a class="reference external" href="https://github.com/scylladb/scylla-cdc-rust">Rust CDC library</a>). They take care of correctly querying the stream description tables and they handle the upgrade procedure for you.</p>
 </div>
-<section id="learning-about-available-streams">
-<h2>Learning about available streams<a class="headerlink" href="#learning-about-available-streams" title="Link to this heading">¶</a></h2>
+<section id="vnode-based-keyspaces">
+<span id="id2"></span><h3>Vnode-based keyspaces<a class="headerlink" href="#vnode-based-keyspaces" title="Link to this heading">¶</a></h3>
 <p>To query the log table without performing partition scans, you need to know which streams to look at. For this you can use the <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_generation_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_streams_descriptions_v2</span></code> tables.</p>
 <section id="example-querying-the-cdc-description-table">
-<h3>Example: querying the CDC description table<a class="headerlink" href="#example-querying-the-cdc-description-table" title="Link to this heading">¶</a></h3>
+<h4>Example: querying the CDC description table<a class="headerlink" href="#example-querying-the-cdc-description-table" title="Link to this heading">¶</a></h4>
 <ol class="arabic">
 <li><p>Retrieve the timestamp of the currently operating CDC generation from the <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> table. If you have a multi-node cluster, query the table with QUORUM or ALL consistency level so you don’t miss any entry:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">CONSISTENCY</span> <span class="n">QUORUM</span><span class="p">;</span>
@@ -425,92 +485,80 @@
 <p>Query all streams to read the entire CDC log.</p>
 </section>
 </section>
-<section id="reacting-to-topology-changes">
-<h2>Reacting to topology changes<a class="headerlink" href="#reacting-to-topology-changes" title="Link to this heading">¶</a></h2>
-<p>As explained in <a class="reference internal" href="cdc-stream-generations.html"><span class="doc">CDC Stream Generations</span></a>, the set of used CDC stream IDs changes whenever you bootstrap a new node. You should then query the CDC description table to read the new set of stream IDs and the corresponding timestamp.</p>
-<p>If you’re periodically querying streams and you don’t want to miss any writes that are sent to the old generation, you should query it at least one time <strong>after</strong> the old generation stops operating (which happens when the new generation starts operating).</p>
-<p>Keep in mind that time is relative: every node has its own clock. Therefore you should make sure that the old generation stops operating <strong>from the point of view of every node</strong> in the cluster <strong>before</strong> you query it one last time and start querying the new generation.</p>
-<section id="example-switching-streams">
-<h3>Example: switching streams<a class="headerlink" href="#example-switching-streams" title="Link to this heading">¶</a></h3>
-<p>Suppose that <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> contains the following entries:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> time
+<section id="tablets-based-keyspaces">
+<span id="id3"></span><h3>Tablets-based keyspaces<a class="headerlink" href="#tablets-based-keyspaces" title="Link to this heading">¶</a></h3>
+<p>Scylla exposes two system tables to provide information about CDC streams for CDC consumers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">system.cdc_timestamps</span></code>: This table records the timestamps when CDC streams are changed.
+CDC consumers use this table to learn when any changes to streams have occurred.
+After discovering a relevant timestamp in <code class="docutils literal notranslate"><span class="pre">system.cdc_timestamps</span></code>, the consumer can then query the <code class="docutils literal notranslate"><span class="pre">system.cdc_streams</span></code> table for that specific timestamp to get detailed information about the streams at that point in time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.cdc_streams</span></code>: For each timestamp, this table shows the set of streams operating at that timestamp, as well as the changes from the previous timestamp (such as streams being opened or closed).
+Each row includes the stream’s state (<code class="docutils literal notranslate"><span class="pre">stream_state</span></code>), which describes whether the stream is active, opened, or closed at this timestamp.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">stream_state</span></code> column in <code class="docutils literal notranslate"><span class="pre">system.cdc_streams</span></code> formally describes the lifecycle of a stream at a given timestamp:</p>
+<ul class="simple">
+<li><p><strong>0 (active):</strong> The stream is active and can be queried for CDC data at this timestamp.</p></li>
+<li><p><strong>1 (closed):</strong> The stream was closed at this timestamp; no new CDC data will be written to this stream after this point.</p></li>
+<li><p><strong>2 (opened):</strong> The stream was opened at this timestamp; CDC data for this stream starts from this point.</p></li>
+</ul>
+<p>To list all available CDC streams for a tablets-based keyspace:</p>
+<ol class="arabic">
+<li><p>Retrieve the timestamps of the CDC stream sets for your table:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">timestamp</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_timestamps</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">&#39;ks&#39;</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The query returns all timestamps in descending order. The first timestamp is the timestamp for the currently operating CDC stream set. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>timestamp
 ---------------------------------
- 2020-03-25 16:05:29.484000+0000
- 2020-03-25 12:44:43.006000+0000
+2025-09-02 15:34:42.467000+0000
+2025-09-02 15:33:27.888000+0000
 
 (2 rows)
 </pre></div>
 </div>
-<p>The currently operating generation’s timestamp is <code class="docutils literal notranslate"><span class="pre">2020-03-25</span> <span class="pre">16:05:29.484000+0000</span></code> — the highest one in the above list. You’ve been periodically querying all streams in this generation. In the meantime, a new node is bootstrapped, hence a new generation appears:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> time
----------------------------------
- 2020-03-25 17:21:45.360000+0000
- 2020-03-25 16:05:29.484000+0000
- 2020-03-25 12:44:43.006000+0000
-
-(3 rows)
+</li>
+<li><p>Retrieve all CDC streams for a specific timestamp (stream_state = 0 means the stream is active at this timestamp):</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">stream_id</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">&#39;ks&#39;</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span> <span class="k">AND</span> <span class="nb">timestamp</span> <span class="o">=</span> <span class="s1">&#39;2025-09-02 15:34:42.467+0000&#39;</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>You should keep querying streams from generation <code class="docutils literal notranslate"><span class="pre">2020-03-25</span> <span class="pre">16:05:29.484000+0000</span></code> until after you make sure that every node’s clock moved past <code class="docutils literal notranslate"><span class="pre">2020-03-25</span> <span class="pre">17:21:45.360000+0000</span></code>. One way to do that is to connect to each node and use the <code class="docutils literal notranslate"><span class="pre">now()</span></code> function:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ cqlsh 127.0.0.1
-Connected to  at 127.0.0.1:9042.
-[cqlsh 5.0.1 | Cassandra 3.0.8 | CQL spec 3.3.1 | Native protocol v4]
-Use HELP for help.
-cqlsh&gt; select totimestamp(now()) from system.local;
+<p>For example, the query can return:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stream_id
+------------------------------------
+0xbfffffffffffffffa15608ebf0000001
+0xffffffffffffffff372c68c25c000001
+0x3fffffffffffffff73b3f26904000001
+0x7fffffffffffffff1ef74fe610000001
 
- system.totimestamp(system.now())
-----------------------------------
-  2020-03-25 17:24:34.104000+0000
-
-(1 rows)
-cqlsh&gt;
-$ cqlsh 127.0.0.4
-Connected to  at 127.0.0.4:9042.
-[cqlsh 5.0.1 | Cassandra 3.0.8 | CQL spec 3.3.1 | Native protocol v4]
-Use HELP for help.
-cqlsh&gt; select totimestamp(now()) from system.local;
-
- system.totimestamp(system.now())
-----------------------------------
-  2020-03-25 17:24:42.038000+0000
-
-(1 rows)
+(4 rows)
 </pre></div>
 </div>
-<p>and so on. After you make sure that every node uses the new generation, you can query streams from the previous generation one last time, and then switch to querying streams from the new generation.</p>
-</section>
-</section>
-<section id="differences-in-scylladb-4-3">
-<h2>Differences in ScyllaDB 4.3<a class="headerlink" href="#differences-in-scylladb-4-3" title="Link to this heading">¶</a></h2>
-<p>In ScyllaDB 4.3 the tables <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions_v2</span></code> don’t exist. Instead there is the <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions</span></code> table. To retrieve all generation timestamps, instead of querying the <code class="docutils literal notranslate"><span class="pre">time</span></code> column of <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> using a single-partition query (i.e. using <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">key</span> <span class="pre">=</span> <span class="pre">'timestamps'</span></code>), you would query the <code class="docutils literal notranslate"><span class="pre">time</span></code> column of <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions</span></code> with a full range scan (without specifying a single partition):</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_streams_descriptions</span><span class="p">;</span>
+<p>Or, you can query for the streams that were opened or closed at a specific timestamp as follows:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">stream_id</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">&#39;ks&#39;</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span> <span class="k">AND</span> <span class="nb">timestamp</span> <span class="o">=</span> <span class="s1">&#39;2025-09-02 15:34:42.467+0000&#39;</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">&gt;=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">&lt;=</span> <span class="mf">2</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>To retrieve a generation’s stream IDs, you query the <code class="docutils literal notranslate"><span class="pre">streams</span></code> column of <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions</span></code> as follows:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">streams</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_streams_descriptions</span> <span class="k">WHERE</span> <span class="nb">time</span> <span class="o">=</span> <span class="s1">&#39;2020-03-25 16:05:29.484+0000&#39;</span><span class="p">;</span>
+<p>returns:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stream_state | stream_id
+-------------+------------------------------------
+           1 | 0xffffffffffffffffdb6cb86b34000001
+           1 | 0x7fffffffffffffff0ded3e1868000001
+           2 | 0xbfffffffffffffffa15608ebf0000001
+           2 | 0xffffffffffffffff372c68c25c000001
+           2 | 0x3fffffffffffffff73b3f26904000001
+           2 | 0x7fffffffffffffff1ef74fe610000001
+
+(4 rows)
 </pre></div>
 </div>
-<p>All stream IDs are stored in a single row, unlike <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions_v2</span></code>.</p>
-<section id="scylladb-4-3-to-scylladb-4-4-upgrade">
-<span id="scylla-4-3-to-4-4-upgrade"></span><h3>ScyllaDB 4.3 to ScyllaDB 4.4 upgrade<a class="headerlink" href="#scylladb-4-3-to-scylladb-4-4-upgrade" title="Link to this heading">¶</a></h3>
-<p>If you didn’t enable CDC on any table while using ScyllaDB 4.3 or earlier, you don’t need to understand this section. Simply upgrade to 4.4 (we recommend doing it as soon as you can) and implement your application to query streams as described above.</p>
-<p>However, if you use CDC with ScyllaDB 4.3 and your application is periodically querying the old <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions</span></code> table, you should upgrade your application <em>before</em> upgrading the cluster to ScyllaDB 4.4.</p>
-<p>The upgraded application should understand both the old <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions</span></code> table and the new <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions_v2</span></code> tables. It should smoothly transition from querying the old table to querying the new tables as the cluster upgrades.</p>
-<p>When ScyllaDB upgrades from 4.3 to 4.4 it will attempt to copy descriptions of all existing generations from the old table to the new tables. This copying procedure may take a while. Until it finishes, your application should keep using the old table; it should switch as soon as it detects that the procedure is finished. To detect that the procedure is finished, you can query the <code class="docutils literal notranslate"><span class="pre">system.cdc_local</span></code> table: if the table contains a row with <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">'rewritten'</span></code>, the procedure was finished; otherwise it is still in progress.</p>
-<p>It is possible to disable the rewriting procedure. In that case only the latest generation will be inserted to the new table and your application should act accordingly (it shouldn’t wait for the <code class="docutils literal notranslate"><span class="pre">'rewritten'</span></code> row to appear but start using the new tables immediately). It is not recommended to disable the rewriting procedure and we’ve purposefully left it undocumented how to do it. This option exists only for emergencies and should be used only with the assistance of a qualified ScyllaDB engineer.</p>
-<p>In fresh ScyllaDB 4.4 clusters (that were not upgraded from a previous version) the old description table does not exist. Thus the application should check for its existence and when it detects its absence, it should use the new tables immediately.</p>
-<p>With the above considerations in mind, the application should behave as follows. When it wants to learn if there are new generations:</p>
-<ol class="arabic simple">
-<li><p>Check if the <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_streams_descriptions</span></code> table exists. If not, proceed to query the new tables.</p></li>
-<li><p>Otherwise, check if <code class="docutils literal notranslate"><span class="pre">system.cdc_local</span></code> contains a row with <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">'rewritten'</span></code>. If yes, proceed to query the new tables.</p></li>
-<li><p>Otherwise, query the old table; the rewriting procedure is still in progress. Repeat step 2 in a few seconds; by this time the rewriting may have already finished.</p></li>
+</li>
+<li><p>Use the obtained stream IDs to query your CDC log tables:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0xffffffffffffffffdb6cb86b34000001</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0x7fffffffffffffff0ded3e1868000001</span><span class="p">;</span>
+<span class="mf">...</span>
+</pre></div>
+</div>
+<p>Query all streams to read the entire CDC log.</p>
+</li>
 </ol>
-<p>You may also decide that it’s safe to switch to the new tables even though not all generations have been copied from the old table. This may be the case if your application is interested only in the latest changes in the latest generation (for example, because it queries the CDC log tables in near-real time and has already seen all past changes). In this case, the application may check that the latest generation’s timestamp is present in <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> and if it is, start using the new tables immediately.</p>
-<p>Note that after upgrading the cluster to 4.4, all new generations (which are created when bootstrapping new nodes) appear only in the new tables. After upgrading your application and your cluster, and ensuring that either all generations have been rewritten to the new tables or that you’re not interested in the data from old generations, it is safe to remove the old description table.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We highly recommend using the newest releases of our client CDC libraries (<a class="reference external" href="https://github.com/scylladb/scylla-cdc-java">Java CDC library</a>, <a class="reference external" href="https://github.com/scylladb/scylla-cdc-go">Go CDC library</a>, <a class="reference external" href="https://github.com/scylladb/scylla-cdc-rust">Rust CDC library</a>). They take care of correctly querying the stream description tables and they handle the upgrade procedure for you.</p>
-</div>
 </section>
 </section>
 </section>
@@ -582,12 +630,12 @@ cqlsh&gt; select totimestamp(now()) from system.local;
                             <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="cdc-stream-generations.html">
+            <a class="navigation__link" href="cdc-stream-changes.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />CDC Stream Generations
+                    <span class="colored">PREVIOUS</span> <br />CDC Stream Changes
                 </div>
             </a>
         
@@ -636,16 +684,16 @@ cqlsh&gt; select totimestamp(now()) from system.local;
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">Querying CDC Streams</a><ul>
-<li><a class="reference internal" href="#learning-about-available-streams">Learning about available streams</a><ul>
-<li><a class="reference internal" href="#example-querying-the-cdc-description-table">Example: querying the CDC description table</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#reacting-to-topology-changes">Reacting to topology changes</a><ul>
+<li><a class="reference internal" href="#reacting-to-stream-changes">Reacting to stream changes</a><ul>
 <li><a class="reference internal" href="#example-switching-streams">Example: switching streams</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#differences-in-scylladb-4-3">Differences in ScyllaDB 4.3</a><ul>
-<li><a class="reference internal" href="#scylladb-4-3-to-scylladb-4-4-upgrade">ScyllaDB 4.3 to ScyllaDB 4.4 upgrade</a></li>
+<li><a class="reference internal" href="#id1">Querying CDC Streams</a><ul>
+<li><a class="reference internal" href="#vnode-based-keyspaces">Vnode-based keyspaces</a><ul>
+<li><a class="reference internal" href="#example-querying-the-cdc-description-table">Example: querying the CDC description table</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tablets-based-keyspaces">Tablets-based keyspaces</a></li>
 </ul>
 </li>
 </ul>
@@ -895,7 +943,7 @@ cqlsh&gt; select totimestamp(now()) from system.local;
 <li class="toctree-l3"><a class="reference internal" href="cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-preimages.html">Preimages and postimages</a></li>
@@ -1120,7 +1168,7 @@ cqlsh&gt; select totimestamp(now()) from system.local;
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2025.
+                        Last updated on 19 Sep 2025.
                     
                 </div>
             

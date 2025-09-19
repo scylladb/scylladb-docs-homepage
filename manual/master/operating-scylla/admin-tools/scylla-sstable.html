@@ -347,7 +347,7 @@
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>This tool allows you to examine the content of SStables by performing operations such as dumping the content of SStables,
-generating a histogram, validating the content of SStables, and more. See <a class="reference internal" href="#supported-operations">Supported Operations</a> for the list of available operations.</p>
+validating the content of SStables, and more. See <a class="reference internal" href="#supported-operations">Supported Operations</a> for the list of available operations.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span> <span class="pre">--help</span></code> for additional information about the tool and the operations.</p>
 <p>This tool is similar to <a class="reference external" href="/operating-scylla/admin-tools/sstabledump">SStableDump</a>, with notable differences:</p>
 <ul class="simple">
@@ -911,7 +911,7 @@ The JSON representation has to have the same schema as that of a single SStable 
 The easiest way to get started with writing your own SStable is to dump an existing SStable, modify the JSON then invoke this operation with the result.
 You can feed the output of dump-data to write by filtering the output of the former with <code class="docutils literal notranslate"><span class="pre">jq</span> <span class="pre">.sstables[]</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data --system-schema system_schema.columns /path/to/me-14-big-Data.db | jq .sstables[] &gt; input.json</span>
-<span class="go">scylla sstable write --system-schema system_schema.columns --input-file ./input.json --generation 0</span>
+<span class="go">scylla sstable write --system-schema system_schema.columns --input-file ./input.json</span>
 <span class="go">scylla sstable dump-data --system-schema system_schema.columns ./me-0-big-Data.db | jq .sstables[] &gt; dump.json</span>
 </pre></div>
 </div>
@@ -922,7 +922,7 @@ You can feed the output of dump-data to write by filtering the output of the for
 <li><p>Non-strictly atomic cells, including frozen multi-cell types like collections, tuples, and UDTs.</p></li>
 </ul>
 <p>Parsing uses a streaming JSON parser, it is safe to pass in input files of any size.</p>
-<p>The output SStable will use the BIG format, the highest supported SStable format, and the specified generation (<code class="docutils literal notranslate"><span class="pre">--generation</span></code>).
+<p>The output SStable will use the BIG format, the highest supported SStable format and a random UUID generation, which is printed to stdout.
 By default, it is placed in the local directory, which can be changed with <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.
 If the output SStable clashes with an existing SStable, the write will fail.</p>
 <p>The output is validated before being written to the disk.
@@ -1958,7 +1958,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -2183,7 +2183,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2025.
+                        Last updated on 19 Sep 2025.
                     
                 </div>
             

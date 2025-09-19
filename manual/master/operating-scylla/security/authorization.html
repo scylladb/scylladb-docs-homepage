@@ -596,6 +596,11 @@ is modelled hierarchically:</p>
 <p>Permissions can be granted at any level of these hierarchies, and they flow downwards. So granting permission on a
 resource higher up the chain automatically grants that same permission on all resources lower down. For example,
 granting <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on a <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code> automatically grants it on all <code class="docutils literal notranslate"><span class="pre">TABLES</span></code> in that <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code>.</p>
+<p>Materialized views and CDC logs cannot be granted separate permissions -
+they inherit the permissions from the base table. Specifically,
+granting <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on a table allows to read also from all its
+materialized views and CDC log. It is not possible to make only
+one materialized view of several materialized views readable.</p>
 <p>Modifications to permissions are visible to existing client sessions; that is, connections need not be re-established
 following permissions changes.</p>
 <p>The full set of available permissions is:</p>
@@ -1191,7 +1196,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -1416,7 +1421,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2025.
+                        Last updated on 19 Sep 2025.
                     
                 </div>
             
