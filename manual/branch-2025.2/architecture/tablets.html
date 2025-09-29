@@ -401,6 +401,47 @@ especially for data models that contain small cells.</p>
 <p>File-based streaming is used for tablet migration in all
 <a class="reference internal" href="../cql/ddl.html#tablets"><span class="std std-ref">keyspaces created with tablets enabled</span></a>.</p>
 </section>
+<section id="absolute-number-of-tablets">
+<span id="id1"></span><h3>Absolute number of tablets<a class="headerlink" href="#absolute-number-of-tablets" title="Link to this heading">¶</a></h3>
+<p>ScyllaDB has a background process that periodically re-evaluates the number of tablets of each table.
+The computed number of tablets a table will have is based on several parameters and factors. These are:</p>
+<ul class="simple">
+<li><p>Keyspace tablets option <code class="docutils literal notranslate"><span class="pre">'initial'</span></code>. This option sets the initial number of tablets on the keyspace level.
+See <a class="reference internal" href="../cql/ddl.html#tablets"><span class="std std-ref">The tablets property</span></a> for details.</p></li>
+<li><p>Table-level option <code class="docutils literal notranslate"><span class="pre">'expected_data_size_in_gb'</span></code>. This option sets the minimal number of tablets for a table
+based on the expected table size and the target tablet size. See
+<a class="reference internal" href="../cql/ddl.html#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> for details.</p></li>
+<li><p>Table-level option <code class="docutils literal notranslate"><span class="pre">'min_per_shard_tablet_count'</span></code>. Using this option results in the number of tablets being
+computed based on the number of shards in a DC so that each shard has at least <code class="docutils literal notranslate"><span class="pre">'min_per_shard_tablet_count'</span></code>
+tablets on average. See <a class="reference internal" href="../cql/ddl.html#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> for details.</p></li>
+<li><p>Table-level option <code class="docutils literal notranslate"><span class="pre">'min_tablet_count'</span></code>. This option sets the minimal number of tablets for the given table.
+See <a class="reference internal" href="../cql/ddl.html#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> for details.</p></li>
+<li><p>Config option <code class="docutils literal notranslate"><span class="pre">'tablets_initial_scale_factor'</span></code>. This option sets the minimal number of tablets per shard
+per table globally. This option can be overridden by the table-level option: <code class="docutils literal notranslate"><span class="pre">'min_per_shard_tablet_count'</span></code>.
+<code class="docutils literal notranslate"><span class="pre">'tablets_initial_scale_factor'</span></code> is ignored if either the keyspace option <code class="docutils literal notranslate"><span class="pre">'initial'</span></code> or table-level
+option <code class="docutils literal notranslate"><span class="pre">'min_tablet_count'</span></code> is set.</p></li>
+</ul>
+<p>Another factor that determines the absolute tablet count is the amount of data the table contains. If the
+amount of data in the table is such that the average tablet size is larger than double the target tablet size,
+the table will be split (the number of tablets will be doubled), and if the average tablet size is smaller than
+half the target tablet size, it will be merged (the number of tablets will be halved).</p>
+<p>Each of these factors is taken into consideration, and the one producing the largest number of tablets wins, and
+will be used as the number of tablets for the given table.</p>
+<p>As the last step, in order to avoid having too many tablets per shard, which could potentially lead to overload
+and performance degradation, ScyllaDB will run the following algorithm to respect the <code class="docutils literal notranslate"><span class="pre">tablets_per_shard_goal</span></code>
+config option:</p>
+<ul class="simple">
+<li><p>Compute average tablet count per-shard in each DC.</p></li>
+<li><p>Determine if per-shard goal is exceeded in that DC.</p></li>
+<li><p>Compute scale factor by which tablet count should be multiplied so that the goal is not exceeded in that DC.</p></li>
+<li><p>Take the smallest scale factor among all DCs, which ensures that no DC is overloaded.</p></li>
+<li><p>Each table’s tablet count is aligned to the nearest power of 2 post-scaling.</p></li>
+</ul>
+<p>Please note that because of this alignment, the scaling may not be effective and in the worst case may be
+overshot by a factor of 2, and that the <code class="docutils literal notranslate"><span class="pre">tablets_per_shard_goal</span></code> is a soft limit and not a hard constraint.</p>
+<p>Finally, the computed tablet count is compared with the current tablet count for each table, and if there is
+a difference, a table resize (split or merge) is executed.</p>
+</section>
 </section>
 <section id="enabling-tablets">
 <span id="tablets-enable-tablets"></span><h2>Enabling Tablets<a class="headerlink" href="#enabling-tablets" title="Link to this heading">¶</a></h2>
@@ -602,6 +643,7 @@ starts serving CQL.</p></li>
 <li><a class="reference internal" href="#load-balancing">Load Balancing</a></li>
 <li><a class="reference internal" href="#scaling-out">Scaling Out</a></li>
 <li><a class="reference internal" href="#file-based-streaming">File-based Streaming</a></li>
+<li><a class="reference internal" href="#absolute-number-of-tablets">Absolute number of tablets</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#enabling-tablets">Enabling Tablets</a></li>
@@ -1055,7 +1097,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Sep 2025.
+                        Last updated on 29 Sep 2025.
                     
                 </div>
             
