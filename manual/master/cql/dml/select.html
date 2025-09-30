@@ -350,6 +350,7 @@
                 <span class="p">:</span> <span class="p">[</span> <span class="k">WHERE</span> <span class="o">`</span><span class="n">where_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="n">GROUP</span> <span class="k">BY</span> <span class="o">`</span><span class="n">group_by_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">ordering_clause</span><span class="o">`</span> <span class="p">]</span>
+                <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">PER</span> <span class="k">PARTITION</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span> <span class="p">]</span>
@@ -550,6 +551,36 @@ induced by the clustering columns and the reverse of that one.</p></li>
 <li><p>Otherwise, the orderings allowed are the order of the <code class="docutils literal notranslate"><span class="pre">CLUSTERING</span> <span class="pre">ORDER</span></code> option and the reversed one.</p></li>
 </ul>
 </section>
+<section id="vector-queries">
+<span id="id2"></span><h2>Vector queries<a class="headerlink" href="#vector-queries" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause can also be used with vector columns to perform the approximate nearest neighbor (ANN) search.
+When using vector columns, the syntax is as follows:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">order_by_vector</span><span class="p">:</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">vector_column_name</span></code> is the name of the vector column,
+<code class="docutils literal notranslate"><span class="pre">vector</span></code> is the query <a class="reference internal" href="../types.html#vectors"><span class="std std-ref">vector</span></a>, and <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> is a limit on the number of results to return.
+Vector queries can only be performed on a vector column that has a <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">vector index</span></a> created.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ANN</span> <span class="pre">OF</span></code> clause orders the results by their distance to the provided query vector,
+using the distance function defined for the vector column when
+<a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">creating the vector index</span></a>.
+The query vector must have the same dimension as the vector column.</p>
+<p>Supported <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> values are integers between 1 and 1000, inclusive.
+However, based on the index parameters and the dataset size and distribution,
+the actual number of results returned may be less than the specified limit.</p>
+<p>For example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span> <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">embedding</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This query returns up to 5 rows with the closest distance of <code class="docutils literal notranslate"><span class="pre">embedding</span></code> vector to the provided query vector,
+in this case <code class="docutils literal notranslate"><span class="pre">[0.1,</span> <span class="pre">0.2,</span> <span class="pre">0.3,</span> <span class="pre">0.4]</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Currently, vector queries do not support filtering with <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, grouping with <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> and paging.
+This will be added in the future releases.</p>
+</div>
+</section>
 <section id="limiting-results">
 <span id="limit-clause"></span><h2>Limiting results<a class="headerlink" href="#limiting-results" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> option to a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement limits the number of rows returned by a query, while the <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span>
@@ -702,7 +733,7 @@ primary index or a secondary index.</p>
 </div>
 </section>
 <section id="bypass-cache">
-<span id="id2"></span><h2>Bypass Cache<a class="headerlink" href="#bypass-cache" title="Link to this heading">¶</a></h2>
+<span id="id3"></span><h2>Bypass Cache<a class="headerlink" href="#bypass-cache" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">CACHE</span></code> clause on SELECT statements informs the database that the data being read is unlikely to be read again in the near future, and also was unlikely to have been read in the near past; therefore, no attempt should be made to read it from the cache or to populate the cache with the data. This is mostly useful for range scans; these typically process large amounts of data with no temporal locality and do not benefit from the cache.
 The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <p><code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">CACHE</span></code> is a ScyllaDB CQL extension and not part of Apache Cassandra CQL.</p>
@@ -714,7 +745,7 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 </div>
 </section>
 <section id="using-timeout">
-<span id="id3"></span><h2>Using Timeout<a class="headerlink" href="#using-timeout" title="Link to this heading">¶</a></h2>
+<span id="id4"></span><h2>Using Timeout<a class="headerlink" href="#using-timeout" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">TIMEOUT</span></code> clause allows specifying a timeout for a specific request.</p>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="mf">5</span><span class="n">s</span><span class="p">;</span>
@@ -724,7 +755,7 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <p><code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">TIMEOUT</span></code> is a ScyllaDB CQL extension and not part of Apache Cassandra CQL.</p>
 </section>
 <section id="like-operator">
-<span id="id4"></span><h2>LIKE Operator<a class="headerlink" href="#like-operator" title="Link to this heading">¶</a></h2>
+<span id="id5"></span><h2>LIKE Operator<a class="headerlink" href="#like-operator" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> operation on <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statements informs ScyllaDB that you are looking for a pattern match. The expression ‘column LIKE pattern’ yields true only if the entire column value matches the pattern.</p>
 <p>The search pattern is a string of characters with two wildcards, as shown:</p>
 <ul class="simple">
@@ -966,6 +997,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li><a class="reference internal" href="#the-where-clause">The <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause</a></li>
 <li><a class="reference internal" href="#grouping-results">Grouping results</a></li>
 <li><a class="reference internal" href="#ordering-results">Ordering results</a></li>
+<li><a class="reference internal" href="#vector-queries">Vector queries</a></li>
 <li><a class="reference internal" href="#limiting-results">Limiting results</a></li>
 <li><a class="reference internal" href="#allowing-filtering">Allowing filtering</a></li>
 <li><a class="reference internal" href="#evaluation-order-of-select-statement-clauses">Evaluation order of SELECT statement clauses</a></li>
@@ -1444,7 +1476,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Sep 2025.
+                        Last updated on 30 Sep 2025.
                     
                 </div>
             
