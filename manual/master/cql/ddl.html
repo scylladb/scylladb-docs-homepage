@@ -393,7 +393,7 @@ part of. If it is not fully-qualified, the table is assumed to be in the <em>cur
 </div>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">Excalibur</span>
-<span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span> <span class="p">:</span> <span class="mf">1</span><span class="p">,</span> <span class="s1">&#39;DC2&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">}</span>
+<span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC1&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC2&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC3&#39;</span><span class="p">],</span> <span class="s1">&#39;DC2&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">}</span>
 <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -483,15 +483,21 @@ associated replication factor. Options:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'&lt;datacenter&gt;'</span></code></p></td>
-<td><p>int</p></td>
+<td><p>int|list</p></td>
 <td><p>The number of replicas to store per range in
-the provided datacenter.</p></td>
+the provided datacenter, or a <a class="reference internal" href="#rack-list-rf"><span class="std std-ref">list of rack names</span></a>
+to place replicas.</p>
+<p><a class="reference internal" href="#rack-list-rf"><span class="std std-ref">Rack list</span></a> is only allowed
+for tablets-based keyspaces, and recommended.</p>
+<p>Altering from a rack list to numerical RF
+is not supported.</p>
+</td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'replication_factor'</span></code></p></td>
 <td><p>int</p></td>
 <td><p>The number of replicas to use as a default
-per datacenter if not specifically provided.
-Note that this always defers to existing
+per datacenter if not specifically provided.</p>
+<p>Note that this always defers to existing
 definitions or explicit datacenter settings.
 For example, to have three replicas per
 datacenter, supply this with a value of 3.</p>
@@ -658,6 +664,45 @@ keyspace name). A <code class="docutils literal notranslate"><span class="pre">U
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement will fail if it would make the keyspace <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-invalid</span></a>.</p></li>
 <li><p>After the <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement that increases the RF finishes, client applications should be restarted. Without a restart, drivers will not know about new replicas, which may cause request imbalance.</p></li>
 </ul>
+</section>
+<section id="rack-list-replication-factor">
+<span id="rack-list-rf"></span><h3>Rack-list replication factor<a class="headerlink" href="#rack-list-replication-factor" title="Link to this heading">¶</a></h3>
+<p>With tablets, replication factor can be a rack list instead of a number. This will limit placement of replicas to those
+specific racks in a given DC, with exactly one replica per rack. It guarantees that replicas never move across racks
+during load balancing.</p>
+<p>This is the recommended way of specifying replication with tablets. Some features will only work with keyspaces which
+are using rack lists for replication factor, and attempt to use them will be rejected otherwise.
+Also, load-balancing is more efficient if keyspaces specify replication like this.
+The numerical replication factor for tablets will be deprecated in the future.</p>
+<p>To create a keyspace using rack-list replication factor:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC1&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC2&#39;</span><span class="p">]};</span>
+</pre></div>
+</div>
+<p>The rack list can be altered, and it must differ by exactly one rack from the current list, with rack being either removed or added.
+For example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC1&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC2&#39;</span><span class="p">]};</span>
+
+<span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC1&#39;</span><span class="p">,</span> <span class="s1">&#39;RACK2&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC3&#39;</span><span class="p">]};</span>
+
+<span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC2&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC3&#39;</span><span class="p">]};</span>
+
+<span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC2&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC3&#39;</span><span class="p">],</span> <span class="s1">&#39;dc2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC4&#39;</span><span class="p">]};</span>
+</pre></div>
+</div>
+<p>Altering a rack list triggers tablet rebuild in the new rack, and the statement completes when rebuild is finished.
+No need for manual repair afterwards.</p>
+<p>An empty list is allowed, and it’s equivalent to numeric replication factor of 0:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="n">dc2</span><span class="s1">&#39; : []};</span>
+</pre></div>
+</div>
+<p>Altering from a rack list to a numeric replication factor is not supported.</p>
+<p>Keyspaces which use rack lists are <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>.</p>
 </section>
 </section>
 <section id="drop-keyspace-statement">
@@ -1606,6 +1651,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#use-statement">USE</a></li>
 <li><a class="reference internal" href="#alter-keyspace-statement">ALTER KEYSPACE</a><ul>
 <li><a class="reference internal" href="#alter-keyspace-with-tablets">ALTER KEYSPACE with Tablets</a></li>
+<li><a class="reference internal" href="#rack-list-replication-factor">Rack-list replication factor</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#drop-keyspace-statement">DROP KEYSPACE</a></li>
@@ -2113,7 +2159,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 06 Oct 2025.
+                        Last updated on 07 Oct 2025.
                     
                 </div>
             
