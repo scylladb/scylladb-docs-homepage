@@ -359,9 +359,16 @@ For example, consider the following two workloads:</p>
 </ul>
 <p>Using Service Level CQL commands, database administrators (working on ScyllaDB) can set different workload prioritization levels (levels of service) for each workload without sacrificing latency or throughput.
 By assigning each service level to the different roles within your organization, DBAs ensure that each <a class="reference external" href="/operating-scylla/security/rbac_usecase/">role</a> receives the level of service the role requires.</p>
+<dl class="simple">
+<dt>Initially ScyllaDB has two service levels:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'default'</span></code> - Receives all load unassigned to any other service level.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'driver'</span></code> - Isolates metadata operations (for example, driver schema and topology fetches) and handles new connections before the user is authenticated and authorized. This reduces the impact of connection handling on regular query traffic. In most deployments, you do not need to tune the <code class="docutils literal notranslate"><span class="pre">'driver'</span></code> service level.</p></li>
+</ul>
+</dd>
+</dl>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
-<p>To create a level of service and assign it to a role, you need:</p>
+<p>To create a new service level and assign it to a role, you need:</p>
 <ul class="simple">
 <li><p>An <a class="reference internal" href="../operating-scylla/security/runtime-authentication.html"><span class="doc">authenticated</span></a> and <a class="reference internal" href="../operating-scylla/security/enable-authorization.html"><span class="doc">authorized</span></a> user</p></li>
 <li><p>At least one <a class="reference internal" href="../operating-scylla/security/authorization.html#create-role-statement"><span class="std std-ref">role created</span></a>.</p></li>
@@ -401,7 +408,7 @@ By assigning each service level to the different roles within your organization,
 </ul>
 <section id="example">
 <h4>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h4>
-<p>There are 3 service levels (OLAP, OLTP, Default) where: (the percentage of resources = (Assigned Shares / Total Shares) x 100). Total Shares in this case is the total of all allocated shares + the Default SLA (1000). The percentage of resources would be:</p>
+<p>There are 4 service levels (OLAP, OLTP, driver, default) where: (the percentage of resources = (Assigned Shares / Total Shares) x 100). Total Shares in this case is the total of all allocated shares + the Default SLA (1000). The percentage of resources would be:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33.3%" />
@@ -421,14 +428,18 @@ By assigning each service level to the different roles within your organization,
 </tr>
 <tr class="row-odd"><td><p>OLTP</p></td>
 <td><p>1000</p></td>
-<td><p>48%</p></td>
+<td><p>44%</p></td>
 </tr>
-<tr class="row-even"><td><p>Default</p></td>
+<tr class="row-even"><td><p>driver</p></td>
+<td><p>200</p></td>
+<td><p>8%</p></td>
+</tr>
+<tr class="row-odd"><td><p>default</p></td>
 <td><p>1000</p></td>
-<td><p>48%</p></td>
+<td><p>44%</p></td>
 </tr>
-<tr class="row-odd"><td><p>Total</p></td>
-<td><p>2100</p></td>
+<tr class="row-even"><td><p>Total</p></td>
+<td><p>2300</p></td>
 <td><p>100%</p></td>
 </tr>
 </tbody>
@@ -448,10 +459,12 @@ By assigning each service level to the different roles within your organization,
 
 <span class="n">service_level</span> <span class="o">|</span> <span class="n">shares</span>
 <span class="c1">--------------+-------</span>
+       <span class="n">driver</span> <span class="o">|</span>    <span class="mf">200</span>
+<span class="c1">--------------+-------</span>
          <span class="n">olap</span> <span class="o">|</span>    <span class="mf">100</span>
 <span class="c1">--------------+-------</span>
          <span class="n">oltp</span> <span class="o">|</span>   <span class="mf">1000</span>
-<span class="p">(</span><span class="mf">2</span> <span class="n">rows</span><span class="p">)</span>
+<span class="p">(</span><span class="mf">3</span> <span class="n">rows</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -545,9 +558,10 @@ By assigning each service level to the different roles within your organization,
 
 <span class="n">service_level</span>  <span class="o">|</span> <span class="n">shares</span>
 <span class="c1">---------------+--------</span>
+        <span class="n">driver</span> <span class="o">|</span>     <span class="mf">200</span>
           <span class="n">olap</span> <span class="o">|</span>     <span class="mf">100</span>
           <span class="n">oltp</span> <span class="o">|</span>    <span class="mf">1000</span>
-<span class="p">(</span><span class="mf">2</span> <span class="n">rows</span><span class="p">)</span>
+<span class="p">(</span><span class="mf">3</span> <span class="n">rows</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -709,7 +723,7 @@ By assigning each service level to the different roles within your organization,
 </section>
 <section id="limits">
 <h2>Limits<a class="headerlink" href="#limits" title="Link to this heading">¶</a></h2>
-<p>ScyllaDB is limited to 9 service levels, including the default one; this means you can create up to 8 service levels.</p>
+<p>ScyllaDB is limited to 10 service levels, including the default and driver levels; this means you can create up to 8 service levels.</p>
 </section>
 <section id="additional-references">
 <h2>Additional References<a class="headerlink" href="#additional-references" title="Link to this heading">¶</a></h2>
@@ -1373,7 +1387,7 @@ By assigning each service level to the different roles within your organization,
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Oct 2025.
+                        Last updated on 10 Oct 2025.
                     
                 </div>
             
