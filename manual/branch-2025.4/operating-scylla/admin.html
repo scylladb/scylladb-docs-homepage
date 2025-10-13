@@ -819,13 +819,10 @@ credentials and endpoint.</p>
 </section>
 <section id="views-with-tablets">
 <span id="admin-views-with-tablets"></span><h2>Views with Tablets<a class="headerlink" href="#views-with-tablets" title="Link to this heading">¶</a></h2>
-<p>By default, Materialized Views (MV) and Secondary Indexes (SI)
-are disabled in keyspaces that use tablets.</p>
-<p>Support for MV and SI with tablets is experimental and must be explicitly
-enabled in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file by specifying
-the <code class="docutils literal notranslate"><span class="pre">views-with-tablets</span></code> option:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">experimental_features</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">views-with-tablets</span>
+<p>Materialized Views (MV) and Secondary Indexes (SI) are enabled in keyspaces that use tablets
+only when <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid keyspaces</span></a> are enforced. That can be
+done in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file by specifying</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rf_rack_valid_keyspaces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
@@ -1598,7 +1595,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 12 Oct 2025.
+                        Last updated on 13 Oct 2025.
                     
                 </div>
             
