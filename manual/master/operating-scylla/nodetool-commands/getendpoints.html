@@ -350,7 +350,8 @@
                         
                         <section id="nodetool-getendpoints">
 <h1>Nodetool getendpoints<a class="headerlink" href="#nodetool-getendpoints" title="Link to this heading">¶</a></h1>
-<p><strong>getendpoints</strong> - <code class="code docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;key&gt;</span></code>- Print the end-points IP or name of the nodes that own the partition key.</p>
+<p><strong>getendpoints</strong> - <code class="code docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;key&gt;</span></code>- Print the end-points IP or name of the nodes that own the partition key.
+<strong>getendpoints</strong> - <code class="code docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;key-components&gt;</span></code> - Print the end-points IP or name of the nodes that own the partition key.</p>
 <p>Use this command to know which node holds the specific partition key.</p>
 <p>For example:</p>
 <p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">getendpoints</span> <span class="pre">nba</span> <span class="pre">player_name</span> <span class="pre">Russell</span></code></p>
@@ -371,20 +372,69 @@
 <td><p>partition key</p></td>
 </tr>
 <tr class="row-odd"><td><p>key-components</p></td>
-<td><p>partition key (alternative to key)</p></td>
+<td><p>partition key (Alternative way to specify composite partition keys using individual components.)</p></td>
 </tr>
 </tbody>
 </table>
 <p>In a case of a composite partition key, use <code class="docutils literal notranslate"><span class="pre">:</span></code> between columns in the key. All columns in the partition key are required.
-Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">--key-components</span></code> option to specify each component of the partition key separately.
-For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="p">:</span><span class="n">mykeyspace</span><span class="o">&gt;</span> <span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">superheroes</span> <span class="p">(</span><span class="n">firstname</span> <span class="n">text</span><span class="p">,</span> <span class="n">lastname</span> <span class="n">text</span><span class="p">,</span> <span class="n">age</span> <span class="nb">int</span><span class="p">,</span> <span class="n">PRIMARY</span> <span class="n">KEY</span> <span class="p">((</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)));</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">getendpoints</span> <span class="n">mykeyspace</span> <span class="n">superheroes</span> <span class="s2">&quot;peter:parker&quot;</span>
-</pre></div>
-</div>
+Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">--key-components</span></code> option to specify each component of the partition key separately,
+instead of combining them into a single colon-separated string.
+This approach avoids ambiguity when key values contain colons.
+All partition key columns must be specified, and they must be provided in the correct order as defined in the table schema.
+You must specify either the <code class="docutils literal notranslate"><span class="pre">--key</span></code> or the <code class="docutils literal notranslate"><span class="pre">--key-components</span></code> option, but not both.</p>
 <p>ScyllaDB does not support <em>getendpoints</em> for a partition key with a frozen UDT.</p>
+<p><strong>Example 1: Single partition key</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">superheroes</span> <span class="p">(</span>
+   <span class="n">firstname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">lastname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">age</span> <span class="nb">int</span><span class="p">,</span>
+   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">firstname</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>getendpoints<span class="w"> </span><span class="s2">&quot;superheroes&quot;</span><span class="w"> </span><span class="s2">&quot;peter&quot;</span>
+</pre></div>
+</div>
+<p>This retrieves the nodes responsible for the partition key <code class="docutils literal notranslate"><span class="pre">peter</span></code> in the <code class="docutils literal notranslate"><span class="pre">superheroes</span></code> table.</p>
+<p><strong>Example 2: Composite partition key (specified as colon-separated string)</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">superheroes</span> <span class="p">(</span>
+   <span class="n">firstname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">lastname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">age</span> <span class="nb">int</span><span class="p">,</span>
+   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">((</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">))</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>getendpoints<span class="w"> </span><span class="s2">&quot;mykeyspace&quot;</span><span class="w"> </span><span class="s2">&quot;superheroes&quot;</span><span class="w"> </span><span class="s2">&quot;peter:parker&quot;</span>
+</pre></div>
+</div>
+<p>When using a composite partition key, separate the components with a colon (<cite>:</cite>) in the order defined in the schema.</p>
+<p><strong>Example 3: Composite partition key (specified by individual components)</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">superheroes</span> <span class="p">(</span>
+   <span class="n">firstname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">lastname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">age</span> <span class="nb">int</span><span class="p">,</span>
+   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">((</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">))</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>getendpoints<span class="w"> </span><span class="s2">&quot;mykeyspace&quot;</span><span class="w"> </span><span class="s2">&quot;superheroes&quot;</span><span class="w"> </span>--key-components<span class="w"> </span><span class="s2">&quot;peter&quot;</span><span class="w"> </span>--key-components<span class="w"> </span><span class="s2">&quot;parker&quot;</span>
+</pre></div>
+</div>
+<p><strong>Example 4: Composite partition key with colon</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">superheroes</span> <span class="p">(</span>
+   <span class="n">firstname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">lastname</span> <span class="nb">text</span><span class="p">,</span>
+   <span class="n">age</span> <span class="nb">int</span><span class="p">,</span>
+   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">((</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">))</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>getendpoints<span class="w"> </span><span class="s2">&quot;mykeyspace&quot;</span><span class="w"> </span><span class="s2">&quot;superheroes&quot;</span><span class="w"> </span>--key-components<span class="w"> </span><span class="s2">&quot;peter:the-great&quot;</span><span class="w"> </span>--key-components<span class="w"> </span><span class="s2">&quot;parker&quot;</span>
+</pre></div>
+</div>
+<p>In this example, the first key component includes a colon, which would cause parsing issues in the string format.
+Using <code class="docutils literal notranslate"><span class="pre">--key-components</span></code> ensures it’s interpreted correctly.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
 </section>
 
@@ -977,7 +1027,7 @@ For example:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Oct 2025.
+                        Last updated on 18 Oct 2025.
                     
                 </div>
             

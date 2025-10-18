@@ -428,6 +428,12 @@ details below).</p></td>
 <td></td>
 <td><p>Enables or disables tablets for the keyspace (see <a class="reference internal" href="#tablets"><span class="std std-ref">tablets</span></a>)</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">consistency</span></code></p></td>
+<td><p><em>simple</em></p></td>
+<td><p>no</p></td>
+<td><p><cite>eventual</cite></p></td>
+<td><p>Configures consistency mode for the keyspace (see <a class="reference internal" href="#consistency-option"><span class="std std-ref">consistency</span></a>).</p></td>
+</tr>
 </tbody>
 </table>
 <p>The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property is optional. Omitting it is equivalent to supplying an empty map (<code class="docutils literal notranslate"><span class="pre">replication</span> <span class="pre">=</span> <span class="pre">{}</span></code>),
@@ -629,6 +635,17 @@ Please use <a class="reference internal" href="#cql-per-table-tablet-options"><s
 As an alternative, you can configure your keyspace to be stored
 on Amazon S3 or another S3-compatible object store.
 See <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">Keyspace storage options</span></a> for details.</p>
+</section>
+<section id="keyspace-consistency-options-experimental">
+<span id="consistency-option"></span><h3>Keyspace <code class="docutils literal notranslate"><span class="pre">consistency</span></code> options <span class="label label--caution">Experimental</span><a class="headerlink" href="#keyspace-consistency-options-experimental" title="Link to this heading">¶</a></h3>
+<p>Experimental option that allows to configure consistency for all tables in
+a keyspace.  By default the consistency is <cite>eventual</cite>. But you can change
+it to strong consistency by setting the <cite>consistency</cite> option to <cite>local</cite>
+or <cite>global</cite> where <cite>local</cite> means that strong consistency is guaranteed
+only for operations going to the same DC and <cite>global</cite> means that strong
+consistency is guaranteed for operations going to all DCs. Note that
+<cite>local</cite> or <cite>global</cite> consistencies are guaranteed only for requests that
+are going to the same partition.</p>
 </section>
 </section>
 <section id="use-statement">
@@ -1646,6 +1663,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#networktopologystrategy">NetworkTopologyStrategy</a></li>
 <li><a class="reference internal" href="#the-tablets-property">The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property</a></li>
 <li><a class="reference internal" href="#keyspace-storage-options-experimental">Keyspace storage options <span class="label label--caution">Experimental</span></a></li>
+<li><a class="reference internal" href="#keyspace-consistency-options-experimental">Keyspace <code class="docutils literal notranslate"><span class="pre">consistency</span></code> options <span class="label label--caution">Experimental</span></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#use-statement">USE</a></li>
@@ -2165,7 +2183,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Oct 2025.
+                        Last updated on 18 Oct 2025.
                     
                 </div>
             
