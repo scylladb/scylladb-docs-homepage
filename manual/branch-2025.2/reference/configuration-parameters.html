@@ -2836,6 +2836,28 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-sstable-compression-user-table-options">
+<dt class="sig sig-object std" id="confval-sstable_compression_user_table_options">
+<span class="sig-name descname"><span class="pre">sstable_compression_user_table_options</span></span><a class="headerlink" href="#confval-sstable_compression_user_table_options" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><dl class="simple">
+<dt>Server-global user table compression options. If enabled, all user tables    will be compressed using the provided options, unless overridden    by compression options in the table schema. The available options are:</dt><dd><ul class="simple">
+<li><p>sstable_compression: The compression algorithm to use. Supported values: LZ4Compressor (default), LZ4WithDictsCompressor, SnappyCompressor, DeflateCompressor, ZstdCompressor, ZstdWithDictsCompressor, ‘’ (empty string; disables compression).</p></li>
+<li><p>chunk_length_in_kb: (Default: 4) The size of chunks to compress in kilobytes. Allowed values are powers of two between 1 and 128.</p></li>
+<li><p>crc_check_chance: (Default: 1.0) Not implemented (option value is ignored).</p></li>
+<li><p>compression_level: (Default: 3) Compression level for ZstdCompressor and ZstdWithDictsCompressor. Higher levels provide better compression ratios at the cost of speed. Allowed values are integers between 1 and 22.</p></li>
+</ul>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">compression_parameters</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">compression_parameters{}</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-sstable-compression-dictionaries-allow-in-ddl">
 <dt class="sig sig-object std" id="confval-sstable_compression_dictionaries_allow_in_ddl">
 <span class="sig-name descname"><span class="pre">sstable_compression_dictionaries_allow_in_ddl</span></span><a class="headerlink" href="#confval-sstable_compression_dictionaries_allow_in_ddl" title="Link to this definition">¶</a></dt>
@@ -5076,7 +5098,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Oct 2025.
+                        Last updated on 22 Oct 2025.
                     
                 </div>
             
