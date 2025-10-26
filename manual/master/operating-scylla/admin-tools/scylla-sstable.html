@@ -906,7 +906,27 @@ For example, for the SStable:</p>
 </section>
 <section id="write">
 <h3>write<a class="headerlink" href="#write" title="Link to this heading">¶</a></h3>
-<p>Writes an SStable based on a JSON representation of the content.
+<p>Writes an SStable based on a description of the content.
+The description can be provided in two formats: <code class="docutils literal notranslate"><span class="pre">CQL</span></code> and <code class="docutils literal notranslate"><span class="pre">JSON</span></code>.
+The input format can be selected with the <code class="docutils literal notranslate"><span class="pre">--input-format</span></code> flag. Default is <code class="docutils literal notranslate"><span class="pre">cql</span></code>.
+In both cases the input is expected to be provided via the file whoose path is passed to <code class="docutils literal notranslate"><span class="pre">--input-file</span></code>.</p>
+<section id="cql-input-format">
+<h4>CQL input format<a class="headerlink" href="#cql-input-format" title="Link to this heading">¶</a></h4>
+<p>The input file is expected to contain <code class="docutils literal notranslate"><span class="pre">;</span></code> separated CQL statements, providing the content of the output SSTable(s).
+The following CQL statements are allowed: <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code> and <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.
+The statements can be in any order, the data will be sorted internally.
+Writes are internally applied to a memtable, which is flushed to disk once its size exceeds the memory limit, specified via the <code class="docutils literal notranslate"><span class="pre">--memory-limit</span></code> command line argument (defaults to <code class="docutils literal notranslate"><span class="pre">1MiB</span></code>).</p>
+<p>Reading the statements from the input file happens via a streaming parser, it is
+safe to provide input files of any size.</p>
+<p>Can produce multiple output SSTables, depending on the size of the input.</p>
+<p>This operation needs a temporary directory to write files to – as it sets up a
+<code class="docutils literal notranslate"><span class="pre">cql_test_env</span></code>. This temporary directory will have a size of a couple of megabytes.
+By default it will create this in <code class="docutils literal notranslate"><span class="pre">/tmp</span></code>, this can be changed with the <code class="docutils literal notranslate"><span class="pre">TEMPDIR</span></code>
+environment variable. This temporary directory is removed on exit.</p>
+</section>
+<section id="json-input-format">
+<h4>JSON input format<a class="headerlink" href="#json-input-format" title="Link to this heading">¶</a></h4>
+<p>The input file is expected to contain a JSON description of the content of the SStable to write.
 The JSON representation has to have the same schema as that of a single SStable from the output of the <a class="reference internal" href="#dump-data">dump-data operation</a> (corresponding to the <code class="docutils literal notranslate"><span class="pre">$SSTABLE</span></code> symbol).
 The easiest way to get started with writing your own SStable is to dump an existing SStable, modify the JSON then invoke this operation with the result.
 You can feed the output of dump-data to write by filtering the output of the former with <code class="docutils literal notranslate"><span class="pre">jq</span> <span class="pre">.sstables[]</span></code>:</p>
@@ -916,15 +936,19 @@ You can feed the output of dump-data to write by filtering the output of the for
 </pre></div>
 </div>
 <p>At the end of the above, <code class="docutils literal notranslate"><span class="pre">input.json</span></code> and <code class="docutils literal notranslate"><span class="pre">dump.json</span></code> will have the same content.</p>
-<p>Note that <cite>write</cite> doesn’t yet support all the features of the ScyllaDB storage engine. The following are not supported:</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">write</span></code> with <code class="docutils literal notranslate"><span class="pre">--input-format=json</span></code> doesn’t yet support all the features of the ScyllaDB storage engine. The following are not supported:</p>
 <ul class="simple">
 <li><p>Counters.</p></li>
 <li><p>Non-strictly atomic cells, including frozen multi-cell types like collections, tuples, and UDTs.</p></li>
 </ul>
 <p>Parsing uses a streaming JSON parser, it is safe to pass in input files of any size.</p>
+<p>Produces a single output SSTable.</p>
+</section>
+<section id="output-sstables">
+<h4>Output SSTables<a class="headerlink" href="#output-sstables" title="Link to this heading">¶</a></h4>
 <p>The output SStable will use the BIG format, the highest supported SStable format and a random UUID generation, which is printed to stdout.
-By default, it is placed in the local directory, which can be changed with <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.
-If the output SStable clashes with an existing SStable, the write will fail.</p>
+By default, they are placed in the local directory, which can be changed with <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.
+If any output SStable clashes with an existing SStable, the write will fail.</p>
 <p>The output is validated before being written to the disk.
 The validation done here is similar to that done by the <a class="reference internal" href="#validate">validate operation</a>.
 The level of validation can be changed with the <code class="docutils literal notranslate"><span class="pre">--validation-level</span></code> flag.
@@ -938,6 +962,7 @@ Possible validation-levels are:</p>
 <p>Note that levels are cumulative - each contains all the checks of the previous levels, too.
 By default, the strictest level is used.
 This can be relaxed, for example, if you want to produce intentionally corrupt SStables for tests.</p>
+</section>
 </section>
 <section id="shard-of">
 <h3>shard-of<a class="headerlink" href="#shard-of" title="Link to this heading">¶</a></h3>
@@ -1671,7 +1696,12 @@ But even an altered schema which changed only the table options can lead to data
 <li><a class="reference internal" href="#scrub">scrub</a></li>
 <li><a class="reference internal" href="#validate-checksums">validate-checksums</a></li>
 <li><a class="reference internal" href="#decompress">decompress</a></li>
-<li><a class="reference internal" href="#write">write</a></li>
+<li><a class="reference internal" href="#write">write</a><ul>
+<li><a class="reference internal" href="#cql-input-format">CQL input format</a></li>
+<li><a class="reference internal" href="#json-input-format">JSON input format</a></li>
+<li><a class="reference internal" href="#output-sstables">Output SSTables</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#shard-of">shard-of</a></li>
 <li><a class="reference internal" href="#query">query</a><ul>
 <li><a class="reference internal" href="#examples">Examples</a></li>
@@ -2206,7 +2236,7 @@ But even an altered schema which changed only the table options can lead to data
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Oct 2025.
+                        Last updated on 26 Oct 2025.
                     
                 </div>
             
