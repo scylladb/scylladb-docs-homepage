@@ -559,6 +559,18 @@ Each row includes the stream’s state (<code class="docutils literal notranslat
 <p>Query all streams to read the entire CDC log.</p>
 </li>
 </ol>
+<section id="garbage-collection-of-cdc-streams-metadata">
+<h4>Garbage collection of CDC streams metadata<a class="headerlink" href="#garbage-collection-of-cdc-streams-metadata" title="Link to this heading">¶</a></h4>
+<p>For tablets-based keyspaces, Scylla periodically performs garbage collection of old CDC streams metadata in the <code class="docutils literal notranslate"><span class="pre">system.cdc_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">system.cdc_streams</span></code> tables.
+This process removes information about streams that are no longer needed, helping to prevent unbounded growth of the metadata tables.</p>
+<p>The garbage collection process runs periodically in the background and examines streams that have been closed.
+It removes information about a stream if the stream’s close timestamp is older than the configured TTL of the CDC table.
+Since the stream has been closed for longer than the TTL, this means that all rows in this stream have also exceeded their TTL and expired, unless the table’s TTL was altered to a smaller value after some rows have been written.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When altering the TTL of a CDC table to a smaller value, you can lose information about streams that still contain live rows. Make sure to read all the information you need from the <code class="docutils literal notranslate"><span class="pre">system.cdc_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">system.cdc_streams</span></code> tables before performing such alterations.</p>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -693,7 +705,10 @@ Each row includes the stream’s state (<code class="docutils literal notranslat
 <li><a class="reference internal" href="#example-querying-the-cdc-description-table">Example: querying the CDC description table</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#tablets-based-keyspaces">Tablets-based keyspaces</a></li>
+<li><a class="reference internal" href="#tablets-based-keyspaces">Tablets-based keyspaces</a><ul>
+<li><a class="reference internal" href="#garbage-collection-of-cdc-streams-metadata">Garbage collection of CDC streams metadata</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
