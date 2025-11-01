@@ -519,6 +519,15 @@ may prevent creating tables in that keyspace.</p>
 then every rack in every datacenter receives a replica, except for racks comprised
 of only <a class="reference internal" href="../architecture/zero-token-nodes.html"><span class="doc">zero-token nodes</span></a>. Racks added after
 the keyspace creation do not receive replicas.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">rf_rack_valid_keyspaces`</span></code> is enabled in the config and the keyspace is tablet-based,
+the numeric replication factor is automatically expanded into a rack list when the statement is
+executed, which can be observed in the DESCRIBE output afterwards. If the numeric RF is smaller than
+the number of racks in a DC, a subset of racks is chosen arbitrarily.</p>
+<p>Altering from a rack list to a numeric replication factor is not supported, except
+for two cases. One is setting replication factor to 0, in which case the number of replicas is reduced to 0 in that DC.
+The other is when the numeric replication factor is equal to the current number of replicas
+for a given datacanter, in which case the current rack list is preserved.</p>
+<p>Altering from a numeric replication factor to a rack list is not supported yet.</p>
 <p>Note that when <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> ing keyspaces and supplying <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code>,
 auto-expansion will only <em>add</em> new datacenters for safety, it will not alter
 existing datacenters or remove any even if they are no longer in the cluster.
@@ -2183,7 +2192,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 31 Oct 2025.
+                        Last updated on 01 Nov 2025.
                     
                 </div>
             

@@ -360,12 +360,13 @@ For tablet keyspaces, a table is also required for effective ownership.</p>
 <p>Example output:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Datacenter: datacenter1</span>
 <span class="go">=======================</span>
-<span class="go">Status=Up/Down</span>
+<span class="go">Status=Up/Down/eXcluded</span>
 <span class="go">|/ State=Normal/Leaving/Joining/Moving</span>
 <span class="go">--  Address    Load       Tokens  Owns (effective)  Host ID                               Rack</span>
 <span class="go">UN  127.0.0.1  394.97 MB  256     33.4%             292a6c7f-2063-484c-b54d-9015216f1750  rack1</span>
 <span class="go">UN  127.0.0.2  151.07 MB  256     34.3%             102b6ecd-2081-4073-8172-bf818c35e27b  rack1</span>
 <span class="go">UN  127.0.0.3  249.07 MB  256     32.3%             20db6ecd-2981-447s-l172-jf118c17o27y  rack1</span>
+<span class="go">XN  127.0.0.4  149.07 MB  256     32.3%             dd961642-c7c6-4962-9f5a-ea774dbaed77  rack1</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -382,6 +383,7 @@ the information.</p></td>
 <tr class="row-odd"><td><p>Status</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">U</span></code> - The node is up.</p>
 <p><code class="docutils literal notranslate"><span class="pre">D</span></code> - The node is down.</p>
+<p><code class="docutils literal notranslate"><span class="pre">X</span></code> - The node is <a class="reference internal" href="#status-excluded"><span class="std std-ref">excluded</span></a>.</p>
 </td>
 </tr>
 <tr class="row-even"><td><p>State</p></td>
@@ -422,6 +424,9 @@ automatically assigned to the node.</p></td>
 </tr>
 </tbody>
 </table>
+<p id="status-excluded">Nodes in the excluded status (<code class="docutils literal notranslate"><span class="pre">X</span></code>) are down nodes which were marked as excluded
+by <code class="docutils literal notranslate"><span class="pre">removenode</span></code>, <code class="docutils literal notranslate"><span class="pre">excludenode`</span></code> or node replace, and means that they are considered permanently lost.
+See <a class="reference internal" href="excludenode.html"><span class="doc">nodetool excludenode</span></a> for more information.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
 </section>
 
@@ -1014,7 +1019,7 @@ automatically assigned to the node.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 31 Oct 2025.
+                        Last updated on 01 Nov 2025.
                     
                 </div>
             
