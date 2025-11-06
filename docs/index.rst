@@ -175,4 +175,5 @@
    :hidden:
 
    get-started/index
+   drivers/index
    versioning/index 

@@ -1,11 +1,11 @@
 ========================
-Driver Support Policy
+Driver Support
 ========================
 
-Driver Support Policy
--------------------------------
+Support Policy
+----------------
 
-We support the **two most recent minor releases** of our drivers.
+We support the **two most recent minor releases** of ScyllaDB drivers.
 
 * We test and validate the latest two minor versions.
 * We typically patch only the latest minor release.
@@ -16,85 +16,42 @@ updates and fixes.
 At a minimum, upgrade your driver when upgrading to a new ScyllaDB version
 to ensure compatibility between the driver and the database.
 
-ScyllaDB Drivers
------------------
+Supported Versions
+--------------------
 
 The following table shows the available ScyllaDB drivers and their latest
-versions. Click the documentation link to view the documentation for each
-driver.
+versions.
 
 .. list-table::
-    :widths: 20 20 60
+    :widths: 50 50
     :header-rows: 1
 
     * - ScyllaDB Driver
-      - Latest Version
-      - Description
+      - Supported Versions
     * - Python Driver
-      - 3.28
-      - | A native Python client for interacting with ScyllaDB and Cassandra
-          clusters, implementing the CQL binary protocol. It supports
-          asynchronous query execution, automatic connection pooling, and
-          adaptive load balancing to optimize throughput and latency in
-          Python applications.
-
-        `Python Driver documentation <https://python-driver.docs.scylladb.com/>`_
+      - * 3.29
+        * 3.28
     * - Java Driver
-      - * 4.19 (Java Driver 4.x)
-        * 3.11 (Java Driver 3.x)
-      - | A native Java client for interacting with ScyllaDB and Cassandra
-          clusters, implementing the CQL binary protocol. It provides full
-          asynchronous support, automatic query paging, and advanced load
-          balancing policies.
-        | There are two driver families, 4.x and 3.x, and the support policy
-          applies separately to each family, covering the two latest minor
-          versions within 4.x and the two latest minor versions within 3.x.
+      - Java Driver 4.x
 
-        `Java Driver documentation <https://java-driver.docs.scylladb.com/>`_
+        * 4.19
+        * 4.18
+
+        Java Driver 3.x
+
+        * 3.11
+        * 3.10
     * - Go Driver
-      - 1.16
-      - | A native Go client for interacting with ScyllaDB and Cassandra
-          clusters, implementing the CQL binary protocol. It features a fully
-          asynchronous, non-blocking API with shard‑aware host selection and
-          optimized connection management for high-performance Go applications.
-        | An extension, **gocqlx**, adds higher‑level abstractions, such as
-          query builders and struct binding, to improve developer productivity.
-
-        * `Go Driver documentation <https://github.com/scylladb/gocql>`_
-        * `Gocql extension documentation <https://github.com/scylladb/gocqlx>`_
+      - * 1.16
+        * 1.15
     * - Rust Driver
-      - 1.3
-      - | A native Rust client for interacting with ScyllaDB and Cassandra
-          clusters, implementing the CQL binary protocol. Delivers memory-safe,
-          fully asynchronous operations with zero-cost abstractions for
-          low-latency, high-throughput Rust applications.
-
-        `Rust Driver documentation <https://rust-driver.docs.scylladb.com/>`_
-    
+      - * 1.3
+        * 1.2
     * - C# Driver
-      - 3.22
-      - | A native C# client for interacting with ScyllaDB and Cassandra
-          clusters, implementing the CQL binary protocol. It integrates with
-          .NET asynchronous programming patterns, supports connection pooling
-          and retry policies, and is optimized for enterprise-grade .NET
-          applications.
-        
-        `C# Driver documentation <https://csharp-driver.docs.scylladb.com/>`_
-
+      - * 3.22
     * - CPP RS Driver
-      - 0.5
-      - | A native C++ client built on a Rust core for interacting with
-          ScyllaDB and Cassandra clusters, implementing the CQL binary
-          protocol. It combines Rust’s memory safety and concurrency features
-          with C++ usability, providing safer and more reliable
-          high-performance database access.
-
-        `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_
-
+      - * 0.5
+        * 0.4
     * - C++ Driver
-      - 2.16
-      - | **This driver is no longer actively maintained. We recommend using
-          the ScyllaDB CPP RS Driver for improved performance and full support
-          for the latest ScyllaDB features.**
-
-        `C++ Driver documentation <https://cpp-driver.docs.scylladb.com/>`_
+      - * 2.16
+        * 2.15
