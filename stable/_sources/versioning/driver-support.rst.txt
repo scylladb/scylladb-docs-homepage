@@ -45,8 +45,8 @@ versions.
       - * 1.16
         * 1.15
     * - Rust Driver
-      - * 1.3
-        * 1.2
+      - * 1.4
+        * 1.3
     * - C# Driver
       - * 3.22
     * - CPP RS Driver
