@@ -504,24 +504,27 @@ entire data center, or other data centers, in that case.</p>
 <section id="tablets">
 <h2>Tablets<a class="headerlink" href="#tablets" title="Link to this heading">¶</a></h2>
 <p>“Tablets” are ScyllaDB’s new approach to replicating data across a cluster.
-It replaces the older approach which was named “vnodes”. Compared to vnodes,
-tablets are smaller pieces of tables that are easier to move between nodes,
-and allow for faster growing or shrinking of the cluster when needed.</p>
-<p>In this version, tablet support is incomplete and not all of the features
-which Alternator needs are supported with tablets. So currently, new
-Alternator tables default to using vnodes - not tablets.</p>
-<p>However, if you do want to create an Alternator table which uses tablets,
-you can do this by specifying the <code class="docutils literal notranslate"><span class="pre">experimental:initial_tablets</span></code> tag in
-the CreateTable operation. The value of this tag can be:</p>
+It replaces the older approach which was named “vnodes”. See
+<a class="reference internal" href="../architecture/tablets.html"><span class="std std-doc">Data Distribution with Tablets</span></a> for details.</p>
+<p>In this version, tablet support is almost complete, so new
+Alternator tables default to following what the global configuration flag
+<a class="reference internal" href="../reference/configuration-parameters.html#confval-tablets_mode_for_new_keyspaces"><span class="std std-ref">tablets_mode_for_new_keyspaces</span></a>
+tells them to.</p>
+<p>If you want to influence whether a specific Alternator table is created with tablets or vnodes,
+you can do this by specifying the <code class="docutils literal notranslate"><span class="pre">system:initial_tablets</span></code> tag
+(in earlier versions of Scylla the tag was <code class="docutils literal notranslate"><span class="pre">experimental:initial_tablets</span></code>)
+in the CreateTable operation. The value of this tag can be:</p>
 <ul class="simple">
 <li><p>Any valid integer as the value of this tag enables tablets.
 Typically the number “0” is used - which tells ScyllaDB to pick a reasonable
 number of initial tablets. But any other number can be used, and this
 number overrides the default choice of initial number of tablets.</p></li>
 <li><p>Any non-integer value - e.g., the string “none” - creates the table
-without tablets - i.e., using vnodes.</p></li>
+without tablets - i.e., using vnodes. However, when vnodes are asked for by the tag value,
+but tablets are <code class="docutils literal notranslate"><span class="pre">enforced</span></code> by the <code class="docutils literal notranslate"><span class="pre">tablets_mode_for_new_keyspaces</span></code> configuration flag,
+an exception will be thrown.</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">experimental:initial_tablets</span></code> tag only has any effect while creating
+<p>The <code class="docutils literal notranslate"><span class="pre">system:initial_tablets</span></code> tag only has any effect while creating
 a new table with CreateTable - changing it later has no effect.</p>
 <p>Because the tablets support is incomplete, when tablets are enabled for an
 Alternator table, the following features will not work for this table:</p>
@@ -1139,7 +1142,7 @@ See <a class="reference external" href="https://github.com/scylladb/scylla/issue
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Nov 2025.
+                        Last updated on 12 Nov 2025.
                     
                 </div>
             
