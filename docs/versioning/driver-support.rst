@@ -50,8 +50,7 @@ versions.
     * - C# Driver
       - * 3.22
     * - CPP RS Driver
-      - * 0.5
-        * 0.4
+      - * 0.5 (Beta)
     * - C++ Driver
       - * 2.16
         * 2.15
