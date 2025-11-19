@@ -5,7 +5,7 @@ Driver Support
 Support Policy
 ----------------
 
-We support the **two most recent minor releases** of ScyllaDB drivers.
+We support the **two most recent minor releases** of :doc:`ScyllaDB drivers </drivers/cql-drivers/>`.
 
 * We test and validate the latest two minor versions.
 * We typically patch only the latest minor release.
@@ -28,10 +28,10 @@ versions.
 
     * - ScyllaDB Driver
       - Supported Versions
-    * - Python Driver
+    * - `Python Driver <https://python-driver.docs.scylladb.com/>`_
       - * 3.29
         * 3.28
-    * - Java Driver
+    * - `Java Driver <https://java-driver.docs.scylladb.com/>`_
       - Java Driver 4.x
 
         * 4.19
@@ -41,16 +41,16 @@ versions.
 
         * 3.11
         * 3.10
-    * - Go Driver
+    * - `Go Driver <https://github.com/scylladb/gocql>`_
       - * 1.16
         * 1.15
-    * - Rust Driver
+    * - `Rust Driver <https://rust-driver.docs.scylladb.com/>`_
       - * 1.4
         * 1.3
-    * - C# Driver
+    * - `C# Driver <https://csharp-driver.docs.scylladb.com/>`_
       - * 3.22
-    * - CPP RS Driver
+    * - `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_
       - * 0.5 (Beta)
-    * - C++ Driver
+    * - `C++ Driver <https://cpp-driver.docs.scylladb.com/>`_
       - * 2.16
         * 2.15
