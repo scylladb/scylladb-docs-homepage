@@ -352,8 +352,8 @@
 <h1>Nodetool scrub<a class="headerlink" href="#nodetool-scrub" title="Link to this heading">¶</a></h1>
 <section id="name">
 <h2>NAME<a class="headerlink" href="#name" title="Link to this heading">¶</a></h2>
-<p><strong>scrub</strong> - Help identify and fix corrupted SSTable.
-Remove faulty data,  eliminate tombstoned rows that have surpassed the table’s gc_grace period, and fix out-of-order rows and partitions.</p>
+<p><strong>scrub</strong> - Help identify and fix corrupted SSTable. Not all kinds of corruption can be skipped or fixed by scrub.
+Remove faulty data, eliminate tombstoned rows that have surpassed the table’s gc_grace period, and fix out-of-order rows and partitions.</p>
 </section>
 <section id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Link to this heading">¶</a></h2>
@@ -363,9 +363,12 @@ Remove faulty data,  eliminate tombstoned rows that have surpassed the table’s
 <span class="w">                </span><span class="o">[(</span>-ns<span class="w"> </span><span class="p">|</span><span class="w"> </span>--no-snapshot<span class="o">)]</span>
 <span class="w">                </span><span class="o">[(</span>-s<span class="w"> </span><span class="p">|</span><span class="w"> </span>--skip-corrupted<span class="o">)]</span>
 <span class="w">                </span><span class="o">[(</span>-m<span class="w"> </span>&lt;scrub_mode&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--mode<span class="w"> </span>&lt;scrub_mode&gt;<span class="o">)]</span>
+<span class="w">                </span><span class="o">[(</span>-q<span class="w"> </span>&lt;quarantine_mode&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--quarantine-mode<span class="w"> </span>&lt;quarantine_mode&gt;<span class="o">)]</span>
+<span class="w">                </span><span class="o">[</span>--drop-unfixable-sstables<span class="o">]</span>
 <span class="w">                </span><span class="o">[</span>--<span class="o">]</span><span class="w"> </span>&lt;keyspace&gt;<span class="w"> </span><span class="o">[</span>&lt;table...&gt;<span class="o">]</span>
 
 Supported<span class="w"> </span>scrub<span class="w"> </span>modes:<span class="w"> </span>ABORT,<span class="w"> </span>SKIP,<span class="w"> </span>SEGREGATE,<span class="w"> </span>VALIDATE
+Supported<span class="w"> </span>quarantine<span class="w"> </span>modes:<span class="w"> </span>INCLUDE,<span class="w"> </span>EXCLUDE,<span class="w"> </span>ONLY
 </pre></div>
 </div>
 </section>
@@ -388,6 +391,12 @@ Supported<span class="w"> </span>scrub<span class="w"> </span>modes:<span class=
 <tr class="row-even"><td><p>-m &lt;scrub_mode&gt; / –mode &lt;scrub_mode&gt;</p></td>
 <td><p>How to handle corrupt data (one of: ABORT|SKIP|SEGREGATE|VALIDATE, default ABORT; overrides ‘–skip-corrupted’)</p></td>
 </tr>
+<tr class="row-odd"><td><p>-q &lt;quarantine_mode&gt; / –quarantine-mode &lt;quarantine_mode&gt;</p></td>
+<td><p>How to handle quarantined SSTables (one of: INCLUDE|EXCLUDE|ONLY, default INCLUDE)</p></td>
+</tr>
+<tr class="row-even"><td><p>–drop-unfixable-sstables</p></td>
+<td><p>Drop unfixable SSTables instead of aborting the entire scrub (only valid with –mode=SEGREGATE)</p></td>
+</tr>
 </tbody>
 </table>
 <p><code class="docutils literal notranslate"><span class="pre">--</span></code> This option can be used to separate command-line options from the list of argument, (useful when arguments might be mistaken for command-line options.</p>
@@ -407,7 +416,9 @@ Supported<span class="w"> </span>scrub<span class="w"> </span>modes:<span class=
 <td><p>Abort scrubbing when the first validation error occurs. (default).</p></td>
 </tr>
 <tr class="row-odd"><td><p>SKIP</p></td>
-<td><p>Skip corrupted rows or partitions. (equivalent to the legacy –skip-corrupted option).</p></td>
+<td><p>Skip corrupted rows or partitions. (equivalent to the legacy –skip-corrupted option).
+<strong>Warning</strong>: This mode can cause data loss by removing invalid data portions or entire
+SSTables if severely corrupted (e.g., digest mismatch detected).</p></td>
 </tr>
 <tr class="row-even"><td><p>SEGREGATE</p></td>
 <td><p>Sort out-of-order rows or partitions by segregating them into additional SSTables.</p></td>
@@ -415,6 +426,27 @@ Supported<span class="w"> </span>scrub<span class="w"> </span>modes:<span class=
 <tr class="row-odd"><td><p>VALIDATE</p></td>
 <td><p>Read-only mode: report any corruptions found while scrubbing but do not fix them.
 By default, corrupt SSTables are moved into a “quarantine” subdirectory so they will not be subject to compaction.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="quarantine-modes">
+<h2>QUARANTINE MODES<a class="headerlink" href="#quarantine-modes" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Quarantine mode</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>INCLUDE</p></td>
+<td><p>Process both regular and quarantined SSTables (default).</p></td>
+</tr>
+<tr class="row-odd"><td><p>EXCLUDE</p></td>
+<td><p>Process only regular (non-quarantined) SSTables.</p></td>
+</tr>
+<tr class="row-even"><td><p>ONLY</p></td>
+<td><p>Process only quarantined SSTables.</p></td>
 </tr>
 </tbody>
 </table>
@@ -437,9 +469,57 @@ By default, corrupt SSTables are moved into a “quarantine” subdirectory so t
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>VALIDATE<span class="w"> </span>--no-snapshot<span class="w"> </span>mykeyspace<span class="w"> </span>mytable
 </pre></div>
 </div>
+<p>Scrub <strong>a</strong> specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mode dropping unfixable SSTables</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>SEGREGATE<span class="w"> </span>--drop-unfixable-sstables<span class="w"> </span>mykeyspace<span class="w"> </span>mytable
+</pre></div>
+</div>
+</section>
+<section id="procedures-for-removing-bad-sstables">
+<h2>Procedures for Removing Bad SSTables<a class="headerlink" href="#procedures-for-removing-bad-sstables" title="Link to this heading">¶</a></h2>
+<section id="method-1-quarantine-and-drop">
+<h3>Method 1: Quarantine and Drop<a class="headerlink" href="#method-1-quarantine-and-drop" title="Link to this heading">¶</a></h3>
+<p><strong>Step 1</strong>: Run scrub in VALIDATE mode to identify and quarantine corrupted SSTables:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>VALIDATE<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
+</pre></div>
+</div>
+<p>This will move corrupted SSTables to a <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory.
+The <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory is a sub-directory of the table’s respective data directory.</p>
+<p><strong>Step 2</strong> (Optional): Preserve quarantined SSTables for analysis:</p>
+<p>Before permanently dropping the corrupted SSTables, consider copying some or all of them aside,
+somewhere outside of the ScyllaDB data directory, so they are preserved for later investigation by the ScyllaDB R&amp;D team,
+to determine the root cause of the corruption.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copy quarantined SSTables to a backup location for analysis</span>
+&gt;<span class="w"> </span>cp<span class="w"> </span>-r<span class="w"> </span>/path/to/data/keyspace_name/table_dir/quarantine<span class="w"> </span>/path/to/backup/location/
+</pre></div>
+</div>
+<p><strong>Step 3</strong>: Drop the quarantined SSTables using <a class="reference internal" href="dropquarantinedsstables.html"><span class="doc">dropquarantinedsstables</span></a>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
+</pre></div>
+</div>
+<p>This permanently removes the quarantined SSTables from the specified table.</p>
+</section>
+<section id="method-2-segregate-with-drop-unfixable-flag">
+<h3>Method 2: Segregate with Drop Unfixable Flag<a class="headerlink" href="#method-2-segregate-with-drop-unfixable-flag" title="Link to this heading">¶</a></h3>
+<p>This approach attempts to fix what can be fixed and automatically drops SSTables that cannot be fixed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method should be used for the subset of corruption issues where SEGREGATE mode can actually help: where corruption manifests at least partly in reordered partitions or rows.</p>
+</div>
+<p><strong>Step 1</strong>: Run scrub in SEGREGATE mode with the <code class="docutils literal notranslate"><span class="pre">--drop-unfixable-sstables</span></code> flag:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>SEGREGATE<span class="w"> </span>--drop-unfixable-sstables<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
+</pre></div>
+</div>
+<p>This will:</p>
+<ul class="simple">
+<li><p>Attempt to segregate and fix out-of-order data where possible</p></li>
+<li><p>Remove faulty data</p></li>
+<li><p>Automatically drop SSTables that cannot be fixed</p></li>
+<li><p>Create new properly ordered SSTables from the recoverable data</p></li>
+</ul>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
 <p>Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.</p>
+</section>
 </section>
 </section>
 
@@ -568,7 +648,13 @@ By default, corrupt SSTables are moved into a “quarantine” subdirectory so t
 <li><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
 <li><a class="reference internal" href="#options">OPTIONS</a></li>
 <li><a class="reference internal" href="#scrub-modes">SCRUB MODES</a></li>
+<li><a class="reference internal" href="#quarantine-modes">QUARANTINE MODES</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#procedures-for-removing-bad-sstables">Procedures for Removing Bad SSTables</a><ul>
+<li><a class="reference internal" href="#method-1-quarantine-and-drop">Method 1: Quarantine and Drop</a></li>
+<li><a class="reference internal" href="#method-2-segregate-with-drop-unfixable-flag">Method 2: Segregate with Drop Unfixable Flag</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -832,6 +918,7 @@ By default, corrupt SSTables are moved into a “quarantine” subdirectory so t
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1047,7 +1134,7 @@ By default, corrupt SSTables are moved into a “quarantine” subdirectory so t
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 Nov 2025.
+                        Last updated on 21 Nov 2025.
                     
                 </div>
             
