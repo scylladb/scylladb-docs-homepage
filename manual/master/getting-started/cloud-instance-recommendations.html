@@ -606,8 +606,8 @@ supported in upcoming releases.</p>
 <p>Pick a zone where Haswell CPUs are found. Local SSD performance offers, according to Google, less than 1 ms of latency and up to 680,000 read IOPS and 360,000 write IOPS.
 Image with NVMe disk interface is recommended.
 (<a class="reference external" href="https://cloud.google.com/compute/docs/disks/local-ssd">More info</a>)</p>
-<p>Recommended instances types are <a class="reference external" href="https://cloud.google.com/compute/docs/storage-optimized-machines#z3_machine_types">z3-highmem-highlssd and z3-highmem-standardlssd</a>,
-<a class="reference external" href="https://cloud.google.com/compute/docs/general-purpose-machines#n1_machines">n1-highmem</a>, and <a class="reference external" href="https://cloud.google.com/compute/docs/general-purpose-machines#n2_machines">n2-highmem</a>.</p>
+<p>Recommended instances types are <a class="reference external" href="https://cloud.google.com/compute/docs/storage-optimized-machines#z3_machine_types">z3-highmem-highlssd, z3-highmem-standardlssd</a>,
+and <a class="reference external" href="https://cloud.google.com/compute/docs/general-purpose-machines#n2_series">n2-highmem</a>.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -697,53 +697,11 @@ Image with NVMe disk interface is recommended.
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 30.0%" />
-<col style="width: 20.0%" />
-<col style="width: 20.0%" />
-<col style="width: 30.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Model</p></th>
-<th class="head"><p>vCPU</p></th>
-<th class="head"><p>Mem (GB)</p></th>
-<th class="head"><p>Storage (GB)</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>n1-highmem-2</p></td>
-<td><p>2</p></td>
-<td><p>13</p></td>
-<td><p>375</p></td>
-</tr>
-<tr class="row-odd"><td><p>n1-highmem-4</p></td>
-<td><p>4</p></td>
-<td><p>26</p></td>
-<td><p>750</p></td>
-</tr>
-<tr class="row-even"><td><p>n1-highmem-8</p></td>
-<td><p>8</p></td>
-<td><p>52</p></td>
-<td><p>1,500</p></td>
-</tr>
-<tr class="row-odd"><td><p>n1-highmem-16</p></td>
-<td><p>16</p></td>
-<td><p>104</p></td>
-<td><p>3,000</p></td>
-</tr>
-<tr class="row-even"><td><p>n1-highmem-32</p></td>
-<td><p>32</p></td>
-<td><p>208</p></td>
-<td><p>6,000</p></td>
-</tr>
-<tr class="row-odd"><td><p>n1-highmem-64</p></td>
-<td><p>64</p></td>
-<td><p>416</p></td>
-<td><p>9,000</p></td>
-</tr>
-</tbody>
-</table>
+<ul class="simple">
+<li><p>Storage: Each Z3 instance supports up to 36,000 GiB (~36 TiB) of local
+Titanium SSD (or up to 72,000 GiB on bare-metal).</p></li>
+<li><p>Z3 Processor: Sapphire Rapids</p></li>
+</ul>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -799,9 +757,19 @@ Image with NVMe disk interface is recommended.
 <td><p>640</p></td>
 <td><p>9,000</p></td>
 </tr>
+<tr class="row-even"><td><p>n2-highmem-96</p></td>
+<td><p>96</p></td>
+<td><p>768</p></td>
+<td><p>9,000</p></td>
+</tr>
 </tbody>
 </table>
-<p>Storage: each instance can support  maximum of 24 local SSD of 375 GB partitions each for a total of <a class="reference external" href="https://cloud.google.com/compute/docs/disks">9 TB per instance</a></p>
+<ul class="simple">
+<li><p>Storage: Each instance can support  maximum of 24 local SSD of 375 GB
+partitions each for a total of <a class="reference external" href="https://cloud.google.com/compute/docs/disks">9 TB per instance</a>.</p></li>
+<li><p>Processors: Ice Lake (the default for larger machine types) and Cascade Lake
+(the default for machine types up to 80 vCPUs).</p></li>
+</ul>
 </section>
 <section id="microsoft-azure">
 <span id="system-requirements-azure"></span><h2>Microsoft Azure<a class="headerlink" href="#microsoft-azure" title="Link to this heading">¶</a></h2>
@@ -1515,7 +1483,7 @@ For Intel Xeon processors, each OCPU corresponds to two hardware execution threa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Nov 2025.
+                        Last updated on 22 Nov 2025.
                     
                 </div>
             
