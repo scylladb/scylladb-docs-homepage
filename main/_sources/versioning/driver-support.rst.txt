@@ -42,8 +42,8 @@ versions.
         * 3.11
         * 3.10
     * - `Go Driver <https://github.com/scylladb/gocql>`_
-      - * 1.16
-        * 1.15
+      - * 1.17
+        * 1.16
     * - `Rust Driver <https://rust-driver.docs.scylladb.com/>`_
       - * 1.4
         * 1.3
