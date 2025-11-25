@@ -407,26 +407,6 @@ explicitly defined or provided as a marker:</p>
 INSERT, UPDATE, DELETE, PRUNE MATERIALIZED VIEW, BATCH,
 and to the TRUNCATE data definition query.</p>
 <p>In addition, the timeout parameter can be applied to SELECT queries as well.</p>
-<p>After <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">enabling object storage support</span></a>, configure your endpoints by
-following these <a class="reference internal" href="../operating-scylla/admin.html#object-storage-configuration"><span class="std std-ref">instructions</span></a>.</p>
-<p>Now you can configure your object storage when creating a keyspace:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="k">with</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;$endpoint_name&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;$bucket&#39;</span> <span class="p">}</span> 
-</pre></div>
-</div>
-<p><strong>Example</strong></p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span>
-    <span class="k">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span> <span class="p">:</span> <span class="mf">3</span> <span class="p">}</span>
-    <span class="k">AND</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span> <span class="p">:</span> <span class="s1">&#39;/tmp/b1&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span> <span class="p">:</span> <span class="s1">&#39;localhost&#39;</span> <span class="p">}</span> <span class="p">;</span>
-</pre></div>
-</div>
-<p>Storage options can be inspected by checking the new system schema table: <code class="docutils literal notranslate"><span class="pre">system_schema.scylla_keyspaces</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span>    <span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">system_schema</span><span class="mf">.</span><span class="n">scylla_keyspaces</span><span class="p">;</span>
-    
-     <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">storage_options</span>                                <span class="o">|</span> <span class="n">storage_type</span>
-    <span class="c1">---------------+------------------------------------------------+--------------</span>
-               <span class="n">ksx</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;/tmp/xx&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;localhost&#39;</span><span class="p">}</span> <span class="o">|</span>           <span class="n">S3</span>
-</pre></div>
-</div>
 </section>
 <section id="prune-materialized-view-statements">
 <h2>PRUNE MATERIALIZED VIEW statements<a class="headerlink" href="#prune-materialized-view-statements" title="Link to this heading">¶</a></h2>
@@ -1332,7 +1312,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Nov 2025.
+                        Last updated on 25 Nov 2025.
                     
                 </div>
             
