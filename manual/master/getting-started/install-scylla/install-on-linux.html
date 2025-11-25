@@ -52,17 +52,17 @@
         </noscript>
 
         
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/biel-search@latest/dist/biel-search/biel-search.css">
-        <script type="module" src="https://cdn.jsdelivr.net/npm/biel-search@latest/dist/biel-search/biel-search.esm.js"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/biel-search@latest/dist/biel-search/biel-search.css">
+            <script type="module" src="https://cdn.jsdelivr.net/npm/biel-search@latest/dist/biel-search/biel-search.esm.js"></script>
         
-        
+
         
             
                 <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
             
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/css/main.css?v=e3ce25dc" />
+                <link rel="stylesheet" type="text/css" href="../../_static/css/main.css?v=3e5a588f" />
             
         
             
@@ -171,10 +171,12 @@
     <body class="brand-self-hosted">
         <section class="promo-banner  promo-banner--hide" style="display: none;">
     <div class="promo-banner-wrapper">
-        
-        <div class="promo-banner__title">ScyllaDB University LIVE, FREE Virtual Training Event | March 21</div>
-        <a class="promo-banner__button button button--reverse" href="https://lp.scylladb.com/university-live-2023-03-registration?siteplacement=docs"
-           target="_blank" rel="noopener noreferrer">Register for Free</a>
+        <div class="promo-banner__content">
+            
+            <div class="promo-banner__title">ScyllaDB University LIVE, FREE Virtual Training Event | March 21</div>
+            <a class="promo-banner__button button button--reverse" href="https://lp.scylladb.com/university-live-2023-03-registration?siteplacement=docs"
+               target="_blank" rel="noopener noreferrer">Register for Free</a>
+        </div>
         <button class="promo-banner__close">
             <i class="icon-cancel"></i>
         </button>
@@ -228,14 +230,20 @@
                 <a href="#" class="scylla-dropdown__title">Drivers <i class="chevron icon-arrow-dropdown"></i></a>
                 <ul class="menu scylla-dropdown__content">
                     <li>
-                        <a href="https://docs.scylladb.com/manual/stable/using-scylla/drivers/cql-drivers/">
+                        <a href="https://docs.scylladb.com/stable/drivers/cql-drivers">
                             <i class="icon-docs-nsql-guides"></i>CQL Drivers
                         </a>
                     </li>
                     <li>
-                        <a href="https://docs.scylladb.com/manual/stable/using-scylla/drivers/dynamo-drivers/">
+                        <a href="https://docs.scylladb.com/stable/drivers/dynamo-drivers">
                             <i class="icon-docs-alternator"></i>DynamoDB Drivers
                         </a>
+
+                        <li>
+                            <a href="https://docs.scylladb.com/stable/versioning/driver-support">
+                                <i class="icon-docs-blog"></i>Supported Driver Versions
+                            </a>
+                        </li>
                     </li>
                 </ul>
             </li>
@@ -274,11 +282,11 @@
             <ci-search></ci-search>
         </div>
         
-            <biel-button class="header-ask-ai" project="ddfdo8m94k" 
-                header-title="ScyllaDB chatbot (beta)"
-                button-position="default"
-                modal-position="bottom-right"
-                button-style="dark">
+            <biel-button class="header-ask-ai" project="ddfdo8m94k"
+                         header-title="ScyllaDB chatbot (beta)"
+                         button-position="default"
+                         modal-position="bottom-right"
+                         button-style="dark">
                 Ask AI
             </biel-button>
         
@@ -327,13 +335,13 @@
                     </div>
                 
                 
-                <div class="sidebar-right-layout">
-                    <div class="body-container">
+                    <div class="sidebar-right-layout">
+                        <div class="body-container">
                 
 
-                    <div class="content-body">
+                <div class="content-body">
+                    
                         
-                            
     <div class="admonition caution">
         <p class="admonition-title">Caution</p>
         <p>
@@ -344,9 +352,9 @@
         </p>
     </div>
 
-                        
-                        
-                        <section id="install-scylladb-linux-packages">
+                    
+
+                    <section id="install-scylladb-linux-packages">
 <h1>Install ScyllaDB Linux Packages<a class="headerlink" href="#install-scylladb-linux-packages" title="Link to this heading">¶</a></h1>
 <p>We recommend installing ScyllaDB using <a class="reference internal" href="../installation-common/scylla-web-installer.html"><span class="doc">ScyllaDB Web Installer for Linux</span></a>,
 a platform-agnostic installation script, to install ScyllaDB on any supported Linux platform.
@@ -376,7 +384,8 @@ as it may conflict with ScyllaDB coredump configuration:</p>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo mkdir -p /etc/apt/keyrings</span>
 </pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo gpg --homedir /tmp --no-default-keyring --keyring /etc/apt/keyrings/scylladb.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys a43e06657bac99e3</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo gpg --homedir /tmp --no-default-keyring --keyring /tmp/temp.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys a43e06657bac99e3</span>
+<span class="go">sudo gpg --homedir /tmp --no-default-keyring --keyring /tmp/temp.gpg --export --armor a43e06657bac99e3 | gpg --dearmor &gt; /etc/apt/keyrings/scylladb.gpg</span>
 </pre></div>
 </div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo wget -O /etc/apt/sources.list.d/scylla.list http://downloads.scylladb.com/deb/debian/scylla-2025.3.list</span>
@@ -396,18 +405,22 @@ To install a specific patch version, list all the available patch versions:</p>
 </pre></div>
 </div>
 <p>Then install the selected patch version:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">apt-get install scylla{,-server,-tools,-tools-core,-kernel-conf,-node-exporter,-conf,-python3}=&lt;your patch version&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">apt-get install scylla{,-server,-kernel-conf,-node-exporter,-conf,-python3}=&lt;your patch version&gt;</span>
 </pre></div>
 </div>
-<p>The following example shows installing ScyllaDB 5.2.3.</p>
+<p>The following example shows installing ScyllaDB 2025.3.1.</p>
 <div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">apt-cache madison scylla</span>
-<span class="go">scylla | 5.2.3-0.20230608.ea08d409f155-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-5.2 stable/main amd64 Packages</span>
-<span class="go">scylla | 5.2.2-0.20230521.9dd70a58c3f9-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-5.2 stable/main amd64 Packages</span>
-<span class="go">scylla | 5.2.1-0.20230508.f1c45553bc29-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-5.2 stable/main amd64 Packages</span>
-<span class="go">scylla | 5.2.0-0.20230427.429b696bbc1b-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-5.2 stable/main amd64 Packages</span>
+<span class="go">scylla | 2025.3.4-0.20251116.898f193ef677-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
+<span class="go">scylla | 2025.3.3-0.20251029.0e6381f14db2-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
+<span class="go">scylla | 2025.3.2-0.20251010.295ed0e9e158-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
+<span class="go">scylla | 2025.3.1-0.20250907.2bbf3cf669bb-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
+<span class="go">scylla | 2025.3.0-0.20250827.d9e492a90c2e-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
+<span class="go">scylla | 2025.3.0~rc2-0.20250730.7164f11b997d-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
+<span class="go">scylla | 2025.3.0~rc1-0.20250710.f3297824e397-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
+<span class="go">scylla | 2025.3.0~rc0-0.20250701.e64bb3819ca7-1 | https://downloads.scylladb.com/downloads/scylla/deb/debian-ubuntu/scylladb-2025.3 stable/main arm64 Packages</span>
 </pre></div>
 </div>
-<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">apt-get install scylla{,-server,-tools,-tools-core,-kernel-conf,-node-exporter,-conf,-python3}=5.2.3-0.20230608.ea08d409f155-1</span>
+<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">apt-get install scylla{,-server,-kernel-conf,-node-exporter,-conf,-python3,-cqlsh}=2025.3.1-0.20250907.2bbf3cf669bb-1</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -535,10 +548,10 @@ We recommend against enabling developer mode in production environments to ensur
 </section>
 </section>
 
-                    </div>
-                    
-                        <div class="post-content">
-                            
+                </div>
+                
+                    <div class="post-content">
+                        
     <div class="feedback-container">
         <p class="feedback-container__title">Was this page helpful?</p>
         <span data-tooltip tabindex="1" title="Yes" data-position="top">
@@ -599,7 +612,7 @@ We recommend against enabling developer mode in production environments to ensur
         });
     </script>
 
-                            <div class="content-navigation">
+                        <div class="content-navigation">
     <div class="navigation navigation--prev">
         
             <a class="navigation__link" href="../installation-common/scylla-web-installer.html">
@@ -625,14 +638,14 @@ We recommend against enabling developer mode in production environments to ensur
         
     </div>
 </div>
-                            <!-- Post content text -->
-                        </div>
-                    
+                        <!-- Post content text -->
+                    </div>
                 
+
                 
                     </div>
-                        <div class="sidebar-right large-order-3">
-                            <div class="secondary-side-nav custom-scroll-bar">
+                    <div class="sidebar-right large-order-3">
+                        <div class="secondary-side-nav custom-scroll-bar">
     
     <ul class="contribute">
         <li class="contribute__item">
@@ -668,7 +681,7 @@ We recommend against enabling developer mode in production environments to ensur
         </div>
     
 </div>
-                        </div>
+                    </div>
                     </div>
                 
             </div>
@@ -1093,7 +1106,7 @@ We recommend against enabling developer mode in production environments to ensur
                     
                 
             </div>
-            
+
         </section>
 
         <footer class="footer">
@@ -1105,7 +1118,7 @@ We recommend against enabling developer mode in production environments to ensur
                 <a class="footer-links__link" href="https://docs.scylladb.com/stable/get-started/develop-with-scylladb/tutorials-example-projects.html" target="_blank">Tutorials</a>
                 <a class="footer-links__link" href="https://university.scylladb.com/" target="_blank">University</a>
                 <a class="footer-links__link" href="https://www.scylladb.com/company/contact-us/"
-                    target="_blank">Contact Us</a>
+                   target="_blank">Contact Us</a>
                 <a class="footer-links__link" href="https://www.scylladb.com/company/" target="_blank">About Us</a>
             </div>
             <div class="footer-actions">
@@ -1123,17 +1136,17 @@ We recommend against enabling developer mode in production environments to ensur
         </div>
 
         
-        <div class="footer-copyright">
-            
+            <div class="footer-copyright">
                 
-                    &#169; 2025, ScyllaDB. All rights reserved.
+                    
+                        &#169; 2025, ScyllaDB. All rights reserved.
+                    
+                    | <a class="footer-copyright__link" href="https://www.scylladb.com/tos/" target="_blank">Terms of Service</a>
+                    | <a class="footer-copyright__link" href="https://www.scylladb.com/privacy/" target="_blank">Privacy Policy</a>
+                    | ScyllaDB, and ScyllaDB Cloud, are registered trademarks of ScyllaDB, Inc.
                 
-                | <a class="footer-copyright__link" href="https://www.scylladb.com/tos/" target="_blank">Terms of Service</a>
-                | <a class="footer-copyright__link" href="https://www.scylladb.com/privacy/" target="_blank">Privacy Policy</a>
-                | ScyllaDB, and ScyllaDB Cloud, are registered trademarks of ScyllaDB, Inc.
-            
-        </div>
-    
+            </div>
+        
 
 
         <div class="footer-bottom">
@@ -1147,16 +1160,16 @@ We recommend against enabling developer mode in production environments to ensur
             <div class="footer-bottom__version">
                 Powered by
                 <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 7.4.7</a> &amp;
-                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.8.8</a>
+                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.8.9</a>
             </div>
         </div>
     </div>
     
-        <biel-button class="footer-ask-ai" project="ddfdo8m94k" 
-            header-title="ScyllaDB chatbot (beta)"
-            button-position="bottom-right"
-            modal-position="bottom-right"
-            button-style="dark">
+        <biel-button class="footer-ask-ai" project="ddfdo8m94k"
+                     header-title="ScyllaDB chatbot (beta)"
+                     button-position="bottom-right"
+                     modal-position="bottom-right"
+                     button-style="dark">
             Ask AI
         </biel-button>
     
