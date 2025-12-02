@@ -113,7 +113,7 @@ retrieval.
 
     .. code::
 
-      yarn install cassandra-driver
+      yarn add cassandra-driver
 
     * Alternatively, you can use ``npm`` to install packages with the same name.
     * `Learn how to use Node.js with ScyllaDB <https://university.scylladb.com/courses/using-scylla-drivers/lessons/scylla-and-node-js/>`_ on ScyllaDB University.
