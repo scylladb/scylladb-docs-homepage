@@ -1922,6 +1922,59 @@ The change will take effect without a node restart, changing the value in the co
 </dd></dl>
 
 </section>
+<section id="vector-search-settings">
+<span id="confgroup-vector-search-settings"></span><h2>Vector search settings<a class="headerlink" href="#vector-search-settings" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><p>Settings for configuring and tuning vector search functionality.</p>
+</div></blockquote>
+<dl class="std confval" id="confprop-vector-store-primary-uri">
+<dt class="sig sig-object std" id="confval-vector_store_primary_uri">
+<span class="sig-name descname"><span class="pre">vector_store_primary_uri</span></span><a class="headerlink" href="#confval-vector_store_primary_uri" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A comma-separated list of primary vector store node URIs. These nodes are preferred for vector search operations.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-vector-store-secondary-uri">
+<dt class="sig sig-object std" id="confval-vector_store_secondary_uri">
+<span class="sig-name descname"><span class="pre">vector_store_secondary_uri</span></span><a class="headerlink" href="#confval-vector_store_secondary_uri" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A comma-separated list of secondary vector store node URIs. These nodes are used as a fallback when all primary nodes are unavailable, and are typically located in a different availability zone for high availability.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-vector-store-encryption-options">
+<dt class="sig sig-object std" id="confval-vector_store_encryption_options">
+<span class="sig-name descname"><span class="pre">vector_store_encryption_options</span></span><a class="headerlink" href="#confval-vector_store_encryption_options" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><dl class="simple">
+<dt>Options for encrypted connections to the vector store. These options are used for HTTPS URIs in `vector_store_primary_uri` and `vector_store_secondary_uri`. The available options are:</dt><dd><ul class="simple">
+<li><p>truststore: (Default: &lt;not set, use system truststore&gt;) Location of the truststore containing the trusted certificate for authenticating remote servers.</p></li>
+</ul>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">string_map</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
 <section id="security-properties">
 <span id="confgroup-security-properties"></span><h2>Security properties<a class="headerlink" href="#security-properties" title="Link to this heading">¶</a></h2>
 <blockquote>
@@ -3653,39 +3706,6 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-vector-store-secondary-uri">
-<dt class="sig sig-object std" id="confval-vector_store_secondary_uri">
-<span class="sig-name descname"><span class="pre">vector_store_secondary_uri</span></span><a class="headerlink" href="#confval-vector_store_secondary_uri" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>A comma-separated list of secondary vector store node URIs. These nodes are used as a fallback when all primary nodes are unavailable, and are typically located in a different availability zone for high availability.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-vector-store-encryption-options">
-<dt class="sig sig-object std" id="confval-vector_store_encryption_options">
-<span class="sig-name descname"><span class="pre">vector_store_encryption_options</span></span><a class="headerlink" href="#confval-vector_store_encryption_options" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><dl class="simple">
-<dt>Options for encrypted connections to the vector store. These options are used for HTTPS URIs in vector_store_primary_uri and vector_store_secondary_uri. The available options are:</dt><dd><ul class="simple">
-<li><p>truststore: (Default: &lt;not set. use system truststore&gt;) Location of the truststore containing the trusted certificate for authenticating remote servers.</p></li>
-</ul>
-</dd>
-</dl>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">string_map</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
 <dl class="std confval" id="confprop-abort-on-ebadf">
 <dt class="sig sig-object std" id="confval-abort_on_ebadf">
 <span class="sig-name descname"><span class="pre">abort_on_ebadf</span></span><a class="headerlink" href="#confval-abort_on_ebadf" title="Link to this definition">¶</a></dt>
@@ -4699,6 +4719,7 @@ The change will take effect without a node restart, changing the value in the co
 <li><a class="reference internal" href="#native-transport-cql-binary-protocol">Native transport (CQL Binary Protocol)</a></li>
 <li><a class="reference internal" href="#rpc-remote-procedure-call-settings">RPC (remote procedure call) settings</a></li>
 <li><a class="reference internal" href="#advanced-fault-detection-settings">Advanced fault detection settings</a></li>
+<li><a class="reference internal" href="#vector-search-settings">Vector search settings</a></li>
 <li><a class="reference internal" href="#security-properties">Security properties</a></li>
 </ul>
 </li>
