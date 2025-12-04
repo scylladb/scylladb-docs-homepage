@@ -58,7 +58,7 @@
 
         
             
-                <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+                <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
             
         
             
@@ -468,7 +468,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-workdir-W">
 <span class="sig-name descname"><span class="pre">workdir,W</span></span><a class="headerlink" href="#confval-workdir-W" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>The directory in which Scylla will put all its subdirectories. The location of individual subdirs can be overridden by the respective <code class="docutils literal notranslate"><span class="pre">*_directory</span></code> options.</p>
+<div><p>The directory in which Scylla will put all its subdirectories. The location of individual subdirs can be overridden by the respective ``*_directory`` options.</p>
 <ul class="simple">
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;/var/lib/scylla&quot;</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
@@ -804,7 +804,7 @@ The change will take effect without a node restart, changing the value in the co
 <span class="sig-name descname"><span class="pre">direct_failure_detector_ping_timeout_in_ms</span></span><a class="headerlink" href="#confval-direct_failure_detector_ping_timeout_in_ms" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
 <div><dl class="simple">
-<dt>Duration after which the direct failure detector aborts a ping message, so the next ping can start.</dt><dd><p>Note: this failure detector is used by Raft, and is different from gossiper’s failure detector (configured by <cite>failure_detector_timeout_in_ms</cite>).</p>
+<dt>Duration after which the direct failure detector aborts a ping message, so the next ping can start.</dt><dd><p>Note: this failure detector is used by Raft, and is different from gossiper’s failure detector (configured by `failure_detector_timeout_in_ms`).</p>
 </dd>
 </dl>
 <ul class="simple">
@@ -826,7 +826,7 @@ The change will take effect without a node restart, changing the value in the co
 <div><dl>
 <dt>The method that Scylla uses to acknowledge writes in milliseconds:</dt><dd><ul class="simple">
 <li><p>periodic: Used with commitlog_sync_period_in_ms (Default: 10000 - 10 seconds ) to control how often the commit log is synchronized to disk. Periodic syncs are acknowledged immediately.</p></li>
-<li><p>batch: Used with commitlog_sync_batch_window_in_ms (Default: disabled <code class="docutils literal notranslate"><span class="pre">**</span></code>) to control how long Scylla waits for other writes before performing a sync. When using this method, writes are not acknowledged until fsynced to disk.</p></li>
+<li><p>batch: Used with commitlog_sync_batch_window_in_ms (Default: disabled ``**``) to control how long Scylla waits for other writes before performing a sync. When using this method, writes are not acknowledged until fsynced to disk.</p></li>
 </ul>
 <p>Related information: Durability</p>
 </dd>
@@ -878,7 +878,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-commitlog_sync_period_in_ms">
 <span class="sig-name descname"><span class="pre">commitlog_sync_period_in_ms</span></span><a class="headerlink" href="#confval-commitlog_sync_period_in_ms" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Controls how long the system waits for other writes before performing a sync in <code class="docutils literal notranslate"><span class="pre">periodic</span></code> mode.</p>
+<div><p>Controls how long the system waits for other writes before performing a sync in ``periodic`` mode.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">10000</span></code></p></li>
@@ -892,7 +892,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-commitlog_sync_batch_window_in_ms">
 <span class="sig-name descname"><span class="pre">commitlog_sync_batch_window_in_ms</span></span><a class="headerlink" href="#confval-commitlog_sync_batch_window_in_ms" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Controls how long the system waits for other writes before performing a sync in <code class="docutils literal notranslate"><span class="pre">batch</span></code> mode.</p>
+<div><p>Controls how long the system waits for other writes before performing a sync in ``batch`` mode.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">10000</span></code></p></li>
@@ -1596,9 +1596,9 @@ The change will take effect without a node restart, changing the value in the co
 <dd><blockquote>
 <div><dl>
 <dt>Specifies when RPC compression dictionary training is performed by this node.</dt><dd><ul class="simple">
-<li><p><cite>never</cite> disables it unconditionally.</p></li>
-<li><p><cite>when_leader</cite> enables it only whenever the node is the Raft leader.</p></li>
-<li><p><cite>always</cite> (not recommended) enables it unconditionally.</p></li>
+<li><p>`never` disables it unconditionally.</p></li>
+<li><p>`when_leader` enables it only whenever the node is the Raft leader.</p></li>
+<li><p>`always` (not recommended) enables it unconditionally.</p></li>
 </ul>
 <p>Training shouldn’t be enabled on more than one node at a time, because overly-frequent dictionary announcements might indefinitely delay nodes from agreeing on a new dictionary.</p>
 </dd>
@@ -2862,7 +2862,7 @@ The change will take effect without a node restart, changing the value in the co
 <dd><blockquote>
 <div><dl class="simple">
 <dt>Allows for configuring tables to use SSTable compression with shared dictionaries.     If the option is disabled, Scylla will reject CREATE and ALTER statements which try to set dictionary-based sstable compressors.</dt><dd><p>This is only enforced when this node validates a new DDL statement; disabling the option won’t disable dictionary-based compression     on tables which already have it configured, and won’t do anything to existing sstables.
-To affect existing tables, you can ALTER them to a non-dictionary compressor, or disable dictionary compression     for the whole node through <cite>sstable_compression_dictionaries_enable_writing</cite>.</p>
+To affect existing tables, you can ALTER them to a non-dictionary compressor, or disable dictionary compression     for the whole node through `sstable_compression_dictionaries_enable_writing`.</p>
 </dd>
 </dl>
 <ul class="simple">
@@ -3231,7 +3231,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-enable_user_defined_functions">
 <span class="sig-name descname"><span class="pre">enable_user_defined_functions</span></span><a class="headerlink" href="#confval-enable_user_defined_functions" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Enable user defined functions. You must also set <code class="docutils literal notranslate"><span class="pre">experimental-features=udf</span></code>.</p>
+<div><p>Enable user defined functions. You must also set ``experimental-features=udf``.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
@@ -3362,13 +3362,13 @@ The change will take effect without a node restart, changing the value in the co
 This option controls the behavior when someone tries to create a view with such invalid IS NOT NULL restrictions.</p>
 <dl class="simple">
 <dt>Can be true, false, or warn:</dt><dd><ul class="simple">
-<li><p><cite>true</cite>: IS NOT NULL is allowed only on the view’s primary key columns,     trying to use it on other columns will cause an error, as it should.</p></li>
-<li><p><cite>false</cite>: Scylla accepts IS NOT NULL restrictions on regular columns, but they’re silently ignored.     It’s useful for backwards compatibility.</p></li>
-<li><p><cite>warn</cite>: The same as false, but there’s a warning about invalid view restrictions.</p></li>
+<li><p>`true`: IS NOT NULL is allowed only on the view’s primary key columns,     trying to use it on other columns will cause an error, as it should.</p></li>
+<li><p>`false`: Scylla accepts IS NOT NULL restrictions on regular columns, but they’re silently ignored.     It’s useful for backwards compatibility.</p></li>
+<li><p>`warn`: The same as false, but there’s a warning about invalid view restrictions.</p></li>
 </ul>
 </dd>
 </dl>
-<p>To preserve backwards compatibility on old clusters, Scylla’s default setting is <cite>warn</cite>.     New clusters have this option set to <cite>true</cite> by scylla.yaml (which overrides the default <cite>warn</cite>),     to make sure that trying to create an invalid view causes an error.</p>
+<p>To preserve backwards compatibility on old clusters, Scylla’s default setting is `warn`.     New clusters have this option set to `true` by scylla.yaml (which overrides the default `warn`),     to make sure that trying to create an invalid view causes an error.</p>
 </dd>
 </dl>
 <ul class="simple">
@@ -3796,7 +3796,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-cache_index_pages">
 <span class="sig-name descname"><span class="pre">cache_index_pages</span></span><a class="headerlink" href="#confval-cache_index_pages" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Keep SSTable index pages in the global cache after a SSTable read. Expected to improve performance for workloads with big partitions, but may degrade performance for workloads with small partitions. The amount of memory usable by index cache is limited with <code class="docutils literal notranslate"><span class="pre">index_cache_fraction</span></code>.</p>
+<div><p>Keep SSTable index pages in the global cache after a SSTable read. Expected to improve performance for workloads with big partitions, but may degrade performance for workloads with small partitions. The amount of memory usable by index cache is limited with ``index_cache_fraction``.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -5118,7 +5118,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Nov 2025.
+                        Last updated on 04 Dec 2025.
                     
                 </div>
             

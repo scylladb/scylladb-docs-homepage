@@ -58,7 +58,7 @@
 
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+                <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
             
         
             
@@ -400,9 +400,9 @@ timestamp, a conflict resolution algorithm determines which of the inserted cell
 <span class="k">SELECT</span> <span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span> <span class="k">FROM</span> <span class="n">NerdMovies</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Serenity&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>movie    | director      | main_actor | year
-----------+---------------+------------+------
-Serenity | Joseph Whedon |    Unknown | null
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>movie    | director      | main_actor
+----------+---------------+------------
+Serenity | Joseph Whedon |    Unknown
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">INSERT</span></code> is not required to assign all columns, so if two
@@ -410,7 +410,7 @@ statements modify the same primary key but assign different
 columns effects of both statements are preserved:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">)</span>
       <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Serenity&#39;</span><span class="p">,</span> <span class="s1">&#39;Joss Whedon&#39;</span><span class="p">,</span> <span class="s1">&#39;Nathan Fillion&#39;</span><span class="p">);</span>
-<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
       <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Serenity&#39;</span><span class="p">,</span> <span class="s1">&#39;Josseph Hill Whedon&#39;</span><span class="p">,</span> <span class="mf">2005</span><span class="p">);</span>
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">NerdMovies</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Serenity&#39;</span>
 </pre></div>
@@ -1024,7 +1024,7 @@ columns effects of both statements are preserved:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Nov 2025.
+                        Last updated on 04 Dec 2025.
                     
                 </div>
             

@@ -58,7 +58,7 @@
 
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+                <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
             
         
             
@@ -843,6 +843,14 @@ $LARGE_DATA_STATS_METADATA := {
 }
 </pre></div>
 </div>
+</section>
+<section id="dump-schema">
+<h3>dump-schema<a class="headerlink" href="#dump-schema" title="Link to this heading">¶</a></h3>
+<p>Dump the schema of the table or sstable in CQL describe table format.</p>
+<p>Uses the regular <a class="reference internal" href="#schema">schema load</a> mechanism to obtain the schema.
+With certain schema sources, the schema can be obtained without any sstables passed to the tool.</p>
+<p>Important note: the dumped schema will always be a <cite>CREATE TABLE</cite> statement, even if the table is in fact a materialized view or an index.
+This schema is enough to understand and parse the sstable data, but it may not be enough to recreate the table or write new sstables for it.</p>
 </section>
 <section id="validate">
 <span id="scylla-sstable-validate-operation"></span><h3>validate<a class="headerlink" href="#validate" title="Link to this heading">¶</a></h3>
@@ -1707,6 +1715,7 @@ But even an altered schema which changed only the table options can lead to data
 <li><a class="reference internal" href="#dump-summary">dump-summary</a></li>
 <li><a class="reference internal" href="#dump-statistics">dump-statistics</a></li>
 <li><a class="reference internal" href="#dump-scylla-metadata">dump-scylla-metadata</a></li>
+<li><a class="reference internal" href="#dump-schema">dump-schema</a></li>
 <li><a class="reference internal" href="#validate">validate</a></li>
 <li><a class="reference internal" href="#scrub">scrub</a></li>
 <li><a class="reference internal" href="#validate-checksums">validate-checksums</a></li>
@@ -2252,7 +2261,7 @@ But even an altered schema which changed only the table options can lead to data
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Nov 2025.
+                        Last updated on 04 Dec 2025.
                     
                 </div>
             
