@@ -8,6 +8,7 @@ and use it as the database for your application.
 .. toctree::
    :maxdepth: 1
    
+   New to ScyllaDB? Start here! <scylladb-basics>
    why-scylladb/index
    develop-with-scylladb/index
    query-data/index
