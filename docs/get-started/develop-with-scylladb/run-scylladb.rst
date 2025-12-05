@@ -118,10 +118,10 @@ ScyllaDB Cloud is a fully managed service where the ScyllaDB team handles
 deployment and maintenance of your ScyllaDB clusters. This service is ideal 
 if you're seeking a cloud-based, ready-to-use ScyllaDB solution.
 
-The easiest way to get started with ScyllaDB Cloud is to sign up for an 
-`account <https://cloud.scylladb.com/account/sign-up>`_.
-
-Follow the `Quick Start Guide to ScyllaDB Cloud <https://cloud.docs.scylladb.com/stable/scylladb-quickstart/>`_
+The easiest way to get started with ScyllaDB Cloud is to 
+`create an account <https://cloud.scylladb.com/account/sign-up>`_, start a
+`free trial <https://cloud.docs.scylladb.com/stable/evaluation/index.html>`_, and follow 
+the `Quick Start Guide <https://cloud.docs.scylladb.com/stable/scylladb-quickstart/index.html>`_
 to launch your cluster.
 
 .. _create-database-self-deploy:
@@ -141,5 +141,5 @@ Run the following command to install ScyllaDB:
 By default, running the script installs the latest official version of ScyllaDB Open Source. 
 
 Alternatively, you can install ScyllaDB packages for your platform or launch 
-ScyllaDB on AWS, GCP, or Azure. See the `download center <https://www.scylladb.com/download/>`_ 
+ScyllaDB on AWS, GCP, or Azure. See `Install ScyllaDB <https://docs.scylladb.com/manual/stable/getting-started/install-scylla/index.html>`_ 
 for a full list of options.
