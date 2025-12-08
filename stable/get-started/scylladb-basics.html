@@ -10,14 +10,14 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Inserting Data | ScyllaDB Docs 
+             ScyllaDB Basics | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
-        <link rel="icon" href="../../_static/img/favicon.ico" type="image/x-icon" />
-        <link rel="icon" href="../../_static/img/favicon-32x32.png" sizes="32x32" />
-        <link rel="icon" href="../../_static/img/favicon-228x228.png" sizes="192x192" />
-        <link rel="apple-touch-icon" href="../../_static/img/favicon-228x228.png" />
-        <meta name="msapplication-TileImage" href="../../_static/img/favicon-228x228.png" />
+        <link rel="icon" href="../_static/img/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="../_static/img/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" href="../_static/img/favicon-228x228.png" sizes="192x192" />
+        <link rel="apple-touch-icon" href="../_static/img/favicon-228x228.png" />
+        <meta name="msapplication-TileImage" href="../_static/img/favicon-228x228.png" />
 
         
             
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/stable/get-started/query-data/insert-data.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/stable/get-started/scylladb-basics.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -58,50 +58,50 @@
 
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+                <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
             
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/css/main.css?v=3e5a588f" />
+                <link rel="stylesheet" type="text/css" href="../_static/css/main.css?v=3e5a588f" />
             
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/sphinx_collapse.css?v=226d88b4" />
+                <link rel="stylesheet" type="text/css" href="../_static/sphinx_collapse.css?v=226d88b4" />
             
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+                <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
             
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=756716cd" />
+                <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=756716cd" />
             
         
     
         
         
             
-        <script type="text/javascript" src="../../_static/js/runtime.bundle.js"></script>
-        <script type="text/javascript" src="../../_static/js/main.bundle.js"></script>
+        <script type="text/javascript" src="../_static/js/runtime.bundle.js"></script>
+        <script type="text/javascript" src="../_static/js/main.bundle.js"></script>
         
             
-                <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-            
-        
-            
-                <script src="../../_static/doctools.js?v=9a2dae69"></script>
+                <script src="../_static/documentation_options.js?v=5929fcd5"></script>
             
         
             
-                <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+                <script src="../_static/doctools.js?v=9a2dae69"></script>
             
         
             
-                <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+                <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
             
         
             
-                <script src="../../_static/copybutton.js?v=f281be69"></script>
+                <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+            
+        
+            
+                <script src="../_static/copybutton.js?v=f281be69"></script>
             
         
     
@@ -177,7 +177,7 @@
         <header class="header">
     <div class="header-logo">
         <a class="header-logo__img" href="https://scylladb.com/">
-            <img src="../../_static/img/scylladb-logo-horizontal.svg" alt="ScyllaDB Documentation Logo" />
+            <img src="../_static/img/scylladb-logo-horizontal.svg" alt="ScyllaDB Documentation Logo" />
         </a>
         <span class="header-logo__bar"></span>
         <a class="header-logo__text" href="https://docs.scylladb.com/">
@@ -304,25 +304,19 @@
         </a>
     </span>
     <span class="bread__item">
-        <a href="../../index.html"
+        <a href="../index.html"
            class="bread__highlight">
             ScyllaDB Documentation
         </a>
     </span>
     
         <span class="bread__item">
-            <a href="../index.html" class="bread__highlight">
+            <a href="index.html" class="bread__highlight">
                 Get Started with ScyllaDB
             </a>
         </span>
     
-        <span class="bread__item">
-            <a href="index.html" class="bread__highlight">
-                Query Data
-            </a>
-        </span>
-    
-    <span class="bread__item bread__item--last">Inserting Data</span>
+    <span class="bread__item bread__item--last">ScyllaDB Basics</span>
 </div>
                     </div>
                 
@@ -336,45 +330,85 @@
                         
                     
 
-                    <section id="inserting-data">
-<h1>Inserting Data<a class="headerlink" href="#inserting-data" title="Link to this heading">¶</a></h1>
-<p>To insert data, use the <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">INTO</span></code> statement specifying the table and
-the column values. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">my_keyspace</span><span class="o">.</span><span class="n">users</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span>
-  <span class="n">VALUES</span> <span class="p">(</span><span class="mf">123e4567</span><span class="o">-</span><span class="n">e89b</span><span class="o">-</span><span class="mi">12</span><span class="n">d3</span><span class="o">-</span><span class="n">a456</span><span class="o">-</span><span class="mi">426655440000</span><span class="p">,</span> <span class="s1">&#39;Polly&#39;</span><span class="p">,</span> <span class="s1">&#39;Partition&#39;</span><span class="p">,</span> <span class="mi">77</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>Let’s break down the components of this <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">INTO</span></code> statement:</p>
-<p><strong>Keyspace and Table</strong></p>
-<p><code class="docutils literal notranslate"><span class="pre">my_keyspace.users</span></code>: This specifies the keyspace and table into which you
-want to insert data. In this example, it’s inserting data into a table named
-<code class="docutils literal notranslate"><span class="pre">users</span></code> within the <code class="docutils literal notranslate"><span class="pre">my_keyspace</span></code> keyspace.</p>
-<p><strong>Column Names</strong></p>
-<p><code class="docutils literal notranslate"><span class="pre">(user_id,</span> <span class="pre">first_name,</span> <span class="pre">last_name,</span> <span class="pre">age)</span></code>: This part of the statement specifies
-the column names in the table to which you want to insert data.</p>
-<p><strong>VALUES Clause</strong></p>
-<p><code class="docutils literal notranslate"><span class="pre">VALUES</span> <span class="pre">(123e4567-e89b-12d3-a456-426655440000,</span> <span class="pre">'Polly',</span> <span class="pre">'Partition',</span> <span class="pre">77)</span></code>:
-This part of the statement specifies the values that you want to insert into
-the corresponding columns. <code class="docutils literal notranslate"><span class="pre">123e4567-e89b-12d3-a456-426655440000</span></code> is being
-inserted into the <code class="docutils literal notranslate"><span class="pre">user_id</span></code> column (without quotes) as it is an <code class="docutils literal notranslate"><span class="pre">uuid</span></code> data
-type. <code class="docutils literal notranslate"><span class="pre">'Polly',</span> <span class="pre">'Partition'</span></code> (enclosed in single quotes) are being inserted into
-the <code class="docutils literal notranslate"><span class="pre">first_name</span></code>, <code class="docutils literal notranslate"><span class="pre">last_name</span></code> columns. <code class="docutils literal notranslate"><span class="pre">77</span></code> is being inserted into
-the <code class="docutils literal notranslate"><span class="pre">age</span></code> column (without quotes) as it is an <code class="docutils literal notranslate"><span class="pre">int</span></code> data type.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Unlike in SQL, <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">INTO</span></code> does not check the prior existence of the row by default:
-the row is created if none existed before, and updated otherwise.
-This behavior can be changed by using ScyllaDB’s
-<a class="reference external" href="https://docs.scylladb.com/manual/stable/features/lwt.html">Lightweight Transaction</a>
-<code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">NOT</span> <span class="pre">EXISTS</span></code> or <code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">EXISTS</span></code> clauses.</p>
-</div>
-<p>In summary, the <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">INTO</span></code> statement in ScyllaDB is used to insert a new
-row of data into a specific table within a keyspace. It requires you to specify
-the keyspace, table, column names, and the corresponding values that you want
-to insert into those columns. This allows you to add data to your tables in
-ScyllaDB for subsequent retrieval and querying.</p>
-<p>See the details about the <a class="reference external" href="https://docs.scylladb.com/manual/stable/cql/dml/insert.html">INSERT statement</a>
-in the ScyllaDB documentation.</p>
+                    <section id="scylladb-basics">
+<h1>ScyllaDB Basics<a class="headerlink" href="#scylladb-basics" title="Link to this heading">¶</a></h1>
+<section id="what-is-scylladb">
+<h2>What is ScyllaDB?<a class="headerlink" href="#what-is-scylladb" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB is a high-performance NoSQL database optimized for speed and
+scalability. It is designed to efficiently handle large volumes of data with
+minimal latency, making it ideal for data-intensive applications. ScyllaDB
+uses a shared-nothing architecture, contributing to its excellent performance
+and resource utilization.</p>
+<p>ScyllaDB comes in two flavors:</p>
+<ul class="simple">
+<li><p><strong>ScyllaDB Cloud</strong> is a managed NoSQL database-as-a-service (DBaaS) running
+ScyllaDB. It spares you the time and effort of setting up hardware or
+installing software. ScyllaDB Cloud is available on both AWS and Google
+Cloud public clouds, so you can choose your preferred cloud provider
+to run your cluster.</p></li>
+<li><p><strong>ScyllaDB</strong> is a high-performance, distributed NoSQL database designed for
+scalability and low-latency data access, with APIs compatible with Apache
+Cassandra and Amazon DynamoDB API. You can install it on Linux or launch it
+on AWS, GCP, or Azure.</p></li>
+</ul>
+</section>
+<section id="why-scylladb">
+<h2>Why ScyllaDB?<a class="headerlink" href="#why-scylladb" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB is favored for its exceptional capability to manage high data volumes
+and support rapid read/write operations. It is particularly effective in
+environments demanding high throughput, low latency, and the ability to scale.
+The database is also known for its robustness and fault tolerance, ensuring
+data integrity and availability.</p>
+</section>
+<section id="how-do-i-start-with-scylladb">
+<h2>How do I start with ScyllaDB?<a class="headerlink" href="#how-do-i-start-with-scylladb" title="Link to this heading">¶</a></h2>
+<p>If you are new to ScyllaDB, start with the <a class="reference internal" href="develop-with-scylladb/index.html"><span class="doc">Develop with ScyllaDB</span></a>
+guide. It will walk you through the basics of running and using ScyllaDB.</p>
+</section>
+<section id="how-do-i-interact-with-a-scylladb-cluster">
+<h2>How do I interact with a ScyllaDB cluster?<a class="headerlink" href="#how-do-i-interact-with-a-scylladb-cluster" title="Link to this heading">¶</a></h2>
+<p>The primary language for communicating with the ScyllaDB database is the <a class="reference external" href="https://docs.scylladb.com/manual/stable/cql/">Apache Cassandra Query
+Language (CQL)</a>.</p>
+<p>In addition, ScyllaDB provides drivers in different programming languages, such as Java, Python, Rust,
+and more, to help you interact with your clusters more efficiently. The drives ensure that queries are
+distributed evenly and efficiently across the cluster for latencies and the highest overall throughput.</p>
+<p>See the <a class="reference external" href="https://docs.scylladb.com/stable/drivers/">driver documentation</a> and
+the <a class="reference external" href="https://university.scylladb.com/courses/using-scylla-drivers/">ScyllaDB University course</a>
+to learn about the drivers.</p>
+</section>
+<section id="how-can-i-monitor-my-cluster">
+<h2>How can I monitor my cluster?<a class="headerlink" href="#how-can-i-monitor-my-cluster" title="Link to this heading">¶</a></h2>
+<p>On ScyllaDB Cloud, you have access to a set of dashboards that let you monitor your cluster’s state in
+real time. See <a class="reference external" href="https://cloud.docs.scylladb.com/stable/monitoring/index.html">Monitoring ScyllaDB Cloud</a>.</p>
+<p>For ScyllaDB, you can use <a class="reference external" href="https://www.scylladb.com/download/#monitor">ScyllaDB Monitoring Stack</a>,
+which allows you to view real-time and historical trend information on ScyllaDB clusters.</p>
+</section>
+<section id="how-can-i-learn-to-use-scylladb">
+<h2>How can I learn to use ScyllaDB?<a class="headerlink" href="#how-can-i-learn-to-use-scylladb" title="Link to this heading">¶</a></h2>
+<p>Join <a class="reference external" href="https://university.scylladb.com/">ScyllaDB University</a>, which offers a series of free NoSQL
+database training courses. They were designed as both a ScyllaDB tutorial and a resource for learning
+basic NoSQL concepts.</p>
+<p>Start with the <a class="reference external" href="https://university.scylladb.com/courses/scylla-essentials-overview/">ScyllaDB Essentials course</a>, which
+will help you install and run ScyllaDB and walk you through the key concepts in NoSQL.</p>
+</section>
+<section id="where-can-i-learn-more-about-scylladb">
+<h2>Where can I learn more about ScyllaDB?<a class="headerlink" href="#where-can-i-learn-more-about-scylladb" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>Join <a class="reference external" href="https://university.scylladb.com/">ScyllaDB University</a>.</p></li>
+<li><p>Read the <a class="reference external" href="https://docs.scylladb.com/manual/">ScyllaDB documentation</a> and
+<a class="reference external" href="https://cloud.docs.scylladb.com/">ScyllaDB Cloud documentation</a>.</p></li>
+<li><p>Join the ScyllaDB community:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Join the <a class="reference external" href="https://forum.scylladb.com/">ScyllaDB Community Forum</a>.</p></li>
+<li><p>Join our <a class="reference external" href="https://slack.scylladb.com/">Slack Channel</a>.</p></li>
+<li><p>Read our <a class="reference external" href="https://www.scylladb.com/users-blog/">blog</a>.</p></li>
+<li><p>Attend ScyllaDB <a class="reference external" href="https://www.scylladb.com/events/">workshops, webinars, and conferences</a>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
 </section>
 
                 </div>
@@ -409,7 +443,7 @@ in the ScyllaDB documentation.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb-docs-homepage/issues/new?title=docs:%20Issue on page Inserting Data&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/main/get-started/query-data/insert-data%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb-docs-homepage/issues/new?title=docs:%20Issue on page ScyllaDB Basics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/main/get-started/scylladb-basics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -444,21 +478,21 @@ in the ScyllaDB documentation.</p>
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="schema.html">
+            <a class="navigation__link" href="index.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Schema
+                    <span class="colored">PREVIOUS</span> <br />Get Started with ScyllaDB
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="read-data.html">
+            <a class="navigation__link" href="develop-with-scylladb/index.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Reading Data
+                    <span class="colored">NEXT</span> <br />Develop with ScyllaDB
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -478,14 +512,14 @@ in the ScyllaDB documentation.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb-docs-homepage/issues/new?title=docs:%20Issue on page Inserting Data&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/main/get-started/query-data/insert-data%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb-docs-homepage/issues/new?title=docs:%20Issue on page ScyllaDB Basics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/main/get-started/scylladb-basics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb-docs-homepage/edit/main/docs/get-started/query-data/insert-data.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb-docs-homepage/edit/main/docs/get-started/scylladb-basics.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -493,6 +527,23 @@ in the ScyllaDB documentation.</p>
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">ScyllaDB Basics</a><ul>
+<li><a class="reference internal" href="#what-is-scylladb">What is ScyllaDB?</a></li>
+<li><a class="reference internal" href="#why-scylladb">Why ScyllaDB?</a></li>
+<li><a class="reference internal" href="#how-do-i-start-with-scylladb">How do I start with ScyllaDB?</a></li>
+<li><a class="reference internal" href="#how-do-i-interact-with-a-scylladb-cluster">How do I interact with a ScyllaDB cluster?</a></li>
+<li><a class="reference internal" href="#how-can-i-monitor-my-cluster">How can I monitor my cluster?</a></li>
+<li><a class="reference internal" href="#how-can-i-learn-to-use-scylladb">How can I learn to use ScyllaDB?</a></li>
+<li><a class="reference internal" href="#where-can-i-learn-more-about-scylladb">Where can I learn more about ScyllaDB?</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                     </div>
@@ -508,7 +559,7 @@ in the ScyllaDB documentation.</p>
     </button>
     <div class="side-nav-content custom-scroll-bar">
         <div class="side-nav__title">
-            <a href="../../index.html">ScyllaDB Documentation</a>
+            <a href="../index.html">ScyllaDB Documentation</a>
         </div>
         <div class="side-nav__search">
             <div class="search-box">
@@ -518,42 +569,42 @@ in the ScyllaDB documentation.</p>
         <div class="side-nav__versions"></div>
         <div class="side-nav__content">
             <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Get Started with ScyllaDB</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../scylladb-basics.html">New to ScyllaDB? Start here!</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../develop-with-scylladb/index.html">Develop with ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../develop-with-scylladb/run-scylladb.html">Run ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../develop-with-scylladb/install-drivers.html">Install a Driver</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../develop-with-scylladb/connect-apps.html">Connect an Application</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../develop-with-scylladb/tutorials-example-projects.html">Tutorials and Example Projects</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Get Started with ScyllaDB</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">New to ScyllaDB? Start here!</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="develop-with-scylladb/index.html">Develop with ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="develop-with-scylladb/run-scylladb.html">Run ScyllaDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="develop-with-scylladb/install-drivers.html">Install a Driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="develop-with-scylladb/connect-apps.html">Connect an Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="develop-with-scylladb/tutorials-example-projects.html">Tutorials and Example Projects</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Query Data</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="cql.html">CQL</a></li>
-<li class="toctree-l3"><a class="reference internal" href="schema.html">Schema</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Inserting Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="read-data.html">Reading Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="update-data.html">Updating Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="delete-data.html">Deleting Data</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="query-data/index.html">Query Data</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="query-data/cql.html">CQL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-data/schema.html">Schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-data/insert-data.html">Inserting Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-data/read-data.html">Reading Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-data/update-data.html">Updating Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-data/delete-data.html">Deleting Data</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../data-modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../data-modeling/query-design.html">Query Design</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../data-modeling/schema-design.html">Schema Design</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../data-modeling/best-practices.html">Data Modeling Best Practices</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="data-modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="data-modeling/query-design.html">Query Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data-modeling/schema-design.html">Schema Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data-modeling/best-practices.html">Data Modeling Best Practices</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../learn-resources/index.html">Learn to Use ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="learn-resources/index.html">Learn to Use ScyllaDB</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../drivers/index.html">ScyllaDB Drivers</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../drivers/cql-drivers.html">ScyllaDB CQL Drivers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../drivers/dynamo-drivers.html">ScyllaDB DynamoDB Drivers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../drivers/third-party-drivers.html">Third-party Drivers</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../drivers/index.html">ScyllaDB Drivers</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="../drivers/cql-drivers.html">ScyllaDB CQL Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../drivers/dynamo-drivers.html">ScyllaDB DynamoDB Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../drivers/third-party-drivers.html">Third-party Drivers</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../versioning/index.html">Versioning and Support Policy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../versioning/version-support.html">ScyllaDB Version Support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../versioning/driver-support.html">Driver Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../versioning/index.html">Versioning and Support Policy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="../versioning/version-support.html">ScyllaDB Version Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../versioning/driver-support.html">Driver Support</a></li>
 </ul>
 </li>
 </ul>
