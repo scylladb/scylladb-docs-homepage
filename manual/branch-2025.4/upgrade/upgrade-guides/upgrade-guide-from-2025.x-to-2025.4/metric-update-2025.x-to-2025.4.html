@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3 | ScyllaDB Docs 
+             Metrics Update Between 2025.x and 2025.4 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -21,11 +21,12 @@
 
         
             
+            
         
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -331,7 +332,13 @@
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3</span>
+        <span class="bread__item">
+            <a href="index.html" class="bread__highlight">
+                Upgrade - ScyllaDB 2025.x to ScyllaDB 2025.4
+            </a>
+        </span>
+    
+    <span class="bread__item bread__item--last">Metrics Update Between 2025.x and 2025.4</span>
 </div>
                     </div>
                 
@@ -347,14 +354,82 @@
 
                     
 
-                    <section id="upgrade-scylladb-2025-2-to-scylladb-2025-3">
-<h1>Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3<a class="headerlink" href="#upgrade-scylladb-2025-2-to-scylladb-2025-3" title="Link to this heading">¶</a></h1>
+                    <section id="metrics-update-between-src-version-and-new-version">
+<h1>Metrics Update Between 2025.x and 2025.4<a class="headerlink" href="#metrics-update-between-src-version-and-new-version" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<p>ScyllaDB 2025.4 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
+<section id="new-metrics-in-new-version">
+<h2>New Metrics in 2025.4<a class="headerlink" href="#new-metrics-in-new-version" title="Link to this heading">¶</a></h2>
+<p>The following metrics are new in ScyllaDB 2025.4 compared to 2025.3.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14.3%" />
+<col style="width: 85.7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>scylla_database_total_view_updates_due_to_replica_count_mismatch</p></td>
+<td><p>The total number of view updates for which there were more view replicas
+than base replicas and we had to generate an extra view update because
+the additional view replica wouldn’t get paired with any base replica.
+It should only increase during the Replication Factor (RF) change. It
+should stop increasing shortly after finishing the RF change.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_database_total_writes_rejected_due_to_out_of_space_prevention</p></td>
+<td><p>Counts write operations that were rejected due to disabled user tables
+writes.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_index_query_latencies</p></td>
+<td><p>Index query latencies.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_reactor_aio_retries</p></td>
+<td><p>The total number of IOCB-s re-submitted via thread-pool.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_reactor_io_threaded_fallbacks</p></td>
+<td><p>The total number of io-threaded-fallbacks operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_repair_inc_sst_read_bytes</p></td>
+<td><p>The total number of bytes read from SStables for incremental repair
+on this shard.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_repair_inc_sst_skipped_bytes</p></td>
+<td><p>The total number of bytes skipped from SStables for incremental repair
+on this shard.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_repair_tablet_time_ms</p></td>
+<td><p>The time spent on tablet repair on this shard (in milliseconds).</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_downloads_blocked_on_memory</p></td>
+<td><p>Counts the number of times the S3 client downloads were delayed due to
+insufficient memory availability.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_memory_usage</p></td>
+<td><p>The total number of bytes consumed by the S3 client.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_read_prefetch_bytes</p></td>
+<td><p>The total number of bytes requested from object.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_storage_proxy_replica_fenced_out_requests</p></td>
+<td><p>The number of requests that resulted in a stale_topology_exception.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_vector_store_dns_refreshes</p></td>
+<td><p>The number of DNS refreshes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-and-updated-metrics-in-previous-2025-x-releases">
+<h2>New and Updated Metrics in Previous 2025.x Releases<a class="headerlink" href="#new-and-updated-metrics-in-previous-2025-x-releases" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="upgrade-guide-from-2025.2-to-2025.3.html"><span class="doc">Upgrade from ScyllaDB 2025.2.x to ScyllaDB 2025.3.y</span></a></p></li>
-<li><p><a class="reference internal" href="metric-update-2025.2-to-2025.3.html"><span class="doc">Metrics Update Between 2025.2 and 2025.3</span></a></p></li>
+<li><p><a class="reference external" href="https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/metric-update-2025.2-to-2025.3.html">Metrics Update Between 2025.2 and 2025.3</a></p></li>
+<li><p><a class="reference external" href="https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/metric-update-2025.1-to-2025.2.html">Metrics Update Between 2025.1 and 2025.2</a></p></li>
 </ul>
+</section>
 </section>
 
                 </div>
@@ -389,7 +464,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.x and 2025.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -424,21 +499,21 @@
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="../index.html">
+            <a class="navigation__link" href="upgrade-guide-from-2025.x-to-2025.4.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Upgrade ScyllaDB
+                    <span class="colored">PREVIOUS</span> <br />Upgrade from ScyllaDB 2025.x to ScyllaDB 2025.4
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="upgrade-guide-from-2025.2-to-2025.3.html">
+            <a class="navigation__link" href="../ami-upgrade.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3
+                    <span class="colored">NEXT</span> <br />Upgrade ScyllaDB Image: EC2 AMI, GCP, and Azure Images
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -458,14 +533,14 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.x and 2025.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/index.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -473,6 +548,18 @@
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">Metrics Update Between 2025.x and 2025.4</a><ul>
+<li><a class="reference internal" href="#new-metrics-in-new-version">New Metrics in 2025.4</a></li>
+<li><a class="reference internal" href="#new-and-updated-metrics-in-previous-2025-x-releases">New and Updated Metrics in Previous 2025.x Releases</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                     </div>
@@ -507,19 +594,19 @@
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="index.html">2025.4</a>
+                        <a href="metric-update-2025.x-to-2025.4.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/index.html">2025.3</a>
+                        <a href="../../../../stable/index.html">2025.3</a>
                     </li>
                 
             
