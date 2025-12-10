@@ -134,6 +134,48 @@ and since which version.
      - |x| 
      - N/A. This driver is no longer actively maintained.
 
+Support for Vector Search
+-------------------------
+
+`Vector Search <https://cloud.docs.scylladb.com/stable/vector-search/index.html>`_
+feature requires from drivers to support `vector` CQL type.
+The following table specifies which ScyllaDB drivers support `vector` type
+and since which version.
+
+.. list-table:: 
+   :widths: 30 35 35
+   :header-rows: 1
+
+   * - ScyllaDB Driver
+     - Support for `vector`
+     - Since Version
+   * - `Python <https://python-driver.docs.scylladb.com/>`_
+     - |v| 
+     - 3.28.0
+   * - `Java <https://java-driver.docs.scylladb.com/>`_
+     - |v| 
+     - Java Driver 4.x: 4.16.0 (recommended 4.19.0 or later)
+
+       Java Driver 3.x: not supported
+   * - `Go <https://github.com/scylladb/gocql>`_
+     - |v|
+     - 1.17.0
+   * - `Gocql extension <https://github.com/scylladb/gocqlx>`_
+     - |x| 
+     - To be supported in the next release
+   * - `Rust <https://rust-driver.docs.scylladb.com/>`_
+     - |v| 
+     - 1.2.0
+   * - `C# <https://csharp-driver.docs.scylladb.com/>`_
+     - |v|
+     - All versions
+   * - `CPP RS <https://cpp-rs-driver.docs.scylladb.com/>`_
+     - |v|
+     - 0.5.1
+   * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
+     - |x| 
+     - N/A. This driver is no longer actively maintained.
+
 CDC Integration with ScyllaDB Drivers
 -------------------------------------------
 
