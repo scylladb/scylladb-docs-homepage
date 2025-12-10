@@ -2,7 +2,7 @@
 Third-party Drivers
 =========================
 
-ScyllaDB supports the CQL binary protocol version 3, so any Apache Cassandra/CQL
+ScyllaDB supports the CQL binary protocol version 4, so any Apache Cassandra/CQL
 driver that implements the same version works with ScyllaDB.
 
 However, we recommend using :doc:`ScyllaDB drivers </drivers/cql-drivers>`.
