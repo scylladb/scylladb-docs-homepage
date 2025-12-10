@@ -134,12 +134,15 @@ and since which version.
      - |x| 
      - N/A. This driver is no longer actively maintained.
 
+
+.. _cql-drivers-vector-support:
+
 Support for Vector Search
 -------------------------
 
-`Vector Search <https://cloud.docs.scylladb.com/stable/vector-search/index.html>`_
-feature requires from drivers to support `vector` CQL type.
-The following table specifies which ScyllaDB drivers support `vector` type
+The `Vector Search <https://cloud.docs.scylladb.com/stable/vector-search/index.html>`_
+feature requires drivers to support the ``vector`` CQL type.
+The following table specifies which ScyllaDB drivers support the ``vector`` type
 and since which version.
 
 .. list-table:: 
@@ -147,7 +150,7 @@ and since which version.
    :header-rows: 1
 
    * - ScyllaDB Driver
-     - Support for `vector`
+     - Support for the ``vector`` type
      - Since Version
    * - `Python <https://python-driver.docs.scylladb.com/>`_
      - |v| 
@@ -162,7 +165,7 @@ and since which version.
      - 1.17.0
    * - `Gocql extension <https://github.com/scylladb/gocqlx>`_
      - |x| 
-     - To be supported in the next release
+     - To be supported in a future release
    * - `Rust <https://rust-driver.docs.scylladb.com/>`_
      - |v| 
      - 1.2.0
