@@ -432,13 +432,12 @@ auditing.</p></td>
 </tr>
 </tbody>
 </table>
-<p>Note that audit for every DML or QUERY might impact performance and consume a lot of storage.</p>
+<p>Note that enabling audit may negatively impact performance and audit-to-table may consume extra storage. That’s especially true when auditing DML and QUERY categories, which generate a high volume of audit messages.</p>
 </section>
 </section>
 <section id="configuring-audit-storage">
 <h2>Configuring Audit Storage<a class="headerlink" href="#configuring-audit-storage" title="Link to this heading">¶</a></h2>
-<p>Auditing messages can be sent to <a class="reference internal" href="#auditing-syslog-storage"><span class="std std-ref">Syslog</span></a> or stored in a Scylla <a class="reference internal" href="#auditing-table-storage"><span class="std std-ref">table</span></a>.
-Currently, auditing messages can only be saved to one location at a time. You cannot log into both a table and the Syslog.</p>
+<p>Auditing messages can be sent to <a class="reference internal" href="#auditing-syslog-storage"><span class="std std-ref">Syslog</span></a> or stored in a Scylla <a class="reference internal" href="#auditing-table-storage"><span class="std std-ref">table</span></a> or both.</p>
 <section id="storing-audit-messages-in-syslog">
 <span id="auditing-syslog-storage"></span><h3>Storing Audit Messages in Syslog<a class="headerlink" href="#storing-audit-messages-in-syslog" title="Link to this heading">¶</a></h3>
 <p><strong>Procedure</strong></p>
@@ -555,6 +554,18 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 -------------------------+--------------+--------------------------------------+----------+-------------+-------+---------------+------------------------------+-----------------+-------------+----------+
 2018-03-18 00:00:00+0000 | 10.143.2.108 | 3429b1a5-2a94-11e8-8f4e-000000000001 |      DDL |         ONE | False |           nba | DROP TABLE nba.team_roster ; | 127.0.0.1       | team_roster | Scylla   |
 (1 row)
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="storing-audit-messages-in-a-table-and-syslog-simultaneously">
+<span id="auditing-table-and-syslog-storage"></span><h3>Storing Audit Messages in a Table and Syslog Simultaneously<a class="headerlink" href="#storing-audit-messages-in-a-table-and-syslog-simultaneously" title="Link to this heading">¶</a></h3>
+<p><strong>Procedure</strong></p>
+<ol class="arabic">
+<li><p>Follow both procedures from above, and set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to both <code class="docutils literal notranslate"><span class="pre">syslog</span></code> and <code class="docutils literal notranslate"><span class="pre">table</span></code>. You need to restart scylla only once.</p>
+<p>To have both syslog and table you need to specify both backends separated by a comma:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>audit:<span class="w"> </span><span class="s2">&quot;syslog,table&quot;</span>
 </pre></div>
 </div>
 </li>
@@ -715,6 +726,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <li><a class="reference internal" href="#configuring-audit-storage">Configuring Audit Storage</a><ul>
 <li><a class="reference internal" href="#storing-audit-messages-in-syslog">Storing Audit Messages in Syslog</a></li>
 <li><a class="reference internal" href="#storing-audit-messages-in-a-table">Storing Audit Messages in a Table</a></li>
+<li><a class="reference internal" href="#storing-audit-messages-in-a-table-and-syslog-simultaneously">Storing Audit Messages in a Table and Syslog Simultaneously</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#handling-audit-failures">Handling Audit Failures</a></li>
@@ -1194,7 +1206,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Dec 2025.
+                        Last updated on 17 Dec 2025.
                     
                 </div>
             

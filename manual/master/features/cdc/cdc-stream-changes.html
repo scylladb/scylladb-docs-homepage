@@ -373,10 +373,6 @@
 <li><p>a mapping from the set of tokens (in the entire token ring) to the set of stream IDs in this generation.</p></li>
 </ul>
 <p>This is the mapping used to decide on which stream IDs to use when making writes, as explained in the <a class="reference internal" href="cdc-streams.html"><span class="doc">CDC Streams</span></a> document. It is a global property of the cluster: it doesn’t depend on the table you’re making writes to.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>The tables mentioned in the following sections: <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_generation_timestamps</span></code> and <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_streams_descriptions_v2</span></code> have been introduced in ScyllaDB 4.4. It is highly recommended to upgrade to 4.4 for efficient CDC usage. The last section explains how to run the below examples in ScyllaDB 4.3.</p>
-</div>
 <section id="when-cdc-generations-change">
 <h3>When CDC generations change<a class="headerlink" href="#when-cdc-generations-change" title="Link to this heading">¶</a></h3>
 <p>When you start a fresh cluster, the first generation is created. It has a timestamp chosen using the local clock of the node; it is stored in the <code class="docutils literal notranslate"><span class="pre">time</span></code> column of the <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_generation_timestamps</span></code> table. The stream IDs used in this generation are stored in the <code class="docutils literal notranslate"><span class="pre">streams</span></code> column of the <code class="docutils literal notranslate"><span class="pre">system_distributed.cdc_streams_descriptions_v2</span></code> table. Whenever you bootstrap a new node, you will see a new row appear in <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> containing the new generation’s timestamp and a new partition in <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions_v2</span></code> containing the stream IDs of that new generation.</p>
@@ -1262,7 +1258,7 @@ We also see that the two streams from the previous timestamps are now indicated 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Dec 2025.
+                        Last updated on 17 Dec 2025.
                     
                 </div>
             
