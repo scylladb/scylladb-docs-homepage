@@ -92,7 +92,7 @@
             
         
             
-                <script src="../_static/doctools.js?v=9a2dae69"></script>
+                <script src="../_static/doctools.js?v=9bcbadda"></script>
             
         
             
@@ -316,7 +316,7 @@
     
         <span class="bread__item">
             <a href="alternator.html" class="bread__highlight">
-                Alternator: DynamoDB API in Scylla
+                Alternator: DynamoDB API in ScyllaDB
             </a>
         </span>
     
@@ -348,9 +348,9 @@
 <h1>Alternator-specific APIs<a class="headerlink" href="#alternator-specific-apis" title="Link to this heading">¶</a></h1>
 <p>Alternator’s primary goal is to be compatible with Amazon DynamoDB(TM)
 and its APIs, so that any application written to use Amazon DynamoDB could
-be run, unmodified, against Scylla with Alternator enabled. The extent of
+be run, unmodified, against ScyllaDB with Alternator enabled. The extent of
 Alternator’s compatibility with DynamoDB is described in the
-<a class="reference internal" href="compatibility.html"><span class="std std-doc">Scylla Alternator for DynamoDB users</span></a> document.</p>
+<a class="reference internal" href="compatibility.html"><span class="std std-doc">ScyllaDB Alternator for DynamoDB users</span></a> document.</p>
 <p>But Alternator also adds several features and APIs that are not available in
 DynamoDB. These Alternator-specific APIs are documented here.</p>
 <section id="write-isolation-policies">
@@ -359,7 +359,7 @@ DynamoDB. These Alternator-specific APIs are documented here.</p>
 <em>conditional</em> update or an update based on the old value of an attribute.
 The read and the write should be treated as a single transaction - protected
 (<em>isolated</em>) from other parallel writes to the same item.</p>
-<p>Alternator could do this isolation by using Scylla’s LWT (lightweight
+<p>Alternator could do this isolation by using ScyllaDB’s LWT (lightweight
 transactions) for every write operation, but this significantly slows
 down writes, and not necessary for workloads which don’t use read-modify-write
 (RMW) updates.</p>
@@ -382,7 +382,7 @@ correctly for every workload.</p>
 which need a read before the write. An attempt to use such statements
 (e.g.,  UpdateItem with a ConditionExpression) will result in an error.
 In this mode, the remaining write requests which are allowed - pure writes
-without a read - are performed using standard Scylla writes, not LWT,
+without a read - are performed using standard ScyllaDB writes, not LWT,
 so they are significantly faster than they would have been in the
 <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code>, but their isolation is still correct.</p>
 <p>This mode is the fastest mode which is still guaranteed to be always
@@ -405,18 +405,18 @@ read-modify-write updates. This mode is not recommended for any use case,
 and will likely be removed in the future.</p></li>
 </ul>
 </section>
-<section id="accessing-system-tables-from-scylla">
-<h2>Accessing system tables from Scylla<a class="headerlink" href="#accessing-system-tables-from-scylla" title="Link to this heading">¶</a></h2>
-<p>Scylla exposes lots of useful information via its internal system tables,
+<section id="accessing-system-tables-from-scylladb">
+<h2>Accessing system tables from ScyllaDB<a class="headerlink" href="#accessing-system-tables-from-scylladb" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB exposes lots of useful information via its internal system tables,
 which can be found in system keyspaces: ‘system’, ‘system_auth’, etc.
 In order to access to these tables via alternator interface,
 Scan and Query requests can use a special table name:
 <code class="docutils literal notranslate"><span class="pre">.scylla.alternator.KEYSPACE_NAME.TABLE_NAME</span></code>
-which will return results fetched from corresponding Scylla table.</p>
+which will return results fetched from corresponding ScyllaDB table.</p>
 <p>This interface can be used only to fetch data from system tables.
 Attempts to read regular tables via the virtual interface will result
 in an error.</p>
-<p>Example: in order to query the contents of Scylla’s <code class="docutils literal notranslate"><span class="pre">system.large_rows</span></code>,
+<p>Example: in order to query the contents of ScyllaDB’s <code class="docutils literal notranslate"><span class="pre">system.large_rows</span></code>,
 pass <code class="docutils literal notranslate"><span class="pre">TableName='.scylla.alternator.system.large_rows'</span></code> to a Query/Scan
 request.</p>
 <p>Note that currently only <code class="docutils literal notranslate"><span class="pre">Scan</span></code> and <code class="docutils literal notranslate"><span class="pre">Query</span></code> on system tables is supported -
@@ -452,13 +452,13 @@ in Alternator.</p>
 </section>
 <section id="service-discovery">
 <h2>Service discovery<a class="headerlink" href="#service-discovery" title="Link to this heading">¶</a></h2>
-<p>As explained in <a class="reference internal" href="compatibility.html"><span class="std std-doc">Scylla Alternator for DynamoDB users</span></a>,
+<p>As explained in <a class="reference internal" href="compatibility.html"><span class="std std-doc">ScyllaDB Alternator for DynamoDB users</span></a>,
 Alternator requires a load-balancer or a client-side load-balancing library
-to distribute requests between all Scylla nodes. This load-balancer needs
-to be able to <em>discover</em> the Scylla nodes. Alternator provides two special
+to distribute requests between all ScyllaDB nodes. This load-balancer needs
+to be able to <em>discover</em> the ScyllaDB nodes. Alternator provides two special
 requests, <code class="docutils literal notranslate"><span class="pre">/</span></code> and <code class="docutils literal notranslate"><span class="pre">/localnodes</span></code>, to help with this service discovery, which
 we will now explain.</p>
-<p>Some setups know exactly which Scylla nodes were brought up, so all that
+<p>Some setups know exactly which ScyllaDB nodes were brought up, so all that
 remains is to periodically verify that each node is still functional. The
 easiest way to do this is to make an HTTP (or HTTPS) GET request to the node,
 with URL <code class="docutils literal notranslate"><span class="pre">/</span></code>. This is a trivial GET request and does <strong>not</strong> need to be
@@ -469,10 +469,10 @@ also supports this unauthenticated <code class="docutils literal notranslate"><s
 healthy: localhost:8000
 </pre></div>
 </div>
-<p>In other setups, the load balancer might not know which Scylla nodes exist.
-For example, it may be possible to add or remove Scylla nodes without a
+<p>In other setups, the load balancer might not know which ScyllaDB nodes exist.
+For example, it may be possible to add or remove ScyllaDB nodes without a
 client-side load balancer knowing. For these setups we have the <code class="docutils literal notranslate"><span class="pre">/localnodes</span></code>
-request that can be used to discover which Scylla nodes exist: A load balancer
+request that can be used to discover which ScyllaDB nodes exist: A load balancer
 that already knows at least one live node can discover the rest by sending
 a <code class="docutils literal notranslate"><span class="pre">/localnodes</span></code> request to the known node. It’s again an unauthenticated
 HTTP (or HTTPS) GET request:</p>
@@ -492,7 +492,7 @@ list the nodes in a specific <em>data center</em> or <em>rack</em>. These option
 useful for certain use cases:</p>
 <ul class="simple">
 <li><p>A <code class="docutils literal notranslate"><span class="pre">dc</span></code> option (e.g., <code class="docutils literal notranslate"><span class="pre">/localnodes?dc=dc1</span></code>) can be passed to list the
-nodes in a specific Scylla data center, not the data center of the node
+nodes in a specific ScyllaDB data center, not the data center of the node
 being contacted. This is useful when a client knowns of <em>some</em> Scylla
 node belonging to an unknown DC, but wants to list the nodes in <em>its</em>
 DC, which it knows by name.</p></li>
@@ -520,7 +520,7 @@ Alternator tables default to following what the global configuration flag
 tells them to.</p>
 <p>If you want to influence whether a specific Alternator table is created with tablets or vnodes,
 you can do this by specifying the <code class="docutils literal notranslate"><span class="pre">system:initial_tablets</span></code> tag
-(in earlier versions of Scylla the tag was <code class="docutils literal notranslate"><span class="pre">experimental:initial_tablets</span></code>)
+(in earlier versions of ScyllaDB the tag was <code class="docutils literal notranslate"><span class="pre">experimental:initial_tablets</span></code>)
 in the CreateTable operation. The value of this tag can be:</p>
 <ul class="simple">
 <li><p>Any valid integer as the value of this tag enables tablets.
@@ -666,7 +666,7 @@ See <a class="reference external" href="https://github.com/scylladb/scylla/issue
             <ul>
 <li><a class="reference internal" href="#">Alternator-specific APIs</a><ul>
 <li><a class="reference internal" href="#write-isolation-policies">Write isolation policies</a></li>
-<li><a class="reference internal" href="#accessing-system-tables-from-scylla">Accessing system tables from Scylla</a><ul>
+<li><a class="reference internal" href="#accessing-system-tables-from-scylladb">Accessing system tables from ScyllaDB</a><ul>
 <li><a class="reference internal" href="#listing-ongoing-requests">Listing ongoing requests</a></li>
 </ul>
 </li>
@@ -904,7 +904,7 @@ See <a class="reference external" href="https://github.com/scylladb/scylla/issue
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="alternator.html">Alternator: DynamoDB API in Scylla</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="alternator.html">Alternator: DynamoDB API in ScyllaDB</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Alternator-specific APIs</a></li>
@@ -1147,13 +1147,13 @@ See <a class="reference external" href="https://github.com/scylladb/scylla/issue
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Dec 2025.
+                        Last updated on 18 Dec 2025.
                     
                 </div>
             
             <div class="footer-bottom__version">
                 Powered by
-                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 7.4.7</a> &amp;
+                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 8.1.3</a> &amp;
                 <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.8.10</a>
             </div>
         </div>

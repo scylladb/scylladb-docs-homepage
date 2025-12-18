@@ -92,7 +92,7 @@
             
         
             
-                <script src="../_static/doctools.js?v=9a2dae69"></script>
+                <script src="../_static/doctools.js?v=9bcbadda"></script>
             
         
             
@@ -316,7 +316,7 @@
     
         <span class="bread__item">
             <a href="alternator.html" class="bread__highlight">
-                Alternator: DynamoDB API in Scylla
+                Alternator: DynamoDB API in ScyllaDB
             </a>
         </span>
     
@@ -346,22 +346,22 @@
 
                     <section id="scylladb-alternator-for-dynamodb-users">
 <h1>ScyllaDB Alternator for DynamoDB users<a class="headerlink" href="#scylladb-alternator-for-dynamodb-users" title="Link to this heading">¶</a></h1>
-<p>Scylla supports the DynamoDB API (this feature is codenamed “Alternator”).
+<p>ScyllaDB supports the DynamoDB API (this feature is codenamed “Alternator”).
 Our goal is to support any application written for Amazon DynamoDB.
 Nevertheless, there are a few differences between DynamoDB and Scylla, and
 and a few DynamoDB features that have not yet been implemented in Scylla.
 The purpose of this document is to inform users of these differences.</p>
 <section id="provisioning">
 <h2>Provisioning<a class="headerlink" href="#provisioning" title="Link to this heading">¶</a></h2>
-<p>The most obvious difference between DynamoDB and Scylla is that while
-DynamoDB is a shared cloud service, Scylla is a dedicated service running
+<p>The most obvious difference between DynamoDB and ScyllaDB is that while
+DynamoDB is a shared cloud service, ScyllaDB is a dedicated service running
 on your private cluster. Whereas DynamoDB allows you to “provision” the
 number of requests per second you’ll need - or at an extra cost not even
-provision that - Scylla requires you to provision your cluster. You need
+provision that - ScyllaDB requires you to provision your cluster. You need
 to reason about the number and size of your nodes - not the throughput.</p>
 <p>Moreover, DynamoDB’s per-table provisioning (<code class="docutils literal notranslate"><span class="pre">BillingMode=PROVISIONED</span></code>) is
 not yet supported by Scylla. The BillingMode and ProvisionedThroughput options
-on a table need to be valid but are ignored, and Scylla behaves like DynamoDB’s
+on a table need to be valid but are ignored, and ScyllaDB behaves like DynamoDB’s
 <code class="docutils literal notranslate"><span class="pre">BillingMode=PAY_PER_REQUEST</span></code>: All requests are accepted without a per-table
 throughput cap.</p>
 </section>
@@ -377,7 +377,7 @@ Instructions for doing this can be found in:
 </section>
 <section id="write-isolation-policies">
 <h2>Write isolation policies<a class="headerlink" href="#write-isolation-policies" title="Link to this heading">¶</a></h2>
-<p>Scylla was designed to optimize the performance of pure write operations -
+<p>ScyllaDB was designed to optimize the performance of pure write operations -
 writes which do not need to read the previous value of the item.
 In CQL, writes which do need the previous value of the item must explicitly
 use the slower LWT (“LightWeight Transaction”) feature to be correctly
@@ -419,11 +419,11 @@ a <em>higher</em> timestamp - and this will be the “last write” that wins.</
 <p>To avoid or mitigate this write reordering issue, users may consider
 one or more of the following:</p>
 <ol class="arabic simple">
-<li><p>Use NTP to keep the clocks on the different Scylla nodes synchronized.
+<li><p>Use NTP to keep the clocks on the different ScyllaDB nodes synchronized.
 If the delay between the two writes is longer than NTP’s accuracy,
 they will not be reordered.</p></li>
 <li><p>If an application wants to ensure that two specific writes are not
-reordered, it should send both requests to the same Scylla node.
+reordered, it should send both requests to the same ScyllaDB node.
 Care should be taken when using a load balancer - which might redirect
 two requests to two different nodes.</p></li>
 <li><p>Consider using the <code class="docutils literal notranslate"><span class="pre">always_use_lwt</span></code> write isolation policy.
@@ -540,18 +540,18 @@ only via CQL API, here is an example on how to do that:</p>
 <span class="n">ATTACH</span> <span class="n">SERVICE_LEVEL</span> <span class="n">oltp</span> <span class="k">TO</span> <span class="n">bob</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">alternator_enforce_authorization</span></code> has to be enabled in Scylla configuration.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">alternator_enforce_authorization</span></code> has to be enabled in ScyllaDB configuration.</p>
 <p>See <a class="reference internal" href="##Authorization"><span class="xref myst">Authorization</span></a> section to learn more about roles and authorization.
 See <a class="reference internal" href="../features/workload-prioritization.html"><span class="doc std std-doc">Workload Prioritization</span></a>
 to read about Workload Prioritization in detail.</p>
 </section>
 <section id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Link to this heading">¶</a></h2>
-<p>Scylla has an advanced and extensive monitoring framework for inspecting
-and graphing hundreds of different metrics of Scylla’s usage and performance.
-Scylla’s monitoring stack, based on Grafana and Prometheus, is described in
+<p>ScyllaDB has an advanced and extensive monitoring framework for inspecting
+and graphing hundreds of different metrics of ScyllaDB’s usage and performance.
+ScyllaDB’s monitoring stack, based on Grafana and Prometheus, is described in
 <a class="reference external" href="https://docs.scylladb.com/operating-scylla/monitoring/">https://docs.scylladb.com/operating-scylla/monitoring/</a>.
-This monitoring stack is different from DynamoDB’s offering - but Scylla’s
+This monitoring stack is different from DynamoDB’s offering - but ScyllaDB’s
 is significantly more powerful and gives the user better insights on
 the internals of the database and its performance.</p>
 </section>
@@ -575,7 +575,7 @@ So <code class="docutils literal notranslate"><span class="pre">Scan</span></cod
 data in different partition order. Applications mustn’t rely on that
 undocumented order.</p>
 <p>Note that inside each partition, the individual items will be sorted the same
-in DynamoDB and Scylla - determined by the <em>sort key</em> defined for that table.</p>
+in DynamoDB and ScyllaDB - determined by the <em>sort key</em> defined for that table.</p>
 </section>
 <hr class="docutils" />
 <section id="configurable-or-different-limits">
@@ -603,7 +603,7 @@ can’t create a GSI whose name is longer than 29 characters.</p></li>
 <section id="experimental-api-features">
 <h2>Experimental API features<a class="headerlink" href="#experimental-api-features" title="Link to this heading">¶</a></h2>
 <p>Some DynamoDB API features are supported by Alternator, but considered
-<strong>experimental</strong> in this release. An experimental feature in Scylla is a
+<strong>experimental</strong> in this release. An experimental feature in ScyllaDB is a
 feature whose functionality is complete, or mostly complete, but it is not
 as thoroughly tested or optimized as regular features. Also, an experimental
 feature’s implementation is still subject to change and upgrades may not be
@@ -678,8 +678,8 @@ This feature was added to DynamoDB in November 2020.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/8786">https://github.com/scylladb/scylla/issues/8786</a></p></li>
 <li><p>The on-demand backup APIs are not supported: CreateBackup, DescribeBackup,
 DeleteBackup, ListBackups, RestoreTableFromBackup.
-For now, users can use Scylla’s existing backup solutions such as snapshots
-or Scylla Manager.
+For now, users can use ScyllaDB’s existing backup solutions such as snapshots
+or ScyllaDB Manager.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/5063">https://github.com/scylladb/scylla/issues/5063</a></p></li>
 <li><p>Continuous backup (the ability to restore any point in time) is also not
 supported: UpdateContinuousBackups, DescribeContinuousBackups,
@@ -693,7 +693,7 @@ is specified, it is ignored. Requests which are asked to return the amount
 of provisioned throughput used by the request do not return it in Alternator.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/5068">https://github.com/scylladb/scylla/issues/5068</a></p></li>
 <li><p>DAX (DynamoDB Accelerator), an in-memory cache for DynamoDB, is not
-available in for Alternator. Anyway, it should not be necessary - Scylla’s
+available in for Alternator. Anyway, it should not be necessary - ScyllaDB’s
 internal cache is already rather advanced and there is no need to place
 another cache in front of the it. We wrote more about this here:
 <a class="reference external" href="https://www.scylladb.com/2017/07/31/database-caches-not-good/">https://www.scylladb.com/2017/07/31/database-caches-not-good/</a></p></li>
@@ -705,7 +705,7 @@ also part of the information about indexes enabled on the table.
 <li><p>The PartiQL syntax (SQL-like SELECT/UPDATE/INSERT/DELETE expressions)
 and the operations ExecuteStatement, BatchExecuteStatement and
 ExecuteTransaction are not yet supported.
-A user that is interested in an SQL-like syntax can consider using Scylla’s
+A user that is interested in an SQL-like syntax can consider using ScyllaDB’s
 CQL protocol instead.
 This feature was added to DynamoDB in November 2020.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/8787">https://github.com/scylladb/scylla/issues/8787</a></p></li>
@@ -713,7 +713,7 @@ This feature was added to DynamoDB in November 2020.
 which is different from AWS’s. In particular, the operations
 DescribeContributorInsights, ListContributorInsights and
 UpdateContributorInsights that configure Amazon’s “CloudWatch Contributor
-Insights” are not yet supported. Scylla has different ways to retrieve the
+Insights” are not yet supported. ScyllaDB has different ways to retrieve the
 same information, such as which items were accessed most often.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/8788">https://github.com/scylladb/scylla/issues/8788</a></p></li>
 <li><p>Alternator does not support the DynamoDB feature “export to S3”,
@@ -1114,7 +1114,7 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="alternator.html">Alternator: DynamoDB API in Scylla</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="alternator.html">Alternator: DynamoDB API in ScyllaDB</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new-apis.html">Alternator-specific APIs</a></li>
@@ -1357,13 +1357,13 @@ This feature was added to DynamoDB in November 2025.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Dec 2025.
+                        Last updated on 18 Dec 2025.
                     
                 </div>
             
             <div class="footer-bottom__version">
                 Powered by
-                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 7.4.7</a> &amp;
+                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 8.1.3</a> &amp;
                 <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.8.10</a>
             </div>
         </div>
