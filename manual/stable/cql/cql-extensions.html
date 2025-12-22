@@ -405,26 +405,6 @@ explicitly defined or provided as a marker:</p>
 INSERT, UPDATE, DELETE, PRUNE MATERIALIZED VIEW, BATCH,
 and to the TRUNCATE data definition query.</p>
 <p>In addition, the timeout parameter can be applied to SELECT queries as well.</p>
-<p>After <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">enabling object storage support</span></a>, configure your endpoints by
-following these <a class="reference internal" href="../operating-scylla/admin.html#object-storage-configuration"><span class="std std-ref">instructions</span></a>.</p>
-<p>Now you can configure your object storage when creating a keyspace:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="k">with</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;$endpoint_name&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;$bucket&#39;</span> <span class="p">}</span> 
-</pre></div>
-</div>
-<p><strong>Example</strong></p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span>
-    <span class="k">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span> <span class="p">:</span> <span class="mf">3</span> <span class="p">}</span>
-    <span class="k">AND</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span> <span class="p">:</span> <span class="s1">&#39;/tmp/b1&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span> <span class="p">:</span> <span class="s1">&#39;localhost&#39;</span> <span class="p">}</span> <span class="p">;</span>
-</pre></div>
-</div>
-<p>Storage options can be inspected by checking the new system schema table: <code class="docutils literal notranslate"><span class="pre">system_schema.scylla_keyspaces</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span>    <span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">system_schema</span><span class="mf">.</span><span class="n">scylla_keyspaces</span><span class="p">;</span>
-    
-     <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">storage_options</span>                                <span class="o">|</span> <span class="n">storage_type</span>
-    <span class="c1">---------------+------------------------------------------------+--------------</span>
-               <span class="n">ksx</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;/tmp/xx&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;localhost&#39;</span><span class="p">}</span> <span class="o">|</span>           <span class="n">S3</span>
-</pre></div>
-</div>
 </section>
 <section id="prune-materialized-view-statements">
 <h2>PRUNE MATERIALIZED VIEW statements<a class="headerlink" href="#prune-materialized-view-statements" title="Link to this heading">¶</a></h2>
@@ -740,7 +720,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -809,7 +789,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -882,7 +862,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -896,13 +876,13 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
             
                 
                     <li>
-                        <a href="../../branch-2025.4/cql/cql-extensions.html">2025.4</a>
+                        <a href="cql-extensions.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="cql-extensions.html">2025.3</a>
+                        <a href="../../branch-2025.3/cql/cql-extensions.html">2025.3</a>
                     </li>
                 
             
@@ -1006,6 +986,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1099,7 +1080,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -1109,6 +1090,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

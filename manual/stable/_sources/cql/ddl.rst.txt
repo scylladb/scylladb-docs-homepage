@@ -97,7 +97,7 @@ A keyspace is created using a ``CREATE KEYSPACE`` statement:
 
 .. code-block:: cql
 
-   create_keyspace_statement: CREATE KEYSPACE [ IF NOT EXISTS ] `keyspace_name` WITH `options`
+   create_keyspace_statement: CREATE KEYSPACE [ IF NOT EXISTS ] `keyspace_name` [ WITH `options` ]
 
 For example:
 
@@ -112,16 +112,19 @@ The supported ``options`` are:
 =================== ========== =========== ========= ===================================================================
 name                 kind       mandatory   default   description
 =================== ========== =========== ========= ===================================================================
-``replication``      *map*      yes                   The replication strategy and options to use for the keyspace (see
+``replication``      *map*      no                    The replication strategy and options to use for the keyspace (see
                                                       details below).
 ``durable_writes``   *simple*   no          true      Whether to use the commit log for updates on this keyspace
                                                       (disable this option at your own risk!).
 ``tablets``          *map*      no                    Enables or disables tablets for the keyspace (see :ref:`tablets <tablets>`)
 =================== ========== =========== ========= ===================================================================
 
-The ``replication`` property is mandatory and must at least contains the ``'class'`` sub-option, which defines the
-replication strategy class to use. The rest of the sub-options depend on what replication
-strategy is used. By default, ScyllaDB supports the following ``'class'``:
+The ``replication`` property is optional. Omitting it is equivalent to supplying an empty map (``replication = {}``),
+and default value will be applied for each sub-option.
+The ``replication`` property contains the ``'class'`` sub-option, which defines the replication strategy class to use.
+If ``'class'`` is not specified, it defaults to ``'NetworkTopologyStrategy'``.
+The rest of the sub-options depend on what replication strategy is used.
+By default, ScyllaDB supports the following ``'class'``:
 
 .. _replication-strategy:
 
@@ -172,6 +175,11 @@ sub-option                             type  description
                                              may prevent creating tables in that keyspace. 
 ===================================== ====== =============================================
 
+If no datacenters are specified, and ``replication_factor`` is left unspecified,
+then every rack in every datacenter receives a replica, except for racks comprised
+of only :doc:`zero-token nodes </architecture/zero-token-nodes>`. Racks added after
+the keyspace creation do not receive replicas.
+
 Note that when ``ALTER`` ing keyspaces and supplying ``replication_factor``,
 auto-expansion will only *add* new datacenters for safety, it will not alter
 existing datacenters or remove any even if they are no longer in the cluster.
@@ -202,6 +210,37 @@ An example that excludes a datacenter while using ``replication_factor``::
 
     DESCRIBE KEYSPACE excalibur
         CREATE KEYSPACE excalibur WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': '3'} AND durable_writes = true;
+
+An example that excludes class and uses only datacenter options::
+
+    CREATE KEYSPACE excalibur
+        WITH replication = {'DC1': '3'} ;
+
+    DESCRIBE KEYSPACE excalibur
+        CREATE KEYSPACE excalibur WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': '3'} AND durable_writes = true;
+
+An example that excludes datacenter options and uses only class::
+
+    CREATE KEYSPACE excalibur
+        WITH replication = {'class': 'NetworkTopologyStrategy'} ;
+
+    DESCRIBE KEYSPACE excalibur
+        CREATE KEYSPACE excalibur WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': '3', 'DC2': '2'} AND durable_writes = true;
+
+An example that excludes both class and datacenter options::
+
+    CREATE KEYSPACE excalibur
+        WITH replication = {} ;
+
+    DESCRIBE KEYSPACE excalibur
+        CREATE KEYSPACE excalibur WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': '3', 'DC2': '2'} AND durable_writes = true;
+
+An example that excludes the whole ``replication`` option::
+
+    CREATE KEYSPACE excalibur ;
+
+    DESCRIBE KEYSPACE excalibur
+        CREATE KEYSPACE excalibur WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': '3', 'DC2': '2'} AND durable_writes = true;
 
 .. _tablets:
 
@@ -250,14 +289,6 @@ Note that the ``initial`` tablets option was deprecated.
 Please use :ref:`Per-table tablet options <cql-per-table-tablet-options>` instead.
 
 See :doc:`Data Distribution with Tablets </architecture/tablets>` for more information about tablets.
-
-Keyspace storage options :label-caution:`Experimental`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-By default, SStables of a keyspace are stored locally.
-As an alternative, you can configure your keyspace to be stored
-on Amazon S3 or another S3-compatible object store.
-See :ref:`Keyspace storage options <admin-keyspace-storage-options>` for details.
 
 .. _use-statement:        
         
@@ -922,6 +953,8 @@ The following modes are available:
      - Tombstone GC is never performed. This mode may be useful when loading data to the database, to avoid tombstone GC when part of the data is not yet available.
    * - ``immediate``
      - Tombstone GC is immediately performed. There is no wait time or repair requirement. This mode is useful for a table that uses the TWCS compaction strategy with no user deletes. After data is expired after TTL, ScyllaDB can perform compaction to drop the expired data immediately.
+
+.. warning:: The ``repair`` mode is not supported for :term:`Colocated Tables <Colocated Table>` in this version.
 
 .. _cql-per-table-tablet-options:
 

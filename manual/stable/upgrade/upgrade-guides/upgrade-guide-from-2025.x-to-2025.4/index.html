@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Metrics Update Between 2025.2 and 2025.3 | ScyllaDB Docs 
+             Upgrade - ScyllaDB 2025.x to ScyllaDB 2025.4 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -21,12 +21,11 @@
 
         
             
-            
         
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/metric-update-2025.2-to-2025.3.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -332,13 +331,7 @@
             </a>
         </span>
     
-        <span class="bread__item">
-            <a href="index.html" class="bread__highlight">
-                Upgrade - ScyllaDB 2025.2 to ScyllaDB 2025.3
-            </a>
-        </span>
-    
-    <span class="bread__item bread__item--last">Metrics Update Between 2025.2 and 2025.3</span>
+    <span class="bread__item bread__item--last">Upgrade - ScyllaDB 2025.x to ScyllaDB 2025.4</span>
 </div>
                     </div>
                 
@@ -354,126 +347,14 @@
 
                     
 
-                    <section id="metrics-update-between-src-version-and-new-version">
-<h1>Metrics Update Between 2025.2 and 2025.3<a class="headerlink" href="#metrics-update-between-src-version-and-new-version" title="Link to this heading">¶</a></h1>
+                    <section id="upgrade-scylladb-2025-x-to-scylladb-2025-4">
+<h1>Upgrade - ScyllaDB 2025.x to ScyllaDB 2025.4<a class="headerlink" href="#upgrade-scylladb-2025-x-to-scylladb-2025-4" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<p>ScyllaDB 2025.3 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
-<section id="new-metrics">
-<h2>New Metrics<a class="headerlink" href="#new-metrics" title="Link to this heading">¶</a></h2>
-<p>The following metrics are new in ScyllaDB 2025.3 compared to 2025.2.</p>
-<section id="alternator-per-table-metrics">
-<h3>Alternator Per-table Metrics<a class="headerlink" href="#alternator-per-table-metrics" title="Link to this heading">¶</a></h3>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 14.3%" />
-<col style="width: 85.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Metric</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>scylla_alternator_table_batch_item_count</p></td>
-<td><p>The total number of items processed across all batches.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_batch_item_count_histogram</p></td>
-<td><p>A histogram of the number of items in a batch request.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_filtered_rows_dropped_total</p></td>
-<td><p>The number of rows read and dropped during filtering operations.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_filtered_rows_matched_total</p></td>
-<td><p>The number of rows read and matched during filtering operations.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_filtered_rows_read_total</p></td>
-<td><p>The number of rows read during filtering operations.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_op_latency</p></td>
-<td><p>A latency histogram of an operation via Alternator API.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_op_latency_summary</p></td>
-<td><p>A latency summary of an operation via Alternator API.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_operation</p></td>
-<td><p>The number of operations via Alternator API.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_rcu_total</p></td>
-<td><p>The total number of consumed read units.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_reads_before_write</p></td>
-<td><p>The number of performed read-before-write operations.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_requests_blocked_memory</p></td>
-<td><p>Counts the number of requests blocked due to memory pressure.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_requests_shed</p></td>
-<td><p>Counts the number of requests shed due to overload.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_shard_bounce_for_lwt</p></td>
-<td><p>The number of writes that had to be bounced from this shard because of LWT requirements.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_total_operations</p></td>
-<td><p>The number of total operations via Alternator API.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_unsupported_operations</p></td>
-<td><p>The number of unsupported operations via Alternator API.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_alternator_table_wcu_total</p></td>
-<td><p>The total number of consumed write units.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_alternator_table_write_using_lwt</p></td>
-<td><p>The number of writes that used LWT.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="other-metrics">
-<h3>Other Metrics<a class="headerlink" href="#other-metrics" title="Link to this heading">¶</a></h3>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 14.3%" />
-<col style="width: 85.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Metric</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>scylla_batchlog_manager_total_write_replay_attempts</p></td>
-<td><p>Counts write operations issued in a batchlog replay flow.
-A high value of this metric indicates that there is a long batch replay list.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_corrupt_data_entries_reported</p></td>
-<td><p>Counts the number of corrupt data instances reported to the corrupt data handler.
-A non-zero value indicates that the database suffered data corruption.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_memory_oversized_allocs</p></td>
-<td><p>The total count of oversized memory allocations.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_reactor_internal_errors</p></td>
-<td><p>The total number of internal errors (subset of cpp_exceptions) that usually
-indicate a malfunction in the code</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_stall_detector_io_threaded_fallbacks</p></td>
-<td><p>The total number of io-threaded-fallbacks operations.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="removed-metrics">
-<h2>Removed Metrics<a class="headerlink" href="#removed-metrics" title="Link to this heading">¶</a></h2>
-<p>The following metrics have been removed in 2025.3:</p>
 <ul class="simple">
-<li><p>scylla_cql_authorized_prepared_statements_cache_evictions</p></li>
-<li><p>scylla_lsa_large_objects_total_space_bytes</p></li>
-<li><p>scylla_lsa_small_objects_total_space_bytes</p></li>
-<li><p>scylla_lsa_small_objects_used_space_bytes</p></li>
+<li><p><a class="reference internal" href="upgrade-guide-from-2025.x-to-2025.4.html"><span class="doc">Upgrade from ScyllaDB 2025.x to ScyllaDB 2025.4</span></a></p></li>
+<li><p><a class="reference internal" href="metric-update-2025.x-to-2025.4.html"><span class="doc">Metrics Update Between 2025.x and 2025.4</span></a></p></li>
 </ul>
-</section>
 </section>
 
                 </div>
@@ -508,7 +389,7 @@ indicate a malfunction in the code</p></td>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.2 and 2025.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/metric-update-2025.2-to-2025.3%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2025.x to ScyllaDB 2025.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -543,21 +424,21 @@ indicate a malfunction in the code</p></td>
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="upgrade-guide-from-2025.2-to-2025.3.html">
+            <a class="navigation__link" href="../index.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Upgrade from ScyllaDB 2025.2 to ScyllaDB 2025.3
+                    <span class="colored">PREVIOUS</span> <br />Upgrade ScyllaDB
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="../ami-upgrade.html">
+            <a class="navigation__link" href="upgrade-guide-from-2025.x-to-2025.4.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Upgrade ScyllaDB Image: EC2 AMI, GCP, and Azure Images
+                    <span class="colored">NEXT</span> <br />Upgrade from ScyllaDB 2025.x to ScyllaDB 2025.4
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -577,14 +458,14 @@ indicate a malfunction in the code</p></td>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.2 and 2025.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/metric-update-2025.2-to-2025.3%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2025.x to ScyllaDB 2025.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/metric-update-2025.2-to-2025.3.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/index.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -592,22 +473,6 @@ indicate a malfunction in the code</p></td>
         
     </ul>
 
-    
-        <div class="secondary-side-nav__content">
-            <p class="topic-title">On this page</p>
-            <ul>
-<li><a class="reference internal" href="#">Metrics Update Between 2025.2 and 2025.3</a><ul>
-<li><a class="reference internal" href="#new-metrics">New Metrics</a><ul>
-<li><a class="reference internal" href="#alternator-per-table-metrics">Alternator Per-table Metrics</a></li>
-<li><a class="reference internal" href="#other-metrics">Other Metrics</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#removed-metrics">Removed Metrics</a></li>
-</ul>
-</li>
-</ul>
-
-        </div>
     
 </div>
                     </div>
@@ -634,7 +499,7 @@ indicate a malfunction in the code</p></td>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -642,19 +507,19 @@ indicate a malfunction in the code</p></td>
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/index.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../branch-2025.4/index.html">2025.4</a>
+                        <a href="index.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="metric-update-2025.2-to-2025.3.html">2025.3</a>
+                        <a href="../../../../branch-2025.3/index.html">2025.3</a>
                     </li>
                 
             
@@ -758,6 +623,7 @@ indicate a malfunction in the code</p></td>
 <li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -851,7 +717,7 @@ indicate a malfunction in the code</p></td>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -861,6 +727,7 @@ indicate a malfunction in the code</p></td>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../features/incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

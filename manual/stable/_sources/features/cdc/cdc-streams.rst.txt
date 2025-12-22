@@ -5,7 +5,8 @@ CDC Streams
 Streams are partitions in CDC log tables. They are identified by their keys: *stream identifiers*. 
 When you perform a base table write, ScyllaDB chooses a stream ID for the corresponding CDC log entries based on two things:
 
-* the currently operating *CDC generation* (:doc:`./cdc-stream-generations`),
+* in a vnode-based keyspace, the currently operating *CDC generation* (:doc:`CDC Stream Changes </features/cdc/cdc-stream-changes/>`),
+* in a tablets-based keyspace, the current stream set associated with the base table,
 * the base write's partition key.
 
 Example:
@@ -38,15 +39,23 @@ returns:
 
 Observe that in the example above, all base writes made to partition ``0`` were sent to the same stream. The same is true for all base writes made to partition ``1``.
 
-Underneath, ScyllaDB uses the token of the base write's partition key to decide the stream ID. 
-It stores a mapping from the token ring (the set of all tokens, which are 64-bit integers) to the set of stream IDs associated with the currently operating CDC generation. 
+Mapping Partition Keys to Stream IDs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Underneath, ScyllaDB uses the token of the base write's partition key to decide the stream ID.
+The method for mapping partition keys to stream IDs depends on whether the keyspace is vnode-based or tablets-based:
+
+Vnode-based Keyspaces
+~~~~~~~~~~~~~~~~~~~~~
+
+ScyllaDB stores a mapping from the token ring (the set of all tokens, which are 64-bit integers) to the set of stream IDs associated with the currently operating CDC generation.
 Thus, choosing a stream proceeds in two steps:
 
 .. code-block:: none
 
    base partition key |--- partitioner ---> token |--- stream ID mapping ---> stream ID
 
-Therefore, at any given moment, the stream ID chosen for a single base partition key will be the same, but two different partition keys might get mapped to two different streams IDs. 
+Therefore, at any given moment, the stream ID chosen for a single base partition key will be the same, but two different partition keys might get mapped to two different stream IDs. 
 But the set of used stream IDs is much smaller than the set of all tokens, so we will often see two base partitions appearing in a single stream:
 
 .. code-block:: cql
@@ -67,11 +76,11 @@ returns:
 
     (2 rows)
 
-.. note:: To make the above example we simply kept inserting rows with different partition keys until we found two that went to the same stream. 
+.. note:: To make the above example, we simply kept inserting rows with different partition keys until we found two rows that went to the same stream. 
 
 .. note:: For a given stream there is no straightforward way to find a partition key which will get mapped to this stream, because of the partitioner, which uses the murmur3 hash function underneath (the truth is you can efficiently find such a key, as murmur3 is not a cryptographic hash, but it's not completely obvious).
 
-The set of used stream IDs is independent from the table. It's a global property of the ScyllaDB cluster:
+The set of used stream IDs is independent of the table. It's a global property of the ScyllaDB cluster:
 
 .. code-block:: cql
       
@@ -109,6 +118,17 @@ As the example above illustrates, even writes made to two different tables will 
 
 More generally, two base writes will use the same stream IDs if the tokens of their partition keys get mapped to the same stream ID by the CDC generation.
 
+Tablets-based Keyspaces
+~~~~~~~~~~~~~~~~~~~~~~~
+
+In a tablets-based keyspace, each base table has its own set of streams operating at any given moment.
+The stream ID is chosen based on the base write's partition key and the currently operating stream set of the base table.
+
+Similarly to vnode-based keyspaces, writes to a single partition key in a given table will be mapped to the same stream ID, unless the stream set changes.
+Writes to different partition keys in one table may be mapped to different stream IDs, or they may be mapped to the same stream ID.
+
+However, writes made to different tables will always be mapped to different stream IDs, because each table has its own distinct set of streams.
+
 Ordering
 ^^^^^^^^
 
@@ -140,4 +160,4 @@ returns:
 
     (6 rows)
 
-Therefore there is no global time ordering between all writes in the CDC log; you only get time-based ordering within a stream, for each stream.
+Therefore, there is no global time ordering between all writes in the CDC log; you only get time-based ordering within a stream, for each stream.

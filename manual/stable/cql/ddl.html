@@ -386,7 +386,7 @@ part of. If it is not fully-qualified, the table is assumed to be in the <em>cur
 <section id="id2">
 <h2>CREATE KEYSPACE<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>A keyspace is created using a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> statement:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_keyspace_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span> <span class="k">WITH</span> <span class="o">`</span><span class="k">options</span><span class="o">`</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_keyspace_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">WITH</span> <span class="o">`</span><span class="k">options</span><span class="o">`</span> <span class="p">]</span>
 </pre></div>
 </div>
 <p>For example:</p>
@@ -408,7 +408,7 @@ part of. If it is not fully-qualified, the table is assumed to be in the <em>cur
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">replication</span></code></p></td>
 <td><p><em>map</em></p></td>
-<td><p>yes</p></td>
+<td><p>no</p></td>
 <td></td>
 <td><p>The replication strategy and options to use for the keyspace (see
 details below).</p></td>
@@ -428,9 +428,12 @@ details below).</p></td>
 </tr>
 </tbody>
 </table>
-<p>The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property is mandatory and must at least contains the <code class="docutils literal notranslate"><span class="pre">'class'</span></code> sub-option, which defines the
-replication strategy class to use. The rest of the sub-options depend on what replication
-strategy is used. By default, ScyllaDB supports the following <code class="docutils literal notranslate"><span class="pre">'class'</span></code>:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property is optional. Omitting it is equivalent to supplying an empty map (<code class="docutils literal notranslate"><span class="pre">replication</span> <span class="pre">=</span> <span class="pre">{}</span></code>),
+and default value will be applied for each sub-option.
+The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property contains the <code class="docutils literal notranslate"><span class="pre">'class'</span></code> sub-option, which defines the replication strategy class to use.
+If <code class="docutils literal notranslate"><span class="pre">'class'</span></code> is not specified, it defaults to <code class="docutils literal notranslate"><span class="pre">'NetworkTopologyStrategy'</span></code>.
+The rest of the sub-options depend on what replication strategy is used.
+By default, ScyllaDB supports the following <code class="docutils literal notranslate"><span class="pre">'class'</span></code>:</p>
 <section id="simplestrategy">
 <span id="replication-strategy"></span><h3>SimpleStrategy<a class="headerlink" href="#simplestrategy" title="Link to this heading">¶</a></h3>
 <p>A simple strategy that defines a replication factor for data to be spread
@@ -498,6 +501,10 @@ may prevent creating tables in that keyspace.</p>
 </tr>
 </tbody>
 </table>
+<p>If no datacenters are specified, and <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code> is left unspecified,
+then every rack in every datacenter receives a replica, except for racks comprised
+of only <a class="reference internal" href="../architecture/zero-token-nodes.html"><span class="doc">zero-token nodes</span></a>. Racks added after
+the keyspace creation do not receive replicas.</p>
 <p>Note that when <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> ing keyspaces and supplying <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code>,
 auto-expansion will only <em>add</em> new datacenters for safety, it will not alter
 existing datacenters or remove any even if they are no longer in the cluster.
@@ -525,6 +532,37 @@ explicitly zero out the datacenter you want to have zero replicas.</p>
 
 <span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
     <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An example that excludes class and uses only datacenter options:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">}</span> <span class="p">;</span>
+
+<span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An example that excludes datacenter options and uses only class:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">}</span> <span class="p">;</span>
+
+<span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;DC2&#39;</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An example that excludes both class and datacenter options:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{}</span> <span class="p">;</span>
+
+<span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;DC2&#39;</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An example that excludes the whole <code class="docutils literal notranslate"><span class="pre">replication</span></code> option:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="p">;</span>
+
+<span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
+    <span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;DC1&#39;</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;DC2&#39;</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span><span class="p">}</span> <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -576,13 +614,6 @@ The calculation applies to every table in the keyspace.</p>
 <p>Note that the <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablets option was deprecated.
 Please use <a class="reference internal" href="#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> instead.</p>
 <p>See <a class="reference internal" href="../architecture/tablets.html"><span class="doc">Data Distribution with Tablets</span></a> for more information about tablets.</p>
-</section>
-<section id="keyspace-storage-options-experimental">
-<h3>Keyspace storage options <span class="label label--caution">Experimental</span><a class="headerlink" href="#keyspace-storage-options-experimental" title="Link to this heading">¶</a></h3>
-<p>By default, SStables of a keyspace are stored locally.
-As an alternative, you can configure your keyspace to be stored
-on Amazon S3 or another S3-compatible object store.
-See <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">Keyspace storage options</span></a> for details.</p>
 </section>
 </section>
 <section id="use-statement">
@@ -1224,6 +1255,10 @@ mode is set by default.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">repair</span></code> mode is not supported for <a class="reference internal" href="../reference/glossary.html#term-Colocated-Table"><span class="xref std std-term">Colocated Tables</span></a> in this version.</p>
+</div>
 </section>
 <section id="per-table-tablet-options">
 <span id="cql-per-table-tablet-options"></span><h5>Per-table tablet options<a class="headerlink" href="#per-table-tablet-options" title="Link to this heading">¶</a></h5>
@@ -1467,7 +1502,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1536,7 +1571,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1561,7 +1596,6 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#simplestrategy">SimpleStrategy</a></li>
 <li><a class="reference internal" href="#networktopologystrategy">NetworkTopologyStrategy</a></li>
 <li><a class="reference internal" href="#the-tablets-property">The <code class="docutils literal notranslate"><span class="pre">tablets</span></code> property</a></li>
-<li><a class="reference internal" href="#keyspace-storage-options-experimental">Keyspace storage options <span class="label label--caution">Experimental</span></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#use-statement">USE</a></li>
@@ -1633,7 +1667,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1647,13 +1681,13 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 
                     <li>
-                        <a href="../../branch-2025.4/cql/ddl.html">2025.4</a>
+                        <a href="ddl.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="ddl.html">2025.3</a>
+                        <a href="../../branch-2025.3/cql/ddl.html">2025.3</a>
                     </li>
                 
             
@@ -1757,6 +1791,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1850,7 +1885,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -1860,6 +1895,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

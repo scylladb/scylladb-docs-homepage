@@ -354,7 +354,7 @@ In addition, if the view update fails, the client receives a write error.</p>
 When using a Token Aware Driver, the same node is likely the coordinator, and the query does not require any inter-node communication.</p>
 <section id="how-local-secondary-index-queries-work">
 <h2>How Local Secondary Index Queries Work<a class="headerlink" href="#how-local-secondary-index-queries-work" title="Link to this heading">¶</a></h2>
-<p>Lets explore the example above, first with Global Secondary Index (GSI) and then with Local Secondary Index (LSI)</p>
+<p>Let’s explore the example above, first with Global Secondary Index (GSI) and then with Local Secondary Index (LSI)</p>
 <p><strong>Global Secondary Index Example</strong></p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">menus</span> <span class="p">(</span><span class="n">location</span> <span class="nb">text</span><span class="p">,</span>
       <span class="n">name</span> <span class="nb">text</span><span class="p">,</span> <span class="n">price</span> <span class="nb">float</span><span class="p">,</span>
@@ -375,7 +375,7 @@ When using a Token Aware Driver, the same node is likely the coordinator, and th
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">menus</span> <span class="k">WHERE</span> <span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;Warsaw&#39;</span> <span class="k">and</span> <span class="n">dish_type</span> <span class="o">=</span> <span class="s1">&#39;Polish soup&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>With GSI, <code class="docutils literal notranslate"><span class="pre">dish_type</span></code> acts as the partition key of the index table and the query requires two inter-node hops</p>
+<p>With GSI, <code class="docutils literal notranslate"><span class="pre">dish_type</span></code> acts as the partition key of the index table, and the query requires two inter-node hops</p>
 <img alt="../_images/global-sec-index-example.png" src="../_images/global-sec-index-example.png" />
 <p>GSI flow:</p>
 <ul class="simple">
@@ -385,7 +385,7 @@ When using a Token Aware Driver, the same node is likely the coordinator, and th
 </ul>
 <p>Note, that partition keys from the base table and underlying materialized view are different, which means that their data is likely to be stored on different nodes.</p>
 <p><strong>Local Secondary Index Example</strong>
-Now let’s create an LSI, using the base table partition key, in this case <code class="docutils literal notranslate"><span class="pre">location</span></code> as partition key for the Index</p>
+Now let’s create an LSI, using the base table partition key, in this case <code class="docutils literal notranslate"><span class="pre">location</span></code> as the partition key for the Index</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">menus</span><span class="p">((</span><span class="n">location</span><span class="p">),</span> <span class="n">dish_type</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -400,7 +400,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
 <li><p>An indexing subquery (2) is used  to fetch all matching base keys from the underlying materialized view.</p></li>
 <li><p>The coordinator uses the resulting base key set to request appropriate rows from the base table (3), located in the <strong>same node</strong> as the Index</p></li>
 </ul>
-<p>Both the base table and the underlying materialized view have the same partition keys for corresponding rows. That means that their data resides on the same node and can thus be executed locally, without having to contact another node. When using a <strong>token aware policy</strong>, the entire query will be done with zero inter-node communication.</p>
+<p>Both the base table and the underlying materialized view have the same partition keys for corresponding rows. That means that their data resides on the same node and can thus be executed locally, without having to contact another node. When using a <strong>token-aware policy</strong>, the entire query will be executed with zero inter-node communication.</p>
 <img alt="../_images/local-sec-index-token-aware-exaple.png" src="../_images/local-sec-index-token-aware-exaple.png" />
 <p>LSI with Token Aware driver flow:</p>
 <ul class="simple">
@@ -471,7 +471,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Local Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/local-secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Local Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/local-secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -540,7 +540,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Local Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/local-secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Local Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/local-secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -594,7 +594,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -608,13 +608,13 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
             
                 
                     <li>
-                        <a href="../../branch-2025.4/features/local-secondary-indexes.html">2025.4</a>
+                        <a href="local-secondary-indexes.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="local-secondary-indexes.html">2025.3</a>
+                        <a href="../../branch-2025.3/features/local-secondary-indexes.html">2025.3</a>
                     </li>
                 
             
@@ -718,6 +718,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -811,7 +812,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -821,6 +822,7 @@ Now let’s create an LSI, using the base table partition key, in this case <cod
 <li class="toctree-l2"><a class="reference internal" href="workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

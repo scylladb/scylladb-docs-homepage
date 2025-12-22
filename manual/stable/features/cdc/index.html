@@ -335,10 +335,6 @@
 
                     <section id="change-data-capture-cdc">
 <h1>Change Data Capture (CDC)<a class="headerlink" href="#change-data-capture-cdc" title="Link to this heading">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>CDC is not supported in keyspaces with <a class="reference internal" href="../../architecture/tablets.html"><span class="doc">tablets</span></a> enabled.</p>
-</div>
 <div class="toctree-wrapper compound">
 </div>
 <p><abbr title="Change Data Capture">CDC</abbr> is a feature that allows you to not only query the current state of a database’s table, but also query the history of all changes made to the table.</p>
@@ -352,7 +348,7 @@
 <li><p><a class="reference internal" href="cdc-log-table.html"><span class="doc">The CDC Log Table</span></a></p></li>
 <li><p><a class="reference internal" href="cdc-basic-operations.html"><span class="doc">Basic Operations in CDC</span></a></p></li>
 <li><p><a class="reference internal" href="cdc-streams.html"><span class="doc">CDC Streams</span></a></p></li>
-<li><p><a class="reference internal" href="cdc-stream-generations.html"><span class="doc">CDC Stream Generations</span></a></p></li>
+<li><p><a class="reference internal" href="cdc-stream-changes.html"><span class="doc">CDC Stream Changes</span></a></p></li>
 <li><p><a class="reference internal" href="cdc-querying-streams.html"><span class="doc">Querying CDC Streams</span></a></p></li>
 <li><p><a class="reference internal" href="cdc-advanced-types.html"><span class="doc">Advanced Column Types</span></a></p></li>
 <li><p><a class="reference internal" href="cdc-preimages.html"><span class="doc">Preimages and Postimages</span></a></p></li>
@@ -406,7 +402,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Change Data Capture (CDC)&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/cdc/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Change Data Capture (CDC)&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/cdc/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -475,7 +471,7 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Change Data Capture (CDC)&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/cdc/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Change Data Capture (CDC)&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/cdc/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -516,7 +512,7 @@
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -530,13 +526,13 @@
             
                 
                     <li>
-                        <a href="../../../branch-2025.4/features/cdc/index.html">2025.4</a>
+                        <a href="index.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="index.html">2025.3</a>
+                        <a href="../../../branch-2025.3/features/cdc/index.html">2025.3</a>
                     </li>
                 
             
@@ -640,6 +636,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -733,7 +730,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-preimages.html">Preimages and postimages</a></li>
@@ -743,6 +740,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

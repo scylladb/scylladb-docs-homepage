@@ -898,6 +898,14 @@
                           "type":"string",
                           "paramType":"query",
                           "enum": ["all", "dc", "rack", "node"]
+                      },
+                      {
+                         "name":"primary_replica_only",
+                         "description":"Load the sstables and stream to the primary replica node within the scope, if one is specified. If not, stream to the global primary replica.",
+                         "required":false,
+                         "allowMultiple":false,
+                         "type":"boolean",
+                         "paramType":"query"
                       }
                   ]
               }
@@ -2945,6 +2953,14 @@
                      "allowMultiple":false,
                      "type":"string",
                      "paramType":"query"
+                  },
+                  {
+                     "name":"incremental_mode",
+                     "description":"Set the incremental repair mode. Can be 'disabled', 'incremental', or 'full'. 'incremental': The incremental repair logic is enabled. Unrepaired sstables will be included for repair. Repaired sstables will be skipped. The incremental repair states will be updated after repair. 'full': The incremental repair logic is enabled. Both repaired and unrepaired sstables will be included for repair. The incremental repair states will be updated after repair. 'disabled': The incremental repair logic is disabled completely. The incremental repair states, e.g., repaired_at in sstables and sstables_repaired_at in the system.tablets table, will not be updated after repair. When the option is not provided, it defaults to 'disabled' mode.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
                   }
                ]
             }
@@ -3201,6 +3217,38 @@
                ]
             }
          ]
+      },
+      {
+         "path":"/storage_service/drop_quarantined_sstables",
+         "operations":[
+            {
+               "method":"POST",
+               "summary":"Drops all quarantined sstables in all keyspaces or specified keyspace and tables",
+               "type":"void",
+               "nickname":"drop_quarantined_sstables",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"keyspace",
+                     "description":"The keyspace name to drop quarantined sstables from.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"tables",
+                     "description":"Comma-separated table names to drop quarantined sstables from.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  }
+               ]
+            }
+         ]
       }
    ],
    "models":{
@@ -3414,7 +3462,7 @@
             "version":{
                "type":"string",
                "enum":[
-                  "ka", "la", "mc", "md", "me"
+                  "ka", "la", "mc", "md", "me", "ms"
                ],
                "description":"SSTable version"
             },

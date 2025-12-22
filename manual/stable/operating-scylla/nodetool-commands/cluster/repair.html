@@ -359,6 +359,10 @@ To repair keyspaces with tablets disabled (vnodes-based), see <a class="referenc
 <p>Running <code class="docutils literal notranslate"><span class="pre">cluster</span> <span class="pre">repair</span></code> on a <strong>single node</strong> synchronizes all data on all nodes in the cluster.</p>
 <p>To synchronize all data in clusters that have both tablets-based and vnodes-based keyspaces, run <a class="reference internal" href="../repair.html"><span class="doc">nodetool repair -pr</span></a> on <strong>all</strong>
 of the nodes in the cluster, and <a class="reference internal" href="#"><span class="doc">nodetool cluster repair</span></a> on  <strong>any</strong> of the nodes in the cluster.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference internal" href="../../../reference/glossary.html#term-Colocated-Table"><span class="xref std std-term">Colocated Tables</span></a> cannot be synchronized using cluster repair in this version.</p>
+</div>
 <p>To check if a keyspace enables tablets, use:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span>
 </pre></div>
@@ -395,6 +399,12 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
 </div>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">cluster</span> <span class="n">repair</span> <span class="o">--</span><span class="n">tablet</span><span class="o">-</span><span class="n">tokens</span> <span class="mi">1</span><span class="p">,</span><span class="mi">10474535988</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--incremental-mode</span></code> specifies the incremental repair mode. Can be ‘disabled’, ‘incremental’, or ‘full’. ‘incremental’: The incremental repair logic is enabled. Unrepaired sstables will be included for repair. Repaired sstables will be skipped. The incremental repair states will be updated after repair. ‘full’: The incremental repair logic is enabled. Both repaired and unrepaired sstables will be included for repair. The incremental repair states will be updated after repair. ‘disabled’: The incremental repair logic is disabled completely. The incremental repair states, e.g., repaired_at in sstables and sstables_repaired_at in the system.tablets table, will not be updated after repair. When the option is not provided, it defaults to ‘disabled’.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">cluster</span> <span class="n">repair</span> <span class="o">--</span><span class="n">incremental</span><span class="o">-</span><span class="n">mode</span> <span class="n">disabled</span>
 </pre></div>
 </div>
 </li>
@@ -446,7 +456,7 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool cluster repair&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/nodetool-commands/cluster/repair%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool cluster repair&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/operating-scylla/nodetool-commands/cluster/repair%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -515,7 +525,7 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool cluster repair&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/nodetool-commands/cluster/repair%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool cluster repair&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/operating-scylla/nodetool-commands/cluster/repair%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -556,7 +566,7 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -570,13 +580,13 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
             
                 
                     <li>
-                        <a href="../../../../branch-2025.4/operating-scylla/nodetool-commands/cluster/repair.html">2025.4</a>
+                        <a href="repair.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="repair.html">2025.3</a>
+                        <a href="../../../../branch-2025.3/operating-scylla/nodetool-commands/cluster/repair.html">2025.3</a>
                     </li>
                 
             
@@ -680,6 +690,7 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
 <li class="toctree-l3"><a class="reference internal" href="../../security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../admin-tools/index.html">Admin Tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
@@ -773,7 +784,7 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -783,6 +794,7 @@ of the nodes in the cluster, and <a class="reference internal" href="#"><span cl
 <li class="toctree-l2"><a class="reference internal" href="../../../features/workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../features/incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

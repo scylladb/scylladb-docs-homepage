@@ -336,10 +336,6 @@
 
                     <section id="lightweight-transactions">
 <h1>Lightweight Transactions<a class="headerlink" href="#lightweight-transactions" title="Link to this heading">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The LWT feature is not supported in keyspaces with <a class="reference internal" href="../architecture/tablets.html"><span class="doc">tablets</span></a> enabled.</p>
-</div>
 <p>There are cases when it is necessary to modify data based on its current state: that is, to perform an update that is executed only if a row does not exist or contains a certain value.
 <abbr title="lightweight transactions">LWTs</abbr> provide this functionality by only allowing changes to data to occur if the condition provided evaluates as true.
 The conditional statements provide linearizable semantics thus allowing data to remain consistent.</p>
@@ -453,15 +449,16 @@ a promise to accept a change associated with it.</p>
 a newer one – this locks out concurrent modification attempts and
 allows the coordinator to proceed with reading and updating a row
 without interference. The state of the protocol is persisted in
-system.paxos table, which is local to each replica.</p>
+the <a class="reference internal" href="#paxos-state-tables"><span class="std std-ref">paxos state table</span></a>, which is local
+to each replica.</p>
 <p>Unlike Cassandra, ScyllaDB piggy-backs the old version of the row on
 response to “Prepare” request, so reading a row doesn’t require
 a separate message exchange.</p>
 <p>Once the coordinator gets a majority of promises from replicas,
 it evaluates the <code class="docutils literal notranslate"><span class="pre">IF</span></code> conditions, and if the result is true,
 sends an updated mutation to replicas.
-Replicas store the new row in system.paxos and acknowledge
-accepting it.</p>
+Replicas store the new row in the <a class="reference internal" href="#paxos-state-tables"><span class="std std-ref">paxos state table</span></a>
+and acknowledge accepting it.</p>
 <p>Having a majority of replicas accept the row satisfies the
 “quorum intersection” rule: as long as at least a majority of
 nodes are up, each conceivable new quorum contains at least
@@ -472,7 +469,7 @@ protocol round is complete, and it is safe to update the base
 table with the new row. This is done in “Learn” round.</p>
 <p>If the base table update is successful, the coordinator responds
 to the client. It’s also safe to prune the state of the protocol
-from system.paxos.</p>
+from the <a class="reference internal" href="#paxos-state-tables"><span class="std std-ref">paxos state table</span></a>.</p>
 <p>The size of the quorum impacts how many acknowledgements the
 coordinator must get before proceeding to the next round or
 responding to the client. For Prepare and Accept, it is configured
@@ -481,8 +478,8 @@ with <code class="docutils literal notranslate"><span class="pre">SERIAL</span> 
 <p>Key differences between ScyllaDB and Cassandra Paxos implementations
 are in collapsing prepare and read actions into a single round, and
 also introducing an extra asynchronous “prune” round, which keeps
-system.paxos table small and thus reduces write amplification
-when it’s compacted.</p>
+the <a class="reference internal" href="#paxos-state-tables"><span class="std std-ref">paxos state table</span></a> small and thus
+reduces write amplification when it’s compacted.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>TTL on records in system.paxos table is set with the <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> value.
@@ -756,6 +753,25 @@ of all columns used in conditional expressions of all conditional statements of 
 </pre></div>
 </div>
 </section>
+<section id="paxos-state-tables">
+<span id="id1"></span><h2>Paxos State Tables<a class="headerlink" href="#paxos-state-tables" title="Link to this heading">¶</a></h2>
+<p>The Paxos protocol state for LWT is stored in dedicated internal tables.
+The specific table used depends on whether the user table is based on vnodes or tablets.</p>
+<p>For vnode-based tables, the Paxos state is stored in the local system table <cite>system.paxos</cite>.
+This table is automatically created and maintained by ScyllaDB on each node and holds Paxos
+state for all vnode-based user tables.</p>
+<p>For tablet-based tables, a separate Paxos state table is created per user table. The creation
+happens the first time an LWT is executed on the user table, which may introduce a small
+latency spike due to the table creation overhead. The table is placed in the same keyspace as the
+user table and follows the naming pattern <cite>&lt;user-table&gt;$paxos</cite>.</p>
+<p>The <cite>$paxos</cite> table uses the same set of tablets as the user table. This ensures that tablet
+operations — such as migration, split, or merge — are consistently applied to both the user table
+tablets and its corresponding <cite>$paxos</cite> table tablets. As a result, Paxos state remains intact
+and consistent during such operations.</p>
+<p>Access to the <cite>$paxos</cite> tables is restricted. ScyllaDB does not grant any explicit permissions on them.
+Only superusers can view these tables, and even they cannot execute <cite>ALTER</cite> or <cite>DROP</cite> commands.</p>
+<p>The <cite>$paxos</cite> table is automatically dropped when the user table is dropped.</p>
+</section>
 <section id="error-handling">
 <h2>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading">¶</a></h2>
 <p>Error executing a conditional statement (LWT) does
@@ -820,7 +836,7 @@ during these are still returned as write timeouts.</p></td>
 <ul class="simple">
 <li><p>While a non-LWT batch can be UNLOGGED, a conditional batch cannot;</p></li>
 <li><p>IF conditions must be a perfect conjunct (… AND … AND …);</p></li>
-<li><p>Conditional batches are always logged in system.paxos table, so UNLOGGED keyword is silently ignored for them.</p></li>
+<li><p>Conditional batches are always logged in the <a class="reference internal" href="#paxos-state-tables"><span class="std std-ref">paxos state table</span></a>, so UNLOGGED keyword is silently ignored for them.</p></li>
 </ul>
 </section>
 <section id="additional-information">
@@ -864,7 +880,7 @@ during these are still returned as write timeouts.</p></td>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Lightweight Transactions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/lwt%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Lightweight Transactions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/lwt%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -933,7 +949,7 @@ during these are still returned as write timeouts.</p></td>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Lightweight Transactions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/lwt%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Lightweight Transactions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/lwt%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -967,6 +983,7 @@ during these are still returned as write timeouts.</p></td>
 </li>
 <li><a class="reference internal" href="#how-is-if-different-from-where">How is IF different from WHERE?</a></li>
 <li><a class="reference internal" href="#working-with-conditional-statement-result-set">Working with conditional statement result set</a></li>
+<li><a class="reference internal" href="#paxos-state-tables">Paxos State Tables</a></li>
 <li><a class="reference internal" href="#error-handling">Error handling</a></li>
 <li><a class="reference internal" href="#limitations">Limitations</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
@@ -1001,7 +1018,7 @@ during these are still returned as write timeouts.</p></td>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1015,13 +1032,13 @@ during these are still returned as write timeouts.</p></td>
             
                 
                     <li>
-                        <a href="../../branch-2025.4/features/lwt.html">2025.4</a>
+                        <a href="lwt.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="lwt.html">2025.3</a>
+                        <a href="../../branch-2025.3/features/lwt.html">2025.3</a>
                     </li>
                 
             
@@ -1125,6 +1142,7 @@ during these are still returned as write timeouts.</p></td>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1218,7 +1236,7 @@ during these are still returned as write timeouts.</p></td>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -1228,6 +1246,7 @@ during these are still returned as write timeouts.</p></td>
 <li class="toctree-l2"><a class="reference internal" href="workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

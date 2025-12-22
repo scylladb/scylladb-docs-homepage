@@ -345,7 +345,8 @@
 <p>Streams are partitions in CDC log tables. They are identified by their keys: <em>stream identifiers</em>.
 When you perform a base table write, ScyllaDB chooses a stream ID for the corresponding CDC log entries based on two things:</p>
 <ul class="simple">
-<li><p>the currently operating <em>CDC generation</em> (<a class="reference internal" href="cdc-stream-generations.html"><span class="doc">CDC Stream Generations</span></a>),</p></li>
+<li><p>in a vnode-based keyspace, the currently operating <em>CDC generation</em> (<a class="reference internal" href="cdc-stream-changes.html"><span class="doc">CDC Stream Changes</span></a>),</p></li>
+<li><p>in a tablets-based keyspace, the current stream set associated with the base table,</p></li>
 <li><p>the base write’s partition key.</p></li>
 </ul>
 <p>Example:</p>
@@ -373,13 +374,18 @@ When you perform a base table write, ScyllaDB chooses a stream ID for the corres
 </pre></div>
 </div>
 <p>Observe that in the example above, all base writes made to partition <code class="docutils literal notranslate"><span class="pre">0</span></code> were sent to the same stream. The same is true for all base writes made to partition <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<section id="mapping-partition-keys-to-stream-ids">
+<h2>Mapping Partition Keys to Stream IDs<a class="headerlink" href="#mapping-partition-keys-to-stream-ids" title="Link to this heading">¶</a></h2>
 <p>Underneath, ScyllaDB uses the token of the base write’s partition key to decide the stream ID.
-It stores a mapping from the token ring (the set of all tokens, which are 64-bit integers) to the set of stream IDs associated with the currently operating CDC generation.
+The method for mapping partition keys to stream IDs depends on whether the keyspace is vnode-based or tablets-based:</p>
+<section id="vnode-based-keyspaces">
+<h3>Vnode-based Keyspaces<a class="headerlink" href="#vnode-based-keyspaces" title="Link to this heading">¶</a></h3>
+<p>ScyllaDB stores a mapping from the token ring (the set of all tokens, which are 64-bit integers) to the set of stream IDs associated with the currently operating CDC generation.
 Thus, choosing a stream proceeds in two steps:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>base partition key |--- partitioner ---&gt; token |--- stream ID mapping ---&gt; stream ID
 </pre></div>
 </div>
-<p>Therefore, at any given moment, the stream ID chosen for a single base partition key will be the same, but two different partition keys might get mapped to two different streams IDs.
+<p>Therefore, at any given moment, the stream ID chosen for a single base partition key will be the same, but two different partition keys might get mapped to two different stream IDs.
 But the set of used stream IDs is much smaller than the set of all tokens, so we will often see two base partitions appearing in a single stream:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span><span class="p">};</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span><span class="n">ck</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">);</span>
@@ -398,13 +404,13 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>To make the above example we simply kept inserting rows with different partition keys until we found two that went to the same stream.</p>
+<p>To make the above example, we simply kept inserting rows with different partition keys until we found two rows that went to the same stream.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For a given stream there is no straightforward way to find a partition key which will get mapped to this stream, because of the partitioner, which uses the murmur3 hash function underneath (the truth is you can efficiently find such a key, as murmur3 is not a cryptographic hash, but it’s not completely obvious).</p>
 </div>
-<p>The set of used stream IDs is independent from the table. It’s a global property of the ScyllaDB cluster:</p>
+<p>The set of used stream IDs is independent of the table. It’s a global property of the ScyllaDB cluster:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t1</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enabled&#39;</span><span class="p">:</span><span class="s1">&#39;true&#39;</span><span class="p">};</span>
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t2</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enabled&#39;</span><span class="p">:</span><span class="s1">&#39;true&#39;</span><span class="p">};</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t1</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span><span class="n">ck</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">);</span>
@@ -433,6 +439,16 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
 </div>
 <p>As the example above illustrates, even writes made to two different tables will use the same stream ID for their corresponding CDC log entries if their partition keys are the same, assuming that the operating CDC generation doesn’t change in between those writes.</p>
 <p>More generally, two base writes will use the same stream IDs if the tokens of their partition keys get mapped to the same stream ID by the CDC generation.</p>
+</section>
+<section id="tablets-based-keyspaces">
+<h3>Tablets-based Keyspaces<a class="headerlink" href="#tablets-based-keyspaces" title="Link to this heading">¶</a></h3>
+<p>In a tablets-based keyspace, each base table has its own set of streams operating at any given moment.
+The stream ID is chosen based on the base write’s partition key and the currently operating stream set of the base table.</p>
+<p>Similarly to vnode-based keyspaces, writes to a single partition key in a given table will be mapped to the same stream ID, unless the stream set changes.
+Writes to different partition keys in one table may be mapped to different stream IDs, or they may be mapped to the same stream ID.</p>
+<p>However, writes made to different tables will always be mapped to different stream IDs, because each table has its own distinct set of streams.</p>
+</section>
+</section>
 <section id="ordering">
 <h2>Ordering<a class="headerlink" href="#ordering" title="Link to this heading">¶</a></h2>
 <p>All considerations related to partition and clustering keys apply to CDC log tables. In particular, when performing a partition scan of the CDC log table, all entries from one stream will appear before all entries from another:</p>
@@ -459,7 +475,7 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
 (6 rows)
 </pre></div>
 </div>
-<p>Therefore there is no global time ordering between all writes in the CDC log; you only get time-based ordering within a stream, for each stream.</p>
+<p>Therefore, there is no global time ordering between all writes in the CDC log; you only get time-based ordering within a stream, for each stream.</p>
 </section>
 </section>
 
@@ -495,7 +511,7 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Streams&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/cdc/cdc-streams%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Streams&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/cdc/cdc-streams%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -542,9 +558,9 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="cdc-stream-generations.html">
+            <a class="navigation__link" href="cdc-stream-changes.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />CDC Stream Generations
+                    <span class="colored">NEXT</span> <br />CDC Stream Changes
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -564,7 +580,7 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Streams&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/cdc/cdc-streams%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CDC Streams&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/cdc/cdc-streams%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -584,6 +600,11 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">CDC Streams</a><ul>
+<li><a class="reference internal" href="#mapping-partition-keys-to-stream-ids">Mapping Partition Keys to Stream IDs</a><ul>
+<li><a class="reference internal" href="#vnode-based-keyspaces">Vnode-based Keyspaces</a></li>
+<li><a class="reference internal" href="#tablets-based-keyspaces">Tablets-based Keyspaces</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#ordering">Ordering</a></li>
 </ul>
 </li>
@@ -616,7 +637,7 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -630,13 +651,13 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
             
                 
                     <li>
-                        <a href="../../../branch-2025.4/features/cdc/cdc-streams.html">2025.4</a>
+                        <a href="cdc-streams.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="cdc-streams.html">2025.3</a>
+                        <a href="../../../branch-2025.3/features/cdc/cdc-streams.html">2025.3</a>
                     </li>
                 
             
@@ -740,6 +761,7 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -833,7 +855,7 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
 <li class="toctree-l3"><a class="reference internal" href="cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-preimages.html">Preimages and postimages</a></li>
@@ -843,6 +865,7 @@ But the set of used stream IDs is much smaller than the set of all tokens, so we
 <li class="toctree-l2"><a class="reference internal" href="../workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

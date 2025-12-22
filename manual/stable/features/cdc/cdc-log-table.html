@@ -415,10 +415,11 @@ Below we explain what the log table’s schema is. For now, to make the explanat
 <p>When a change is performed in the base table, a stream identifier is chosen for the corresponding log entries depending on two things:</p>
 <ul class="simple">
 <li><p>the base write’s partition key,</p></li>
-<li><p>the currently operating <strong>CDC generation</strong> which is a global property of the ScyllaDB cluster (similar to tokens).</p></li>
+<li><p>in a vnode-based keyspace, the currently operating <strong>CDC generation</strong> which is a global property of the ScyllaDB cluster (similar to tokens).</p></li>
+<li><p>in a tablets-based keyspace, the current stream set associated with the base table, which depends on the tablets shape of the base table.</p></li>
 </ul>
 <p>Partitions in the log table are called <em>streams</em>; within one stream, all entries are sorted according to the base table writes’ timestamps, using standard clustering key properties (note that <code class="docutils literal notranslate"><span class="pre">cdc$time</span></code>, which represents the time of the write, is the first part of the clustering key).</p>
-<p>If you want to use CDC efficiently, it’s important to understand how stream IDs are managed and chosen. Consult the <a class="reference internal" href="cdc-streams.html"><span class="doc">CDC Streams</span></a> document for basic definitions and properties, <a class="reference internal" href="cdc-stream-generations.html"><span class="doc">CDC Stream Generations</span></a> document to understand how streams are managed and how they change over time, and finally <a class="reference internal" href="cdc-querying-streams.html"><span class="doc">Querying CDC Streams</span></a> to learn how streams can be queried efficiently, and how to find out which streams to query. Reading these documents is not a prerequisite for understanding the rest of the log table related sections.</p>
+<p>If you want to use CDC efficiently, it’s important to understand how stream IDs are managed and chosen. Consult the <a class="reference internal" href="cdc-streams.html"><span class="doc">CDC Streams</span></a> document for basic definitions and properties, <a class="reference internal" href="cdc-stream-changes.html"><span class="doc">CDC Stream Changes</span></a> document to understand how streams are managed and how they change over time, and finally <a class="reference internal" href="cdc-querying-streams.html"><span class="doc">Querying CDC Streams</span></a> to learn how streams can be queried efficiently, and how to find out which streams to query. Reading these documents is not a prerequisite for understanding the rest of the log table related sections.</p>
 </section>
 <section id="time-column">
 <h3>Time column<a class="headerlink" href="#time-column" title="Link to this heading">¶</a></h3>
@@ -733,7 +734,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page The CDC Log Table&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/cdc/cdc-log-table%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page The CDC Log Table&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/cdc/cdc-log-table%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -802,7 +803,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page The CDC Log Table&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/features/cdc/cdc-log-table%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page The CDC Log Table&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/features/cdc/cdc-log-table%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -866,7 +867,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -880,13 +881,13 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
             
                 
                     <li>
-                        <a href="../../../branch-2025.4/features/cdc/cdc-log-table.html">2025.4</a>
+                        <a href="cdc-log-table.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="cdc-log-table.html">2025.3</a>
+                        <a href="../../../branch-2025.3/features/cdc/cdc-log-table.html">2025.3</a>
                     </li>
                 
             
@@ -990,6 +991,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1083,7 +1085,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdc-preimages.html">Preimages and postimages</a></li>
@@ -1093,6 +1095,7 @@ Furthermore, if you’ve enabled the <code class="docutils literal notranslate">
 <li class="toctree-l2"><a class="reference internal" href="../workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

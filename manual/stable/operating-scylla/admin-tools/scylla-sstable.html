@@ -345,7 +345,7 @@
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>This tool allows you to examine the content of SStables by performing operations such as dumping the content of SStables,
-generating a histogram, validating the content of SStables, and more. See <a class="reference internal" href="#supported-operations">Supported Operations</a> for the list of available operations.</p>
+validating the content of SStables, and more. See <a class="reference internal" href="#supported-operations">Supported Operations</a> for the list of available operations.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span> <span class="pre">--help</span></code> for additional information about the tool and the operations.</p>
 <p>This tool is similar to <a class="reference external" href="/operating-scylla/admin-tools/sstabledump">SStableDump</a>, with notable differences:</p>
 <ul class="simple">
@@ -361,10 +361,17 @@ generating a histogram, validating the content of SStables, and more. See <a cla
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable &lt;operation&gt; &lt;path to SStable&gt;</span>
 </pre></div>
 </div>
-<p>You can specify more than one SSTable. Additionally, the path to SSTable can point to an S3 fully qualified path in the form of s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt. To use this feature, you need to have AWS credentials set up in your environment. For more information, see <a class="reference internal" href="../admin.html#aws-s3-configuration"><span class="std std-ref">Configuring AWS S3 access</span></a>. Additionally, you must ensure the tool is able to load the correct Scylla YAML file, which can be done using the –scylla-yaml-file parameter or by placing the YAML file in one of the default locations the tool checks.</p>
+<p>You can specify more than one SSTable.</p>
+<p>Additionally, the path to SSTable can point to an S3 fully qualified path in
+the form of s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt. To use
+this feature, you need to have AWS credentials set up in your environment.
+For more information, see <a class="reference internal" href="../admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a>.</p>
+<p>Additionally, you must ensure the tool is able to load the correct scylla.yaml
+file, which can be done using the <code class="docutils literal notranslate"><span class="pre">--scylla-yaml-file</span></code> parameter or by
+placing the YAML file in one of the default locations the tool checks.</p>
 </section>
 <section id="schema">
-<h2>Schema<a class="headerlink" href="#schema" title="Link to this heading">¶</a></h2>
+<span id="scylla-sstable-schema"></span><h2>Schema<a class="headerlink" href="#schema" title="Link to this heading">¶</a></h2>
 <p>All operations need a schema to interpret the SStables with. By default the tool tries to auto-detect the schema of the SSTable. This should work out-of-the-box in most cases.</p>
 <p>Although the tool tries to auto-detect the schema of the SStable by default, it provides options for the user to control where it obtains the schema from. The following schema-sources can be provided (more details on each one below):</p>
 <ul class="simple">
@@ -909,7 +916,7 @@ The JSON representation has to have the same schema as that of a single SStable 
 The easiest way to get started with writing your own SStable is to dump an existing SStable, modify the JSON then invoke this operation with the result.
 You can feed the output of dump-data to write by filtering the output of the former with <code class="docutils literal notranslate"><span class="pre">jq</span> <span class="pre">.sstables[]</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data --system-schema system_schema.columns /path/to/me-14-big-Data.db | jq .sstables[] &gt; input.json</span>
-<span class="go">scylla sstable write --system-schema system_schema.columns --input-file ./input.json --generation 0</span>
+<span class="go">scylla sstable write --system-schema system_schema.columns --input-file ./input.json</span>
 <span class="go">scylla sstable dump-data --system-schema system_schema.columns ./me-0-big-Data.db | jq .sstables[] &gt; dump.json</span>
 </pre></div>
 </div>
@@ -920,7 +927,7 @@ You can feed the output of dump-data to write by filtering the output of the for
 <li><p>Non-strictly atomic cells, including frozen multi-cell types like collections, tuples, and UDTs.</p></li>
 </ul>
 <p>Parsing uses a streaming JSON parser, it is safe to pass in input files of any size.</p>
-<p>The output SStable will use the BIG format, the highest supported SStable format, and the specified generation (<code class="docutils literal notranslate"><span class="pre">--generation</span></code>).
+<p>The output SStable will use the BIG format, the highest supported SStable format and a random UUID generation, which is printed to stdout.
 By default, it is placed in the local directory, which can be changed with <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.
 If the output SStable clashes with an existing SStable, the write will fail.</p>
 <p>The output is validated before being written to the disk.
@@ -1490,6 +1497,22 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <p>You can find example scripts at <a class="reference external" href="https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts">https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts</a>.</p>
 </section>
 </section>
+<section id="upgrade">
+<h3>upgrade<a class="headerlink" href="#upgrade" title="Link to this heading">¶</a></h3>
+<p>Offline, scylla-sstable variant of <a class="reference external" href="/operating-scylla/nodetool-commands/upgradesstables/">nodetool upgradesstables</a>.
+Rewrites the input SSTable(s) to the latest supported version and latest schema version.
+The SSTable version to be used can be overridden with the <code class="docutils literal notranslate"><span class="pre">--version</span></code> flag, allowing for switching sstables between all versions supported for writing (some SSTable versions are supported for reading only).</p>
+<p>SSTables which are already on the designated version are skipped. To force rewriting <em>all</em> SSTables, use the <code class="docutils literal notranslate"><span class="pre">--all</span></code> flag.</p>
+<p>Output SSTables are written to the path provided by the <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code> flag, or to the current directory if not specified.
+This directory is expected to exist and be empty. If not empty the tool will refuse to run. This can be overridden with the <code class="docutils literal notranslate"><span class="pre">--unsafe-accept-nonempty-output-dir</span></code> flag.</p>
+<p>It is strongly recommended to use the system schema tables as the schema source for this command, see the <a class="reference internal" href="#scylla-sstable-schema">schema options</a> for more details.
+A schema which is good enough to read the SSTable and dump its content, may not be good enough to write its content back verbatim.
+An incomplete or incorrect schema can lead to the tool crashing or even data loss.</p>
+<p>Altering the schema deliberately to alter the SSTable content or options is possible, by using the <code class="docutils literal notranslate"><span class="pre">--schema-file</span></code> schema source and providing the schema with the desired alterations.
+This is dangerous and can lead to data loss, use with caution. In general, altering the table options (the part after the <code class="docutils literal notranslate"><span class="pre">WITH</span></code>) is safe.
+But even an altered schema which changed only the table options can lead to data loss, since not all schema column options are expressible via CQL.</p>
+<p>The mapping of input SSTables to output SSTables is printed to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>.</p>
+</section>
 </section>
 <section id="id3">
 <h2>Examples<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
@@ -1540,7 +1563,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1609,7 +1632,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1706,6 +1729,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li><a class="reference internal" href="#id2">Examples</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#upgrade">upgrade</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#id3">Examples</a></li>
@@ -1740,7 +1764,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1754,13 +1778,13 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
             
                 
                     <li>
-                        <a href="../../../branch-2025.4/operating-scylla/admin-tools/scylla-sstable.html">2025.4</a>
+                        <a href="scylla-sstable.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="scylla-sstable.html">2025.3</a>
+                        <a href="../../../branch-2025.3/operating-scylla/admin-tools/scylla-sstable.html">2025.3</a>
                     </li>
                 
             
@@ -1864,6 +1888,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l3"><a class="reference internal" href="../security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Admin Tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
@@ -1957,7 +1982,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -1967,6 +1992,7 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

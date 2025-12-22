@@ -768,8 +768,8 @@
 </dd></dl>
 
 </section>
-<section id="compress">
-<h2>Compress<a class="headerlink" href="#compress" title="Link to this heading">¶</a></h2>
+<section id="compressor">
+<h2>Compressor<a class="headerlink" href="#compressor" title="Link to this heading">¶</a></h2>
 <dl class="std metrics_option" id="metricsprop-scylla-sstable-compression-dicts-total-live-memory-bytes">
 <dt class="sig sig-object std" id="metrics_option-scylla_sstable_compression_dicts_total_live_memory_bytes">
 <span class="sig-name descname"><span class="pre">scylla_sstable_compression_dicts_total_live_memory_bytes</span></span><a class="headerlink" href="#metrics_option-scylla_sstable_compression_dicts_total_live_memory_bytes" title="Link to this definition">¶</a></dt>
@@ -2849,6 +2849,69 @@
 </div></blockquote>
 </dd></dl>
 
+<dl class="std metrics_option" id="metricsprop-scylla-repair-inc-sst-skipped-bytes">
+<dt class="sig sig-object std" id="metrics_option-scylla_repair_inc_sst_skipped_bytes">
+<span class="sig-name descname"><span class="pre">scylla_repair_inc_sst_skipped_bytes</span></span><a class="headerlink" href="#metrics_option-scylla_repair_inc_sst_skipped_bytes" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Total number of bytes skipped from sstables for incremental repair on this shard.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">repair</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">inc_sst_skipped_bytes</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-repair-inc-sst-read-bytes">
+<dt class="sig sig-object std" id="metrics_option-scylla_repair_inc_sst_read_bytes">
+<span class="sig-name descname"><span class="pre">scylla_repair_inc_sst_read_bytes</span></span><a class="headerlink" href="#metrics_option-scylla_repair_inc_sst_read_bytes" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Total number of bytes read from sstables for incremental repair on this shard.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">repair</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">inc_sst_read_bytes</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-repair-tablet-time-ms">
+<dt class="sig sig-object std" id="metrics_option-scylla_repair_tablet_time_ms">
+<span class="sig-name descname"><span class="pre">scylla_repair_tablet_time_ms</span></span><a class="headerlink" href="#metrics_option-scylla_repair_tablet_time_ms" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Time spent on tablet repair on this shard in milliseconds.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">repair</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">tablet_time_ms</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="secondary-index-manager">
+<h2>Secondary index manager<a class="headerlink" href="#secondary-index-manager" title="Link to this heading">¶</a></h2>
+<dl class="std metrics_option" id="metricsprop-scylla-index-query-latencies">
+<dt class="sig sig-object std" id="metrics_option-scylla_index_query_latencies">
+<span class="sig-name descname"><span class="pre">scylla_index_query_latencies</span></span><a class="headerlink" href="#metrics_option-scylla_index_query_latencies" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Index query latencies</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">histogram</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">index</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">query_latencies</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </section>
 <section id="server">
 <h2>Server<a class="headerlink" href="#server" title="Link to this heading">¶</a></h2>
@@ -4151,6 +4214,81 @@
 </div></blockquote>
 </dd></dl>
 
+<dl class="std metrics_option" id="metricsprop-scylla-group-name-expression-cache-evictions">
+<dt class="sig sig-object std" id="metrics_option-scylla_group_name_expression_cache_evictions">
+<span class="sig-name descname"><span class="pre">scylla_group_name_expression_cache_evictions</span></span><a class="headerlink" href="#metrics_option-scylla_group_name_expression_cache_evictions" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of entries evicted from expressions cache</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">group_name</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">expression_cache_evictions</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-group-name-expression-cache-hits">
+<dt class="sig sig-object std" id="metrics_option-scylla_group_name_expression_cache_hits">
+<span class="sig-name descname"><span class="pre">scylla_group_name_expression_cache_hits</span></span><a class="headerlink" href="#metrics_option-scylla_group_name_expression_cache_hits" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of hits of cached expressions</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">group_name</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">expression_cache_hits</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-group-name-expression-cache-misses">
+<dt class="sig sig-object std" id="metrics_option-scylla_group_name_expression_cache_misses">
+<span class="sig-name descname"><span class="pre">scylla_group_name_expression_cache_misses</span></span><a class="headerlink" href="#metrics_option-scylla_group_name_expression_cache_misses" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of misses of cached expressions</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">total_operations</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">group_name</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">expression_cache_misses</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-alternator-authentication-failures">
+<dt class="sig sig-object std" id="metrics_option-scylla_alternator_authentication_failures">
+<span class="sig-name descname"><span class="pre">scylla_alternator_authentication_failures</span></span><a class="headerlink" href="#metrics_option-scylla_alternator_authentication_failures" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>total number of authentication failures</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">alternator</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">authentication_failures</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-alternator-authorization-failures">
+<dt class="sig sig-object std" id="metrics_option-scylla_alternator_authorization_failures">
+<span class="sig-name descname"><span class="pre">scylla_alternator_authorization_failures</span></span><a class="headerlink" href="#metrics_option-scylla_alternator_authorization_failures" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>total number of authorization failures</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">alternator</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">authorization_failures</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </section>
 <section id="storage-service">
 <h2>Storage service<a class="headerlink" href="#storage-service" title="Link to this heading">¶</a></h2>
@@ -4665,6 +4803,24 @@
 </dd></dl>
 
 </section>
+<section id="vector-store-client">
+<h2>Vector store client<a class="headerlink" href="#vector-store-client" title="Link to this heading">¶</a></h2>
+<dl class="std metrics_option" id="metricsprop-scylla-vector-store-dns-refreshes">
+<dt class="sig sig-object std" id="metrics_option-scylla_vector_store_dns_refreshes">
+<span class="sig-name descname"><span class="pre">scylla_vector_store_dns_refreshes</span></span><a class="headerlink" href="#metrics_option-scylla_vector_store_dns_refreshes" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of DNS refreshes</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">vector_store</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">dns_refreshes</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
 <section id="view">
 <h2>View<a class="headerlink" href="#view" title="Link to this heading">¶</a></h2>
 <dl class="std metrics_option" id="metricsprop-scylla-column-family-view-updates-pushed-remote">
@@ -4978,7 +5134,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -5047,7 +5203,7 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.3/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/reference/metrics%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -5071,7 +5227,7 @@
 <li><a class="reference internal" href="#batchlog-manager">Batchlog manager</a></li>
 <li><a class="reference internal" href="#client">Client</a></li>
 <li><a class="reference internal" href="#compaction-manager">Compaction manager</a></li>
-<li><a class="reference internal" href="#compress">Compress</a></li>
+<li><a class="reference internal" href="#compressor">Compressor</a></li>
 <li><a class="reference internal" href="#corrupt-data-handler">Corrupt data handler</a></li>
 <li><a class="reference internal" href="#gossiper">Gossiper</a></li>
 <li><a class="reference internal" href="#logalloc">Logalloc</a></li>
@@ -5085,6 +5241,7 @@
 <li><a class="reference internal" href="#repair">Repair</a></li>
 <li><a class="reference internal" href="#row-cache">Row cache</a></li>
 <li><a class="reference internal" href="#row-level">Row level</a></li>
+<li><a class="reference internal" href="#secondary-index-manager">Secondary index manager</a></li>
 <li><a class="reference internal" href="#server">Server</a></li>
 <li><a class="reference internal" href="#sstables">Sstables</a></li>
 <li><a class="reference internal" href="#sstables-manager">Sstables manager</a></li>
@@ -5095,6 +5252,7 @@
 <li><a class="reference internal" href="#tablet-allocator">Tablet allocator</a></li>
 <li><a class="reference internal" href="#trace-keyspace-helper">Trace keyspace helper</a></li>
 <li><a class="reference internal" href="#ttl">Ttl</a></li>
+<li><a class="reference internal" href="#vector-store-client">Vector store client</a></li>
 <li><a class="reference internal" href="#view">View</a></li>
 <li><a class="reference internal" href="#view-update-generator">View update generator</a></li>
 <li><a class="reference internal" href="#wasm-instance-cache">Wasm instance cache</a></li>
@@ -5129,7 +5287,7 @@
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.3
+                2025.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -5143,13 +5301,13 @@
             
                 
                     <li>
-                        <a href="../../branch-2025.4/reference/metrics.html">2025.4</a>
+                        <a href="metrics.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="metrics.html">2025.3</a>
+                        <a href="../../branch-2025.3/reference/metrics.html">2025.3</a>
                     </li>
                 
             
@@ -5253,6 +5411,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -5346,7 +5505,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-log-table.html">The CDC Log Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-basic-operations.html">Basic operations in CDC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-streams.html">CDC Streams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-stream-generations.html">CDC Stream Generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-stream-changes.html">CDC Stream Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-querying-streams.html">Querying CDC Streams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-advanced-types.html">Advanced column types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../features/cdc/cdc-preimages.html">Preimages and postimages</a></li>
@@ -5356,6 +5515,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-attributes.html">Workload Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/backup-and-restore.html">Backup and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
