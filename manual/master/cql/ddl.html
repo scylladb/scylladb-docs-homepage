@@ -685,7 +685,7 @@ keyspace name). A <code class="docutils literal notranslate"><span class="pre">U
 <ul class="simple">
 <li><p>The replication factor (RF) can be increased or decreased by at most 1 at a time. To reach the desired RF value, modify the RF repeatedly.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement rejects the <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code> tag. List the DCs explicitly when altering a keyspace. See <a class="reference internal" href="#replication-strategy"><span class="std std-ref">NetworkTopologyStrategy</span></a>.</p></li>
-<li><p>If there’s any other ongoing global topology operation, executing the <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement will fail (with an explicit and specific error) and needs to be repeated.</p></li>
+<li><p>An RF change cannot be requested while another RF change is pending for the same keyspace. Attempting to execute an <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement in this scenario will fail with an explicit error. Wait for the ongoing RF change to complete before issuing another <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement may take longer than the regular query timeout, and even if it times out, it will continue to execute in the background.</p></li>
 <li><p>The replication strategy cannot be modified, as keyspaces with tablets only support <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code>.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> statement will fail if it would make the keyspace <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-invalid</span></a>.</p></li>
@@ -1979,6 +1979,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/backup-and-restore.html">Backup and Restore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -2194,7 +2195,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Dec 2025.
+                        Last updated on 23 Dec 2025.
                     
                 </div>
             
