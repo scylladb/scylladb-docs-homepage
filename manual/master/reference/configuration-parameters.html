@@ -1805,6 +1805,62 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-native-transport-port-proxy-protocol">
+<dt class="sig sig-object std" id="confval-native_transport_port_proxy_protocol">
+<span class="sig-name descname"><span class="pre">native_transport_port_proxy_protocol</span></span><a class="headerlink" href="#confval-native_transport_port_proxy_protocol" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Port on which the CQL native transport listens for clients using proxy protocol v2. Disabled (0) by default.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-native-transport-port-ssl-proxy-protocol">
+<dt class="sig sig-object std" id="confval-native_transport_port_ssl_proxy_protocol">
+<span class="sig-name descname"><span class="pre">native_transport_port_ssl_proxy_protocol</span></span><a class="headerlink" href="#confval-native_transport_port_ssl_proxy_protocol" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Port on which the CQL TLS native transport listens for clients using proxy protocol v2. Disabled (0) by default.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-native-shard-aware-transport-port-proxy-protocol">
+<dt class="sig sig-object std" id="confval-native_shard_aware_transport_port_proxy_protocol">
+<span class="sig-name descname"><span class="pre">native_shard_aware_transport_port_proxy_protocol</span></span><a class="headerlink" href="#confval-native_shard_aware_transport_port_proxy_protocol" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Like native_transport_port_proxy_protocol, but clients-side port number (modulo smp) is used to route the connection to the specific shard.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-native-shard-aware-transport-port-ssl-proxy-protocol">
+<dt class="sig sig-object std" id="confval-native_shard_aware_transport_port_ssl_proxy_protocol">
+<span class="sig-name descname"><span class="pre">native_shard_aware_transport_port_ssl_proxy_protocol</span></span><a class="headerlink" href="#confval-native_shard_aware_transport_port_ssl_proxy_protocol" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Like native_transport_port_ssl_proxy_protocol, but clients-side port number (modulo smp) is used to route the connection to the specific shard.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </section>
 <section id="rpc-remote-procedure-call-settings">
 <span id="confgroup-rpc-remote-procedure-call-settings"></span><h2>RPC (remote procedure call) settings<a class="headerlink" href="#rpc-remote-procedure-call-settings" title="Link to this heading">¶</a></h2>
@@ -4885,6 +4941,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/rest.html">Admin REST API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../using-scylla/tracing.html">Tracing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/scylla-sstable-script-api.html">ScyllaDB SStable Script API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/scylla-types.html">ScyllaDB Types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/sstableloader.html">SSTableLoader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/cassandra-stress.html">cassandra-stress</a></li>
@@ -5197,7 +5254,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Dec 2025.
+                        Last updated on 26 Dec 2025.
                     
                 </div>
             
