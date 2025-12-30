@@ -3762,6 +3762,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-alternator-describe-table-info-cache-validity-in-seconds">
+<dt class="sig sig-object std" id="confval-alternator_describe_table_info_cache_validity_in_seconds">
+<span class="sig-name descname"><span class="pre">alternator_describe_table_info_cache_validity_in_seconds</span></span><a class="headerlink" href="#confval-alternator_describe_table_info_cache_validity_in_seconds" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The validity of DescribeTable information - table size in bytes. This is how long calculated value will be reused before recalculation.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">60</span> <span class="pre">*</span> <span class="pre">60</span> <span class="pre">*</span> <span class="pre">6</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-abort-on-ebadf">
 <dt class="sig sig-object std" id="confval-abort_on_ebadf">
 <span class="sig-name descname"><span class="pre">abort_on_ebadf</span></span><a class="headerlink" href="#confval-abort_on_ebadf" title="Link to this definition">¶</a></dt>
@@ -4576,6 +4590,48 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-force-capacity-based-balancing">
+<dt class="sig sig-object std" id="confval-force_capacity_based_balancing">
+<span class="sig-name descname"><span class="pre">force_capacity_based_balancing</span></span><a class="headerlink" href="#confval-force_capacity_based_balancing" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Forces the load balancer to perform capacity based balancing, instead of size based balancing.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-size-based-balance-threshold-percentage">
+<dt class="sig sig-object std" id="confval-size_based_balance_threshold_percentage">
+<span class="sig-name descname"><span class="pre">size_based_balance_threshold_percentage</span></span><a class="headerlink" href="#confval-size_based_balance_threshold_percentage" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Sets the maximum difference in percentages between the most loaded and least loaded nodes, below which the load balancer considers nodes balanced.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-minimal-tablet-size-for-balancing">
+<dt class="sig sig-object std" id="confval-minimal_tablet_size_for_balancing">
+<span class="sig-name descname"><span class="pre">minimal_tablet_size_for_balancing</span></span><a class="headerlink" href="#confval-minimal_tablet_size_for_balancing" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Sets the minimal tablet size for the load balancer. For any tablet smaller than this, the balancer will use this size instead of the actual tablet size.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">service::default_target_tablet_size</span> <span class="pre">/</span> <span class="pre">100</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-default-log-level">
 <dt class="sig sig-object std" id="confval-default_log_level">
 <span class="sig-name descname"><span class="pre">default_log_level</span></span><a class="headerlink" href="#confval-default_log_level" title="Link to this definition">¶</a></dt>
@@ -5254,7 +5310,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Dec 2025.
+                        Last updated on 30 Dec 2025.
                     
                 </div>
             

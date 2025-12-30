@@ -598,6 +598,11 @@ So for example, if you create a table whose name is 192 characters, you
 can’t create a GSI whose name is longer than 29 characters.</p></li>
 </ul>
 </li>
+<li><p>DynamoDB’s DescribeTable will return information about the table. According to
+AWS documentation, fields TableSizeBytes, IndexSizeBytes and ItemCount can
+lag behind by up to 6 hours.
+The <code class="docutils literal notranslate"><span class="pre">alternator_describe_table_info_cache_validity_in_seconds</span></code> parameter allows
+users to change this timeout - the default value in seconds is set to 21600 (6 hours).</p></li>
 </ul>
 </section>
 <section id="experimental-api-features">
@@ -697,11 +702,11 @@ available in for Alternator. Anyway, it should not be necessary - ScyllaDB’s
 internal cache is already rather advanced and there is no need to place
 another cache in front of the it. We wrote more about this here:
 <a class="reference external" href="https://www.scylladb.com/2017/07/31/database-caches-not-good/">https://www.scylladb.com/2017/07/31/database-caches-not-good/</a></p></li>
-<li><p>The DescribeTable is missing information about size estimates, and
-also part of the information about indexes enabled on the table.
+<li><p>The DescribeTable is missing some information about size estimates
+(IndexSizeBytes and ItemCount - TableSizeBytes is available), and also
+part of the information about indexes enabled on the table.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/5320">https://github.com/scylladb/scylla/issues/5320</a>
-<a class="reference external" href="https://github.com/scylladb/scylla/issues/7550">https://github.com/scylladb/scylla/issues/7550</a>
-<a class="reference external" href="https://github.com/scylladb/scylla/issues/7551">https://github.com/scylladb/scylla/issues/7551</a></p></li>
+<a class="reference external" href="https://github.com/scylladb/scylla/issues/7550">https://github.com/scylladb/scylla/issues/7550</a></p></li>
 <li><p>The PartiQL syntax (SQL-like SELECT/UPDATE/INSERT/DELETE expressions)
 and the operations ExecuteStatement, BatchExecuteStatement and
 ExecuteTransaction are not yet supported.
@@ -1359,7 +1364,7 @@ This feature was added to DynamoDB in November 2025.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Dec 2025.
+                        Last updated on 30 Dec 2025.
                     
                 </div>
             
