@@ -622,6 +622,13 @@ experimental:</p>
 <li><p>The DynamoDB Streams API for capturing change is supported, but still
 considered experimental so needs to be enabled explicitly with the
 <code class="docutils literal notranslate"><span class="pre">--experimental-features=alternator-streams</span></code> configuration option.</p>
+<p>In this version, Alternator Streams is only supported if the base table
+uses vnodes instead of tablets. However, by default new tables use tablets
+so to create a table that can be used with Streams, you must set the tag
+<code class="docutils literal notranslate"><span class="pre">system:initial_tablets</span></code> set to <code class="docutils literal notranslate"><span class="pre">none</span></code> during CreateTable - so that the
+new table will use vnodes. Streams cannot be enabled on an already-existing
+table that uses tablets.
+See <a class="reference external" href="https://github.com/scylladb/scylla/issues/23838">https://github.com/scylladb/scylla/issues/23838</a>.</p>
 <p>Alternator streams also differ in some respects from DynamoDB Streams:</p>
 <ul class="simple">
 <li><p>The number of separate “shards” in Alternator’s streams is significantly
@@ -1364,7 +1371,7 @@ This feature was added to DynamoDB in November 2025.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Dec 2025.
+                        Last updated on 31 Dec 2025.
                     
                 </div>
             
