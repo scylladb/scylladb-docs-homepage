@@ -583,9 +583,16 @@ the actual number of results returned may be less than the specified limit.</p>
 </div>
 <p>This query returns up to 5 rows with the closest distance of <code class="docutils literal notranslate"><span class="pre">embedding</span></code> vector to the provided query vector,
 in this case <code class="docutils literal notranslate"><span class="pre">[0.1,</span> <span class="pre">0.2,</span> <span class="pre">0.3,</span> <span class="pre">0.4]</span></code>.</p>
+<p>There’s also possibility to return the similarity score along with the results by using the <a class="reference internal" href="../functions.html#vector-similarity-functions"><span class="std std-ref">similarity functions</span></a>.</p>
+<p>For example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">similarity_cosine</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>
+  <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">embedding</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Currently, vector queries do not support filtering with <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, returning similarity distances,
+<p>Currently, vector queries do not support filtering with <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause,
 grouping with <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> and paging. This will be added in the future releases.</p>
 </div>
 </section>
@@ -1489,7 +1496,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jan 2026.
+                        Last updated on 06 Jan 2026.
                     
                 </div>
             

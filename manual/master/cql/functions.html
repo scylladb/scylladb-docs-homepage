@@ -569,6 +569,33 @@ type.</p>
 takes a 64-bit <code class="docutils literal notranslate"><span class="pre">blob</span></code> argument and converts it to a <code class="docutils literal notranslate"><span class="pre">bigint</span></code> value. For example, <code class="docutils literal notranslate"><span class="pre">bigintAsBlob(3)</span></code> is
 <code class="docutils literal notranslate"><span class="pre">0x0000000000000003</span></code> and <code class="docutils literal notranslate"><span class="pre">blobAsBigint(0x0000000000000003)</span></code> is <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p>
 </section>
+<section id="vector-similarity-functions">
+<span id="id3"></span><h4>Vector similarity functions<a class="headerlink" href="#vector-similarity-functions" title="Link to this heading">¶</a></h4>
+<p>To obtain the similarity of the given vectors, use a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> query:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">comment</span><span class="p">,</span> <span class="n">similarity_cosine</span><span class="p">(</span><span class="n">comment_vector</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+    <span class="k">FROM</span> <span class="n">cycling</span><span class="mf">.</span><span class="n">comments_vs</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The supported functions for this type of query are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">similarity_cosine</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">similarity_euclidean</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">similarity_dot_product</span></code></p></li>
+</ul>
+<p>with the parameters of (<code class="docutils literal notranslate"><span class="pre">&lt;vector&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;vector&gt;</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">vector</span></code> is either the name of the float vector column or <a class="reference internal" href="types.html#vectors"><span class="std std-ref">vector of floats</span></a>.
+Both arguments must be of the same dimension.</p>
+<p>These functions return a <code class="docutils literal notranslate"><span class="pre">float</span></code> value representing the similarity between the given vectors for each row.
+The similarity value is a floating-point number in a range of [0, 1] that describes how similar two vectors are.
+Values closer to 1 indicate greater similarity.
+The <code class="docutils literal notranslate"><span class="pre">similarity_euclidean</span></code> and <code class="docutils literal notranslate"><span class="pre">similarity_dot_product</span></code> functions do not perform vector normalization prior to computing similarity.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">similarity_dot_product</span></code> function assumes that all input vectors are L2-normalized.
+Supplying non-normalized vectors will result in dot product values that do not represent cosine similarity and therefore are not meaningful for similarity comparison.
+If the input vectors are not normalized, consider using the <code class="docutils literal notranslate"><span class="pre">similarity_cosine</span></code> function instead.</p>
+</div>
+</section>
 </section>
 <section id="user-defined-functions-experimental">
 <span id="udfs"></span><h3>User-defined functions <span class="label label--caution">Experimental</span><a class="headerlink" href="#user-defined-functions-experimental" title="Link to this heading">¶</a></h3>
@@ -631,7 +658,7 @@ signature does not exist. <code class="docutils literal notranslate"><span class
 </section>
 </section>
 <section id="aggregate-functions">
-<span id="id3"></span><h2>Aggregate functions<a class="headerlink" href="#aggregate-functions" title="Link to this heading">¶</a></h2>
+<span id="id4"></span><h2>Aggregate functions<a class="headerlink" href="#aggregate-functions" title="Link to this heading">¶</a></h2>
 <p>Aggregate functions work on a set of rows. They receive values for each row and return one value for the whole set.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">normal</span></code> columns, <code class="docutils literal notranslate"><span class="pre">scalar</span> <span class="pre">functions</span></code>, <code class="docutils literal notranslate"><span class="pre">UDT</span></code> fields, <code class="docutils literal notranslate"><span class="pre">writetime</span></code>, or <code class="docutils literal notranslate"><span class="pre">ttl</span></code> are selected together with
 aggregate functions, the values returned for them will be the ones of the first row matching the query.</p>
@@ -867,6 +894,7 @@ instance:</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#blob-conversion-functions">Blob conversion functions</a></li>
+<li><a class="reference internal" href="#vector-similarity-functions">Vector similarity functions</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#user-defined-functions-experimental">User-defined functions <span class="label label--caution">Experimental</span></a><ul>
@@ -1369,7 +1397,7 @@ instance:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jan 2026.
+                        Last updated on 06 Jan 2026.
                     
                 </div>
             

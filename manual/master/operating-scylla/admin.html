@@ -585,14 +585,18 @@ configure access to the storage endpoints.</p>
 the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file. The relevant section of <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>
 should follow this format:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://&lt;endpoint_address_or_domain_name&gt;[:&lt;port_number&gt;]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;endpoint_address_or_domain_name&gt;</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;port_number&gt;</span>
+<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;true_or_false&gt;</span><span class="w"> </span><span class="c1"># optional</span>
 <span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;region_name&gt;</span><span class="w"> </span><span class="c1"># optional, e.g. us-east-1</span>
 <span class="w">    </span><span class="nt">iam_role_arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;iam_role&gt;</span><span class="w"> </span><span class="c1"># optional</span>
 </pre></div>
 </div>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://s3.us-east-1.amazonaws.com</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3.us-east-1.amazonaws.com</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<span class="w">    </span><span class="nt">https</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-1</span>
 <span class="w">    </span><span class="nt">iam_role_arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arn:aws:iam::123456789012:instance-profile/my-instance-instance-profile</span>
 </pre></div>
@@ -1536,7 +1540,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jan 2026.
+                        Last updated on 06 Jan 2026.
                     
                 </div>
             
