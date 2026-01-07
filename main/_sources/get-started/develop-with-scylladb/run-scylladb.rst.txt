@@ -138,7 +138,7 @@ Run the following command to install ScyllaDB:
 
     curl -sSf get.scylladb.com/server | sudo bash
 
-By default, running the script installs the latest official version of ScyllaDB Open Source. 
+By default, running the script installs the latest official version of ScyllaDB. 
 
 Alternatively, you can install ScyllaDB packages for your platform or launch 
 ScyllaDB on AWS, GCP, or Azure. See `Install ScyllaDB <https://docs.scylladb.com/manual/stable/getting-started/install-scylla/index.html>`_ 
