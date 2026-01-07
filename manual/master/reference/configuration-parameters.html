@@ -3776,6 +3776,41 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-alternator-response-gzip-compression-level">
+<dt class="sig sig-object std" id="confval-alternator_response_gzip_compression_level">
+<span class="sig-name descname"><span class="pre">alternator_response_gzip_compression_level</span></span><a class="headerlink" href="#confval-alternator_response_gzip_compression_level" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><dl>
+<dt>Controls gzip and deflate compression level for Alternator response bodies (if the client requests it via Accept-Encoding header) Default of 6 is a compromise between speed and compression.</dt><dd><p>Valid values:</p>
+<blockquote>
+<div><p>0 : No compression (disables gzip/deflate)</p>
+<p>1-9: Compression levels (1 = fastest, 9 = best compression)</p>
+</div></blockquote>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">int8_t(6)</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-alternator-response-compression-threshold-in-bytes">
+<dt class="sig sig-object std" id="confval-alternator_response_compression_threshold_in_bytes">
+<span class="sig-name descname"><span class="pre">alternator_response_compression_threshold_in_bytes</span></span><a class="headerlink" href="#confval-alternator_response_compression_threshold_in_bytes" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>When the compression is enabled, this value indicates the minimum size of data to compress. Smaller responses will not be compressed.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">uint64_t(4096)</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-abort-on-ebadf">
 <dt class="sig sig-object std" id="confval-abort_on_ebadf">
 <span class="sig-name descname"><span class="pre">abort_on_ebadf</span></span><a class="headerlink" href="#confval-abort_on_ebadf" title="Link to this definition">¶</a></dt>
