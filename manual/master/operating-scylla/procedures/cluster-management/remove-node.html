@@ -382,6 +382,12 @@ by ensuring that the node you’re removing streams its data to the remaining no
 <p class="admonition-title">Warning</p>
 <p>Review current disk space utilization on existing nodes and make sure the amount of data streamed from the node being removed can fit into the disk space available on the remaining nodes. If there is not enough disk space on the remaining nodes, the removal of a node will fail. Add more storage to remaining nodes <strong>before</strong> starting the removal procedure.</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Removing a node in a rack may violate the <a class="reference internal" href="../../../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a> constraints of some keyspace.</p>
+<p>If a keyspace uses tablets and contains a Materialized View or Secondary Index, or if the <cite>rf_rack_valid_keyspaces</cite> option is set,
+the invariant is enforced for the keyspace, and the node removal will be rejected if it would violate the invariant.</p>
+</div>
 </li>
 <li><p>Run the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">netstats</span></code> command to monitor the progress of the token reallocation.</p></li>
 <li><p>Run the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">status</span></code> command to verify that the node has been removed.</p>
@@ -1047,7 +1053,7 @@ is enabled).</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jan 2026.
+                        Last updated on 10 Jan 2026.
                     
                 </div>
             

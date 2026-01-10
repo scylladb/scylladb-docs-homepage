@@ -424,6 +424,14 @@ That’s why we recommend skipping running scylla_io_setup when provisioning a n
 </ul>
 </div></blockquote>
 </li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Adding a node in a new rack in an existing datacenter may violate the <a class="reference internal" href="../../../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a> constraints of some keyspace.</p>
+<p>If a keyspace uses tablets and contains a Materialized View or Secondary Index, or if the <cite>rf_rack_valid_keyspaces</cite> option is set,
+the invariant is enforced for the keyspace, and the new node will be rejected if adding it would violate the invariant.</p>
+</div>
+<ol class="arabic">
 <li><p>Start the nodes with the following command:</p>
 <blockquote>
 <div><div class="sphinx-tabs docutils container">
@@ -1080,7 +1088,7 @@ However, cleanup may consume significant resources. Use the following guideline 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jan 2026.
+                        Last updated on 10 Jan 2026.
                     
                 </div>
             

@@ -497,12 +497,17 @@ the keyspace schema with <code class="docutils literal notranslate"><span class=
 <span id="tablets-limitations"></span><h2>Limitations and Unsupported Features<a class="headerlink" href="#limitations-and-unsupported-features" title="Link to this heading">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>If a keyspace has tablets enabled, it must remain <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>
-throughout its lifetime. Failing to keep that invariant satisfied may result in data inconsistencies,
-performance problems, or other issues.</p>
+<p>If a keyspace has tablets enabled and contains a materialized view or a secondary index, it must
+remain <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a> throughout its lifetime. Failing to keep that
+invariant satisfied may result in data inconsistencies, performance problems, or other issues.</p>
+<p>The invariant is enforced while the keyspace contains a materialized view or a secondary index, or
+if the <cite>rf_rack_valid_keyspaces</cite> option is set, by rejecting operations that would violate the RF-rack-valid property:
+Altering a keyspace’s replication factor, adding a node in a new rack, or removing the last node
+in a rack, will be rejected if they would result in an RF-rack-invalid keyspace.</p>
 </div>
-<p>To enable materialized views and secondary indexes for tablet keyspaces, use
-the <cite>–rf-rack-valid-keyspaces</cite> See <a class="reference internal" href="../operating-scylla/admin.html#admin-views-with-tablets"><span class="std std-ref">Views with tablets</span></a> for details.</p>
+<p>To enable materialized views and secondary indexes for tablet keyspaces, the keyspace
+must be <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>.
+See <a class="reference internal" href="../operating-scylla/admin.html#admin-views-with-tablets"><span class="std std-ref">Views with tablets</span></a> for details.</p>
 <p>Resharding in keyspaces with tablets enabled has the following limitations:</p>
 <ul class="simple">
 <li><p>ScyllaDB does not support reducing the number of shards after node restart.</p></li>
@@ -1121,7 +1126,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jan 2026.
+                        Last updated on 10 Jan 2026.
                     
                 </div>
             

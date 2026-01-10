@@ -773,12 +773,15 @@ Use <code class="docutils literal notranslate"><span class="pre">scylla</span> <
 </section>
 <section id="views-with-tablets">
 <span id="admin-views-with-tablets"></span><h2>Views with Tablets<a class="headerlink" href="#views-with-tablets" title="Link to this heading">¶</a></h2>
-<p>Materialized Views (MV) and Secondary Indexes (SI) are enabled in keyspaces that use tablets
-only when <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid keyspaces</span></a> are enforced. That can be
-done in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file by specifying</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rf_rack_valid_keyspaces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</pre></div>
-</div>
+<p>Materialized Views (MV) and Secondary Indexes (SI) are supported in keyspaces that use tablets
+only when the keyspaces are <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>.</p>
+<p>When a keyspace contains a Materialized View or Secondary Index, some operations are restricted to maintain
+the RF-rack condition. The following actions are not allowed while the view or index is present:</p>
+<ul class="simple">
+<li><p>Altering the keyspace’s replication factor to a value that would violate the RF-rack-valid property</p></li>
+<li><p>Adding a node in a new rack in an existing datacenter</p></li>
+<li><p>Removing the last node in a rack</p></li>
+</ul>
 </section>
 <section id="monitoring">
 <h2>Monitoring<a class="headerlink" href="#monitoring" title="Link to this heading">¶</a></h2>
@@ -1540,7 +1543,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jan 2026.
+                        Last updated on 10 Jan 2026.
                     
                 </div>
             
