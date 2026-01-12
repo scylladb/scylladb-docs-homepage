@@ -373,9 +373,10 @@ is managed by a load balancer mechanism and happens independently of
 the administrator. The tablet load balancer decides where to migrate
 the tablets, either within the same node to balance the shards or across
 the nodes to balance the global load in the cluster.</p>
-<p>The number of tablets the load balancer maintains on a node is directly
-proportional to the node’s storage capacity. A node with twice
-the storage will have twice the number of tablets located on it.</p>
+<p>During this process, the balancer will compute disk usage based on the
+actual disk sizes of the tablets located on the nodes. It will then issue
+tablet migrations which migrate tablets from nodes with higher to nodes
+with lower disk utilization, equalizing the load.</p>
 <p>As a table grows, each tablet can split into two, creating a new tablet.
 The load balancer can migrate the split halves independently to different nodes
 or shards.</p>
@@ -817,8 +818,6 @@ starts serving CQL.</p></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/scylla-types.html">ScyllaDB Types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/sstableloader.html">SSTableLoader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/cassandra-stress.html">cassandra-stress</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/sstabledump.html">SSTabledump</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/sstablemetadata.html">SSTableMetadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/logging.html">ScyllaDB Logs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/perftune.html">Seastar Perftune</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/virtual-tables.html">Virtual Tables</a></li>
@@ -1126,7 +1125,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Jan 2026.
+                        Last updated on 12 Jan 2026.
                     
                 </div>
             
