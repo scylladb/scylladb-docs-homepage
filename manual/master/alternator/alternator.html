@@ -390,6 +390,13 @@ be placed in <code class="docutils literal notranslate"><span class="pre">/etc/s
 these default locations can overridden by specifying
 <code class="docutils literal notranslate"><span class="pre">--alternator-encryption-options</span> <span class="pre">keyfile=&quot;...&quot;</span></code> and
 <code class="docutils literal notranslate"><span class="pre">--alternator-encryption-options</span> <span class="pre">certificate=&quot;...&quot;</span></code>.</p>
+<p>In addition to <strong>alternator_port</strong> and <strong>alternator_https_port</strong>, the two
+options <strong>alternator_port_proxy_protocol</strong> (for HTTP) and
+<strong>alternator_https_port_proxy_protocol</strong> (for HTTPS) allow running Alternator
+behind a reverse proxy, such as HAProxy or AWS PrivateLink, and still report
+the correct client address. The reverse proxy must be configured to use
+<a class="reference external" href="https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt">Proxy Protocol v2</a>
+(the binary header format).</p>
 <p>By default, ScyllaDB saves a snapshot of deleted tables. But Alternator does
 not offer an API to restore these snapshots, so these snapshots are not useful
 and waste disk space - deleting a table does not recover any disk space.
@@ -667,7 +674,7 @@ with Tablets enabled.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2025.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB on AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB on GCP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
@@ -828,6 +835,7 @@ with Tablets enabled.</p>
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new-apis.html">Alternator-specific APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="network.html">Reducing network costs in Alternator</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1068,7 +1076,7 @@ with Tablets enabled.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Jan 2026.
+                        Last updated on 14 Jan 2026.
                     
                 </div>
             
