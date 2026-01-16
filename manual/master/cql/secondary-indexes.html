@@ -356,14 +356,52 @@ is identified by a name defined by:</p>
 <p>Creating a secondary index on a table uses the <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_index_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="p">[</span> <span class="k">CUSTOM</span> <span class="p">]</span> <span class="k">INDEX</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="p">[</span> <span class="o">`</span><span class="n">index_name</span><span class="o">`</span> <span class="p">]</span>
                       <span class="p">:</span>     <span class="k">ON</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">index_identifier</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
-                      <span class="p">:</span>     <span class="p">[</span> <span class="k">USING</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span> <span class="p">[</span> <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span> <span class="p">]</span> <span class="p">]</span>
+                      <span class="p">:</span>     <span class="p">[</span> <span class="k">USING</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span> <span class="p">[</span> <span class="k">WITH</span> <span class="o">`</span><span class="n">index_properties</span><span class="o">`</span> <span class="p">]</span> <span class="p">]</span>
 <span class="n">index_identifier</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span>
                 <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+<span class="n">index_properties</span><span class="p">:</span> <span class="n">index_property</span> <span class="p">(</span><span class="k">AND</span> <span class="n">index_property</span><span class="p">)</span><span class="o">*</span>
+<span class="n">index_property</span><span class="p">:</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span>
+              <span class="p">:</span><span class="o">|</span> <span class="n">view_property</span>
 </pre></div>
 </div>
+<p>where <cite>view_property</cite> is any <a class="reference internal" href="mv.html#mv-options"><span class="std std-ref">property</span></a> that can be used when creating
+a <a class="reference internal" href="../features/materialized-views.html"><span class="doc">materialized view</span></a>. The only exception is <cite>CLUSTERING ORDER BY</cite>,
+which is not supported by secondary indexes.</p>
+<p>If the statement is provided with a materialized view property, it will not be applied to the index itself.
+Instead, it will be applied to the underlying materialized view of it.</p>
 <p>For instance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">userIndex</span> <span class="k">ON</span> <span class="n">NerdMovies</span> <span class="p">(</span><span class="k">user</span><span class="p">);</span>
 <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">Mutants</span> <span class="p">(</span><span class="n">abilityId</span><span class="p">);</span>
+
+<span class="c1">-- Create a secondary index called `catsIndex` on the table `Animals`.</span>
+<span class="c1">-- The indexed column is `cats`. Both properties, `comment` and</span>
+<span class="c1">-- `synchronous_updates`, are view properties, so the underlying materialized</span>
+<span class="c1">-- view will be configured with: `comment = &#39;everyone likes cats&#39;` and</span>
+<span class="c1">-- `synchronous_updates = true`.</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">catsIndex</span> <span class="k">ON</span> <span class="n">Animals</span> <span class="p">(</span><span class="n">cats</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;everyone likes cats&#39;</span> <span class="k">AND</span> <span class="n">synchronous_updates</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+
+<span class="c1">-- Create a secondary index called `dogsIndex` on the same table, `Animals`.</span>
+<span class="c1">-- This time, the indexed column is `dogs`. The property `gc_grace_seconds` is</span>
+<span class="c1">-- a view property, so the underlying materialized view will be configured with</span>
+<span class="c1">-- `gc_grace_seconds = 13`.</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">dogsIndex</span> <span class="k">ON</span> <span class="n">Animals</span> <span class="p">(</span><span class="n">dogs</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">gc_grace_seconds</span> <span class="o">=</span> <span class="mf">13</span><span class="p">;</span>
+
+<span class="c1">-- The view property `CLUSTERING ORDER BY` is not supported by secondary indexes,</span>
+<span class="c1">-- so this statement will be rejected by Scylla.</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">bearsIndex</span> <span class="k">ON</span> <span class="n">Animals</span> <span class="p">(</span><span class="n">bears</span><span class="p">)</span> <span class="k">WITH</span> <span class="k">CLUSTERING</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="p">(</span><span class="n">bears</span> <span class="k">ASC</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>View properties of a secondary index have the same limitations as those imposed by materialized views.
+For instance, a materialized view cannot be created specifying <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span> <span class="pre">=</span> <span class="pre">0</span></code>, so creating
+a secondary index with the same property will not be possible either.</p>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- This statement will be rejected by Scylla because creating</span>
+<span class="c1">-- a materialized view with `gc_grace_seconds = 0` is not possible.</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">names</span> <span class="k">ON</span> <span class="n">clients</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">gc_grace_seconds</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
+
+<span class="c1">-- This statement will also be rejected by Scylla.</span>
+<span class="c1">-- It&#39;s not possible to use `COMPACT STORAGE` with a materialized view.</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">names</span> <span class="k">ON</span> <span class="n">clients</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">WITH</span> <span class="k">COMPACT</span> <span class="k">STORAGE</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code> statement is used to create a new (automatic) secondary index for a given (existing) column in a
@@ -1076,7 +1114,7 @@ name, which may optionally specify the keyspace of the index.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Jan 2026.
+                        Last updated on 16 Jan 2026.
                     
                 </div>
             
