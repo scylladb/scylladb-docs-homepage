@@ -351,43 +351,35 @@ The location of ScyllaDB SSTables is specified in scylla.yaml <code class="docut
 <h2>SSTable Version Support<a class="headerlink" href="#sstable-version-support" title="Link to this heading">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33.3%" />
-<col style="width: 33.3%" />
-<col style="width: 33.3%" />
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>SSTable Version</p></th>
-<th class="head"><p>ScyllaDB Enterprise Version</p></th>
-<th class="head"><p>ScyllaDB Open Source Version</p></th>
+<th class="head"><p>ScyllaDB Version</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>3.x (‘ms’)</p></td>
 <td><p>2025.4 and above</p></td>
-<td><p>None</p></td>
 </tr>
 <tr class="row-odd"><td><p>3.x (‘me’)</p></td>
 <td><p>2022.2 and above</p></td>
-<td><p>5.1 and above</p></td>
 </tr>
 <tr class="row-even"><td><p>3.x (‘md’)</p></td>
 <td><p>2021.1</p></td>
-<td><p>4.3, 4.4, 4.5, 4.6, 5.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>3.0 (‘mc’)</p></td>
-<td><p>2019.1, 2020.1</p></td>
-<td><p>3.x, 4.1, 4.2</p></td>
-</tr>
-<tr class="row-even"><td><p>2.2 (‘la’)</p></td>
-<td><p>N/A</p></td>
-<td><p>2.3</p></td>
-</tr>
-<tr class="row-odd"><td><p>2.1.8 (‘ka’)</p></td>
-<td><p>2018.1</p></td>
-<td><p>2.2</p></td>
 </tr>
 </tbody>
 </table>
+<ul class="simple">
+<li><p>The supported formats are <code class="docutils literal notranslate"><span class="pre">me</span></code> and <code class="docutils literal notranslate"><span class="pre">ms</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">md</span></code> format is used only when upgrading from an existing cluster using
+<code class="docutils literal notranslate"><span class="pre">md</span></code>. The <code class="docutils literal notranslate"><span class="pre">sstable_format</span></code> parameter is ignored if it is set to <code class="docutils literal notranslate"><span class="pre">md</span></code>.</p></li>
+<li><p>Note: The <code class="docutils literal notranslate"><span class="pre">sstable_format</span></code> parameter specifies the SSTable format used for
+<strong>writes</strong>. The legacy SSTable formats (<code class="docutils literal notranslate"><span class="pre">ka</span></code>, <code class="docutils literal notranslate"><span class="pre">la</span></code>, <code class="docutils literal notranslate"><span class="pre">mc</span></code>) remain
+supported for reads, which is essential for restoring clusters from existing
+backups.</p></li>
+</ul>
 <p>For more information about ScyllaDB 2.x SSTable formats, see below:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="sstable-compression.html"><span class="doc">SSTable Compression</span></a> - Deep dive into ScyllaDB/Apache Cassandra SSTable Compression</p></li>
@@ -1000,7 +992,7 @@ The location of ScyllaDB SSTables is specified in scylla.yaml <code class="docut
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Jan 2026.
+                        Last updated on 17 Jan 2026.
                     
                 </div>
             
