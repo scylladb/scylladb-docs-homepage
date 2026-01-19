@@ -590,10 +590,18 @@ in this case <code class="docutils literal notranslate"><span class="pre">[0.1,<
   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">embedding</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>Vector queries also support filtering with <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clauses on columns that are part of the primary key.</p>
+<p>For example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span> <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">&#39;user123&#39;</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">embedding</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The supported operations are equal relations (<code class="docutils literal notranslate"><span class="pre">=</span></code> and <code class="docutils literal notranslate"><span class="pre">IN</span></code>) with restrictions as in regular <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clauses. See <a class="reference internal" href="#where-clause"><span class="std std-ref">WHERE</span></a>.</p>
+<p>Other filtering scenarios are currently not supported.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Currently, vector queries do not support filtering with <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause,
-grouping with <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> and paging. This will be added in the future releases.</p>
+<p>Currently, vector queries do not support grouping with <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> and paging. This will be added in the future releases.</p>
 </div>
 </section>
 <section id="limiting-results">
@@ -1495,7 +1503,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Jan 2026.
+                        Last updated on 19 Jan 2026.
                     
                 </div>
             
