@@ -482,6 +482,26 @@ as <code class="docutils literal notranslate"><span class="pre">efSearch</span><
 but increase query latency. Supported values are integers between 1 and 4096.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">64</span></code></p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quantization</span></code></p></td>
+<td><p>The quantization method to use for compressing vectors in Vector Index. Vectors in base table
+are never compressed. Supported values (case-insensitive) are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">f32</span></code>: 32-bit single-precision IEEE 754 floating-point.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f16</span></code>: 16-bit standard half-precision floating-point (IEEE 754).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bf16</span></code>: 16-bit “Brain” floating-point (optimized for ML workloads).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">i8</span></code>: 8-bit signed integer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b1</span></code>: 1-bit binary value (packed 8 per byte).</p></li>
+</ul>
+</td>
+<td><p><code class="docutils literal notranslate"><span class="pre">f32</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">oversampling</span></code></p></td>
+<td><p>A multiplier for the candidate set size during the search phase. For example, if a query asks for 10
+similar vectors (<code class="docutils literal notranslate"><span class="pre">LIMIT</span> <span class="pre">10</span></code>) and <code class="docutils literal notranslate"><span class="pre">oversampling</span></code> is 2.0, the search will initially retrieve 20
+candidates. This can improve accuracy at the cost of latency. Supported values are
+floating-point numbers between 1.0 (no oversampling) and 100.0.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -1114,7 +1134,7 @@ name, which may optionally specify the keyspace of the index.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 Jan 2026.
+                        Last updated on 21 Jan 2026.
                     
                 </div>
             
