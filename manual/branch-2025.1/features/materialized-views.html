@@ -406,7 +406,7 @@ InvalidRequest:<span class="w"> </span><span class="nv">code</span><span class="
 <p>Materialized views, just like regular tables, use one of the available <a class="reference internal" href="../architecture/compaction/compaction-strategies.html"><span class="doc">compaction strategies</span></a>.
 When a materialized view is created, it does not inherit its base table compaction strategy settings, because the data model
 of a view does not necessarily have the same characteristics as the one from its base table.
-Instead, the default compaction strategy (SizeTieredCompactionStrategy) is used.</p>
+Instead, the default compaction strategy (IncrementalCompactionStrategy) is used.</p>
 <p>A compaction strategy for a new materialized view can be explicitly set during its creation, using the following command:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">MATERIALIZED</span> <span class="k">VIEW</span> <span class="n">ks</span><span class="mf">.</span><span class="n">mv</span> <span class="k">AS</span> <span class="k">SELECT</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="k">WHERE</span>
   <span class="n">a</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span>
@@ -1014,7 +1014,7 @@ Instead, the default compaction strategy (SizeTieredCompactionStrategy) is used.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Jan 2026.
+                        Last updated on 22 Jan 2026.
                     
                 </div>
             
