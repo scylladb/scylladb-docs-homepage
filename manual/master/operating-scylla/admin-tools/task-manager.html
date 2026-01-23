@@ -448,6 +448,24 @@ for which cluster tasks are visible in task manager isn’t specified.</p>
 <p>Cluster tasks are not unregistered from task manager with API calls.</p>
 </section>
 </section>
+<section id="node-operations-module">
+<h2>Node operations module<a class="headerlink" href="#node-operations-module" title="Link to this heading">¶</a></h2>
+<p>There is a module named <code class="docutils literal notranslate"><span class="pre">node_ops</span></code>, which allows tracking node operations: decommission, removenode, bootstrap, replace, rebuild.</p>
+<dl class="simple">
+<dt>The <code class="docutils literal notranslate"><span class="pre">type</span></code> field designates the operation, and is one of:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">decommission</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remove</span> <span class="pre">node</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bootstrap</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">replace</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rebuild</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<p>The <code class="docutils literal notranslate"><span class="pre">scope</span></code> and <code class="docutils literal notranslate"><span class="pre">kind</span></code> fields are set to <code class="docutils literal notranslate"><span class="pre">cluster</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">entity</span></code> field holds the host id of the node which is being operated on, as long as the request
+is not finished. In case of the <code class="docutils literal notranslate"><span class="pre">replace</span></code> operation, it will hold the host id of the replacing node.</p>
+<p><code class="docutils literal notranslate"><span class="pre">decommission</span></code> and <code class="docutils literal notranslate"><span class="pre">remove</span> <span class="pre">node</span></code> tasks are abortable, but only before they finish tablet migration.</p>
+</section>
 <section id="tasks-api">
 <h2>Tasks API<a class="headerlink" href="#tasks-api" title="Link to this heading">¶</a></h2>
 <p>With task manager, we can have asynchronous versions of synchronous calls. Some of them are accessible from tasks API.
@@ -588,6 +606,7 @@ return the id of the associated task. You can query the operation’s status wit
 <li><a class="reference internal" href="#api-calls">API calls</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#node-operations-module">Node operations module</a></li>
 <li><a class="reference internal" href="#tasks-api">Tasks API</a></li>
 </ul>
 </li>
@@ -953,7 +972,6 @@ return the id of the associated task. You can query the operation’s status wit
 <li class="toctree-l2"><a class="reference internal" href="../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/ntp.html">NTP Configuration for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/perftune-modes-sync.html">Updating the Mode in perftune.yaml After a ScyllaDB Upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/posix.html">POSIX networking for ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/raid-device.html">Recreate RAID devices</a></li>
@@ -1065,7 +1083,7 @@ return the id of the associated task. You can query the operation’s status wit
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Jan 2026.
+                        Last updated on 23 Jan 2026.
                     
                 </div>
             

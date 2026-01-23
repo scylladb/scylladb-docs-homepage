@@ -400,9 +400,18 @@ instead of running <code class="docutils literal notranslate"><span class="pre">
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool excludenode &lt;Host ID of the node&gt;</span>
 </pre></div>
 </div>
+<p id="removenode-ignore-dead-nodes">It’s allowed to invoke <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">removenode</span></code> on multiple nodes in parallel. This will be faster than doing
+it sequentially if there is significant amount of data in tablet-based keyspaces, because
+tablets which belong to removed nodes will be rebuilt in parallel. Node removal first migrates tablets to new
+replicas, in parallel for all nodes being removed. Then does the part which executes
+removal for the vnode-based keyspaces, and this is serialized with other vnode-based operations, including
+those from other removenode operations.</p>
+<p>Removenode which is still in the tablet rebuild phase can be canceled using Task Manager API.
+Tablets which are already rebuilt will remain on their new replicas.
+See <a class="reference internal" href="../admin-tools/task-manager.html"><span class="doc">Task manager</span></a>.</p>
 </section>
 <section id="ignoring-dead-nodes">
-<span id="removenode-ignore-dead-nodes"></span><h2>Ignoring Dead Nodes<a class="headerlink" href="#ignoring-dead-nodes" title="Link to this heading">¶</a></h2>
+<h2>Ignoring Dead Nodes<a class="headerlink" href="#ignoring-dead-nodes" title="Link to this heading">¶</a></h2>
 <p>All the nodes in the cluster participate in the <code class="docutils literal notranslate"><span class="pre">removenode</span></code> operation to sync data if needed. For this reason, the operation will fail if one or more nodes in the cluster are not available.
 In such a case, to ensure that the operation succeeds, you must explicitly specify a list of unavailable nodes with the <code class="docutils literal notranslate"><span class="pre">--ignore-dead-nodes</span></code> option.</p>
 <p>Use a comma-separated list to specify the Host IDs of all unavailable nodes in the cluster before specifying the node to remove.</p>
@@ -902,7 +911,6 @@ In such a case, to ensure that the operation succeeds, you must explicitly speci
 <li class="toctree-l2"><a class="reference internal" href="../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/ntp.html">NTP Configuration for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/perftune-modes-sync.html">Updating the Mode in perftune.yaml After a ScyllaDB Upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/posix.html">POSIX networking for ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/raid-device.html">Recreate RAID devices</a></li>
@@ -1014,7 +1022,7 @@ In such a case, to ensure that the operation succeeds, you must explicitly speci
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Jan 2026.
+                        Last updated on 23 Jan 2026.
                     
                 </div>
             

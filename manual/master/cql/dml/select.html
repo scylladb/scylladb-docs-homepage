@@ -559,8 +559,8 @@ induced by the clustering columns and the reverse of that one.</p></li>
 <li><p>Otherwise, the orderings allowed are the order of the <code class="docutils literal notranslate"><span class="pre">CLUSTERING</span> <span class="pre">ORDER</span></code> option and the reversed one.</p></li>
 </ul>
 </section>
-<section id="vector-queries">
-<span id="id2"></span><h2>Vector queries<a class="headerlink" href="#vector-queries" title="Link to this heading">¶</a></h2>
+<section id="vector-queries-scylladb-cloud">
+<span id="vector-queries"></span><h2>Vector queries <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#vector-queries-scylladb-cloud" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause can also be used with vector columns to perform the approximate nearest neighbor (ANN) search.
 When using vector columns, the syntax is as follows:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">order_by_vector</span><span class="p">:</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
@@ -599,9 +599,12 @@ in this case <code class="docutils literal notranslate"><span class="pre">[0.1,<
 </div>
 <p>The supported operations are equal relations (<code class="docutils literal notranslate"><span class="pre">=</span></code> and <code class="docutils literal notranslate"><span class="pre">IN</span></code>) with restrictions as in regular <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clauses. See <a class="reference internal" href="#where-clause"><span class="std std-ref">WHERE</span></a>.</p>
 <p>Other filtering scenarios are currently not supported.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Currently, vector queries do not support grouping with <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> and paging. This will be added in the future releases.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
+Vector indexes do not support all ScyllaDB features (e.g., tracing, TTL, paging, and grouping). More information
+about Vector Search is available in the
+<a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/">ScyllaDB Cloud documentation</a>.</p>
 </div>
 </section>
 <section id="limiting-results">
@@ -756,7 +759,7 @@ primary index or a secondary index.</p>
 </div>
 </section>
 <section id="bypass-cache">
-<span id="id3"></span><h2>Bypass Cache<a class="headerlink" href="#bypass-cache" title="Link to this heading">¶</a></h2>
+<span id="id2"></span><h2>Bypass Cache<a class="headerlink" href="#bypass-cache" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">CACHE</span></code> clause on SELECT statements informs the database that the data being read is unlikely to be read again in the near future, and also was unlikely to have been read in the near past; therefore, no attempt should be made to read it from the cache or to populate the cache with the data. This is mostly useful for range scans; these typically process large amounts of data with no temporal locality and do not benefit from the cache.
 The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <p><code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">CACHE</span></code> is a ScyllaDB CQL extension and not part of Apache Cassandra CQL.</p>
@@ -768,7 +771,7 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 </div>
 </section>
 <section id="using-timeout">
-<span id="id4"></span><h2>Using Timeout<a class="headerlink" href="#using-timeout" title="Link to this heading">¶</a></h2>
+<span id="id3"></span><h2>Using Timeout<a class="headerlink" href="#using-timeout" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">TIMEOUT</span></code> clause allows specifying a timeout for a specific request.</p>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="mf">5</span><span class="n">s</span><span class="p">;</span>
@@ -778,7 +781,7 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <p><code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">TIMEOUT</span></code> is a ScyllaDB CQL extension and not part of Apache Cassandra CQL.</p>
 </section>
 <section id="like-operator">
-<span id="id5"></span><h2>LIKE Operator<a class="headerlink" href="#like-operator" title="Link to this heading">¶</a></h2>
+<span id="id4"></span><h2>LIKE Operator<a class="headerlink" href="#like-operator" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> operation on <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statements informs ScyllaDB that you are looking for a pattern match. The expression ‘column LIKE pattern’ yields true only if the entire column value matches the pattern.</p>
 <p>The search pattern is a string of characters with two wildcards, as shown:</p>
 <ul class="simple">
@@ -1020,7 +1023,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li><a class="reference internal" href="#the-where-clause">The <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause</a></li>
 <li><a class="reference internal" href="#grouping-results">Grouping results</a></li>
 <li><a class="reference internal" href="#ordering-results">Ordering results</a></li>
-<li><a class="reference internal" href="#vector-queries">Vector queries</a></li>
+<li><a class="reference internal" href="#vector-queries-scylladb-cloud">Vector queries <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#limiting-results">Limiting results</a></li>
 <li><a class="reference internal" href="#allowing-filtering">Allowing filtering</a></li>
 <li><a class="reference internal" href="#evaluation-order-of-select-statement-clauses">Evaluation order of SELECT statement clauses</a></li>
@@ -1391,7 +1394,6 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l2"><a class="reference internal" href="../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/ntp.html">NTP Configuration for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/perftune-modes-sync.html">Updating the Mode in perftune.yaml After a ScyllaDB Upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/posix.html">POSIX networking for ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/raid-device.html">Recreate RAID devices</a></li>
@@ -1503,7 +1505,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Jan 2026.
+                        Last updated on 23 Jan 2026.
                     
                 </div>
             
