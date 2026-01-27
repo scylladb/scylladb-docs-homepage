@@ -881,10 +881,7 @@ It is limited to ordering issues on the partition, row, or mutation-fragment lev
 <li><p><strong>segregate</strong> - Fixes partition/row/mutation-fragment out-of-order errors by segregating the output into as many SStables as required so that the content of each output SStable is properly ordered.</p></li>
 <li><p><strong>validate</strong> - Validates the content of the SStable, reporting any corruptions found. Writes no output SStables. In this mode, scrub has the same outcome as the <a class="reference internal" href="#scylla-sstable-validate-operation">validate operation</a> - and the validate operation is recommended over scrub.</p></li>
 </ul>
-<p>Output SStables are written to the directory specified via <code class="docutils literal notranslate"><span class="pre">--output-directory</span></code>. They will be written with the <code class="docutils literal notranslate"><span class="pre">BIG</span></code> format and the highest supported SStable format, with generations chosen by scylla-sstable. Generations are chosen such
-that they are unique among the SStables written by the current scrub.</p>
-<p>The output directory must be empty; otherwise, scylla-sstable will abort scrub. You can allow writing to a non-empty directory by setting the <code class="docutils literal notranslate"><span class="pre">--unsafe-accept-nonempty-output-dir</span></code> command line flag.
-Note that scrub will be aborted if an SStable cannot be written because its generation clashes with a pre-existing SStable in the output directory.</p>
+<p>Output SStables are written to the directory specified via <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>. They will be written with the <code class="docutils literal notranslate"><span class="pre">BIG</span></code> format and the highest supported SStable format, with random generation.</p>
 </section>
 <section id="validate-checksums">
 <h3>validate-checksums<a class="headerlink" href="#validate-checksums" title="Link to this heading">¶</a></h3>
@@ -1098,7 +1095,7 @@ Rewrites the input SSTable(s) to the latest supported version and latest schema 
 The SSTable version to be used can be overridden with the <code class="docutils literal notranslate"><span class="pre">--version</span></code> flag, allowing for switching sstables between all versions supported for writing (some SSTable versions are supported for reading only).</p>
 <p>SSTables which are already on the designated version are skipped. To force rewriting <em>all</em> SSTables, use the <code class="docutils literal notranslate"><span class="pre">--all</span></code> flag.</p>
 <p>Output SSTables are written to the path provided by the <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code> flag, or to the current directory if not specified.
-This directory is expected to exist and be empty. If not empty the tool will refuse to run. This can be overridden with the <code class="docutils literal notranslate"><span class="pre">--unsafe-accept-nonempty-output-dir</span></code> flag.</p>
+This directory is expected to exist.</p>
 <p>It is strongly recommended to use the system schema tables as the schema source for this command, see the <a class="reference internal" href="#scylla-sstable-schema"><span class="std std-ref">schema options</span></a> for more details.
 A schema which is good enough to read the SSTable and dump its content, may not be good enough to write its content back verbatim.
 An incomplete or incorrect schema can lead to the tool crashing or even data loss.</p>
@@ -1106,6 +1103,21 @@ An incomplete or incorrect schema can lead to the tool crashing or even data los
 This is dangerous and can lead to data loss, use with caution. In general, altering the table options (the part after the <code class="docutils literal notranslate"><span class="pre">WITH</span></code>) is safe.
 But even an altered schema which changed only the table options can lead to data loss, since not all schema column options are expressible via CQL.</p>
 <p>The mapping of input SSTables to output SSTables is printed to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>.</p>
+</section>
+<section id="filter">
+<h3>filter<a class="headerlink" href="#filter" title="Link to this heading">¶</a></h3>
+<p>Filter the SSTable(s), including/excluding specified partitions.</p>
+<p>Similar to <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span> <span class="pre">dump-data</span> <span class="pre">--partition|--partition-file</span></code>, with some notable differences:</p>
+<ul class="simple">
+<li><p>Instead of dumping the content to stdout, the filtered content is written back to SSTable(s) on disk.</p></li>
+<li><p>Also supports negative filters (keep all partitions except the those specified).</p></li>
+</ul>
+<p>The partition list can be provided either via the <code class="docutils literal notranslate"><span class="pre">--partition</span></code> command line argument, or via a file path passed to the the <code class="docutils literal notranslate"><span class="pre">--partitions-file</span></code> argument. The file should contain one partition key per line.
+Partition keys should be provided in the hex format, as produced by <a class="reference external" href="/operating-scylla/admin-tools/scylla-types/">scylla types serialize</a>.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">--include</span></code>, only the specified partitions are kept from the input SSTable(s). With <code class="docutils literal notranslate"><span class="pre">--exclude</span></code>, the specified partitions are discarded and won’t be written to the output SSTable(s).
+It is possible that certain input SSTable(s) won’t have any content left after the filtering. These input SSTable(s) will not have a matching output SSTable.</p>
+<p>By default, each input sstable is filtered individually. Use <code class="docutils literal notranslate"><span class="pre">--merge</span></code> to filter the combined content of all input sstables, producing a single output SSTable.</p>
+<p>Output sstables use the latest supported sstable format (can be changed with <code class="docutils literal notranslate"><span class="pre">--sstable-version</span></code>).</p>
 </section>
 </section>
 <section id="id2">
@@ -1287,6 +1299,7 @@ But even an altered schema which changed only the table options can lead to data
 </ul>
 </li>
 <li><a class="reference internal" href="#upgrade">upgrade</a></li>
+<li><a class="reference internal" href="#filter">filter</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#id2">Examples</a></li>
@@ -1371,11 +1384,11 @@ But even an altered schema which changed only the table options can lead to data
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2025.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2025.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2025.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2025.4 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2025.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/install-jmx.html">Install scylla-jmx Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
@@ -1593,11 +1606,7 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/upgrade/index.html">Upgrade</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/missing-dotmount-files.html">Inaccessible configuration files after ScyllaDB upgrade</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/handling-node-failures.html">Handling Node Failures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-add-remove-replace.html">Failure to Add, Remove, or Replace a Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-decommission.html">Failed Decommission Problem</a></li>
@@ -1607,14 +1616,14 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-schema-sync.html">Failed Schema Sync</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/large-partition-table.html">ScyllaDB Large Partitions Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/large-rows-large-cells-tables.html">ScyllaDB Large Rows and Cells Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/debugging-large-partition.html">Large Partitions Hunting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-update-schema.html">Failure to Update the Schema</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/space-up.html">Space Utilization Increasing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/drop-table-space-up.html">Disk Space is not Reclaimed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/sstable-corruption.html">SSTable Corruption Problem</a></li>
@@ -1622,24 +1631,24 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l3"><a class="reference external" href="https://monitoring.docs.scylladb.com/stable/use-monitoring/advisor/heavyCompaction.html">Limiting Compaction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/time-zone.html">Time Range Query Fails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/copy-from-failed.html">COPY FROM Fails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/clients-table.html">CQL Connection Table</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/manager-monitoring-integration.html">Manager and Monitoring integration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/reverse-dns-sshd.html">Manager lists healthy nodes as down</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/autoremove-ubuntu.html">Removing ScyllaDB on Ubuntu breaks system packages</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/cdc-experimental-upgrade.html">Upgrading from experimental CDC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/compaction.html">Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/consistency.html">Consistency in ScyllaDB</a></li>
@@ -1680,14 +1689,14 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l2"><a class="reference internal" href="../../kb/yaml-address.html">Configure ScyllaDB Networking with Multiple NIC/IP Combinations</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
@@ -1771,7 +1780,7 @@ But even an altered schema which changed only the table options can lead to data
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Jan 2026.
+                        Last updated on 27 Jan 2026.
                     
                 </div>
             
