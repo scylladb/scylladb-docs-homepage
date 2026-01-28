@@ -15,13 +15,13 @@ ScyllaDB Cloud.
 It includes examples for NodeJS, Java, Python, Rust, Ruby, Elixir, C#, and
 Go.
 
+Vector Search
+-----------------
 
-Gaming Leaderboard
----------------------
-
-The `Gaming Leaderboard sample application <https://github.com/scylladb/gaming-leaderboard-demo>`_ 
-will guide you through the process of creating a leaderboard for your gaming 
-application using ScyllaDB Cloud and NextJS.
+With the `Vector Search sample application tutorial <https://vector-search.scylladb.com/>`_,
+you'll learn how you can use ScyllaDB Vector Search to build RAG applications,
+semantic caching layers, and how it works together with popular LLM libraries
+like LlamaIndex and LangChain.
 
 Video Streaming 
 ---------------------
@@ -48,3 +48,9 @@ The `Shopping Cart sample application <https://shopping-cart.scylladb.com/stable
 will guide you through the process of creating a new ScyllaDB cluster and running
 the shopping cart API server. 
 
+Gaming Leaderboard
+---------------------
+
+The `Gaming Leaderboard sample application <https://github.com/scylladb/gaming-leaderboard-demo>`_ 
+will guide you through the process of creating a leaderboard for your gaming 
+application using ScyllaDB Cloud and NextJS.
