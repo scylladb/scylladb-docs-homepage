@@ -1310,7 +1310,24 @@ mode is set by default.</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">cf</span> <span class="k">WITH</span> <span class="n">tombstone_gc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span><span class="s1">&#39;repair&#39;</span><span class="p">}</span> <span class="p">;</span>
 </pre></div>
 </div>
-<p>The following modes are available:</p>
+<p>To support writes arriving out-of-order – either due to natural delays, or user provided timestamps – the repair mode has a propagation delay.
+Out-of-order writes present a problem for repair mode tombstone gc. Consider the following example sequence of events:</p>
+<ol class="arabic simple">
+<li><p>Write <code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">FROM</span> <span class="pre">table</span> <span class="pre">WHERE</span> <span class="pre">key</span> <span class="pre">=</span> <span class="pre">K1</span></code> arrives at the node.</p></li>
+<li><p>Repair is run.</p></li>
+<li><p>Compaction runs and garbage collects the tombstone for <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">K1</span></code>.</p></li>
+<li><p>Write <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">INTO</span> <span class="pre">table</span> <span class="pre">(key,</span> <span class="pre">...)</span> <span class="pre">VALUES</span> <span class="pre">(K1,</span> <span class="pre">...)</span></code> arrives at the node with timestamp smaller than that of the delete. The tombstone for <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">K1</span></code> should apply to this write, but it is already garbage collected, so this data is resurrected.</p></li>
+</ol>
+<p>Propagation delay solves this problem by establishing a window before repair, where tombstones are not yet garbage collectible: a tombstone is garbage collectible if it was written before the last repair by at least the propagation delay.</p>
+<p>The value of the propagation delay can be set via the <code class="docutils literal notranslate"><span class="pre">propagation_delay_in_seconds</span></code> parameter:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">cf</span> <span class="p">(</span><span class="k">key</span> <span class="nb">blob</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">val</span> <span class="nb">blob</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">tombstone_gc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span><span class="s1">&#39;repair&#39;</span><span class="p">,</span> <span class="s1">&#39;propagation_delay_in_seconds&#39;</span><span class="p">:</span> <span class="mf">120</span><span class="p">};</span>
+</pre></div>
+</div>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">cf</span> <span class="k">WITH</span> <span class="n">tombstone_gc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span><span class="s1">&#39;repair&#39;</span><span class="p">,</span> <span class="s1">&#39;propagation_delay_in_seconds&#39;</span><span class="p">:</span> <span class="mf">120</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>The default value of the propagation delay is 1 hour. This parameter should only be changed if your application uses user provided timestamps and writes and deletes can arrive out-of-order by more than the default 1 hour.</p>
+<p>The following tombstone gc modes are available:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 20.0%" />
@@ -2196,7 +2213,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 27 Jan 2026.
+                        Last updated on 28 Jan 2026.
                     
                 </div>
             
