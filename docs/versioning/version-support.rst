@@ -108,3 +108,9 @@ releases when required.
 We recommend upgrading to the latest patch version. You should especially
 upgrade to the latest patch of your current version before upgrading to
 a new major or minor version.
+
+Upgrade Policy
+----------------
+
+To learn about the upgrade policy, see the `About Upgrade <https://docs.scylladb.com/manual/stable/upgrade/about-upgrade.html>`_
+section in the ScyllaDB documentation.
