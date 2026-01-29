@@ -86,6 +86,14 @@ Click the documentation link to view the documentation for each driver.
 
         `CPP RS Driver documentation <https://cpp-rs-driver.docs.scylladb.com/>`_
 
+    * - Node.js RS Driver
+      - | A native Node.js client for interacting with ScyllaDB and Cassandra
+          clusters, implementing the CQL binary protocol. Built on a Rust core,
+          it provides fully asynchronous operations, efficient resource usage,
+          and high-throughput, low-latency database access for Node.js applications.
+
+        `Node.js RS Driver documentation <https://github.com/scylladb/nodejs-rs-driver/>`_
+
     * - C++ Driver
       - | This driver is no longer actively maintained. We recommend using
           the CPP RS Driver for improved performance and full support
@@ -128,6 +136,9 @@ and since which version.
      - |v|
      - All versions
    * - `CPP RS <https://cpp-rs-driver.docs.scylladb.com/>`_
+     - |v|
+     - All versions
+   * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
      - |v|
      - All versions
    * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
@@ -175,6 +186,9 @@ and since which version.
    * - `CPP RS <https://cpp-rs-driver.docs.scylladb.com/>`_
      - |v|
      - 0.5.1
+   * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
+     - |v|
+     - All versions
    * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
      - |x| 
      - N/A. This driver is no longer actively maintained.
@@ -204,6 +218,8 @@ The following table specifies which ScyllaDB drivers include a library for
    * - `C# <https://csharp-driver.docs.scylladb.com/>`_
      - |x|
    * - `CPP RS Driver <https://cpp-rust-driver.docs.scylladb.com/>`_
+     - |x|
+   * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
      - |x|
    * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
      - |x| 
