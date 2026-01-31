@@ -433,14 +433,70 @@ about Vector Search is available in the
 <a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/">ScyllaDB Cloud documentation</a>.</p>
 </div>
 <p>ScyllaDB supports creating vector indexes on tables, allowing queries on the table to use those indexes for efficient
-similarity search on vector data.</p>
+similarity search on vector data. Vector indexes can be a global index for indexing vectors per table or a local
+index for indexing vectors per partition.</p>
 <p>The vector index is the only custom type index supported in ScyllaDB. It is created using
-the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code> keyword and specifying the index type as <code class="docutils literal notranslate"><span class="pre">vector_index</span></code>. Example:</p>
+the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code> keyword and specifying the index type as <code class="docutils literal notranslate"><span class="pre">vector_index</span></code>. It is also possible to
+add additional columns to the index for filtering the search results. The partition column
+specified in the global vector index definition must be the vector column, and any subsequent
+columns are treated as filtering columns. The local vector index requires that the partition key
+of the base table is also the partition key of the index and the vector column is the first one
+from the following columns.</p>
+<p>Example of a simple index:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="n">vectorIndex</span> <span class="k">ON</span> <span class="n">ImageEmbeddings</span> <span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
 <span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
 <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="s1">&#39;maximum_node_connections&#39;</span><span class="p">:</span> <span class="s1">&#39;16&#39;</span><span class="p">};</span>
 </pre></div>
 </div>
+<p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed to enable similarity search using
+a global vector index. Additional filtering can be performed on the primary key
+columns of the base table.</p>
+<p>Example of a global vector index with additional filtering:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="n">vectorIndex</span> <span class="k">ON</span> <span class="n">ImageEmbeddings</span> <span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+<span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="s1">&#39;maximum_node_connections&#39;</span><span class="p">:</span> <span class="s1">&#39;16&#39;</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed to enable similarity search using
+a global index. Additional columns are added for filtering the search results.
+The filtering is possible on <code class="docutils literal notranslate"><span class="pre">category</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code> and all primary key columns
+of the base table.</p>
+<p>Example of a local vector index:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="n">vectorIndex</span> <span class="k">ON</span> <span class="n">ImageEmbeddings</span> <span class="p">((</span><span class="n">id</span><span class="p">,</span> <span class="n">created_at</span><span class="p">),</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+<span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="s1">&#39;maximum_node_connections&#39;</span><span class="p">:</span> <span class="s1">&#39;16&#39;</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed for similarity search (a local
+index) and additional columns are added for filtering the search results. The
+filtering is possible on <code class="docutils literal notranslate"><span class="pre">category</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code> and all primary key columns of
+the base table. The columns <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> must be the partition key
+of the base table.</p>
+<p>Vector indexes support additional filtering columns of native data types
+(excluding counter and duration). The indexed column itself must be a vector
+column, while the extra columns can be used to filter search results.</p>
+<p>The supported types are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ascii</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">blob</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">date</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decimal</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inet</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smallint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">varchar</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeuuid</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tinyint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">varint</span></code></p></li>
+</ul>
 <p>The following options are supported for vector indexes. All of them are optional.</p>
 <table class="docutils align-default">
 <thead>
@@ -929,6 +985,7 @@ name, which may optionally specify the keyspace of the index.</p>
 <li class="toctree-l2"><a class="reference internal" href="../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/backup-and-restore.html">Backup and Restore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 </ul>
 </li>
@@ -1140,7 +1197,7 @@ name, which may optionally specify the keyspace of the index.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Jan 2026.
+                        Last updated on 31 Jan 2026.
                     
                 </div>
             
