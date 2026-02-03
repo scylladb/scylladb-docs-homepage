@@ -369,6 +369,8 @@
         <span class="p">:</span> <span class="o">|</span> <span class="k">CAST</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="k">AS</span> <span class="o">`</span><span class="n">cql_type</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
         <span class="p">:</span> <span class="o">|</span> <span class="o">`</span><span class="n">function_name</span><span class="o">`</span> <span class="s1">&#39;(&#39;</span> <span class="p">[</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="p">]</span> <span class="s1">&#39;)&#39;</span>
         <span class="p">:</span> <span class="o">|</span> <span class="k">COUNT</span> <span class="s1">&#39;(&#39;</span> <span class="s1">&#39;*&#39;</span> <span class="s1">&#39;)&#39;</span>
+        <span class="p">:</span> <span class="o">|</span> <span class="n">literal</span>
+        <span class="p">:</span> <span class="o">|</span> <span class="n">bind_marker</span>
         <span class="p">:</span> <span class="p">)</span>
         <span class="p">:</span> <span class="p">(</span> <span class="s1">&#39;.&#39;</span> <span class="o">`</span><span class="n">field_name</span><span class="o">`</span> <span class="o">|</span> <span class="s1">&#39;[&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;]&#39;</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">where_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">relation</span><span class="o">`</span> <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">relation</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span>
@@ -379,6 +381,8 @@
 <span class="n">operator</span><span class="p">:</span> <span class="s1">&#39;=&#39;</span> <span class="o">|</span> <span class="s1">&#39;&lt;&#39;</span> <span class="o">|</span> <span class="s1">&#39;&gt;&#39;</span> <span class="o">|</span> <span class="s1">&#39;&lt;=&#39;</span> <span class="o">|</span> <span class="s1">&#39;&gt;=&#39;</span> <span class="o">|</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="k">KEY</span>
 <span class="n">ordering_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">timeout</span><span class="p">:</span> <span class="o">`</span><span class="n">duration</span><span class="o">`</span>
+<span class="n">literal</span><span class="p">:</span> <span class="n">number</span> <span class="o">|</span> <span class="s1">&#39;string&#39;</span> <span class="o">|</span> <span class="nb">boolean</span> <span class="o">|</span> <span class="k">NULL</span> <span class="o">|</span> <span class="n">tuple_literal</span> <span class="o">|</span> <span class="n">list_literal</span> <span class="o">|</span> <span class="n">map_literal</span>
+<span class="n">bind_marker</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span> <span class="o">|</span> <span class="s1">&#39;:&#39;</span> <span class="o">`</span><span class="n">identifier</span><span class="o">`</span>
 </pre></div>
 </div>
 <p>For instance:</p>
@@ -418,7 +422,13 @@ alternatively, of the wildcard character (<code class="docutils literal notransl
 <li><p>A casting, which allows you to convert a nested selector to a (compatible) type.</p></li>
 <li><p>A function call, where the arguments are selector themselves.</p></li>
 <li><p>A call to the <a class="reference internal" href="../functions.html#count-function"><span class="std std-ref">COUNT function</span></a>, which counts all non-null results.</p></li>
+<li><p>A literal value (constant).</p></li>
+<li><p>A bind variable (<cite>?</cite> or <cite>:name</cite>).</p></li>
 </ul>
+<p>Note that due to a quirk of the type system, literals and bind markers cannot be
+used as top-level selectors, as the parser cannot infer their type. However, they can be used
+when nested inside functions, as the function formal parameter types provide the
+necessary context.</p>
 </section>
 <section id="aliases">
 <h3>Aliases<a class="headerlink" href="#aliases" title="Link to this heading">¶</a></h3>
@@ -1509,7 +1519,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Feb 2026.
+                        Last updated on 03 Feb 2026.
                     
                 </div>
             
