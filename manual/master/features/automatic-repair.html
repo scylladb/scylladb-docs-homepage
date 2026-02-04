@@ -346,8 +346,8 @@
 
                     <section id="automatic-repair">
 <span id="id1"></span><h1>Automatic Repair<a class="headerlink" href="#automatic-repair" title="Link to this heading">¶</a></h1>
-<p>Traditionally, launching <a class="reference external" href="/operating-scylla/procedures/maintenance/repair">repairs</a> in a ScyllaDB cluster is left to an external process, typically done via <a class="reference external" href="https://manager.docs.scylladb.com/stable/repair/index.html">Scylla Manager</a>.</p>
-<p>Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the last repair is greater than the configured repair interval, ScyllaDB will start a repair for the tablet <a class="reference external" href="/architecture/tablets">tablet</a> automatically.
+<p>Traditionally, launching <a class="reference internal" href="../operating-scylla/procedures/maintenance/repair.html"><span class="doc">repairs</span></a> in a ScyllaDB cluster is left to an external process, typically done via <a class="reference external" href="https://manager.docs.scylladb.com/stable/repair/index.html">Scylla Manager</a>.</p>
+<p>Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the last repair is greater than the configured repair interval, ScyllaDB will start a repair for the <a class="reference internal" href="../architecture/tablets.html"><span class="doc">tablet table</span></a> automatically.
 Repairs are spread over time and among nodes and shards, to avoid load spikes or any adverse effects on user workloads.</p>
 <p>To enable automatic repair, add this to the configuration (<code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>):</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">auto_repair_enabled_default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -357,7 +357,7 @@ Repairs are spread over time and among nodes and shards, to avoid load spikes or
 <p>This will enable automatic repair for all tables with a repair period of 1 day. This configuration has to be set on each node, to an identical value.
 More featureful configuration methods will be implemented in the future.</p>
 <p>To disable, set <code class="docutils literal notranslate"><span class="pre">auto_repair_enabled_default:</span> <span class="pre">false</span></code>.</p>
-<p>Automatic repair relies on <a class="reference external" href="/features/incremental-repair">Incremental Repair</a> and as such it only works with <a class="reference external" href="/architecture/tablets">tablet</a> tables.</p>
+<p>Automatic repair relies on <a class="reference internal" href="incremental-repair.html"><span class="doc">Incremental Repair</span></a> and as such it only works with <a class="reference internal" href="../architecture/tablets.html"><span class="doc">tablet</span></a> tables.</p>
 </section>
 
                 </div>
@@ -949,7 +949,7 @@ More featureful configuration methods will be implemented in the future.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Feb 2026.
+                        Last updated on 04 Feb 2026.
                     
                 </div>
             
