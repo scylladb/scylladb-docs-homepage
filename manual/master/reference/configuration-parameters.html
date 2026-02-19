@@ -2033,7 +2033,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-permissions_validity_in_ms">
 <span class="sig-name descname"><span class="pre">permissions_validity_in_ms</span></span><a class="headerlink" href="#confval-permissions_validity_in_ms" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>How long permissions in cache remain valid. Depending on the authorizer, such as CassandraAuthorizer, fetching permissions can be resource intensive. Permissions caching is disabled when this property is set to 0 or when AllowAllAuthorizer is used. The cached value is considered valid as long as both its value is not older than the permissions_validity_in_ms     and the cached value has been read at least once during the permissions_validity_in_ms time frame. If any of these two conditions doesn’t hold the cached value is going to be evicted from the cache.</p>
+<div><p>How long authorized statements cache entries remain valid. The cached value is considered valid as long as both its value is not older than the permissions_validity_in_ms     and the cached value has been read at least once during the permissions_validity_in_ms time frame. If any of these two conditions doesn’t hold the cached value is going to be evicted from the cache.</p>
 <blockquote>
 <div><p>Related information: Object permissions</p>
 </div></blockquote>
@@ -2050,24 +2050,10 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-permissions_update_interval_in_ms">
 <span class="sig-name descname"><span class="pre">permissions_update_interval_in_ms</span></span><a class="headerlink" href="#confval-permissions_update_interval_in_ms" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Refresh interval for permissions cache (if enabled). After this interval, cache entries become eligible for refresh. An async reload is scheduled every permissions_update_interval_in_ms time period and the old value is returned until it completes. If permissions_validity_in_ms has a non-zero value, then this property must also have a non-zero value. It’s recommended to set this value to be at least 3 times smaller than the permissions_validity_in_ms.</p>
+<div><p>Refresh interval for authorized statements cache. After this interval, cache entries become eligible for refresh. An async reload is scheduled every permissions_update_interval_in_ms time period and the old value is returned until it completes. If permissions_validity_in_ms has a non-zero value, then this property must also have a non-zero value. It’s recommended to set this value to be at least 3 times smaller than the permissions_validity_in_ms. This option additionally controls the permissions refresh interval for LDAP.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">2000</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-permissions-cache-max-entries">
-<dt class="sig sig-object std" id="confval-permissions_cache_max_entries">
-<span class="sig-name descname"><span class="pre">permissions_cache_max_entries</span></span><a class="headerlink" href="#confval-permissions_cache_max_entries" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Maximum cached permission entries. Must have a non-zero value if permissions caching is enabled (see a permissions_validity_in_ms description).</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1000</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -5306,7 +5292,6 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
@@ -5422,7 +5407,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Feb 2026.
+                        Last updated on 19 Feb 2026.
                     
                 </div>
             

@@ -577,8 +577,8 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <h2>Handling Audit Failures<a class="headerlink" href="#handling-audit-failures" title="Link to this heading">¶</a></h2>
 <p>In some cases, auditing may not be possible, for example, when:</p>
 <ul class="simple">
-<li><p>A table is used as the audit’s backend, and the audit partition where the audit row is saved is not available because the node that holds this partition is down.</p></li>
-<li><p>Syslog is used as the audit’s backend, and the Syslog sink (a regular unix socket) is unresponsive/unavailable.</p></li>
+<li><p>A table is used as the audit’s backend, and the partitions where the audit rows are saved are unavailable because the nodes holding those partitions are down or unreachable due to network issues.</p></li>
+<li><p>Syslog is used as the audit’s backend, and the Syslog sink (a regular Unix socket) is unresponsive or unavailable.</p></li>
 </ul>
 <p>If the audit fails and audit messages are not stored in the configured audit’s backend, you can still review the audit log in the regular ScyllaDB logs.</p>
 <p>The following example shows audit information in the regular ScyllaDB logs in the case when the Syslog backend is broken (for example, because the socket was closed) and you tried to connect to a node with incorrect credentials:</p>
@@ -1094,7 +1094,6 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <li class="toctree-l2"><a class="reference internal" href="../../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
@@ -1210,7 +1209,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Feb 2026.
+                        Last updated on 19 Feb 2026.
                     
                 </div>
             
