@@ -2412,7 +2412,7 @@ The change will take effect without a node restart, changing the value in the co
 <div><p>A comma separated list of node operations which are allowed to enable repair based node operations. The operations can be bootstrap, replace, removenode, decommission and rebuild.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;replace,removenode,rebuild,bootstrap,decommission&quot;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;replace,removenode,rebuild&quot;</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -4199,6 +4199,34 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-tablet-streaming-read-concurrency-per-shard">
+<dt class="sig sig-object std" id="confval-tablet_streaming_read_concurrency_per_shard">
+<span class="sig-name descname"><span class="pre">tablet_streaming_read_concurrency_per_shard</span></span><a class="headerlink" href="#confval-tablet_streaming_read_concurrency_per_shard" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Maximum number of tablets which may be leaving a shard at the same time. Effecting only on topology coordinator. Set to the same value on all nodes.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">unsigned</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">2</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-tablet-streaming-write-concurrency-per-shard">
+<dt class="sig sig-object std" id="confval-tablet_streaming_write_concurrency_per_shard">
+<span class="sig-name descname"><span class="pre">tablet_streaming_write_concurrency_per_shard</span></span><a class="headerlink" href="#confval-tablet_streaming_write_concurrency_per_shard" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Maximum number of tablets which may be pending on a shard at the same time. Effecting only on topology coordinator. Set to the same value on all nodes.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">unsigned</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">2</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-replication-strategy-warn-list">
 <dt class="sig sig-object std" id="confval-replication_strategy_warn_list">
 <span class="sig-name descname"><span class="pre">replication_strategy_warn_list</span></span><a class="headerlink" href="#confval-replication_strategy_warn_list" title="Link to this definition">¶</a></dt>
@@ -4252,7 +4280,7 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;table&quot;</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
@@ -4266,7 +4294,7 @@ The change will take effect without a node restart, changing the value in the co
 <div><p>Comma separated list of operation categories that should be audited.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;DCL,DDL,AUTH&quot;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;DCL,AUTH,ADMIN&quot;</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -5407,7 +5435,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 Feb 2026.
+                        Last updated on 20 Feb 2026.
                     
                 </div>
             

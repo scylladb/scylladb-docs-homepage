@@ -377,7 +377,8 @@ the removal of a node will fail. Add more storage to remaining nodes <strong>bef
 starting the removal procedure.</p></li>
 <li><p>Make sure that the number of nodes remaining in the DC after you decommission a node
 will be the same or higher than the Replication Factor configured for the keyspace
-in this DC. If the number of remaining nodes is lower than the RF, the decommission
+in this DC. Please mind that e.g. audit feature, which is enabled by default, may require
+adjusting <code class="docutils literal notranslate"><span class="pre">audit</span></code> keyspace. If the number of remaining nodes is lower than the RF, the decommission
 request may fail.
 In such a case, ALTER the keyspace to reduce the RF before running <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">decommission</span></code>.</p></li>
 </ul>
@@ -979,7 +980,7 @@ See <a class="reference internal" href="../admin-tools/task-manager.html"><span 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 Feb 2026.
+                        Last updated on 20 Feb 2026.
                     
                 </div>
             

@@ -364,11 +364,11 @@ The information is stored in a Syslog or a Scylla table.</p>
 </section>
 <section id="enabling-audit">
 <h2>Enabling Audit<a class="headerlink" href="#enabling-audit" title="Link to this heading">¶</a></h2>
-<p>By default, auditing is <strong>enabled</strong>. Enabling auditing is controlled by the <code class="docutils literal notranslate"><span class="pre">audit:</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.
+<p>By default, table auditing is <strong>enabled</strong>. Enabling auditing is controlled by the <code class="docutils literal notranslate"><span class="pre">audit:</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.
 You can set the following options:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">none</span></code> - Audit is disabled (default).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">table</span></code> - Audit is enabled, and messages are stored in a Scylla table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">none</span></code> - Audit is disabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">table</span></code> - Audit is enabled, and messages are stored in a Scylla table (default).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">syslog</span></code> - Audit is enabled, and messages are sent to Syslog.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">syslog,table</span></code> - Audit is enabled, and messages are stored in a Scylla table and sent to Syslog.</p></li>
 </ul>
@@ -386,7 +386,7 @@ You can set the following options:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>audit_categories</p></td>
-<td><p>“DCL,DDL,AUTH,ADMIN”</p></td>
+<td><p>“DCL,AUTH,ADMIN”</p></td>
 <td><p>Comma-separated list of statement categories that should be audited</p></td>
 </tr>
 <tr class="row-odd"><td><p>audit_tables</p></td>
@@ -446,9 +446,7 @@ auditing.</p></td>
 <li><p>Set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to <code class="docutils literal notranslate"><span class="pre">syslog</span></code>.</p>
 <p>For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># audit setting</span>
-<span class="c1"># by default, Scylla does not audit anything.</span>
-<span class="c1"># It is possible to enable auditing to the following places:</span>
-<span class="c1">#   - audit.audit_log column family by setting the flag to &quot;table&quot;</span>
+<span class="c1"># &#39;audit&#39; config option controls if and where to output audited events:</span>
 audit:<span class="w"> </span><span class="s2">&quot;syslog&quot;</span>
 <span class="c1">#</span>
 <span class="c1"># List of statement categories that should be audited.</span>
@@ -519,9 +517,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <li><p>Set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to <code class="docutils literal notranslate"><span class="pre">table</span></code>.</p>
 <p>For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># audit setting</span>
-<span class="c1"># by default, Scylla does not audit anything.</span>
-<span class="c1"># It is possible to enable auditing to the following places:</span>
-<span class="c1">#   - audit.audit_log column family by setting the flag to &quot;table&quot;</span>
+<span class="c1"># &#39;audit&#39; config option controls if and where to output audited events:</span>
 audit:<span class="w"> </span><span class="s2">&quot;table&quot;</span>
 <span class="c1">#</span>
 <span class="c1"># List of statement categories that should be audited.</span>
@@ -1209,7 +1205,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 Feb 2026.
+                        Last updated on 20 Feb 2026.
                     
                 </div>
             
