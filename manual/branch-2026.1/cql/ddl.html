@@ -535,7 +535,6 @@ the number of racks in a DC, a subset of racks is chosen arbitrarily.</p>
 for two cases. One is setting replication factor to 0, in which case the number of replicas is reduced to 0 in that DC.
 The other is when the numeric replication factor is equal to the current number of replicas
 for a given datacanter, in which case the current rack list is preserved.</p>
-<p>Altering from a numeric replication factor to a rack list is not supported yet.</p>
 <p>Note that when <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> ing keyspaces and supplying <code class="docutils literal notranslate"><span class="pre">replication_factor</span></code>,
 auto-expansion will only <em>add</em> new datacenters for safety, it will not alter
 existing datacenters or remove any even if they are no longer in the cluster.
@@ -730,6 +729,17 @@ No need for manual repair afterwards.</p>
 </div>
 <p>Altering from a rack list to a numeric replication factor is not supported.</p>
 <p>Keyspaces which use rack lists are <a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a> if each rack in the rack list contains at least one node (excluding <a class="reference internal" href="../architecture/zero-token-nodes.html"><span class="doc">zero-token nodes</span></a>).</p>
+</section>
+<section id="conversion-to-rack-list-replication-factor">
+<span id="conversion-to-rack-list-rf"></span><h3>Conversion to rack-list replication factor<a class="headerlink" href="#conversion-to-rack-list-replication-factor" title="Link to this heading">¶</a></h3>
+<p>To migrate a keyspace from a numeric replication factor to a rack-list replication factor, provide the rack-list replication factor explicitly in ALTER KEYSPACE statement. The number of racks in the list must be equal to the numeric replication factor. The replication factor can be converted in any number of DCs at once. In a statement that converts replication factor, no replication factor updates (increase or decrease) are allowed in any DC.</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="mf">1</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+
+<span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC1&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC2&#39;</span><span class="p">,</span> <span class="s1">&#39;RAC3&#39;</span><span class="p">],</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RAC4&#39;</span><span class="p">]}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="drop-keyspace-statement">
@@ -1684,6 +1694,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#alter-keyspace-statement">ALTER KEYSPACE</a><ul>
 <li><a class="reference internal" href="#alter-keyspace-with-tablets">ALTER KEYSPACE with Tablets</a></li>
 <li><a class="reference internal" href="#rack-list-replication-factor">Rack-list replication factor</a></li>
+<li><a class="reference internal" href="#conversion-to-rack-list-replication-factor">Conversion to rack-list replication factor</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#drop-keyspace-statement">DROP KEYSPACE</a></li>
@@ -2197,7 +2208,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Feb 2026.
+                        Last updated on 25 Feb 2026.
                     
                 </div>
             

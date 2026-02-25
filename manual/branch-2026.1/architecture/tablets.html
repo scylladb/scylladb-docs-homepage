@@ -494,6 +494,18 @@ the keyspace schema with <code class="docutils literal notranslate"><span class=
 <code class="docutils literal notranslate"><span class="pre">tablets</span> <span class="pre">=</span> <span class="pre">{</span> <span class="pre">'enabled':</span> <span class="pre">true</span> <span class="pre">}</span></code>.</p>
 </div>
 </section>
+<section id="enforcing-rack-list-replication-for-tablet-keyspaces">
+<span id="keyspace-rf-rack-valid-to-enforce-rack-list"></span><h2>Enforcing Rack-List Replication for Tablet Keyspaces<a class="headerlink" href="#enforcing-rack-list-replication-for-tablet-keyspaces" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">rf_rack_valid_keyspaces</span></code> is a legacy option that ensures that all keyspaces with tablets enabled are
+<a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>.</p>
+<p>Requiring every tablet keyspace to use the rack list replication factor exclusively is enough to guarantee the keyspace is
+<a class="reference internal" href="../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a>. It reduces restrictions and provides stronger guarantees compared
+to <code class="docutils literal notranslate"><span class="pre">rf_rack_valid_keyspaces</span></code> option.</p>
+<p>To enforce rack list in tablet keyspaces, use <code class="docutils literal notranslate"><span class="pre">enforce_rack_list</span></code> option. It can be set only if all tablet keyspaces use
+rack list. To ensure that, follow a procedure of <a class="reference internal" href="../cql/ddl.html#conversion-to-rack-list-rf"><span class="std std-ref">conversion to rack list replication factor</span></a>.
+After that restart all nodes in the cluster, with <code class="docutils literal notranslate"><span class="pre">enforce_rack_list</span></code> enabled and <code class="docutils literal notranslate"><span class="pre">rf_rack_valid_keyspaces</span></code> disabled. Make
+sure to avoid setting or updating replication factor (with CREATE KEYSPACE or ALTER KEYSPACE) while nodes are being restarted.</p>
+</section>
 <section id="limitations-and-unsupported-features">
 <span id="tablets-limitations"></span><h2>Limitations and Unsupported Features<a class="headerlink" href="#limitations-and-unsupported-features" title="Link to this heading">¶</a></h2>
 <div class="admonition warning">
@@ -649,6 +661,7 @@ starts serving CQL.</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#enabling-tablets">Enabling Tablets</a></li>
+<li><a class="reference internal" href="#enforcing-rack-list-replication-for-tablet-keyspaces">Enforcing Rack-List Replication for Tablet Keyspaces</a></li>
 <li><a class="reference internal" href="#limitations-and-unsupported-features">Limitations and Unsupported Features</a></li>
 </ul>
 </li>
@@ -1128,7 +1141,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Feb 2026.
+                        Last updated on 25 Feb 2026.
                     
                 </div>
             
