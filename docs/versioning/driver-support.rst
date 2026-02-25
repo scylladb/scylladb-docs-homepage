@@ -50,7 +50,7 @@ versions.
     * - `C# Driver <https://csharp-driver.docs.scylladb.com/>`_
       - * 3.22
     * - `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_
-      - * 1.0.0
+      - * 1.0
     * - `C++ Driver <https://cpp-driver.docs.scylladb.com/>`_
       - * 2.16
         * 2.15
