@@ -52,8 +52,7 @@ versions.
     * - `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_
       - * 1.0
     * - `C++ Driver <https://cpp-driver.docs.scylladb.com/>`_
-      - * 2.16
-        * 2.15
+      - * EOL
     * - `Node.js RS Driver <https://github.com/scylladb/nodejs-rs-driver/>`_
       - * 0.3 (Beta)
 
