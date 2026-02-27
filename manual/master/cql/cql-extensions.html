@@ -704,6 +704,76 @@ it also describes authentication/authorization and service levels. Additionally,
 statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span> <span class="pre">AND</span> <span class="pre">PASSWORDS</span></code>, which also includes the information about hashed passwords of the roles.</p>
 <p>For more details, see <a class="reference internal" href="describe-schema.html"><span class="std std-doc">the article on DESCRIBE SCHEMA</span></a>.</p>
 </section>
+<section id="per-row-ttl">
+<h2>Per-row TTL<a class="headerlink" href="#per-row-ttl" title="Link to this heading">¶</a></h2>
+<p>CQL’s traditional time-to-live (TTL) feature attaches an expiration time to
+each cell - i.e., each value in each column. For example, the statement:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UPDATE</span> <span class="n">tbl</span> <span class="n">USING</span> <span class="n">TTL</span> <span class="mi">60</span> <span class="n">SET</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>Sets a new value for the column <code class="docutils literal notranslate"><span class="pre">x</span></code> in row <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">2</span></code>, and asks for this value to
+expire in 60 seconds. When a row is updated incrementally, with different
+columns set at different times, this can result in different pieces of the
+row expiring at different times. Applications rarely want partially-expired
+rows, so they often need to re-write an entire row each time the row needs
+updating. In particular, it is not possible to change the expiration time of
+an existing row without re-writing it.</p>
+<p>Per-row time-to-live (TTL) is a new CQL feature that is an alternative to
+the traditional per-cell TTL. One column is designated as the “expiration
+time” column, and the value of this column determines when the entire row
+will expire. It becomes possible to update pieces of a row without changing
+its expiration time, and vice versa - to change a row’s expiration time
+without rewriting its data.</p>
+<p>The expiration-time column of a table can be chosen when it is created by
+adding the keyword “TTL” to one of the columns:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">tab</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">int</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">t</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="n">expiration</span> <span class="nb">timestamp</span> <span class="k">TTL</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>The TTL column’s name, in this example <code class="docutils literal notranslate"><span class="pre">expiration</span></code>, can be anything.</p>
+<p>Per-row TTL can also be enabled on an existing table by adding the “TTL”
+designation to one of the existing columns, with:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">tab</span> <span class="k">TTL</span> <span class="n">colname</span>
+</pre></div>
+</div>
+<p>Or per-row TTL can be disabled (rows will never expire), with:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">tab</span> <span class="k">TTL</span> <span class="k">NULL</span>
+</pre></div>
+</div>
+<p>It is not possible to enable per-row TTL if it’s already enabled, or disable
+it when already disabled. If you have TTL enabled on one column and want to
+enable it instead on a second column, you must do it in two steps: First
+disable TTL and then re-enable it on the second column.</p>
+<p>The designated TTL column must have the type <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> or <code class="docutils literal notranslate"><span class="pre">bigint</span></code>,
+and specifies the absolute time when the row should expire (the <code class="docutils literal notranslate"><span class="pre">bigint</span></code>
+type is interpreted as seconds since the UNIX epoch). It must be a regular
+column (not a primary key column or a static column), and there can only be
+one such column.</p>
+<p>The 32-bit type <code class="docutils literal notranslate"><span class="pre">int</span></code> (specifying number of seconds since the UNIX epoch)
+is also supported, but not recommended because it will wrap around in 2038.
+Unless you must use the <code class="docutils literal notranslate"><span class="pre">int</span></code> type because of pre-existing expiration data
+with that type, please prefer <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> or <code class="docutils literal notranslate"><span class="pre">bigint</span></code>.</p>
+<p>Another important feature of per-row TTL is that if CDC is enabled, when a
+row expires a deletion event appears in the CDC log - something that doesn’t
+happen in per-cell TTL. This deletion event can be distinguished from user-
+initiated deletes: Whereas user-initiated deletes have <code class="docutils literal notranslate"><span class="pre">cdc_operation</span></code> set to
+3 (<code class="docutils literal notranslate"><span class="pre">row_delete</span></code>) or 4 (<code class="docutils literal notranslate"><span class="pre">partition_delete</span></code>), those generated by expiration have
+<code class="docutils literal notranslate"><span class="pre">cdc_operation</span></code> -3 (<code class="docutils literal notranslate"><span class="pre">service_row_delete</span></code>) or -4 (<code class="docutils literal notranslate"><span class="pre">service_partition_delete</span></code>).</p>
+<p>Unlike per-cell TTL where a value becomes unreadable at the precise specified
+second, the per-row TTL’s expiration is <em>eventual</em> - the row will expire
+some time <em>after</em> its requested expiration time, where this “some time” can
+be controlled by the configuration <code class="docutils literal notranslate"><span class="pre">alternator_ttl_period_in_seconds</span></code>. Until
+the row is actually deleted, it can still be read, and even written.
+Importantly, the CDC event will appear immediately after the row is finally
+deleted.</p>
+<p>It’s important to re-iterate that the per-cell TTL and per-row TTL features
+are separate and distinct, use a different CQL syntax, have a different
+implementation and provide different guarantees. It is possible to use
+both features in the same table, or even the same row.</p>
+</section>
 </section>
 
                 </div>
@@ -849,6 +919,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li><a class="reference internal" href="#per-partition-rate-limit">Per-partition rate limit</a></li>
 <li><a class="reference internal" href="#effective-service-level">Effective service level</a></li>
 <li><a class="reference internal" href="#describe-schema-with-internals-and-passwords">DESCRIBE SCHEMA WITH INTERNALS [AND PASSWORDS]</a></li>
+<li><a class="reference internal" href="#per-row-ttl">Per-row TTL</a></li>
 </ul>
 </li>
 </ul>
@@ -1325,7 +1396,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Feb 2026.
+                        Last updated on 27 Feb 2026.
                     
                 </div>
             
