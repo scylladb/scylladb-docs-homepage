@@ -100,7 +100,7 @@ Version Support Policy
 
 
 Patch Versions
-================
+=================
 
 All supported versions (major and minor, LTS and Feature) will get patch
 releases when required.
