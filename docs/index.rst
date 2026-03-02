@@ -81,7 +81,7 @@
   :image: /_static/img/mascots-2/alternator.svg
   :class: topic-box--product,large-4,small-6
 
-  Open source Amazon DynamoDB-compatible API.
+  Amazon DynamoDB-compatible API.
 
 .. topic-box::
   :title: ScyllaDB Monitoring Stack
@@ -175,4 +175,5 @@
    :hidden:
 
    get-started/index
+   drivers/index
    versioning/index 

@@ -34,8 +34,7 @@ ScyllaDB Community Forum
 -----------------------------
 
 Join the `ScyllaDB Community Forum <https://forum.scylladb.com/>`_.
-It's a public NoSQL forum to discuss ScyllaDB, an open-source distributed 
-database for data-intensive apps that require high performance and low latency.
+It is a public discussion space for asking questions, sharing knowledge, and troubleshooting topics related to ScyllaDB and its ecosystem. It also hosts broader discussions on NoSQL databases, including data modeling, performance, and distributed system best practices.
 
 ScyllaDB Blog
 ----------------
