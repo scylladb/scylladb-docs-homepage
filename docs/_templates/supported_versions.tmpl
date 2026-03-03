@@ -8,7 +8,7 @@
      - End of Life (EOL)
 
 {% for row in data['data'] %}
-   * - {{ row['version'] }}
+   * - {% if row['install_url'] %}`{{ row['version'] }} <{{ row['install_url'] }}>`__{% else %}{{ row['version'] }}{% endif %}
      - {{ row['released'] }}
      - {{ row['status'] }}
      - {{ row['end_of_life'] }}  {% if row['show_version_policy_link'] %} (see :ref:`Version Support Policy <version-support-policy>`){% endif %}
