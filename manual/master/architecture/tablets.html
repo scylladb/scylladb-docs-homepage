@@ -425,6 +425,8 @@ computed based on the number of shards in a DC so that each shard has at least <
 tablets on average. See <a class="reference internal" href="../cql/ddl.html#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> for details.</p></li>
 <li><p>Table-level option <code class="docutils literal notranslate"><span class="pre">'min_tablet_count'</span></code>. This option sets the minimal number of tablets for the given table.
 See <a class="reference internal" href="../cql/ddl.html#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> for details.</p></li>
+<li><p>Table-level option <code class="docutils literal notranslate"><span class="pre">'max_tablet_count'</span></code>. This option sets the maximum number of tablets for the given table
+See <a class="reference internal" href="../cql/ddl.html#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a> for details.</p></li>
 <li><p>Config option <code class="docutils literal notranslate"><span class="pre">'tablets_initial_scale_factor'</span></code>. This option sets the minimal number of tablets per shard
 per table globally. This option can be overridden by the table-level option: <code class="docutils literal notranslate"><span class="pre">'min_per_shard_tablet_count'</span></code>.
 <code class="docutils literal notranslate"><span class="pre">'tablets_initial_scale_factor'</span></code> is ignored if either the keyspace option <code class="docutils literal notranslate"><span class="pre">'initial'</span></code> or table-level
@@ -436,6 +438,18 @@ the table will be split (the number of tablets will be doubled), and if the aver
 half the target tablet size, it will be merged (the number of tablets will be halved).</p>
 <p>Each of these factors is taken into consideration, and the one producing the largest number of tablets wins, and
 will be used as the number of tablets for the given table.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When both <code class="docutils literal notranslate"><span class="pre">'min_tablet_count'</span></code> and <code class="docutils literal notranslate"><span class="pre">'max_tablet_count'</span></code> are set together, ScyllaDB validates the
+combination by computing <strong>effective</strong> bounds:</p>
+<ul class="simple">
+<li><p>The <strong>effective minimum</strong> is the smallest power of 2 that is greater than or equal to <code class="docutils literal notranslate"><span class="pre">min_tablet_count</span></code>.</p></li>
+<li><p>The <strong>effective maximum</strong> is the largest power of 2 that is less than or equal to <code class="docutils literal notranslate"><span class="pre">max_tablet_count</span></code>.</p></li>
+</ul>
+<p>ScyllaDB validates that the effective minimum does not exceed the effective maximum. If it does,
+the <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> statement will be rejected with an error. To avoid ambiguity, it is recommended
+to use power-of-2 values for both options.</p>
+</div>
 <p>As the last step, in order to avoid having too many tablets per shard, which could potentially lead to overload
 and performance degradation, ScyllaDB will run the following algorithm to respect the <code class="docutils literal notranslate"><span class="pre">tablets_per_shard_goal</span></code>
 config option:</p>
@@ -1139,7 +1153,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Mar 2026.
+                        Last updated on 04 Mar 2026.
                     
                 </div>
             

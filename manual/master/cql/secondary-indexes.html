@@ -574,6 +574,8 @@ Valid only for quantization below <code class="docutils literal notranslate"><sp
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> statement is used to drop an existing secondary index. The argument of the statement is the index
 name, which may optionally specify the keyspace of the index.</p>
+<p>If the index is currently being built, the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> can still be executed. Once the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> command is issued,
+the system stops the build process and cleans up any partially built data associated with the index.</p>
 </section>
 <section id="additional-information">
 <h2>Additional Information<a class="headerlink" href="#additional-information" title="Link to this heading">¶</a></h2>
@@ -1195,7 +1197,7 @@ name, which may optionally specify the keyspace of the index.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Mar 2026.
+                        Last updated on 04 Mar 2026.
                     
                 </div>
             

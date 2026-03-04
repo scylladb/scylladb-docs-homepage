@@ -1423,6 +1423,16 @@ function of the tablet count, the replication factor in the datacenter, and the 
 of nodes and shards in the datacenter.  It is recommended to use higher-level options
 such as <code class="docutils literal notranslate"><span class="pre">expected_data_size_in_gb</span></code> or <code class="docutils literal notranslate"><span class="pre">min_per_shard_tablet_count</span></code> instead.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_tablet_count</span></code></p></td>
+<td><p>0</p></td>
+<td><p>Sets the maximum number of tablets for the table. When set, the tablet count
+will not exceed this value, even if the table grows large enough to normally
+trigger tablet splits. This option is mainly intended for use during restore
+operations, to ensure that each SSTable fits entirely within a single tablet.
+This enables efficient file-based streaming during restore. Setting both
+<code class="docutils literal notranslate"><span class="pre">min_tablet_count</span></code> and <code class="docutils literal notranslate"><span class="pre">max_tablet_count</span></code> to the same value fixes the
+tablet count for the table.</p></td>
+</tr>
 </tbody>
 </table>
 <p>When allocating tablets for a new table, ScyllaDB uses the maximum of the <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablets configured for the keyspace
@@ -2233,7 +2243,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Mar 2026.
+                        Last updated on 04 Mar 2026.
                     
                 </div>
             

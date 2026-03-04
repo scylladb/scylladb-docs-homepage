@@ -1119,6 +1119,47 @@ It is possible that certain input SSTable(s) won’t have any content left after
 <p>By default, each input sstable is filtered individually. Use <code class="docutils literal notranslate"><span class="pre">--merge</span></code> to filter the combined content of all input sstables, producing a single output SSTable.</p>
 <p>Output sstables use the latest supported sstable format (can be changed with <code class="docutils literal notranslate"><span class="pre">--sstable-version</span></code>).</p>
 </section>
+<section id="split">
+<h3>split<a class="headerlink" href="#split" title="Link to this heading">¶</a></h3>
+<p>Split SSTable(s) into multiple output SSTables based on token boundaries.</p>
+<p>This operation divides SSTable(s) according to the specified split tokens, creating one output SSTable per token range.
+This is useful for redistributing data across different token ranges, such as when preparing data for different nodes or shards.</p>
+<p>Tokens should be provided via the <code class="docutils literal notranslate"><span class="pre">--split-token</span></code> (or <code class="docutils literal notranslate"><span class="pre">-t</span></code>) option. Multiple tokens can be specified by repeating the option.
+The tokens will be sorted automatically to ensure proper ordering.</p>
+<p>For N split tokens, N+1 output SSTables will be generated:</p>
+<ul class="simple">
+<li><p>First SSTable: from minimum token to first split token</p></li>
+<li><p>Middle SSTables: between consecutive split tokens</p></li>
+<li><p>Last SSTable: from last split token to maximum token</p></li>
+</ul>
+<p>By default, each input SSTable is split individually. Use <code class="docutils literal notranslate"><span class="pre">--merge</span></code> to split the combined content of all input SSTables, producing a single set of output SSTables.</p>
+<p>Output SSTables use the latest supported sstable format (can be changed with <code class="docutils literal notranslate"><span class="pre">--sstable-version</span></code>) and are written to the directory specified by <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.</p>
+<p><strong>Examples:</strong></p>
+<p>Split a single SSTable at token boundaries 100 and 500:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable split --split-token 100 --split-token 500 /path/to/md-123456-big-Data.db</span>
+</pre></div>
+</div>
+<p>Or using the short-hand form:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable split -t 100 -t 500 /path/to/md-123456-big-Data.db</span>
+</pre></div>
+</div>
+<p>This will create 3 output SSTables:</p>
+<ul class="simple">
+<li><p>One containing partitions with tokens &lt; 100</p></li>
+<li><p>One containing partitions with tokens &gt;= 100 and &lt; 500</p></li>
+<li><p>One containing partitions with tokens &gt;= 500</p></li>
+</ul>
+<p>Split multiple SSTables individually:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable split -t 100 -t 500 /path/to/md-123456-big-Data.db /path/to/md-123457-big-Data.db</span>
+</pre></div>
+</div>
+<p>This will split each input SSTable separately, creating 6 output SSTables total (3 per input).</p>
+<p>Split multiple SSTables as a combined stream:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable split --merge -t 100 -t 500 /path/to/md-123456-big-Data.db /path/to/md-123457-big-Data.db</span>
+</pre></div>
+</div>
+<p>This will merge both input SSTables first, then split the combined data, creating 3 output SSTables.</p>
+</section>
 </section>
 <section id="id2">
 <h2>Examples<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
@@ -1300,6 +1341,7 @@ It is possible that certain input SSTable(s) won’t have any content left after
 </li>
 <li><a class="reference internal" href="#upgrade">upgrade</a></li>
 <li><a class="reference internal" href="#filter">filter</a></li>
+<li><a class="reference internal" href="#split">split</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#id2">Examples</a></li>
@@ -1779,7 +1821,7 @@ It is possible that certain input SSTable(s) won’t have any content left after
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Mar 2026.
+                        Last updated on 04 Mar 2026.
                     
                 </div>
             
