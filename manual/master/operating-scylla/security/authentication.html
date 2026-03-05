@@ -371,7 +371,7 @@
 </pre></div>
 </div>
 </li>
-<li><p>Restart  ScyllaDB.</p>
+<li><p>Restart ScyllaDB.</p>
 <blockquote>
 <div><div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-0-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-0-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-0-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
@@ -384,18 +384,12 @@
 </div></div>
 </div></blockquote>
 </li>
-<li><p>Start cqlsh with the default superuser username and password.</p>
+<li><p>Start cqlsh over the maintenance socket and create a new superuser. See <a class="reference internal" href="create-superuser.html#create-superuser-using-maintenance-socket"><span class="std std-ref">Setting Up a Superuser Using the Maintenance Socket</span></a> for instructions.</p>
 <blockquote>
-<div><div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">-</span><span class="n">u</span> <span class="n">cassandra</span> <span class="o">-</span><span class="n">p</span> <span class="n">cassandra</span>
+<div><div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">&lt;</span><span class="n">maintenance_socket_path</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div></blockquote>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Before proceeding  to the next step, we recommend creating a custom superuser
-to improve security.
-See <a class="reference internal" href="create-superuser.html"><span class="doc">Creating a Custom Superuser</span></a> for instructions.</p>
-</div>
 </li>
 <li><p>If you want to create users and roles, continue to <a class="reference internal" href="enable-authorization.html"><span class="doc">Enable Authorization</span></a>.</p></li>
 </ol>
@@ -678,7 +672,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l3"><a class="reference internal" href="security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enable-authorization.html">Enable Authorization</a></li>
@@ -1009,7 +1003,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Mar 2026.
+                        Last updated on 05 Mar 2026.
                     
                 </div>
             

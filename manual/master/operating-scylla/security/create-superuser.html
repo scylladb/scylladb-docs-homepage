@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Creating a Custom Superuser | ScyllaDB Docs 
+             Creating a Superuser | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../_static/img/favicon.ico" type="image/x-icon" />
@@ -326,7 +326,7 @@
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Creating a Custom Superuser</span>
+    <span class="bread__item bread__item--last">Creating a Superuser</span>
 </div>
                     </div>
                 
@@ -350,94 +350,90 @@
 
                     
 
-                    <section id="creating-a-custom-superuser">
-<h1>Creating a Custom Superuser<a class="headerlink" href="#creating-a-custom-superuser" title="Link to this heading">¶</a></h1>
-<p>The default ScyllaDB superuser role is <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> with password <code class="docutils literal notranslate"><span class="pre">cassandra</span></code>.
-Users with the <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> role have full access to the database and can run
+                    <section id="creating-a-superuser">
+<h1>Creating a Superuser<a class="headerlink" href="#creating-a-superuser" title="Link to this heading">¶</a></h1>
+<p>There is no default superuser role in ScyllaDB.
+Users with a superuser role have full access to the database and can run
 any CQL command on the database resources.</p>
-<p>To improve security, we recommend creating a custom superuser. You should:</p>
-<ol class="arabic simple">
-<li><p>Use the default <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> superuser to log in.</p></li>
-<li><p>Create a custom superuser.</p></li>
-<li><p>Log in as the custom superuser.</p></li>
-<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> role.</p></li>
-</ol>
-<p>In the above procedure, you only need to use the <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> superuser once, during
-the initial RBAC set up.
-To completely eliminate the need to use <code class="docutils literal notranslate"><span class="pre">cassandra</span></code>, you can <a class="reference internal" href="#create-superuser-in-config-file"><span class="std std-ref">configure the initial
-custom superuser in the scylla.yaml configuration file</span></a>.</p>
-<section id="procedure">
-<span id="create-superuser-procedure"></span><h2>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">¶</a></h2>
-<ol class="arabic">
-<li><p>Start cqlsh with the default superuser settings:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">-</span><span class="n">u</span> <span class="n">cassandra</span> <span class="o">-</span><span class="n">p</span> <span class="n">cassandra</span>
-</pre></div>
-</div>
-</li>
-<li><p>Create a new superuser:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CREATE</span> <span class="n">ROLE</span> <span class="o">&lt;</span><span class="n">custom_superuser</span> <span class="n">name</span><span class="o">&gt;</span>  <span class="n">WITH</span> <span class="n">SUPERUSER</span> <span class="o">=</span> <span class="n">true</span> <span class="n">AND</span> <span class="n">LOGIN</span> <span class="o">=</span> <span class="n">true</span> <span class="ow">and</span> <span class="n">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;&lt;custom_superuser_password&gt;&#39;</span><span class="p">;</span>
-</pre></div>
-</div>
-<p>For example:</p>
-<div class="hide-copy-button highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CREATE</span> <span class="n">ROLE</span> <span class="n">dba</span> <span class="n">WITH</span> <span class="n">SUPERUSER</span> <span class="o">=</span> <span class="n">true</span> <span class="n">AND</span> <span class="n">LOGIN</span> <span class="o">=</span> <span class="n">true</span> <span class="ow">and</span> <span class="n">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;39fksah!&#39;</span><span class="p">;</span>
-</pre></div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>You must set a PASSWORD when creating a role with LOGIN privileges.
-Otherwise, you will not be able to log in to the database using that role.</p>
-</div>
-</li>
-<li><p>Exit cqlsh:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EXIT</span><span class="p">;</span>
-</pre></div>
-</div>
-</li>
-<li><p>Log in as the new superuser:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">-</span><span class="n">u</span> <span class="o">&lt;</span><span class="n">custom_superuser</span> <span class="n">name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">p</span> <span class="o">&lt;</span><span class="n">custom_superuser_password</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p>For example:</p>
-<div class="hide-copy-button highlight-default notranslate"><div class="highlight"><pre><span></span>cqlsh -u dba -p 39fksah!
-</pre></div>
-</div>
-</li>
-<li><p>Show all the roles to verify that the new superuser was created:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LIST</span> <span class="n">ROLES</span><span class="p">;</span>
-</pre></div>
-</div>
-</li>
-<li><p>Remove the cassandra superuser:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DROP</span> <span class="n">ROLE</span> <span class="n">cassandra</span><span class="p">;</span>
-</pre></div>
-</div>
-</li>
-<li><p>Show all the roles to verify that the cassandra role was deleted:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LIST</span> <span class="n">ROLES</span><span class="p">;</span>
-</pre></div>
-</div>
-</li>
-</ol>
-</section>
-<section id="setting-custom-superuser-credentials-in-scylla-yaml">
-<span id="create-superuser-in-config-file"></span><h2>Setting Custom Superuser Credentials in scylla.yaml<a class="headerlink" href="#setting-custom-superuser-credentials-in-scylla-yaml" title="Link to this heading">¶</a></h2>
-<p>Operating ScyllaDB using the default superuser <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> with password <code class="docutils literal notranslate"><span class="pre">cassandra</span></code>
-is insecure and impacts performance. For this reason, the default should be used only once -
-to create a custom superuser role, following the CQL <a class="reference internal" href="#create-superuser-procedure"><span class="std std-ref">procedure</span></a> above.</p>
-<p>To avoid executing with the default credentials for the period before you can make
-the CQL modifications, you can configure the custom superuser name and password
-in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">auth_superuser_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;superuser name&gt;</span>
-<span class="nt">auth_superuser_salted_password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;superuser salted password as processed by mkpassword or similar - cleartext is not allowed&gt;</span>
-</pre></div>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>The superuser credentials in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file will be ignored:</p>
+<p>There are two ways you can create a superuser in ScyllaDB:</p>
 <ul class="simple">
-<li><p>If any superuser other than <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> is already defined in the cluster.</p></li>
-<li><p>After you create a custom superuser with the CQL <a class="reference internal" href="#create-superuser-procedure"><span class="std std-ref">procedure</span></a>.</p></li>
+<li><p><a class="reference internal" href="#create-superuser-using-maintenance-socket"><span class="std std-ref">Using the ScyllaDB Maintenance Socket to create a superuser role</span></a></p></li>
+<li><p><a class="reference internal" href="#create-superuser-using-existing-superuser"><span class="std std-ref">Using an existing superuser account to create a new superuser role</span></a></p></li>
 </ul>
+<p>When setting up a new cluster, use the maintenance socket approach to create the first superuser.</p>
+<section id="setting-up-a-superuser-using-the-maintenance-socket">
+<span id="create-superuser-using-maintenance-socket"></span><h2>Setting Up a Superuser Using the Maintenance Socket<a class="headerlink" href="#setting-up-a-superuser-using-the-maintenance-socket" title="Link to this heading">¶</a></h2>
+<p>If no superuser account exists in the cluster, which is the case for new clusters, you can create a superuser using the ScyllaDB Maintenance Socket.
+In order to do that, the node must have the maintenance socket enabled.
+See <a class="reference internal" href="../admin-tools/maintenance-socket.html"><span class="doc">Admin Tools: Maintenance Socket</span></a>.</p>
+<p>To create a superuser using the maintenance socket, you should:</p>
+<ol class="arabic simple">
+<li><p>Connect to the node using <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code> over the maintenance socket.</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>&lt;maintenance_socket_path&gt;
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;maintenance_socket_path&gt;</span></code> with the socket path configured in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>.</p>
+<ol class="arabic simple" start="2">
+<li><p>Create new superuser role using <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">ROLE</span></code> command.</p></li>
+</ol>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="o">&lt;</span><span class="n">new_superuser</span><span class="o">&gt;</span>  <span class="k">WITH</span> <span class="k">SUPERUSER</span> <span class="o">=</span> <span class="n">true</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span> <span class="k">and</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;&lt;new_superuser_password&gt;&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Verify that you can log in to your node using <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code> command with the new password.</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>-u<span class="w"> </span>&lt;new_superuser&gt;
+Password:
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enter the value of <cite>&lt;new_superuser_password&gt;</cite> password when prompted. The input is not displayed.</p>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Show all the roles to verify that the new superuser was created:</p></li>
+</ol>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">LIST</span> <span class="k">ROLES</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="setting-up-a-superuser-using-an-existing-superuser-account">
+<span id="create-superuser-using-existing-superuser"></span><h2>Setting Up a Superuser Using an Existing Superuser Account<a class="headerlink" href="#setting-up-a-superuser-using-an-existing-superuser-account" title="Link to this heading">¶</a></h2>
+<p>To create a superuser using an existing superuser account, you should:</p>
+<ol class="arabic simple">
+<li><p>Log in to cqlsh using an existing superuser account.</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>-u<span class="w"> </span>&lt;existing_superuser&gt;
+Password:
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enter the value of <cite>&lt;existing_superuser_password&gt;</cite> password when prompted. The input is not displayed.</p>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Create a new superuser.</p></li>
+</ol>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="o">&lt;</span><span class="n">new_superuser</span><span class="o">&gt;</span>  <span class="k">WITH</span> <span class="k">SUPERUSER</span> <span class="o">=</span> <span class="n">true</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span> <span class="k">and</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;&lt;new_superuser_password&gt;&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Verify that you can log in to your node using <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code> command with the new password.</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>-u<span class="w"> </span>&lt;new_superuser&gt;
+Password:
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enter the value of <cite>&lt;new_superuser_password&gt;</cite> password when prompted. The input is not displayed.</p>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Show all the roles to verify that the new superuser was created:</p></li>
+</ol>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">LIST</span> <span class="k">ROLES</span><span class="p">;</span>
+</pre></div>
 </div>
 </section>
 </section>
@@ -474,7 +470,7 @@ in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml<
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Creating a Custom Superuser&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/operating-scylla/security/create-superuser%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Creating a Superuser&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/operating-scylla/security/create-superuser%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -543,7 +539,7 @@ in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml<
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Creating a Custom Superuser&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/operating-scylla/security/create-superuser%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Creating a Superuser&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/operating-scylla/security/create-superuser%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -562,9 +558,9 @@ in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml<
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Creating a Custom Superuser</a><ul>
-<li><a class="reference internal" href="#procedure">Procedure</a></li>
-<li><a class="reference internal" href="#setting-custom-superuser-credentials-in-scylla-yaml">Setting Custom Superuser Credentials in scylla.yaml</a></li>
+<li><a class="reference internal" href="#">Creating a Superuser</a><ul>
+<li><a class="reference internal" href="#setting-up-a-superuser-using-the-maintenance-socket">Setting Up a Superuser Using the Maintenance Socket</a></li>
+<li><a class="reference internal" href="#setting-up-a-superuser-using-an-existing-superuser-account">Setting Up a Superuser Using an Existing Superuser Account</a></li>
 </ul>
 </li>
 </ul>
@@ -710,7 +706,7 @@ in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml<
 <li class="toctree-l3"><a class="reference internal" href="security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Creating a Custom Superuser</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enable-authorization.html">Enable Authorization</a></li>
@@ -1041,7 +1037,7 @@ in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml<
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Mar 2026.
+                        Last updated on 05 Mar 2026.
                     
                 </div>
             

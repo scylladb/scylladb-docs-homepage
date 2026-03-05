@@ -380,34 +380,20 @@
 <p>(without restarting <em>some-scylla</em> container)</p>
 </div></div>
 </li>
-<li><p>Login with the default superuser credentials and create an authenticated user with strong password.</p>
-<p>For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">-</span><span class="n">ucassandra</span> <span class="o">-</span><span class="n">pcassandra</span>
+<li><p>Login over the maintenance socket and create an authenticated user with strong password.</p>
+<p>See <a class="reference internal" href="create-superuser.html#create-superuser-using-maintenance-socket"><span class="std std-ref">Setting Up a Superuser Using the Maintenance Socket</span></a> for instructions.</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="k">to</span><span class="o">/</span><span class="n">maintenance</span><span class="o">/</span><span class="n">socket</span><span class="o">/</span><span class="n">cql</span><span class="mf">.</span><span class="n">m</span>
 
 <span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">scylla</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;123456&#39;</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span> <span class="k">AND</span> <span class="k">SUPERUSER</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
 <span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">LIST</span> <span class="k">ROLES</span><span class="p">;</span>
 
 <span class="n">name</span>      <span class="o">|</span><span class="n">super</span>
 <span class="c1">----------+-------</span>
-<span class="n">cassandra</span> <span class="o">|</span><span class="n">True</span>
 <span class="n">scylla</span>    <span class="o">|</span><span class="n">True</span>
 </pre></div>
 </div>
 <p>Optionally, assign the role to your user. For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">GRANT</span> <span class="n">scylla</span> <span class="k">TO</span> <span class="n">myuser</span>
-</pre></div>
-</div>
-</li>
-<li><p>Login with the new user created and drop the superuser cassandra.</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">-</span><span class="n">u</span> <span class="n">scylla</span> <span class="o">-</span><span class="n">p</span> <span class="mf">123456</span>
-
-<span class="n">scylla</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DROP</span> <span class="k">ROLE</span> <span class="n">cassandra</span><span class="p">;</span>
-
-<span class="n">scylla</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">LIST</span> <span class="k">ROLES</span><span class="p">;</span>
-
-<span class="n">name</span>      <span class="o">|</span><span class="n">super</span>
-<span class="c1">----------+-------</span>
-<span class="n">scylla</span>    <span class="o">|</span><span class="n">True</span>
 </pre></div>
 </div>
 </li>
@@ -554,7 +540,7 @@
         
             <a class="navigation__link" href="create-superuser.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Creating a Custom Superuser
+                    <span class="colored">NEXT</span> <br />Creating a Superuser
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -747,7 +733,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enable-authorization.html">Enable Authorization</a></li>
@@ -1078,7 +1064,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Mar 2026.
+                        Last updated on 05 Mar 2026.
                     
                 </div>
             

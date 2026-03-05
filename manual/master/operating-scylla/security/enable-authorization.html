@@ -379,7 +379,6 @@
 <li><p>Set your credentials as the <a class="reference internal" href="#superuser">superuser</a></p></li>
 <li><p>Login to cqlsh as the superuser and set <a class="reference internal" href="#roles">roles</a> and privileges for your users</p></li>
 <li><p>Confirm users can <a class="reference internal" href="#access">access</a> the client with their new credentials.</p></li>
-<li><p><a class="reference internal" href="#remove">Remove</a> Cassandra default user / passwords</p></li>
 </ol>
 <section id="configure-the-authorizer">
 <span id="authorizer"></span><h3>Configure the Authorizer<a class="headerlink" href="#configure-the-authorizer" title="Link to this heading">¶</a></h3>
@@ -404,17 +403,10 @@
 <p>(without restarting <em>some-scylla</em> container)</p>
 </div></div>
 </section>
-<section id="set-a-superuser">
-<span id="superuser"></span><h3>Set a Superuser<a class="headerlink" href="#set-a-superuser" title="Link to this heading">¶</a></h3>
-<p>The default ScyllaDB superuser role is <code class="docutils literal notranslate"><span class="pre">cassandra</span></code> with password <code class="docutils literal notranslate"><span class="pre">cassandra</span></code>. Using the default
-superuser is unsafe and may significantly impact performance.</p>
-<p>If you haven’t created a custom superuser while enabling authentication, you should create a custom superuser
-before creating additional roles.
-See <a class="reference internal" href="create-superuser.html"><span class="doc">Creating a Custom Superuser</span></a> for instructions.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We recommend creating a custom superuser to improve security.</p>
-</div>
+<section id="create-a-superuser">
+<span id="superuser"></span><h3>Create a Superuser<a class="headerlink" href="#create-a-superuser" title="Link to this heading">¶</a></h3>
+<p>There is no default superuser in ScyllaDB. You should create a superuser before creating additional roles.
+See <a class="reference internal" href="create-superuser.html"><span class="doc">Creating a Superuser</span></a> for instructions.</p>
 </section>
 <section id="create-additional-roles">
 <span id="roles"></span><h3>Create Additional Roles<a class="headerlink" href="#create-additional-roles" title="Link to this heading">¶</a></h3>
@@ -425,8 +417,13 @@ Validate you have the credentials for the superuser for your system for yourself
 <ol class="arabic simple">
 <li><p>Open a new cqlsh session using the credentials of a role with <a class="reference internal" href="#superuser">superuser</a> credentials. For example:</p></li>
 </ol>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cqlsh -u dba -p 39fksah!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cqlsh -u dba
+Password:
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enter the password when prompted. The input is not displayed.</p>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>Configure the appropriate access privileges for clients using <a class="reference internal" href="authorization.html#grant-permission-statement"><span class="std std-ref">GRANT PERMISSION</span></a> statements.  For additional examples, consult the <a class="reference internal" href="rbac-usecase.html"><span class="doc">RBAC example</span></a>.</p></li>
@@ -460,22 +457,10 @@ Validate you have the credentials for the superuser for your system for yourself
 <ul class="simple">
 <li><p>Clients are not able to connect until you setup roles as users with passwords  using <a class="reference internal" href="authorization.html#grant-permission-statement"><span class="std std-ref">GRANT PERMISSION</span></a> statements (using the superuser). Refer to the example in <a class="reference internal" href="rbac-usecase.html"><span class="doc">Role Based Access Control (RBAC)</span></a> for details.</p></li>
 <li><p>When initiating a connection, clients will need to use the user name and password that you assign</p></li>
-<li><p>Confirm all clients can connect before removing the Cassandra default password and user.</p></li>
 </ul>
 <ol class="arabic simple" start="2">
 <li><p>To remove permission from any role or user, see <a class="reference internal" href="authorization.html#revoke-permission-statement"><span class="std std-ref">REVOKE PERMISSION</span></a>.</p></li>
 </ol>
-</section>
-<section id="remove-cassandra-default-password-and-user">
-<span id="remove"></span><h3>Remove Cassandra Default Password and User<a class="headerlink" href="#remove-cassandra-default-password-and-user" title="Link to this heading">¶</a></h3>
-<p>To prevent others from entering with the old superuser password, you can and should delete it.</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DROP</span> <span class="k">ROLE</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="s1">&#39;old-username&#39;</span><span class="p">;</span>
-</pre></div>
-</div>
-<p>For example</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DROP</span> <span class="k">ROLE</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="s1">&#39;cassandra&#39;</span><span class="p">;</span>
-</pre></div>
-</div>
 </section>
 </section>
 <section id="additional-references">
@@ -611,10 +596,9 @@ Validate you have the credentials for the superuser for your system for yourself
 <li><a class="reference internal" href="#">Enable Authorization</a><ul>
 <li><a class="reference internal" href="#enabling-authorization">Enabling Authorization</a><ul>
 <li><a class="reference internal" href="#configure-the-authorizer">Configure the Authorizer</a></li>
-<li><a class="reference internal" href="#set-a-superuser">Set a Superuser</a></li>
+<li><a class="reference internal" href="#create-a-superuser">Create a Superuser</a></li>
 <li><a class="reference internal" href="#create-additional-roles">Create Additional Roles</a></li>
 <li><a class="reference internal" href="#clients-resume-access-with-new-permissions">Clients Resume Access with New Permissions</a></li>
-<li><a class="reference internal" href="#remove-cassandra-default-password-and-user">Remove Cassandra Default Password and User</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#additional-references">Additional References</a></li>
@@ -763,7 +747,7 @@ Validate you have the credentials for the superuser for your system for yourself
 <li class="toctree-l3"><a class="reference internal" href="security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Enable Authorization</a></li>
@@ -1094,7 +1078,7 @@ Validate you have the credentials for the superuser for your system for yourself
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Mar 2026.
+                        Last updated on 05 Mar 2026.
                     
                 </div>
             
