@@ -1354,10 +1354,10 @@ Out-of-order writes present a problem for repair mode tombstone gc. Consider the
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeout</span></code></p></td>
-<td><p>Tombstone GC is performed after the wait time specified with <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> (default).</p></td>
+<td><p>Tombstone GC is performed after the wait time specified with <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">repair</span></code></p></td>
-<td><p>Tombstone GC is performed after repair is run.</p></td>
+<td><p>Tombstone GC is performed after repair is run (default).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">disabled</span></code></p></td>
 <td><p>Tombstone GC is never performed. This mode may be useful when loading data to the database, to avoid tombstone GC when part of the data is not yet available.</p></td>
@@ -1371,6 +1371,8 @@ Out-of-order writes present a problem for repair mode tombstone gc. Consider the
 <p class="admonition-title">Warning</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">repair</span></code> mode is not supported for <a class="reference internal" href="../reference/glossary.html#term-Colocated-Table"><span class="xref std std-term">Colocated Tables</span></a> in this version.</p>
 </div>
+<p>The default tombstone-gc mode is <code class="docutils literal notranslate"><span class="pre">repair</span></code> for all tables that use <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code> or <code class="docutils literal notranslate"><span class="pre">SimpleStrategy</span></code>, except for <a class="reference internal" href="../reference/glossary.html#term-Colocated-Table"><span class="xref std std-term">Colocated Tables</span></a>.
+Tables which have a single replica (RF=1) don’t need repair (and cannot be repaired either). For such tables, tombstone-gc mode <code class="docutils literal notranslate"><span class="pre">repair</span></code> acts the same as <code class="docutils literal notranslate"><span class="pre">immediate</span></code> mode would: all tombstones are immediately collectible.</p>
 </section>
 <section id="per-table-tablet-options">
 <span id="cql-per-table-tablet-options"></span><h5>Per-table tablet options<a class="headerlink" href="#per-table-tablet-options" title="Link to this heading">¶</a></h5>
@@ -2243,7 +2245,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Mar 2026.
+                        Last updated on 06 Mar 2026.
                     
                 </div>
             
