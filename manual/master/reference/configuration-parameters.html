@@ -4091,6 +4091,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-enable-create-table-with-compact-storage">
+<dt class="sig sig-object std" id="confval-enable_create_table_with_compact_storage">
+<span class="sig-name descname"><span class="pre">enable_create_table_with_compact_storage</span></span><a class="headerlink" href="#confval-enable_create_table_with_compact_storage" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Enable the deprecated feature of CREATE TABLE WITH COMPACT STORAGE.  This feature will eventually be removed in a future version.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-minimum-replication-factor-fail-threshold">
 <dt class="sig sig-object std" id="confval-minimum_replication_factor_fail_threshold">
 <span class="sig-name descname"><span class="pre">minimum_replication_factor_fail_threshold</span></span><a class="headerlink" href="#confval-minimum_replication_factor_fail_threshold" title="Link to this definition">¶</a></dt>
@@ -4117,6 +4131,19 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-maximum-replication-factor-fail-threshold">
+<dt class="sig sig-object std" id="confval-maximum_replication_factor_fail_threshold">
+<span class="sig-name descname"><span class="pre">maximum_replication_factor_fail_threshold</span></span><a class="headerlink" href="#confval-maximum_replication_factor_fail_threshold" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">-1</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-maximum-replication-factor-warn-threshold">
 <dt class="sig sig-object std" id="confval-maximum_replication_factor_warn_threshold">
 <span class="sig-name descname"><span class="pre">maximum_replication_factor_warn_threshold</span></span><a class="headerlink" href="#confval-maximum_replication_factor_warn_threshold" title="Link to this definition">¶</a></dt>
@@ -4130,13 +4157,56 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-maximum-replication-factor-fail-threshold">
-<dt class="sig sig-object std" id="confval-maximum_replication_factor_fail_threshold">
-<span class="sig-name descname"><span class="pre">maximum_replication_factor_fail_threshold</span></span><a class="headerlink" href="#confval-maximum_replication_factor_fail_threshold" title="Link to this definition">¶</a></dt>
+<dl class="std confval" id="confprop-replication-strategy-fail-list">
+<dt class="sig sig-object std" id="confval-replication_strategy_fail_list">
+<span class="sig-name descname"><span class="pre">replication_strategy_fail_list</span></span><a class="headerlink" href="#confval-replication_strategy_fail_list" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">-1</span></code></p></li>
+<div><p>Controls which replication strategies are disallowed to be used when creating/altering a keyspace. Doesn’t affect the pre-existing keyspaces.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;replication_strategy_restriction_t&gt;&gt;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-replication-strategy-warn-list">
+<dt class="sig sig-object std" id="confval-replication_strategy_warn_list">
+<span class="sig-name descname"><span class="pre">replication_strategy_warn_list</span></span><a class="headerlink" href="#confval-replication_strategy_warn_list" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Controls which replication strategies to warn about when creating/altering a keyspace. Doesn’t affect the pre-existing keyspaces.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;replication_strategy_restriction_t&gt;&gt;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{locator::replication_strategy_type::simple}</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-write-consistency-levels-disallowed">
+<dt class="sig sig-object std" id="confval-write_consistency_levels_disallowed">
+<span class="sig-name descname"><span class="pre">write_consistency_levels_disallowed</span></span><a class="headerlink" href="#confval-write_consistency_levels_disallowed" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A list of consistency levels that are not allowed for write operations. Requests using these levels will fail.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;consistency_level_restriction_t&gt;&gt;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-write-consistency-levels-warned">
+<dt class="sig sig-object std" id="confval-write_consistency_levels_warned">
+<span class="sig-name descname"><span class="pre">write_consistency_levels_warned</span></span><a class="headerlink" href="#confval-write_consistency_levels_warned" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A list of consistency levels that will trigger a warning when used in write operations. Requests using these levels will contain a warning in the query response.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;consistency_level_restriction_t&gt;&gt;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -4207,34 +4277,6 @@ The change will take effect without a node restart, changing the value in the co
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">unsigned</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">2</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-replication-strategy-warn-list">
-<dt class="sig sig-object std" id="confval-replication_strategy_warn_list">
-<span class="sig-name descname"><span class="pre">replication_strategy_warn_list</span></span><a class="headerlink" href="#confval-replication_strategy_warn_list" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Controls which replication strategies to warn about when creating/altering a keyspace. Doesn’t affect the pre-existing keyspaces.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;replication_strategy_restriction_t&gt;&gt;</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{locator::replication_strategy_type::simple}</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-replication-strategy-fail-list">
-<dt class="sig sig-object std" id="confval-replication_strategy_fail_list">
-<span class="sig-name descname"><span class="pre">replication_strategy_fail_list</span></span><a class="headerlink" href="#confval-replication_strategy_fail_list" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Controls which replication strategies are disallowed to be used when creating/altering a keyspace. Doesn’t affect the pre-existing keyspaces.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;replication_strategy_restriction_t&gt;&gt;</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -4572,20 +4614,6 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-enable-create-table-with-compact-storage">
-<dt class="sig sig-object std" id="confval-enable_create_table_with_compact_storage">
-<span class="sig-name descname"><span class="pre">enable_create_table_with_compact_storage</span></span><a class="headerlink" href="#confval-enable_create_table_with_compact_storage" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Enable the deprecated feature of CREATE TABLE WITH COMPACT STORAGE.  This feature will eventually be removed in a future version.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
 <dl class="std confval" id="confprop-rf-rack-valid-keyspaces">
 <dt class="sig sig-object std" id="confval-rf_rack_valid_keyspaces">
 <span class="sig-name descname"><span class="pre">rf_rack_valid_keyspaces</span></span><a class="headerlink" href="#confval-rf_rack_valid_keyspaces" title="Link to this definition">¶</a></dt>
@@ -4739,34 +4767,6 @@ The change will take effect without a node restart, changing the value in the co
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">86400</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-write-consistency-levels-warned">
-<dt class="sig sig-object std" id="confval-write_consistency_levels_warned">
-<span class="sig-name descname"><span class="pre">write_consistency_levels_warned</span></span><a class="headerlink" href="#confval-write_consistency_levels_warned" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>A list of consistency levels that will trigger a warning when used in write operations. Requests using these levels will contain a warning in the query response.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;consistency_level_restriction_t&gt;&gt;</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="std confval" id="confprop-write-consistency-levels-disallowed">
-<dt class="sig sig-object std" id="confval-write_consistency_levels_disallowed">
-<span class="sig-name descname"><span class="pre">write_consistency_levels_disallowed</span></span><a class="headerlink" href="#confval-write_consistency_levels_disallowed" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>A list of consistency levels that are not allowed for write operations. Requests using these levels will fail.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;enum_option&lt;consistency_level_restriction_t&gt;&gt;</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -5448,7 +5448,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Mar 2026.
+                        Last updated on 10 Mar 2026.
                     
                 </div>
             

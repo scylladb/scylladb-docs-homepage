@@ -353,6 +353,14 @@
                     <section id="grant-authorization-cql-reference">
 <span id="cql-security"></span><h1>Grant Authorization CQL Reference<a class="headerlink" href="#grant-authorization-cql-reference" title="Link to this heading">¶</a></h1>
 <p>Authorization is the process by where users are granted permissions, which entitle them to access, or permission to change data on specific keyspaces, tables or an entire datacenter. Authorization for ScyllaDB is done internally within ScyllaDB and is not done with a third-party such as LDAP or OAuth. Granting permissions to users requires the use of a role such as a Database Administrator as well as <a class="reference internal" href="enable-authorization.html"><span class="doc">enabling the CassandraAuthorizer</span></a>. It also requires a user who has been <a class="reference internal" href="authentication.html"><span class="doc">authenticated</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All role and permission management statements in this section are consistent: once a statement completes
+successfully, the change is durable. However, the change may not be immediately visible on other nodes
+in the cluster, as the data is replicated asynchronously. Queries such as <code class="docutils literal notranslate"><span class="pre">LIST</span> <span class="pre">ROLES</span></code> or
+<code class="docutils literal notranslate"><span class="pre">LIST</span> <span class="pre">ALL</span> <span class="pre">PERMISSIONS</span></code> routed to a different node may temporarily return stale results until
+replication converges, which typically happens within moments.</p>
+</div>
 <p>This reference covers CQL specification version 3.3.1</p>
 <section id="database-roles">
 <span id="db-roles"></span><h2>Database Roles<a class="headerlink" href="#database-roles" title="Link to this heading">¶</a></h2>
@@ -1438,7 +1446,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Mar 2026.
+                        Last updated on 10 Mar 2026.
                     
                 </div>
             
