@@ -362,30 +362,30 @@ the package manager (dnf and apt).</p>
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
 <p>Ensure your platform is supported by the ScyllaDB version you want to install.
 See <a class="reference internal" href="../os-support.html"><span class="doc">OS Support</span></a> for information about supported Linux distributions and versions.</p>
-<p>Note that if you’re on CentOS 7, only root offline installation is supported.</p>
 </section>
 <section id="download-and-install">
 <h2>Download and Install<a class="headerlink" href="#download-and-install" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
 <li><p>Download the latest tar.gz file for ScyllaDB version (x86 or ARM) from <code class="docutils literal notranslate"><span class="pre">https://downloads.scylladb.com/downloads/scylla/relocatable/scylladb-&lt;version&gt;/</span></code>.</p>
-<p>Example for version 6.1: <a class="reference external" href="https://downloads.scylladb.com/downloads/scylla/relocatable/scylladb-6.1/">https://downloads.scylladb.com/downloads/scylla/relocatable/scylladb-6.1/</a></p>
+<p><strong>Example</strong> for version 2025.1:</p>
+<ul class="simple">
+<li><p>Go to <a class="reference external" href="https://downloads.scylladb.com/downloads/scylla/relocatable/scylladb-2025.1/">https://downloads.scylladb.com/downloads/scylla/relocatable/scylladb-2025.1/</a></p></li>
+<li><p>Download the <code class="docutils literal notranslate"><span class="pre">scylla-unified</span></code> file for the patch version you want to
+install. For example, to install 2025.1.9 (x86), download
+<code class="docutils literal notranslate"><span class="pre">scylla-unified-2025.1.9-0.20251010.6c539463bbda.x86_64.tar.gz</span></code>.</p></li>
+</ul>
 </li>
 <li><p>Uncompress the downloaded package.</p>
-<p>The following example shows the package for ScyllaDB 6.1.1 (x86):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">tar xvfz scylla-unified-6.1.1-0.20240814.8d90b817660a.x86_64.tar.gz</span>
+<p><strong>Example</strong> for version 2025.1.9 (x86) (downloaded in the previous step):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="n">xvfz</span> <span class="n">scylla</span><span class="o">-</span><span class="n">unified</span><span class="o">-</span><span class="mf">2025.1.9</span><span class="o">-</span><span class="mf">0.20251010.6</span><span class="n">c539463bbda</span><span class="o">.</span><span class="n">x86_64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
 </div>
 </li>
-<li><p>Install OpenJDK 8 or 11.</p>
-<p>The following example shows Java installation on a CentOS-like system:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo yum install -y java-11-openjdk-headless</span>
-</pre></div>
-</div>
-<p>For root offline installation on Debian-like systems, two additional packages, <code class="docutils literal notranslate"><span class="pre">xfsprogs</span></code>
-and <code class="docutils literal notranslate"><span class="pre">mdadm</span></code>, should be installed to be used in RAID setup.</p>
-</li>
+<li><p>(Root offline installation only) For root offline installation on Debian-like
+systems, two additional packages, <code class="docutils literal notranslate"><span class="pre">xfsprogs</span></code> and <code class="docutils literal notranslate"><span class="pre">mdadm</span></code>, should be
+installed to be used in RAID setup.</p></li>
 <li><p>Install ScyllaDB as a user with non-root privileges:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./install.sh --nonroot --python3 ~/scylladb/python3/bin/python3</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./install.sh --nonroot</span>
 </pre></div>
 </div>
 </li>
@@ -412,15 +412,11 @@ and <code class="docutils literal notranslate"><span class="pre">mdadm</span></c
 </ol>
 <p>Now you can start using ScyllaDB. Here are some tools you may find useful.</p>
 <p>Run nodetool:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">~/scylladb/share/cassandra/bin/nodetool status</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">~/scylladb/bin/nodetool nodetool status</span>
 </pre></div>
 </div>
 <p>Run cqlsh:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">~/scylladb/share/cassandra/bin/cqlsh</span>
-</pre></div>
-</div>
-<p>Run cassandra-stress:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">~/scylladb/share/cassandra/bin/cassandra-stress write</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">~/scylladb/bin/cqlsh</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -444,7 +440,7 @@ and <code class="docutils literal notranslate"><span class="pre">mdadm</span></c
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The installation script does not upgrade scylla-jmx and scylla-tools. You will have to upgrade them separately.</p>
+<p>The installation script does not upgrade scylla-tools. You will have to upgrade them separately.</p>
 </div>
 </section>
 <section id="uninstall">
@@ -1084,7 +1080,7 @@ and <code class="docutils literal notranslate"><span class="pre">mdadm</span></c
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Mar 2026.
+                        Last updated on 11 Mar 2026.
                     
                 </div>
             
