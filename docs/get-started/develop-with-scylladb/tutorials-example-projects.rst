@@ -51,6 +51,6 @@ the shopping cart API server.
 Gaming Leaderboard
 ---------------------
 
-The `Gaming Leaderboard sample application <https://github.com/scylladb/gaming-leaderboard-demo>`_ 
+The `Gaming Leaderboard sample application <https://gaming-leaderboard.scylladb.com/>`_ 
 will guide you through the process of creating a leaderboard for your gaming 
 application using ScyllaDB Cloud and NextJS.
