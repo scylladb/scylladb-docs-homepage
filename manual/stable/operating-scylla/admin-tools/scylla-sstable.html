@@ -62,7 +62,7 @@
             
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/css/main.css?v=0ebb4bd5" />
+                <link rel="stylesheet" type="text/css" href="../../_static/css/main.css?v=31980c35" />
             
         
             
@@ -92,11 +92,11 @@
             
         
             
-                <script src="../../_static/doctools.js?v=9bcbadda"></script>
+                <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
             
         
             
-                <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+                <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
             
         
             
@@ -269,7 +269,7 @@
             </li>
         </ul>
         <div class="header-button">
-            <a href="https://docs.scylladb.com/manual/stable/getting-started/installation-common/scylla-web-installer.html" class="button"><i class="icon-download me-2"></i> Install</a>
+            <a href="https://docs.scylladb.com/manual/stable/getting-started/install-scylla/index.html" class="button"><i class="icon-download me-2"></i> Install</a>
         </div>
     </div>
     <div class="header-search-box">
@@ -912,7 +912,7 @@ For example, for the SStable:</p>
 <section id="write">
 <h3>write<a class="headerlink" href="#write" title="Link to this heading">¶</a></h3>
 <p>Writes an SStable based on a JSON representation of the content.
-The JSON representation has to have the same schema as that of a single SStable from the output of the <a class="reference internal" href="#dump-data">dump-data operation</a> (corresponding to the <code class="docutils literal notranslate"><span class="pre">$SSTABLE</span></code> symbol).
+The JSON representation has to have the same schema as that of a single SStable from the output of the <a href="#id66"><span class="problematic" id="id67">`dump-data operation &lt;dump-data_&gt;`_</span></a> (corresponding to the <code class="docutils literal notranslate"><span class="pre">$SSTABLE</span></code> symbol).
 The easiest way to get started with writing your own SStable is to dump an existing SStable, modify the JSON then invoke this operation with the result.
 You can feed the output of dump-data to write by filtering the output of the former with <code class="docutils literal notranslate"><span class="pre">jq</span> <span class="pre">.sstables[]</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data --system-schema system_schema.columns /path/to/me-14-big-Data.db | jq .sstables[] &gt; input.json</span>
@@ -1108,24 +1108,24 @@ These methods (if provided by the script) will be called by the scylla-sstable r
 <li><p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-partition-end-method">consume_partition_end()</a> is called, the remaining content of the partition is skipped. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the remaining content of the partition.</p></li>
 </ul>
 </section>
-<section id="consume-partition-end">
-<span id="scylla-consume-partition-end-method"></span><h5>consume_partition_end()<a class="headerlink" href="#consume-partition-end" title="Link to this heading">¶</a></h5>
+<section id="scylla-consume-partition-end-method">
+<span id="id8"></span><h5>consume_partition_end()<a class="headerlink" href="#scylla-consume-partition-end-method" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>Part of the Consume API.</p></li>
 <li><p>Called at the end of the partition.</p></li>
 <li><p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-sstable-end-method">consume_sstable_end()</a> is called,  the remaining content of the SStable is skipped. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the remaining content of the SStable.</p></li>
 </ul>
 </section>
-<section id="consume-sstable-end">
-<span id="scylla-consume-sstable-end-method"></span><h5>consume_sstable_end()<a class="headerlink" href="#consume-sstable-end" title="Link to this heading">¶</a></h5>
+<section id="scylla-consume-sstable-end-method">
+<span id="id10"></span><h5>consume_sstable_end()<a class="headerlink" href="#scylla-consume-sstable-end-method" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>Part of the Consume API.</p></li>
 <li><p>Called at the end of the SStable.</p></li>
 <li><p>Returns whether to stop. If true, <a class="reference internal" href="#scylla-consume-stream-end-method">consume_stream_end()</a> is called, the remaining content of the stream is skipped. If false, consumption follows with the remaining content of the stream.</p></li>
 </ul>
 </section>
-<section id="consume-stream-end">
-<span id="scylla-consume-stream-end-method"></span><h5>consume_stream_end()<a class="headerlink" href="#consume-stream-end" title="Link to this heading">¶</a></h5>
+<section id="scylla-consume-stream-end-method">
+<span id="id11"></span><h5>consume_stream_end()<a class="headerlink" href="#scylla-consume-stream-end-method" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>Part of the Consume API.</p></li>
 <li><p>Called at the very end of the stream.</p></li>
@@ -1194,8 +1194,8 @@ The listing uses the following terminology:</p>
 <li><p>__tostring - can be converted to string with tostring(), uses the built-in operator&lt;&lt; in ScyllaDB.</p></li>
 </ul>
 </section>
-<section id="scylladb-clustering-row">
-<span id="scylla-clustering-row-type"></span><h5>ScyllaDB.clustering_row<a class="headerlink" href="#scylladb-clustering-row" title="Link to this heading">¶</a></h5>
+<section id="scylla-clustering-row-type">
+<span id="id14"></span><h5>ScyllaDB.clustering_row<a class="headerlink" href="#scylla-clustering-row-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>key ($TYPE) - the clustering key’s value as the appropriate Lua native type.</p></li>
@@ -1209,8 +1209,8 @@ The listing uses the following terminology:</p>
 <li><p><a class="reference internal" href="#scylla-unserialize-clustering-key-method">ScyllaDB.unserialize_clustering_key()</a>.</p></li>
 </ul>
 </section>
-<section id="scylladb-collection">
-<span id="scylla-collection-type"></span><h5>ScyllaDB.collection<a class="headerlink" href="#scylladb-collection" title="Link to this heading">¶</a></h5>
+<section id="scylla-collection-type">
+<span id="id17"></span><h5>ScyllaDB.collection<a class="headerlink" href="#scylla-collection-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>type (string) - always <code class="docutils literal notranslate"><span class="pre">collection</span></code> for collection.</p></li>
@@ -1235,8 +1235,8 @@ The listing uses the following terminology:</p>
 <li><p>kind (string) - the kind of the column, one of <code class="docutils literal notranslate"><span class="pre">partition_key</span></code>, <code class="docutils literal notranslate"><span class="pre">clustering_key</span></code>, <code class="docutils literal notranslate"><span class="pre">static_column</span></code> or <code class="docutils literal notranslate"><span class="pre">regular_column</span></code>.</p></li>
 </ul>
 </section>
-<section id="scylladb-counter-shards-value">
-<span id="scylla-counter-shards-value-type"></span><h5>ScyllaDB.counter_shards_value<a class="headerlink" href="#scylladb-counter-shards-value" title="Link to this heading">¶</a></h5>
+<section id="scylla-counter-shards-value-type">
+<span id="id22"></span><h5>ScyllaDB.counter_shards_value<a class="headerlink" href="#scylla-counter-shards-value-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul>
 <li><p>value (integer) - the total value of the counter (the sum of all the shards).</p></li>
@@ -1255,8 +1255,8 @@ The listing uses the following terminology:</p>
 <li><p>__tostring - can be converted to string with tostring().</p></li>
 </ul>
 </section>
-<section id="scylladb-data-value">
-<span id="scylla-data-value-type"></span><h5>ScyllaDB.data_value<a class="headerlink" href="#scylladb-data-value" title="Link to this heading">¶</a></h5>
+<section id="scylla-data-value-type">
+<span id="id23"></span><h5>ScyllaDB.data_value<a class="headerlink" href="#scylla-data-value-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>value - the value represented as the appropriate Lua type</p></li>
@@ -1266,8 +1266,8 @@ The listing uses the following terminology:</p>
 <li><p>__tostring - can be converted to string with tostring().</p></li>
 </ul>
 </section>
-<section id="scylladb-gc-clock-time-point">
-<span id="scylla-gc-clock-time-point-type"></span><h5>ScyllaDB.gc_clock_time_point<a class="headerlink" href="#scylladb-gc-clock-time-point" title="Link to this heading">¶</a></h5>
+<section id="scylla-gc-clock-time-point-type">
+<span id="id24"></span><h5>ScyllaDB.gc_clock_time_point<a class="headerlink" href="#scylla-gc-clock-time-point-type" title="Link to this heading">¶</a></h5>
 <p>A time point belonging to the gc_clock, in UTC.</p>
 <p>Attributes:</p>
 <ul class="simple">
@@ -1295,7 +1295,7 @@ The listing uses the following terminology:</p>
 <span id="scylla-json-writer-type"></span><h5>ScyllaDB.json_writer<a class="headerlink" href="#scylladb-json-writer" title="Link to this heading">¶</a></h5>
 <p>A JSON writer object, with both low-level and high-level APIs.
 The low-level API allows you to write custom JSON and it loosely follows the API of <a class="reference external" href="https://rapidjson.org/classrapidjson_1_1_writer.html">rapidjson::Writer</a> (upon which it is implemented).
-The high-level API is for writing <a class="reference internal" href="#scylla-sstable-sstable-content">mutation fragments</a> as JSON directly, using the built-in JSON conversion logic that is used by <a class="reference internal" href="#dump-data">dump-data</a> operation.</p>
+The high-level API is for writing <a class="reference internal" href="#scylla-sstable-sstable-content">mutation fragments</a> as JSON directly, using the built-in JSON conversion logic that is used by <a href="#id68"><span class="problematic" id="id69">`dump-data &lt;dump-data_&gt;`_</span></a> operation.</p>
 <p>Low level API Methods:</p>
 <ul class="simple">
 <li><p>null() - write a null json value.</p></li>
@@ -1351,12 +1351,12 @@ The high-level API is for writing <a class="reference internal" href="#scylla-ss
 <li><p>token (integer) - the token (of the key if a key is provided).</p></li>
 </ul>
 </section>
-<section id="scylladb-now">
-<span id="scylla-now-method"></span><h5>ScyllaDB.now()<a class="headerlink" href="#scylladb-now" title="Link to this heading">¶</a></h5>
+<section id="scylla-now-method">
+<span id="id28"></span><h5>ScyllaDB.now()<a class="headerlink" href="#scylla-now-method" title="Link to this heading">¶</a></h5>
 <p>Create a <a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a> instance, representing the current time.</p>
 </section>
-<section id="scylladb-partition-key">
-<span id="scylla-partition-key-type"></span><h5>ScyllaDB.partition_key<a class="headerlink" href="#scylladb-partition-key" title="Link to this heading">¶</a></h5>
+<section id="scylla-partition-key-type">
+<span id="id30"></span><h5>ScyllaDB.partition_key<a class="headerlink" href="#scylla-partition-key-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>components (table) - the column values (<a class="reference internal" href="#scylla-data-value-type">ScyllaDB.data_value</a>) making up the composite partition key.</p></li>
@@ -1375,8 +1375,8 @@ The high-level API is for writing <a class="reference internal" href="#scylla-ss
 <li><p><a class="reference internal" href="#scylla-token-of-method"><span class="std std-ref">ScyllaDB.token_of()</span></a>.</p></li>
 </ul>
 </section>
-<section id="scylladb-partition-start">
-<span id="scylla-partition-start-type"></span><h5>ScyllaDB.partition_start<a class="headerlink" href="#scylladb-partition-start" title="Link to this heading">¶</a></h5>
+<section id="scylla-partition-start-type">
+<span id="id32"></span><h5>ScyllaDB.partition_start<a class="headerlink" href="#scylla-partition-start-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>key - the partition key’s value as the appropriate Lua native type.</p></li>
@@ -1384,8 +1384,8 @@ The high-level API is for writing <a class="reference internal" href="#scylla-ss
 <li><p>tombstone (<a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a>) - the partition tombstone, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if no tombstone.</p></li>
 </ul>
 </section>
-<section id="scylladb-position-in-partition">
-<span id="scylla-position-in-partition-type"></span><h5>ScyllaDB.position_in_partition<a class="headerlink" href="#scylladb-position-in-partition" title="Link to this heading">¶</a></h5>
+<section id="scylla-position-in-partition-type">
+<span id="id34"></span><h5>ScyllaDB.position_in_partition<a class="headerlink" href="#scylla-position-in-partition-type" title="Link to this heading">¶</a></h5>
 <p>Currently used only for clustering positions.</p>
 <p>Attributes:</p>
 <ul class="simple">
@@ -1401,8 +1401,8 @@ The high-level API is for writing <a class="reference internal" href="#scylla-ss
 <li><p><a class="reference internal" href="#scylla-new-position-in-partition-method">ScyllaDB.new_position_in_partition()</a>.</p></li>
 </ul>
 </section>
-<section id="scylladb-range-tombstone-change">
-<span id="scylla-range-tombstone-change-type"></span><h5>ScyllaDB.range_tombstone_change<a class="headerlink" href="#scylladb-range-tombstone-change" title="Link to this heading">¶</a></h5>
+<section id="scylla-range-tombstone-change-type">
+<span id="id37"></span><h5>ScyllaDB.range_tombstone_change<a class="headerlink" href="#scylla-range-tombstone-change-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>key ($TYPE) - the clustering key’s value as the appropriate Lua native type.</p></li>
@@ -1410,8 +1410,8 @@ The high-level API is for writing <a class="reference internal" href="#scylla-ss
 <li><p>tombstone (<a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a>) - tombstone, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if no tombstone.</p></li>
 </ul>
 </section>
-<section id="scylladb-ring-position">
-<span id="scylla-ring-position-type"></span><h5>ScyllaDB.ring_position<a class="headerlink" href="#scylladb-ring-position" title="Link to this heading">¶</a></h5>
+<section id="scylla-ring-position-type">
+<span id="id39"></span><h5>ScyllaDB.ring_position<a class="headerlink" href="#scylla-ring-position-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>token (integer) - the token, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if the ring position represents the min or max ring positions.</p></li>
@@ -1427,8 +1427,8 @@ The high-level API is for writing <a class="reference internal" href="#scylla-ss
 <li><p><a class="reference internal" href="#scylla-new-ring-position-method">ScyllaDB.new_ring_position()</a>.</p></li>
 </ul>
 </section>
-<section id="scylladb-row-marker">
-<span id="scylla-row-marker-type"></span><h5>ScyllaDB.row_marker<a class="headerlink" href="#scylladb-row-marker" title="Link to this heading">¶</a></h5>
+<section id="scylla-row-marker-type">
+<span id="id42"></span><h5>ScyllaDB.row_marker<a class="headerlink" href="#scylla-row-marker-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>timestamp (integer).</p></li>
@@ -1451,21 +1451,21 @@ The high-level API is for writing <a class="reference internal" href="#scylla-ss
 </ul>
 </section>
 <section id="scylla-sstable-type">
-<span id="id1"></span><h5>ScyllaDB.sstable<a class="headerlink" href="#scylla-sstable-type" title="Link to this heading">¶</a></h5>
+<span id="id50"></span><h5>ScyllaDB.sstable<a class="headerlink" href="#scylla-sstable-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>filename (string) - the full path of the sstable Data component file;</p></li>
 </ul>
 </section>
-<section id="scylladb-static-row">
-<span id="scylla-static-row-type"></span><h5>ScyllaDB.static_row<a class="headerlink" href="#scylladb-static-row" title="Link to this heading">¶</a></h5>
+<section id="scylla-static-row-type">
+<span id="id51"></span><h5>ScyllaDB.static_row<a class="headerlink" href="#scylla-static-row-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>cells (table) - table of cells, where keys are the column names and the values are either of type <a class="reference internal" href="#scylla-atomic-cell-type">ScyllaDB.atomic_cell</a> or <a class="reference internal" href="#scylla-collection-type">ScyllaDB.collection</a>.</p></li>
 </ul>
 </section>
-<section id="scylladb-time-point-from-string">
-<span id="scylla-time-point-from-string-method"></span><h5>ScyllaDB.time_point_from_string()<a class="headerlink" href="#scylladb-time-point-from-string" title="Link to this heading">¶</a></h5>
+<section id="scylla-time-point-from-string-method">
+<span id="id54"></span><h5>ScyllaDB.time_point_from_string()<a class="headerlink" href="#scylla-time-point-from-string-method" title="Link to this heading">¶</a></h5>
 <p>Create a <a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a> instance from the passed in string.
 Argument is string, using the same format as the CQL timestamp type, see <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">https://en.wikipedia.org/wiki/ISO_8601</a>.</p>
 </section>
@@ -1473,16 +1473,16 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <span id="scylla-token-of-method"></span><h5>ScyllaDB.token_of()<a class="headerlink" href="#scylladb-token-of" title="Link to this heading">¶</a></h5>
 <p>Compute and return the token (integer) for a <a class="reference internal" href="#scylla-partition-key-type">ScyllaDB.partition_key</a>.</p>
 </section>
-<section id="scylladb-tombstone">
-<span id="scylla-tombstone-type"></span><h5>ScyllaDB.tombstone<a class="headerlink" href="#scylladb-tombstone" title="Link to this heading">¶</a></h5>
+<section id="scylla-tombstone-type">
+<span id="id57"></span><h5>ScyllaDB.tombstone<a class="headerlink" href="#scylla-tombstone-type" title="Link to this heading">¶</a></h5>
 <p>Attributes:</p>
 <ul class="simple">
 <li><p>timestamp (integer)</p></li>
 <li><p>deletion_time (<a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a>) - the point in time at which the tombstone was deleted.</p></li>
 </ul>
 </section>
-<section id="scylladb-unserialize-clustering-key">
-<span id="scylla-unserialize-clustering-key-method"></span><h5>ScyllaDB.unserialize_clustering_key()<a class="headerlink" href="#scylladb-unserialize-clustering-key" title="Link to this heading">¶</a></h5>
+<section id="scylla-unserialize-clustering-key-method">
+<span id="id59"></span><h5>ScyllaDB.unserialize_clustering_key()<a class="headerlink" href="#scylla-unserialize-clustering-key-method" title="Link to this heading">¶</a></h5>
 <p>Create a <a class="reference internal" href="#scylla-clustering-key-type">ScyllaDB.clustering_key</a> instance.</p>
 <p>Argument is a string representing serialized clustering key in hex format.</p>
 </section>
@@ -1492,8 +1492,8 @@ Argument is string, using the same format as the CQL timestamp type, see <a clas
 <p>Argument is a string representing serialized partition key in hex format.</p>
 </section>
 </section>
-<section id="id2">
-<h4>Examples<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
+<section id="id62">
+<h4>Examples<a class="headerlink" href="#id62" title="Link to this heading">¶</a></h4>
 <p>You can find example scripts at <a class="reference external" href="https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts">https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts</a>.</p>
 </section>
 </section>
@@ -1514,8 +1514,8 @@ But even an altered schema which changed only the table options can lead to data
 <p>The mapping of input SSTables to output SSTables is printed to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>.</p>
 </section>
 </section>
-<section id="id3">
-<h2>Examples<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<section id="id63">
+<h2>Examples<a class="headerlink" href="#id63" title="Link to this heading">¶</a></h2>
 <p>Dumping the content of the SStable:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data /path/to/md-123456-big-Data.db</span>
 </pre></div>
@@ -1690,49 +1690,49 @@ But even an altered schema which changed only the table options can lead to data
 <li><a class="reference internal" href="#consume-static-row-sr">consume_static_row(sr)</a></li>
 <li><a class="reference internal" href="#consume-clustering-row-cr">consume_clustering_row(cr)</a></li>
 <li><a class="reference internal" href="#consume-range-tombstone-change-crt">consume_range_tombstone_change(crt)</a></li>
-<li><a class="reference internal" href="#consume-partition-end">consume_partition_end()</a></li>
-<li><a class="reference internal" href="#consume-sstable-end">consume_sstable_end()</a></li>
-<li><a class="reference internal" href="#consume-stream-end">consume_stream_end()</a></li>
+<li><a class="reference internal" href="#scylla-consume-partition-end-method">consume_partition_end()</a></li>
+<li><a class="reference internal" href="#scylla-consume-sstable-end-method">consume_sstable_end()</a></li>
+<li><a class="reference internal" href="#scylla-consume-stream-end-method">consume_stream_end()</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#scylladb-lua-api">ScyllaDB LUA API</a><ul>
 <li><a class="reference internal" href="#scylladb-atomic-cell">ScyllaDB.atomic_cell</a></li>
 <li><a class="reference internal" href="#scylladb-clustering-key">ScyllaDB.clustering_key</a></li>
-<li><a class="reference internal" href="#scylladb-clustering-row">ScyllaDB.clustering_row</a></li>
-<li><a class="reference internal" href="#scylladb-collection">ScyllaDB.collection</a></li>
+<li><a class="reference internal" href="#scylla-clustering-row-type">ScyllaDB.clustering_row</a></li>
+<li><a class="reference internal" href="#scylla-collection-type">ScyllaDB.collection</a></li>
 <li><a class="reference internal" href="#scylladb-collection-cell-value">ScyllaDB.collection_cell_value</a></li>
 <li><a class="reference internal" href="#scylladb-column-definition">ScyllaDB.column_definition</a></li>
-<li><a class="reference internal" href="#scylladb-counter-shards-value">ScyllaDB.counter_shards_value</a></li>
-<li><a class="reference internal" href="#scylladb-data-value">ScyllaDB.data_value</a></li>
-<li><a class="reference internal" href="#scylladb-gc-clock-time-point">ScyllaDB.gc_clock_time_point</a></li>
+<li><a class="reference internal" href="#scylla-counter-shards-value-type">ScyllaDB.counter_shards_value</a></li>
+<li><a class="reference internal" href="#scylla-data-value-type">ScyllaDB.data_value</a></li>
+<li><a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a></li>
 <li><a class="reference internal" href="#scylladb-json-writer">ScyllaDB.json_writer</a></li>
 <li><a class="reference internal" href="#scylladb-new-json-writer">ScyllaDB.new_json_writer()</a></li>
 <li><a class="reference internal" href="#scylladb-new-position-in-partition">ScyllaDB.new_position_in_partition()</a></li>
 <li><a class="reference internal" href="#scylladb-new-ring-position">ScyllaDB.new_ring_position()</a></li>
-<li><a class="reference internal" href="#scylladb-now">ScyllaDB.now()</a></li>
-<li><a class="reference internal" href="#scylladb-partition-key">ScyllaDB.partition_key</a></li>
-<li><a class="reference internal" href="#scylladb-partition-start">ScyllaDB.partition_start</a></li>
-<li><a class="reference internal" href="#scylladb-position-in-partition">ScyllaDB.position_in_partition</a></li>
-<li><a class="reference internal" href="#scylladb-range-tombstone-change">ScyllaDB.range_tombstone_change</a></li>
-<li><a class="reference internal" href="#scylladb-ring-position">ScyllaDB.ring_position</a></li>
-<li><a class="reference internal" href="#scylladb-row-marker">ScyllaDB.row_marker</a></li>
+<li><a class="reference internal" href="#scylla-now-method">ScyllaDB.now()</a></li>
+<li><a class="reference internal" href="#scylla-partition-key-type">ScyllaDB.partition_key</a></li>
+<li><a class="reference internal" href="#scylla-partition-start-type">ScyllaDB.partition_start</a></li>
+<li><a class="reference internal" href="#scylla-position-in-partition-type">ScyllaDB.position_in_partition</a></li>
+<li><a class="reference internal" href="#scylla-range-tombstone-change-type">ScyllaDB.range_tombstone_change</a></li>
+<li><a class="reference internal" href="#scylla-ring-position-type">ScyllaDB.ring_position</a></li>
+<li><a class="reference internal" href="#scylla-row-marker-type">ScyllaDB.row_marker</a></li>
 <li><a class="reference internal" href="#scylladb-schema">ScyllaDB.schema</a></li>
 <li><a class="reference internal" href="#scylla-sstable-type">ScyllaDB.sstable</a></li>
-<li><a class="reference internal" href="#scylladb-static-row">ScyllaDB.static_row</a></li>
-<li><a class="reference internal" href="#scylladb-time-point-from-string">ScyllaDB.time_point_from_string()</a></li>
+<li><a class="reference internal" href="#scylla-static-row-type">ScyllaDB.static_row</a></li>
+<li><a class="reference internal" href="#scylla-time-point-from-string-method">ScyllaDB.time_point_from_string()</a></li>
 <li><a class="reference internal" href="#scylladb-token-of">ScyllaDB.token_of()</a></li>
-<li><a class="reference internal" href="#scylladb-tombstone">ScyllaDB.tombstone</a></li>
-<li><a class="reference internal" href="#scylladb-unserialize-clustering-key">ScyllaDB.unserialize_clustering_key()</a></li>
+<li><a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a></li>
+<li><a class="reference internal" href="#scylla-unserialize-clustering-key-method">ScyllaDB.unserialize_clustering_key()</a></li>
 <li><a class="reference internal" href="#scylladb-unserialize-partition-key">ScyllaDB.unserialize_partition_key()</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id2">Examples</a></li>
+<li><a class="reference internal" href="#id62">Examples</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#upgrade">upgrade</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id3">Examples</a></li>
+<li><a class="reference internal" href="#id63">Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -2214,14 +2214,14 @@ But even an altered schema which changed only the table options can lead to data
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Mar 2026.
+                        Last updated on 12 Mar 2026.
                     
                 </div>
             
             <div class="footer-bottom__version">
                 Powered by
-                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 8.1.3</a> &amp;
-                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.8.10</a>
+                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 9.1.0</a> &amp;
+                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.9.1</a>
             </div>
         </div>
     </div>
