@@ -47,4 +47,3 @@ Shopping Cart
 The `Shopping Cart sample application <https://shopping-cart.scylladb.com/stable/>`_ 
 will guide you through the process of creating a new ScyllaDB cluster and running
 the shopping cart API server. 
-
