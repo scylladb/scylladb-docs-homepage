@@ -44,11 +44,6 @@ Download and Install
 
     ./install.sh --nonroot
 
-#. (Optional) Install scylla-jmx
-
-    scylla-jmx is an optional package and is not installed by default.
-    If you need JMX server, see :doc:`Install scylla-jmx Package </getting-started/installation-common/install-jmx>`.
-
 Configure and Run ScyllaDB
 ----------------------------
 

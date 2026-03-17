@@ -865,6 +865,9 @@ The SSTable version to be used can be overridden with the ``--version`` flag, al
 
 SSTables which are already on the designated version are skipped. To force rewriting *all* SSTables, use the ``--all`` flag. 
 
+Use the ``--ignore-component-digest-mismatch`` flag to log a warning instead of failing when a component digest mismatch is detected during SSTable loading.
+This is useful for recovering SSTables with corrupted non-vital components or working around bugs in digest calculation.
+
 Output SSTables are written to the path provided by the ``--output-dir`` flag, or to the current directory if not specified.
 This directory is expected to exist.
 
