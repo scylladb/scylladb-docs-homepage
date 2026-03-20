@@ -139,7 +139,7 @@ The ``WHERE`` clause
 ~~~~~~~~~~~~~~~~~~~~
 
 The ``WHERE`` clause specifies which rows must be queried. It is composed of relations on the columns that are part of
-the ``PRIMARY KEY``.
+the ``PRIMARY KEY``, and relations can be joined only with ``AND`` (``OR`` and other logical operators are not supported).
 
 Not all relations are allowed in a query. For instance, non-equal relations (where ``IN`` is considered as an equal
 relation) on a partition key are not supported (see the use of the ``TOKEN`` method below to do non-equal queries on
@@ -199,6 +199,23 @@ The tuple notation may also be used for ``IN`` clauses on clustering columns::
     SELECT * FROM posts
      WHERE userid = 'john doe'
        AND (blog_title, posted_at) IN (('John''s Blog', '2012-01-01'), ('Extreme Chess', '2014-06-01'))
+
+This tuple notation is different from boolean grouping. For example, the following query is not supported::
+
+    SELECT * FROM users
+     WHERE (country = 'BR' AND state = 'SP')
+
+because parentheses are only allowed around a single relation, so this works: ``(country = 'BR') AND (state = 'SP')``, but this does not: ``(country = 'BR' AND state = 'SP')``.
+Similarly, an extended query of the form of::
+
+    SELECT * FROM users
+     WHERE (country = 'BR' AND state = 'SP')
+       OR (country = 'BR' AND state = 'RJ')
+
+won't work due to both: grouping boolean expressions and not supporting ``OR``, so when possible,
+rewrite such queries with ``IN`` on the varying column, for example
+``country = 'BR' AND state IN ('SP', 'RJ')``, or run multiple queries and merge
+the results client-side.
 
 The ``CONTAINS`` operator may only be used on collection columns (lists, sets, and maps). In the case of maps,
 ``CONTAINS`` applies to the map values. The ``CONTAINS KEY`` operator may only be used on map columns and applies to the

@@ -473,7 +473,7 @@ take only one argument, and that argument <em>must</em> be a column name (so, fo
 <section id="the-where-clause">
 <span id="where-clause"></span><h2>The <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause<a class="headerlink" href="#the-where-clause" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause specifies which rows must be queried. It is composed of relations on the columns that are part of
-the <code class="docutils literal notranslate"><span class="pre">PRIMARY</span> <span class="pre">KEY</span></code>.</p>
+the <code class="docutils literal notranslate"><span class="pre">PRIMARY</span> <span class="pre">KEY</span></code>, and relations can be joined only with <code class="docutils literal notranslate"><span class="pre">AND</span></code> (<code class="docutils literal notranslate"><span class="pre">OR</span></code> and other logical operators are not supported).</p>
 <p>Not all relations are allowed in a query. For instance, non-equal relations (where <code class="docutils literal notranslate"><span class="pre">IN</span></code> is considered as an equal
 relation) on a partition key are not supported (see the use of the <code class="docutils literal notranslate"><span class="pre">TOKEN</span></code> method below to do non-equal queries on
 the partition key). Moreover, for a given partition key, the clustering columns induce an ordering of rows and relations
@@ -531,6 +531,22 @@ in the clustering order. In particular, rows having a <code class="docutils lite
    <span class="k">AND</span> <span class="p">(</span><span class="n">blog_title</span><span class="p">,</span> <span class="n">posted_at</span><span class="p">)</span> <span class="k">IN</span> <span class="p">((</span><span class="s1">&#39;John&#39;&#39;s Blog&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-01-01&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Extreme Chess&#39;</span><span class="p">,</span> <span class="s1">&#39;2014-06-01&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
+<p>This tuple notation is different from boolean grouping. For example, the following query is not supported:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span>
+ <span class="k">WHERE</span> <span class="p">(</span><span class="n">country</span> <span class="o">=</span> <span class="s1">&#39;BR&#39;</span> <span class="k">AND</span> <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;SP&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>because parentheses are only allowed around a single relation, so this works: <code class="docutils literal notranslate"><span class="pre">(country</span> <span class="pre">=</span> <span class="pre">'BR')</span> <span class="pre">AND</span> <span class="pre">(state</span> <span class="pre">=</span> <span class="pre">'SP')</span></code>, but this does not: <code class="docutils literal notranslate"><span class="pre">(country</span> <span class="pre">=</span> <span class="pre">'BR'</span> <span class="pre">AND</span> <span class="pre">state</span> <span class="pre">=</span> <span class="pre">'SP')</span></code>.
+Similarly, an extended query of the form of:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span>
+ <span class="k">WHERE</span> <span class="p">(</span><span class="n">country</span> <span class="o">=</span> <span class="s1">&#39;BR&#39;</span> <span class="k">AND</span> <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;SP&#39;</span><span class="p">)</span>
+   <span class="k">OR</span> <span class="p">(</span><span class="n">country</span> <span class="o">=</span> <span class="s1">&#39;BR&#39;</span> <span class="k">AND</span> <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;RJ&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>won’t work due to both: grouping boolean expressions and not supporting <code class="docutils literal notranslate"><span class="pre">OR</span></code>, so when possible,
+rewrite such queries with <code class="docutils literal notranslate"><span class="pre">IN</span></code> on the varying column, for example
+<code class="docutils literal notranslate"><span class="pre">country</span> <span class="pre">=</span> <span class="pre">'BR'</span> <span class="pre">AND</span> <span class="pre">state</span> <span class="pre">IN</span> <span class="pre">('SP',</span> <span class="pre">'RJ')</span></code>, or run multiple queries and merge
+the results client-side.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code> operator may only be used on collection columns (lists, sets, and maps). In the case of maps,
 <code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code> applies to the map values. The <code class="docutils literal notranslate"><span class="pre">CONTAINS</span> <span class="pre">KEY</span></code> operator may only be used on map columns and applies to the
 map keys.</p>
@@ -1515,7 +1531,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 Mar 2026.
+                        Last updated on 20 Mar 2026.
                     
                 </div>
             
