@@ -3061,6 +3061,399 @@
 </dd></dl>
 
 </section>
+<section id="segment-manager">
+<h2>Segment manager<a class="headerlink" href="#segment-manager" title="Link to this heading">¶</a></h2>
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segments-in-use">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segments_in_use">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segments_in_use</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segments_in_use" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments currently in use.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segments_in_use</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-free-segments">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_free_segments">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_free_segments</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_free_segments" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of free segments currently available.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">free_segments</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segment-pool-size">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segment_pool_size">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segment_pool_size</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segment_pool_size" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments in the segment pool.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segment_pool_size</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segment-pool-segments-put">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segment_pool_segments_put">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segment_pool_segments_put</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segment_pool_segments_put" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments returned to the segment pool.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segment_pool_segments_put</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segment-pool-normal-segments-get">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segment_pool_normal_segments_get">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segment_pool_normal_segments_get</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segment_pool_normal_segments_get" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments taken from the segment pool for normal writes.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segment_pool_normal_segments_get</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segment-pool-compaction-segments-get">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segment_pool_compaction_segments_get">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segment_pool_compaction_segments_get</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segment_pool_compaction_segments_get" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments taken from the segment pool for compaction.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segment_pool_compaction_segments_get</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segment-pool-separator-segments-get">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segment_pool_separator_segments_get">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segment_pool_separator_segments_get</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segment_pool_separator_segments_get" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments taken from the segment pool for separator writes.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segment_pool_separator_segments_get</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segment-pool-normal-segments-wait">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segment_pool_normal_segments_wait">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segment_pool_normal_segments_wait</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segment_pool_normal_segments_wait" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of times normal writes had to wait for a segment to become available in the segment pool.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segment_pool_normal_segments_wait</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-bytes-written">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_bytes_written">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_bytes_written</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_bytes_written" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of bytes written to the disk.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">bytes_written</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-data-bytes-written">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_data_bytes_written">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_data_bytes_written</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_data_bytes_written" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of data bytes written to the disk.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">data_bytes_written</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-bytes-read">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_bytes_read">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_bytes_read</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_bytes_read" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of bytes read from the disk.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">bytes_read</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-bytes-freed">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_bytes_freed">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_bytes_freed</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_bytes_freed" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of data bytes freed.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">bytes_freed</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segments-allocated">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segments_allocated">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segments_allocated</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segments_allocated" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments allocated.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segments_allocated</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segments-freed">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segments_freed">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segments_freed</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segments_freed" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments freed.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segments_freed</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-disk-usage">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_disk_usage">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_disk_usage</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_disk_usage" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Total disk usage.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">disk_usage</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-compaction-bytes-written">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_compaction_bytes_written">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_compaction_bytes_written</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_compaction_bytes_written" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of bytes written to the disk by compaction.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compaction_bytes_written</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-compaction-data-bytes-written">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_compaction_data_bytes_written">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_compaction_data_bytes_written</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_compaction_data_bytes_written" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of data bytes written to the disk by compaction.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compaction_data_bytes_written</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-segments-compacted">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_segments_compacted">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_segments_compacted</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_segments_compacted" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments compacted.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">segments_compacted</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-compaction-segments-freed">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_compaction_segments_freed">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_compaction_segments_freed</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_compaction_segments_freed" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments freed by compaction.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compaction_segments_freed</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-compaction-records-skipped">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_compaction_records_skipped">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_compaction_records_skipped</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_compaction_records_skipped" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of records skipped during compaction.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compaction_records_skipped</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-compaction-records-rewritten">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_compaction_records_rewritten">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_compaction_records_rewritten</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_compaction_records_rewritten" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of records rewritten during compaction.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">compaction_records_rewritten</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-separator-bytes-written">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_separator_bytes_written">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_separator_bytes_written</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_separator_bytes_written" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of bytes written to the separator.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">separator_bytes_written</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-separator-data-bytes-written">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_separator_data_bytes_written">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_separator_data_bytes_written</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_separator_data_bytes_written" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of data bytes written to the separator.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">separator_data_bytes_written</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-separator-buffer-flushed">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_separator_buffer_flushed">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_separator_buffer_flushed</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_separator_buffer_flushed" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of times the separator buffer has been flushed.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">separator_buffer_flushed</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-separator-segments-freed">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_separator_segments_freed">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_separator_segments_freed</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_separator_segments_freed" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Counts number of segments freed by the separator.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">separator_segments_freed</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-logstor-sm-separator-flow-control-delay">
+<dt class="sig sig-object std" id="metrics_option-scylla_logstor_sm_separator_flow_control_delay">
+<span class="sig-name descname"><span class="pre">scylla_logstor_sm_separator_flow_control_delay</span></span><a class="headerlink" href="#metrics_option-scylla_logstor_sm_separator_flow_control_delay" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Current delay applied to writes to control separator debt in microseconds.</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">logstor_sm</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">separator_flow_control_delay</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
 <section id="server">
 <h2>Server<a class="headerlink" href="#server" title="Link to this heading">¶</a></h2>
 <dl class="std metrics_option" id="metricsprop-scylla-raft-add-entries">
@@ -5484,6 +5877,7 @@
 <li><a class="reference internal" href="#row-cache">Row cache</a></li>
 <li><a class="reference internal" href="#row-level">Row level</a></li>
 <li><a class="reference internal" href="#secondary-index-manager">Secondary index manager</a></li>
+<li><a class="reference internal" href="#segment-manager">Segment manager</a></li>
 <li><a class="reference internal" href="#server">Server</a></li>
 <li><a class="reference internal" href="#sstables">Sstables</a></li>
 <li><a class="reference internal" href="#sstables-manager">Sstables manager</a></li>
@@ -5727,6 +6121,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cql/secondary-indexes.html">Global Secondary Indexes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/guardrails.html">CQL Guardrails</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>

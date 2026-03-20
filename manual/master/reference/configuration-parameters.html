@@ -512,6 +512,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-logstor-directory">
+<dt class="sig sig-object std" id="confval-logstor_directory">
+<span class="sig-name descname"><span class="pre">logstor_directory</span></span><a class="headerlink" href="#confval-logstor_directory" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The directory where data files for logstor storage are stored.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </section>
 <section id="common-initialization-properties">
 <span id="confgroup-common-initialization-properties"></span><h2>Common initialization properties<a class="headerlink" href="#common-initialization-properties" title="Link to this heading">¶</a></h2>
@@ -940,6 +954,65 @@ The change will take effect without a node restart, changing the value in the co
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="memtable-settings">
+<span id="confgroup-memtable-settings"></span><h2>Memtable settings<a class="headerlink" href="#memtable-settings" title="Link to this heading">¶</a></h2>
+<dl class="std confval" id="confprop-logstor-disk-size-in-mb">
+<dt class="sig sig-object std" id="confval-logstor_disk_size_in_mb">
+<span class="sig-name descname"><span class="pre">logstor_disk_size_in_mb</span></span><a class="headerlink" href="#confval-logstor_disk_size_in_mb" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Total size in megabytes allocated for logstor storage on disk.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">2048</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-logstor-file-size-in-mb">
+<dt class="sig sig-object std" id="confval-logstor_file_size_in_mb">
+<span class="sig-name descname"><span class="pre">logstor_file_size_in_mb</span></span><a class="headerlink" href="#confval-logstor_file_size_in_mb" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Total size in megabytes allocated for each logstor data file on disk.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">32</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-logstor-separator-delay-limit-ms">
+<dt class="sig sig-object std" id="confval-logstor_separator_delay_limit_ms">
+<span class="sig-name descname"><span class="pre">logstor_separator_delay_limit_ms</span></span><a class="headerlink" href="#confval-logstor_separator_delay_limit_ms" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Maximum delay in milliseconds for logstor separator debt control.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-logstor-separator-max-memory-in-mb">
+<dt class="sig sig-object std" id="confval-logstor_separator_max_memory_in_mb">
+<span class="sig-name descname"><span class="pre">logstor_separator_max_memory_in_mb</span></span><a class="headerlink" href="#confval-logstor_separator_max_memory_in_mb" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Maximum memory in megabytes for logstor separator memory buffers.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">256</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
@@ -2217,6 +2290,20 @@ The change will take effect without a node restart, changing the value in the co
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-enable-logstor">
+<dt class="sig sig-object std" id="confval-enable_logstor">
+<span class="sig-name descname"><span class="pre">enable_logstor</span></span><a class="headerlink" href="#confval-enable_logstor" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Enable the logstor storage engine.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
@@ -4973,6 +5060,7 @@ The change will take effect without a node restart, changing the value in the co
 <li><a class="reference internal" href="#common-fault-detection-setting">Common fault detection setting</a></li>
 <li><a class="reference internal" href="#commit-log-settings">Commit log settings</a></li>
 <li><a class="reference internal" href="#compaction-settings">Compaction settings</a></li>
+<li><a class="reference internal" href="#memtable-settings">Memtable settings</a></li>
 <li><a class="reference internal" href="#cache-and-index-settings">Cache and index settings</a></li>
 <li><a class="reference internal" href="#disks-settings">Disks settings</a></li>
 <li><a class="reference internal" href="#advanced-initialization-properties">Advanced initialization properties</a></li>
@@ -5214,6 +5302,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="../cql/secondary-indexes.html">Global Secondary Indexes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/guardrails.html">CQL Guardrails</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
