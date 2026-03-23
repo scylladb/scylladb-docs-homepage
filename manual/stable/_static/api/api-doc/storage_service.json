@@ -221,6 +221,25 @@
          ]
       },
       {
+         "path":"/storage_service/nodes/excluded",
+         "operations":[
+            {
+               "method":"GET",
+               "summary":"Retrieve host ids of nodes which are marked as excluded",
+               "type":"array",
+               "items":{
+                  "type":"string"
+               },
+               "nickname":"get_excluded_nodes",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+               ]
+            }
+         ]
+      },
+      {
          "path":"/storage_service/nodes/joining",
          "operations":[
             {
@@ -594,6 +613,50 @@
             }
          ]
       },
+      {
+         "path": "/storage_service/natural_endpoints/v2/{keyspace}",
+         "operations": [
+            {
+               "method": "GET",
+               "summary":"This method returns the N endpoints that are responsible for storing the specified key i.e for replication. the endpoint responsible for this key",
+               "type": "array",
+               "items": {
+                  "type": "string"
+               },
+               "nickname": "get_natural_endpoints_v2",
+               "produces": [
+                  "application/json"
+               ],
+               "parameters": [
+                  {
+                     "name": "keyspace",
+                     "description": "The keyspace to query about.",
+                     "required": true,
+                     "allowMultiple": false,
+                     "type": "string",
+                     "paramType": "path"
+                  },
+                  {
+                     "name": "cf",
+                     "description": "Column family name.",
+                     "required": true,
+                     "allowMultiple": false,
+                     "type": "string",
+                     "paramType": "query"
+                  },
+                  {
+                     "name": "key_component",
+                     "description": "Each component of the key for which we need to find the endpoint (e.g. ?key_component=part1&key_component=part2).",
+                     "required": true,
+                     "allowMultiple": true,
+                     "type": "string",
+                     "paramType": "query"
+                  }
+               ]
+            }
+         ]
+      },
+
       {
          "path":"/storage_service/cdc_streams_check_and_repair",
          "operations":[
@@ -1132,6 +1195,14 @@
                      "allowMultiple":false,
                      "type":"string",
                      "paramType":"query"
+                  },
+                  {
+                     "name": "drop_unfixable_sstables",
+                     "description": "When set to true, drop unfixable sstables. Applies only to scrub mode SEGREGATE.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"boolean",
+                     "paramType":"query"
                   }
                ]
             }
@@ -1543,6 +1614,30 @@
                      "name":"ignore_nodes",
                      "description":"Comma-separated list of dead nodes to ignore in removenode operation. Use the same method for all nodes to ignore: either Host IDs or ip addresses.",
                      "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "path":"/storage_service/exclude_node",
+         "operations":[
+            {
+               "method":"POST",
+               "summary":"Marks the node as permanently down (excluded).",
+               "type":"void",
+               "nickname":"exclude_node",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"hosts",
+                     "description":"Comma-separated list of host ids to exclude",
+                     "required":true,
                      "allowMultiple":false,
                      "type":"string",
                      "paramType":"query"
@@ -2956,7 +3051,7 @@
                   },
                   {
                      "name":"incremental_mode",
-                     "description":"Set the incremental repair mode. Can be 'disabled', 'incremental', or 'full'. 'incremental': The incremental repair logic is enabled. Unrepaired sstables will be included for repair. Repaired sstables will be skipped. The incremental repair states will be updated after repair. 'full': The incremental repair logic is enabled. Both repaired and unrepaired sstables will be included for repair. The incremental repair states will be updated after repair. 'disabled': The incremental repair logic is disabled completely. The incremental repair states, e.g., repaired_at in sstables and sstables_repaired_at in the system.tablets table, will not be updated after repair. When the option is not provided, it defaults to 'disabled' mode.",
+                     "description":"Set the incremental repair mode. Can be 'disabled', 'incremental', or 'full'. 'incremental': The incremental repair logic is enabled. Unrepaired sstables will be included for repair. Repaired sstables will be skipped. The incremental repair states will be updated after repair. 'full': The incremental repair logic is enabled. Both repaired and unrepaired sstables will be included for repair. The incremental repair states will be updated after repair. 'disabled': The incremental repair logic is disabled completely. The incremental repair states, e.g., repaired_at in sstables and sstables_repaired_at in the system.tablets table, will not be updated after repair. When the option is not provided, it defaults to incremental mode.",
                      "required":false,
                      "allowMultiple":false,
                      "type":"string",

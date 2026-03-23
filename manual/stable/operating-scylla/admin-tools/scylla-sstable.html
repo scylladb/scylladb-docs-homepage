@@ -344,16 +344,11 @@
 <h1>ScyllaDB SStable<a class="headerlink" href="#scylladb-sstable" title="Link to this heading">¶</a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB SStable is a ScyllaDB-native tool for examining and manipulating SStables, written in C++ and built on top of the ScyllaDB codebase.
+The tool is built-into the ScyllaDB executable and can be invoked via <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span></code>.</p>
 <p>This tool allows you to examine the content of SStables by performing operations such as dumping the content of SStables,
 validating the content of SStables, and more. See <a class="reference internal" href="#supported-operations">Supported Operations</a> for the list of available operations.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span> <span class="pre">--help</span></code> for additional information about the tool and the operations.</p>
-<p>This tool is similar to <a class="reference external" href="/operating-scylla/admin-tools/sstabledump">SStableDump</a>, with notable differences:</p>
-<ul class="simple">
-<li><p>Built on the ScyllaDB C++ codebase, it supports all SStable formats and components that ScyllaDB supports.</p></li>
-<li><p>Expanded scope: this tool supports much more than dumping SStable data components (see <a class="reference internal" href="#supported-operations">Supported Operations</a>).</p></li>
-<li><p>More flexible on how schema is obtained and where SStables are located: <a class="reference external" href="/operating-scylla/admin-tools/sstabledump">SStableDump</a> only supports dumping SStables located in their native data directory. To dump an SStable, one has to clone the entire ScyllaDB data directory tree, including system table directories and even config files. <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span></code> can dump sstables from any path with multiple choices on how to obtain the schema, see <a class="reference internal" href="#schema">Schema</a>.</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span></code> was developed to supplant <a class="reference external" href="/operating-scylla/admin-tools/sstabledump">SStableDump</a> as ScyllaDB-native tool, better tailored for the needs of ScyllaDB.</p>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
@@ -834,6 +829,14 @@ $LARGE_DATA_STATS_METADATA := {
 </pre></div>
 </div>
 </section>
+<section id="dump-schema">
+<h3>dump-schema<a class="headerlink" href="#dump-schema" title="Link to this heading">¶</a></h3>
+<p>Dump the schema of the table or sstable in CQL describe table format.</p>
+<p>Uses the regular <a class="reference internal" href="#schema">schema load</a> mechanism to obtain the schema.
+With certain schema sources, the schema can be obtained without any sstables passed to the tool.</p>
+<p>Important note: the dumped schema will always be a <cite>CREATE TABLE</cite> statement, even if the table is in fact a materialized view or an index.
+This schema is enough to understand and parse the sstable data, but it may not be enough to recreate the table or write new sstables for it.</p>
+</section>
 <section id="validate">
 <span id="scylla-sstable-validate-operation"></span><h3>validate<a class="headerlink" href="#validate" title="Link to this heading">¶</a></h3>
 <p>Validates the content of the sstable on the mutation-fragment level, see <a class="reference internal" href="#scylla-sstable-sstable-content">sstable content</a> for more details.
@@ -911,8 +914,28 @@ For example, for the SStable:</p>
 </section>
 <section id="write">
 <h3>write<a class="headerlink" href="#write" title="Link to this heading">¶</a></h3>
-<p>Writes an SStable based on a JSON representation of the content.
-The JSON representation has to have the same schema as that of a single SStable from the output of the <a href="#id66"><span class="problematic" id="id67">`dump-data operation &lt;dump-data_&gt;`_</span></a> (corresponding to the <code class="docutils literal notranslate"><span class="pre">$SSTABLE</span></code> symbol).
+<p>Writes an SStable based on a description of the content.
+The description can be provided in two formats: <code class="docutils literal notranslate"><span class="pre">CQL</span></code> and <code class="docutils literal notranslate"><span class="pre">JSON</span></code>.
+The input format can be selected with the <code class="docutils literal notranslate"><span class="pre">--input-format</span></code> flag. Default is <code class="docutils literal notranslate"><span class="pre">cql</span></code>.
+In both cases the input is expected to be provided via the file whose path is passed to <code class="docutils literal notranslate"><span class="pre">--input-file</span></code>.</p>
+<section id="cql-input-format">
+<h4>CQL input format<a class="headerlink" href="#cql-input-format" title="Link to this heading">¶</a></h4>
+<p>The input file is expected to contain <code class="docutils literal notranslate"><span class="pre">;</span></code> separated CQL statements, providing the content of the output SSTable(s).
+The following CQL statements are allowed: <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code> and <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.
+The statements can be in any order, the data will be sorted internally.
+Writes are internally applied to a memtable, which is flushed to disk once its size exceeds the memory limit, specified via the <code class="docutils literal notranslate"><span class="pre">--memory-limit</span></code> command line argument (defaults to <code class="docutils literal notranslate"><span class="pre">1MiB</span></code>).</p>
+<p>Reading the statements from the input file happens via a streaming parser, it is
+safe to provide input files of any size.</p>
+<p>Can produce multiple output SSTables, depending on the size of the input.</p>
+<p>This operation needs a temporary directory to write files to – as it sets up a
+<code class="docutils literal notranslate"><span class="pre">cql_test_env</span></code>. This temporary directory will have a size of a couple of megabytes.
+By default it will create this in <code class="docutils literal notranslate"><span class="pre">/tmp</span></code>, this can be changed with the <code class="docutils literal notranslate"><span class="pre">TEMPDIR</span></code>
+environment variable. This temporary directory is removed on exit.</p>
+</section>
+<section id="json-input-format">
+<h4>JSON input format<a class="headerlink" href="#json-input-format" title="Link to this heading">¶</a></h4>
+<p>The input file is expected to contain a JSON description of the content of the SStable to write.
+The JSON representation has to have the same schema as that of a single SStable from the output of the <a class="reference internal" href="#dump-data">dump-data operation</a> (corresponding to the <code class="docutils literal notranslate"><span class="pre">$SSTABLE</span></code> symbol).
 The easiest way to get started with writing your own SStable is to dump an existing SStable, modify the JSON then invoke this operation with the result.
 You can feed the output of dump-data to write by filtering the output of the former with <code class="docutils literal notranslate"><span class="pre">jq</span> <span class="pre">.sstables[]</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data --system-schema system_schema.columns /path/to/me-14-big-Data.db | jq .sstables[] &gt; input.json</span>
@@ -921,15 +944,19 @@ You can feed the output of dump-data to write by filtering the output of the for
 </pre></div>
 </div>
 <p>At the end of the above, <code class="docutils literal notranslate"><span class="pre">input.json</span></code> and <code class="docutils literal notranslate"><span class="pre">dump.json</span></code> will have the same content.</p>
-<p>Note that <cite>write</cite> doesn’t yet support all the features of the ScyllaDB storage engine. The following are not supported:</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">write</span></code> with <code class="docutils literal notranslate"><span class="pre">--input-format=json</span></code> doesn’t yet support all the features of the ScyllaDB storage engine. The following are not supported:</p>
 <ul class="simple">
 <li><p>Counters.</p></li>
 <li><p>Non-strictly atomic cells, including frozen multi-cell types like collections, tuples, and UDTs.</p></li>
 </ul>
 <p>Parsing uses a streaming JSON parser, it is safe to pass in input files of any size.</p>
+<p>Produces a single output SSTable.</p>
+</section>
+<section id="output-sstables">
+<h4>Output SSTables<a class="headerlink" href="#output-sstables" title="Link to this heading">¶</a></h4>
 <p>The output SStable will use the BIG format, the highest supported SStable format and a random UUID generation, which is printed to stdout.
-By default, it is placed in the local directory, which can be changed with <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.
-If the output SStable clashes with an existing SStable, the write will fail.</p>
+By default, they are placed in the local directory, which can be changed with <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.
+If any output SStable clashes with an existing SStable, the write will fail.</p>
 <p>The output is validated before being written to the disk.
 The validation done here is similar to that done by the <a class="reference internal" href="#validate">validate operation</a>.
 The level of validation can be changed with the <code class="docutils literal notranslate"><span class="pre">--validation-level</span></code> flag.
@@ -943,6 +970,7 @@ Possible validation-levels are:</p>
 <p>Note that levels are cumulative - each contains all the checks of the previous levels, too.
 By default, the strictest level is used.
 This can be relaxed, for example, if you want to produce intentionally corrupt SStables for tests.</p>
+</section>
 </section>
 <section id="shard-of">
 <h3>shard-of<a class="headerlink" href="#shard-of" title="Link to this heading">¶</a></h3>
@@ -1046,454 +1074,10 @@ The format of this argument is the following:</p>
 <div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>--script-arg $key1=$value1 --script-arg $key2=$value2
 </pre></div>
 </div>
-<p>Command line arguments will be received by the <a class="reference internal" href="#scylla-consume-stream-start-method">consume_stream_start()</a> API method.</p>
-<section id="scylladb-consume-api">
-<span id="scylla-consume-api"></span><h4>ScyllaDB Consume API<a class="headerlink" href="#scylladb-consume-api" title="Link to this heading">¶</a></h4>
-<p>These methods represent the glue code between scylla-sstable’s C++ code and the Lua script.
-Conceptually a script is an implementation of a consumer interface. The script has to implement only the methods it is interested in. Each method has a default implementation in the interface, which simply drops the respective <a class="reference internal" href="#scylla-sstable-sstable-content">mutation fragment</a>.
-For example, a script only interested in partitions can define only <a class="reference internal" href="#scylla-consume-partition-start-method">consume_partition_start()</a> and nothing else.
-Therefore a completely empty script is also valid, although not very useful.
-Below you will find the listing of the API methods.
-These methods (if provided by the script) will be called by the scylla-sstable runtime for the appropriate events and fragment types.</p>
-<section id="consume-stream-start-args">
-<span id="scylla-consume-stream-start-method"></span><h5>consume_stream_start(args)<a class="headerlink" href="#consume-stream-start-args" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API. Called on the very start of the stream.</p></li>
-<li><p>Parameter is a Lua table containing command line arguments for the script, passed via <code class="docutils literal notranslate"><span class="pre">--script-arg</span></code>.</p></li>
-<li><p>Can be used to initialize global state.</p></li>
-</ul>
-</section>
-<section id="consume-sstable-start-sst">
-<span id="scylla-consume-sstable-start-method"></span><h5>consume_sstable_start(sst)<a class="headerlink" href="#consume-sstable-start-sst" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API.</p></li>
-<li><p>Called on the start of each stable.</p></li>
-<li><p>The parameter is of type <a class="reference internal" href="#scylla-sstable-type">ScyllaDB.sstable</a>.</p></li>
-<li><p>When SStables are merged (<code class="docutils literal notranslate"><span class="pre">--merge</span></code>), the parameter is <code class="docutils literal notranslate"><span class="pre">nil</span></code>.</p></li>
-</ul>
-<p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-sstable-end-method">consume_sstable_end()</a> is called, skipping the content of the sstable (or that of the entire stream if <code class="docutils literal notranslate"><span class="pre">--merge</span></code> is used). If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the content of the sstable.</p>
-</section>
-<section id="consume-partition-start-ps">
-<span id="scylla-consume-partition-start-method"></span><h5>consume_partition_start(ps)<a class="headerlink" href="#consume-partition-start-ps" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API. Called on the start of each partition.</p></li>
-<li><p>The parameter is of type <a class="reference internal" href="#scylla-partition-start-type">ScyllaDB.partition_start</a>.</p></li>
-<li><p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-partition-end-method">consume_partition_end()</a> is called, skipping the content of the partition. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the content of the partition.</p></li>
-</ul>
-</section>
-<section id="consume-static-row-sr">
-<h5>consume_static_row(sr)<a class="headerlink" href="#consume-static-row-sr" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API.</p></li>
-<li><p>Called if the partition has a static row.</p></li>
-<li><p>The parameter is of type <a class="reference internal" href="#scylla-static-row-type">ScyllaDB.static_row</a>.</p></li>
-<li><p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-partition-end-method">consume_partition_end()</a> is called, and the remaining content of the partition is skipped. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the remaining content of the partition.</p></li>
-</ul>
-</section>
-<section id="consume-clustering-row-cr">
-<h5>consume_clustering_row(cr)<a class="headerlink" href="#consume-clustering-row-cr" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API.</p></li>
-<li><p>Called for each clustering row.</p></li>
-<li><p>The parameter is of type <a class="reference internal" href="#scylla-clustering-row-type">ScyllaDB.clustering_row</a>.</p></li>
-<li><p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-partition-end-method">consume_partition_end()</a> is called, the remaining content of the partition is skipped. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the remaining content of the partition.</p></li>
-</ul>
-</section>
-<section id="consume-range-tombstone-change-crt">
-<h5>consume_range_tombstone_change(crt)<a class="headerlink" href="#consume-range-tombstone-change-crt" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API.</p></li>
-<li><p>Called for each range tombstone change.</p></li>
-<li><p>The parameter is of type <a class="reference internal" href="#scylla-range-tombstone-change-type">ScyllaDB.range_tombstone_change</a>.</p></li>
-<li><p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-partition-end-method">consume_partition_end()</a> is called, the remaining content of the partition is skipped. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the remaining content of the partition.</p></li>
-</ul>
-</section>
-<section id="scylla-consume-partition-end-method">
-<span id="id8"></span><h5>consume_partition_end()<a class="headerlink" href="#scylla-consume-partition-end-method" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API.</p></li>
-<li><p>Called at the end of the partition.</p></li>
-<li><p>Returns whether to stop. If <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="#scylla-consume-sstable-end-method">consume_sstable_end()</a> is called,  the remaining content of the SStable is skipped. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, consumption follows with the remaining content of the SStable.</p></li>
-</ul>
-</section>
-<section id="scylla-consume-sstable-end-method">
-<span id="id10"></span><h5>consume_sstable_end()<a class="headerlink" href="#scylla-consume-sstable-end-method" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API.</p></li>
-<li><p>Called at the end of the SStable.</p></li>
-<li><p>Returns whether to stop. If true, <a class="reference internal" href="#scylla-consume-stream-end-method">consume_stream_end()</a> is called, the remaining content of the stream is skipped. If false, consumption follows with the remaining content of the stream.</p></li>
-</ul>
-</section>
-<section id="scylla-consume-stream-end-method">
-<span id="id11"></span><h5>consume_stream_end()<a class="headerlink" href="#scylla-consume-stream-end-method" title="Link to this heading">¶</a></h5>
-<ul class="simple">
-<li><p>Part of the Consume API.</p></li>
-<li><p>Called at the very end of the stream.</p></li>
-</ul>
-</section>
-</section>
-<section id="scylladb-lua-api">
-<h4>ScyllaDB LUA API<a class="headerlink" href="#scylladb-lua-api" title="Link to this heading">¶</a></h4>
-<p>In addition to the <a class="reference internal" href="#scylla-consume-api">ScyllaDB Consume API</a>, the Lua bindings expose various types and methods that allow you to work with ScyllaDB types and values.
-The listing uses the following terminology:</p>
-<ul class="simple">
-<li><p>Attribute - a simple attribute accessible via <code class="docutils literal notranslate"><span class="pre">obj.attribute_name</span></code>;</p></li>
-<li><p>Method - a method operating on an instance of said type, invocable as <code class="docutils literal notranslate"><span class="pre">obj:method()</span></code>;</p></li>
-<li><p>Magic method - magic methods defined in the metatable which define behaviour of these objects w.r.t. <a class="reference external" href="http://www.lua.org/manual/5.4/manual.html#2.4">Lua operators and more</a>;</p></li>
-</ul>
-<p>The format of an attribute description is the following:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>attribute_name (type) - description
-</pre></div>
-</div>
-<p>and that of a method:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>method_name(arg1_type, arg2_type...) (return_type) - description
-</pre></div>
-</div>
-<p>Magic methods have their signature defined by Lua and so that is not described here (these methods are not used directly anyway).</p>
-<section id="scylladb-atomic-cell">
-<span id="scylla-atomic-cell-type"></span><h5>ScyllaDB.atomic_cell<a class="headerlink" href="#scylladb-atomic-cell" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul>
-<li><p>timestamp (integer)</p></li>
-<li><p>is_live (boolean) - is the cell live?</p></li>
-<li><p>type (string) - one of: <code class="docutils literal notranslate"><span class="pre">regular</span></code>, <code class="docutils literal notranslate"><span class="pre">counter-update</span></code>, <code class="docutils literal notranslate"><span class="pre">counter-shards</span></code>, <code class="docutils literal notranslate"><span class="pre">frozen-collection</span></code> or <code class="docutils literal notranslate"><span class="pre">collection</span></code>.</p></li>
-<li><p>has_ttl (boolean) - is the cell expiring?</p></li>
-<li><p>ttl (integer) - time to live in seconds, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if cell is not expiring.</p></li>
-<li><p>expiry (<a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a>) - time at which cell expires, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if cell is not expiring.</p></li>
-<li><p>deletion_time (<a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a>) - time at which cell was deleted, <code class="docutils literal notranslate"><span class="pre">nil</span></code> unless cell is dead or expiring.</p></li>
-<li><p>value:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">nil</span></code> if cell is dead.</p></li>
-<li><p>appropriate Lua native type if type == <code class="docutils literal notranslate"><span class="pre">regular</span></code>.</p></li>
-<li><p>integer if type == <code class="docutils literal notranslate"><span class="pre">counter-update</span></code>.</p></li>
-<li><p><a class="reference internal" href="#scylla-counter-shards-value-type">ScyllaDB.counter_shards_value</a> if type == <code class="docutils literal notranslate"><span class="pre">counter-shards</span></code>.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<p>A counter-shard table has the following keys:</p>
-<ul class="simple">
-<li><p>id (string)</p></li>
-<li><p>value (integer)</p></li>
-<li><p>clock (integer)</p></li>
-</ul>
-</section>
-<section id="scylladb-clustering-key">
-<span id="scylla-clustering-key-type"></span><h5>ScyllaDB.clustering_key<a class="headerlink" href="#scylladb-clustering-key" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>components (table) - the column values (<a class="reference internal" href="#scylla-data-value-type">ScyllaDB.data_value</a>) making up the composite clustering key.</p></li>
-</ul>
-<p>Methods:</p>
-<ul class="simple">
-<li><p>to_hex - convert the key to its serialized format, encoded in hex.</p></li>
-</ul>
-<p>Magic methods:</p>
-<ul class="simple">
-<li><p>__tostring - can be converted to string with tostring(), uses the built-in operator&lt;&lt; in ScyllaDB.</p></li>
-</ul>
-</section>
-<section id="scylla-clustering-row-type">
-<span id="id14"></span><h5>ScyllaDB.clustering_row<a class="headerlink" href="#scylla-clustering-row-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>key ($TYPE) - the clustering key’s value as the appropriate Lua native type.</p></li>
-<li><p>tombstone (<a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a>) - row tombstone, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if no tombstone.</p></li>
-<li><p>shadowable_tombstone (<a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a>) - shadowable tombstone of the row tombstone, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if no tombstone.</p></li>
-<li><p>marker (<a class="reference internal" href="#scylla-row-marker-type">ScyllaDB.row_marker</a>) - the row marker, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if row doesn’t have one.</p></li>
-<li><p>cells (table) - table of cells, where keys are the column names and the values are either of type <a class="reference internal" href="#scylla-atomic-cell-type">ScyllaDB.atomic_cell</a> or <a class="reference internal" href="#scylla-collection-type">ScyllaDB.collection</a>.</p></li>
-</ul>
-<p>See also:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#scylla-unserialize-clustering-key-method">ScyllaDB.unserialize_clustering_key()</a>.</p></li>
-</ul>
-</section>
-<section id="scylla-collection-type">
-<span id="id17"></span><h5>ScyllaDB.collection<a class="headerlink" href="#scylla-collection-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>type (string) - always <code class="docutils literal notranslate"><span class="pre">collection</span></code> for collection.</p></li>
-<li><p>tombstone (<a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a>) - <code class="docutils literal notranslate"><span class="pre">nil</span></code> if no tombstone.</p></li>
-<li><p>cells (table) - the collection cells, each collection cell is a table, with a <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> attribute. The key entry is the key of the collection cell for actual collections (list, set and map) and is of type <a class="reference internal" href="#scylla-data-value-type">ScyllaDB.data-value</a>. For tuples and UDT this is just an empty string. The value entry is the value of the collection cell and is of type <a class="reference internal" href="#scylla-atomic-cell-type">ScyllaDB.atomic-cell</a>.</p></li>
-</ul>
-</section>
-<section id="scylladb-collection-cell-value">
-<span id="scylla-collection-cell-value-type"></span><h5>ScyllaDB.collection_cell_value<a class="headerlink" href="#scylladb-collection-cell-value" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>key (sstring) - collection cell key in human readable form.</p></li>
-<li><p>value (<a class="reference internal" href="#scylla-atomic-cell-type">ScyllaDB.atomic_cell</a>) - collection cell value.</p></li>
-</ul>
-</section>
-<section id="scylladb-column-definition">
-<span id="scylla-column-definition-type"></span><h5>ScyllaDB.column_definition<a class="headerlink" href="#scylladb-column-definition" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>id (integer) - the id of the column.</p></li>
-<li><p>name (string) - the name of the column.</p></li>
-<li><p>kind (string) - the kind of the column, one of <code class="docutils literal notranslate"><span class="pre">partition_key</span></code>, <code class="docutils literal notranslate"><span class="pre">clustering_key</span></code>, <code class="docutils literal notranslate"><span class="pre">static_column</span></code> or <code class="docutils literal notranslate"><span class="pre">regular_column</span></code>.</p></li>
-</ul>
-</section>
-<section id="scylla-counter-shards-value-type">
-<span id="id22"></span><h5>ScyllaDB.counter_shards_value<a class="headerlink" href="#scylla-counter-shards-value-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul>
-<li><p>value (integer) - the total value of the counter (the sum of all the shards).</p></li>
-<li><p>shards (table) - the shards making up this counter, a lua list containing tables, representing shards, with the following key/values:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>id (string) - the shard’s id (UUID).</p></li>
-<li><p>value (integer) - the shard’s value.</p></li>
-<li><p>clock (integer) - the shard’s logical clock.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<p>Magic methods:</p>
-<ul class="simple">
-<li><p>__tostring - can be converted to string with tostring().</p></li>
-</ul>
-</section>
-<section id="scylla-data-value-type">
-<span id="id23"></span><h5>ScyllaDB.data_value<a class="headerlink" href="#scylla-data-value-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>value - the value represented as the appropriate Lua type</p></li>
-</ul>
-<p>Magic methods:</p>
-<ul class="simple">
-<li><p>__tostring - can be converted to string with tostring().</p></li>
-</ul>
-</section>
-<section id="scylla-gc-clock-time-point-type">
-<span id="id24"></span><h5>ScyllaDB.gc_clock_time_point<a class="headerlink" href="#scylla-gc-clock-time-point-type" title="Link to this heading">¶</a></h5>
-<p>A time point belonging to the gc_clock, in UTC.</p>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>year (integer) - [1900, +inf).</p></li>
-<li><p>month (integer) - [1, 12].</p></li>
-<li><p>day (integer) - [1, 31].</p></li>
-<li><p>hour (integer) - [0, 23].</p></li>
-<li><p>min (integer) - [0, 59].</p></li>
-<li><p>sec (integer) - [0, 59].</p></li>
-</ul>
-<p>Magic methods:</p>
-<ul class="simple">
-<li><p>__eq - can be equal compared.</p></li>
-<li><p>__lt - can be less compared.</p></li>
-<li><p>__le - can be less-or-equal compared.</p></li>
-<li><p>__tostring - can be converted to string with tostring().</p></li>
-</ul>
-<p>See also:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#scylla-now-method">ScyllaDB.now()</a>.</p></li>
-<li><p><a class="reference internal" href="#scylla-time-point-from-string-method">ScyllaDB.time_point_from_string()</a>.</p></li>
-</ul>
-</section>
-<section id="scylladb-json-writer">
-<span id="scylla-json-writer-type"></span><h5>ScyllaDB.json_writer<a class="headerlink" href="#scylladb-json-writer" title="Link to this heading">¶</a></h5>
-<p>A JSON writer object, with both low-level and high-level APIs.
-The low-level API allows you to write custom JSON and it loosely follows the API of <a class="reference external" href="https://rapidjson.org/classrapidjson_1_1_writer.html">rapidjson::Writer</a> (upon which it is implemented).
-The high-level API is for writing <a class="reference internal" href="#scylla-sstable-sstable-content">mutation fragments</a> as JSON directly, using the built-in JSON conversion logic that is used by <a href="#id68"><span class="problematic" id="id69">`dump-data &lt;dump-data_&gt;`_</span></a> operation.</p>
-<p>Low level API Methods:</p>
-<ul class="simple">
-<li><p>null() - write a null json value.</p></li>
-<li><p>bool(boolean) - write a bool json value.</p></li>
-<li><p>int(integer) - write an integer json value.</p></li>
-<li><p>double(number) - write a double json value.</p></li>
-<li><p>string(string) - write a string json value.</p></li>
-<li><p>start_object() - start a json object.</p></li>
-<li><p>key(string) - write the key of a json object.</p></li>
-<li><p>end_object() - write the end of a json object.</p></li>
-<li><p>start_array() - write the start of a json array.</p></li>
-<li><p>end_array() - write the end of a json array.</p></li>
-</ul>
-<p>High level API Methods:</p>
-<ul class="simple">
-<li><p>start_stream() - start the stream, call at the very beginning.</p></li>
-<li><p>start_sstable() - start an sstable.</p></li>
-<li><p>start_partition() - start a partition.</p></li>
-<li><p>static_row() - write a static row to the stream.</p></li>
-<li><p>clustering_row() - write a clustering row to the stream.</p></li>
-<li><p>range_tombstone_change() - write a range tombstone change to the stream.</p></li>
-<li><p>end_partition() - end the current partition.</p></li>
-<li><p>end_sstable() - end the current sstable.</p></li>
-<li><p>end_stream() - end the stream, call at the very end.</p></li>
-</ul>
-</section>
-<section id="scylladb-new-json-writer">
-<span id="scylla-new-json-writer-method"></span><h5>ScyllaDB.new_json_writer()<a class="headerlink" href="#scylladb-new-json-writer" title="Link to this heading">¶</a></h5>
-<p>Create a <a class="reference internal" href="#scylla-json-writer-type">ScyllaDB.json_writer</a> instance.</p>
-</section>
-<section id="scylladb-new-position-in-partition">
-<span id="scylla-new-position-in-partition-method"></span><h5>ScyllaDB.new_position_in_partition()<a class="headerlink" href="#scylladb-new-position-in-partition" title="Link to this heading">¶</a></h5>
-<p>Creates a <a class="reference internal" href="#scylla-position-in-partition-type">ScyllaDB.position_in_partition</a> instance.</p>
-<p>Arguments:</p>
-<ul class="simple">
-<li><p>weight (integer) - the weight of the key.</p></li>
-<li><p>key (<a class="reference internal" href="#scylla-clustering-key-type">ScyllaDB.clustering_key</a>) - the clustering key, optional.</p></li>
-</ul>
-</section>
-<section id="scylladb-new-ring-position">
-<span id="scylla-new-ring-position-method"></span><h5>ScyllaDB.new_ring_position()<a class="headerlink" href="#scylladb-new-ring-position" title="Link to this heading">¶</a></h5>
-<p>Creates a <a class="reference internal" href="#scylla-ring-position-type">ScyllaDB.ring_position</a> instance.</p>
-<p>Has several overloads:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ScyllaDB.new_ring_position(weight,</span> <span class="pre">key)</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ScyllaDB.new_ring_position(weight,</span> <span class="pre">token)</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ScyllaDB.new_ring_position(weight,</span> <span class="pre">key,</span> <span class="pre">token)</span></code>.</p></li>
-</ul>
-<p>Where:</p>
-<ul class="simple">
-<li><p>weight (integer) - the weight of the key.</p></li>
-<li><p>key (<a class="reference internal" href="#scylla-partition-key-type">ScyllaDB.partition_key</a>) - the partition key.</p></li>
-<li><p>token (integer) - the token (of the key if a key is provided).</p></li>
-</ul>
-</section>
-<section id="scylla-now-method">
-<span id="id28"></span><h5>ScyllaDB.now()<a class="headerlink" href="#scylla-now-method" title="Link to this heading">¶</a></h5>
-<p>Create a <a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a> instance, representing the current time.</p>
-</section>
-<section id="scylla-partition-key-type">
-<span id="id30"></span><h5>ScyllaDB.partition_key<a class="headerlink" href="#scylla-partition-key-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>components (table) - the column values (<a class="reference internal" href="#scylla-data-value-type">ScyllaDB.data_value</a>) making up the composite partition key.</p></li>
-</ul>
-<p>Methods:</p>
-<ul class="simple">
-<li><p>to_hex - convert the key to its serialized format, encoded in hex.</p></li>
-</ul>
-<p>Magic methods:</p>
-<ul class="simple">
-<li><p>__tostring - can be converted to string with tostring(), uses the built-in operator&lt;&lt; in ScyllaDB.</p></li>
-</ul>
-<p>See also:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#scylla-unserialize-partition-key-method"><span class="std std-ref">ScyllaDB.unserialize_partition_key()</span></a>.</p></li>
-<li><p><a class="reference internal" href="#scylla-token-of-method"><span class="std std-ref">ScyllaDB.token_of()</span></a>.</p></li>
-</ul>
-</section>
-<section id="scylla-partition-start-type">
-<span id="id32"></span><h5>ScyllaDB.partition_start<a class="headerlink" href="#scylla-partition-start-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>key - the partition key’s value as the appropriate Lua native type.</p></li>
-<li><p>token (integer) - the partition key’s token.</p></li>
-<li><p>tombstone (<a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a>) - the partition tombstone, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if no tombstone.</p></li>
-</ul>
-</section>
-<section id="scylla-position-in-partition-type">
-<span id="id34"></span><h5>ScyllaDB.position_in_partition<a class="headerlink" href="#scylla-position-in-partition-type" title="Link to this heading">¶</a></h5>
-<p>Currently used only for clustering positions.</p>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>key (<a class="reference internal" href="#scylla-clustering-key-type">ScyllaDB.clustering_key</a>) - the clustering key, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if the position in partition represents the min or max clustering positions.</p></li>
-<li><p>weight (integer) - weight of the position, either -1 (before key), 0 (at key) or 1 (after key). If key attribute is <code class="docutils literal notranslate"><span class="pre">nil</span></code>, the weight is never 0.</p></li>
-</ul>
-<p>Methods:</p>
-<ul class="simple">
-<li><p>tri_cmp - compare this position in partition to another position in partition, returns -1 (<code class="docutils literal notranslate"><span class="pre">&lt;</span></code>), 0 (<code class="docutils literal notranslate"><span class="pre">==</span></code>) or 1 (<code class="docutils literal notranslate"><span class="pre">&gt;</span></code>).</p></li>
-</ul>
-<p>See also:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#scylla-new-position-in-partition-method">ScyllaDB.new_position_in_partition()</a>.</p></li>
-</ul>
-</section>
-<section id="scylla-range-tombstone-change-type">
-<span id="id37"></span><h5>ScyllaDB.range_tombstone_change<a class="headerlink" href="#scylla-range-tombstone-change-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>key ($TYPE) - the clustering key’s value as the appropriate Lua native type.</p></li>
-<li><p>key_weight (integer) - weight of the position, either -1 (before key), 0 (at key) or 1 (after key).</p></li>
-<li><p>tombstone (<a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a>) - tombstone, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if no tombstone.</p></li>
-</ul>
-</section>
-<section id="scylla-ring-position-type">
-<span id="id39"></span><h5>ScyllaDB.ring_position<a class="headerlink" href="#scylla-ring-position-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>token (integer) - the token, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if the ring position represents the min or max ring positions.</p></li>
-<li><p>key (<a class="reference internal" href="#scylla-partition-key-type">ScyllaDB.partition_key</a>) - the partition key, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if the ring position represents a position before/after a token.</p></li>
-<li><p>weight (integer) - weight of the position, either -1 (before key/token), 0 (at key) or 1 (after key/token). If key attribute is <code class="docutils literal notranslate"><span class="pre">nil</span></code>, the weight is never 0.</p></li>
-</ul>
-<p>Methods:</p>
-<ul class="simple">
-<li><p>tri_cmp - compare this ring position to another ring position, returns -1 (<code class="docutils literal notranslate"><span class="pre">&lt;</span></code>), 0 (<code class="docutils literal notranslate"><span class="pre">==</span></code>) or 1 (<code class="docutils literal notranslate"><span class="pre">&gt;</span></code>).</p></li>
-</ul>
-<p>See also:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#scylla-new-ring-position-method">ScyllaDB.new_ring_position()</a>.</p></li>
-</ul>
-</section>
-<section id="scylla-row-marker-type">
-<span id="id42"></span><h5>ScyllaDB.row_marker<a class="headerlink" href="#scylla-row-marker-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>timestamp (integer).</p></li>
-<li><p>is_live (boolean) - is the marker live?</p></li>
-<li><p>has_ttl (boolean) - is the marker expiring?</p></li>
-<li><p>ttl (integer) - time to live in seconds, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if marker is not expiring.</p></li>
-<li><p>expiry (<a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a>) - time at which marker expires, <code class="docutils literal notranslate"><span class="pre">nil</span></code> if marker is not expiring.</p></li>
-<li><p>deletion_time (<a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a>) - time at which marker was deleted, <code class="docutils literal notranslate"><span class="pre">nil</span></code> unless marker is dead or expiring.</p></li>
-</ul>
-</section>
-<section id="scylladb-schema">
-<span id="scylla-schema-type"></span><h5>ScyllaDB.schema<a class="headerlink" href="#scylladb-schema" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>partition_key_columns (table) - list of <a class="reference internal" href="#scylla-column-definition-type">ScyllaDB.column_definition</a> of the key columns making up the partition key.</p></li>
-<li><p>clustering_key_columns (table) - list of <a class="reference internal" href="#scylla-column-definition-type">ScyllaDB.column_definition</a> of the key columns making up the clustering key.</p></li>
-<li><p>static_columns (table) - list of <a class="reference internal" href="#scylla-column-definition-type">ScyllaDB.column_definition</a> of the static columns.</p></li>
-<li><p>regular_columns (table) - list of <a class="reference internal" href="#scylla-column-definition-type">ScyllaDB.column_definition</a> of the regular columns.</p></li>
-<li><p>all_columns (table) - list of <a class="reference internal" href="#scylla-column-definition-type">ScyllaDB.column_definition</a> of all columns.</p></li>
-</ul>
-</section>
-<section id="scylla-sstable-type">
-<span id="id50"></span><h5>ScyllaDB.sstable<a class="headerlink" href="#scylla-sstable-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>filename (string) - the full path of the sstable Data component file;</p></li>
-</ul>
-</section>
-<section id="scylla-static-row-type">
-<span id="id51"></span><h5>ScyllaDB.static_row<a class="headerlink" href="#scylla-static-row-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>cells (table) - table of cells, where keys are the column names and the values are either of type <a class="reference internal" href="#scylla-atomic-cell-type">ScyllaDB.atomic_cell</a> or <a class="reference internal" href="#scylla-collection-type">ScyllaDB.collection</a>.</p></li>
-</ul>
-</section>
-<section id="scylla-time-point-from-string-method">
-<span id="id54"></span><h5>ScyllaDB.time_point_from_string()<a class="headerlink" href="#scylla-time-point-from-string-method" title="Link to this heading">¶</a></h5>
-<p>Create a <a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a> instance from the passed in string.
-Argument is string, using the same format as the CQL timestamp type, see <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">https://en.wikipedia.org/wiki/ISO_8601</a>.</p>
-</section>
-<section id="scylladb-token-of">
-<span id="scylla-token-of-method"></span><h5>ScyllaDB.token_of()<a class="headerlink" href="#scylladb-token-of" title="Link to this heading">¶</a></h5>
-<p>Compute and return the token (integer) for a <a class="reference internal" href="#scylla-partition-key-type">ScyllaDB.partition_key</a>.</p>
-</section>
-<section id="scylla-tombstone-type">
-<span id="id57"></span><h5>ScyllaDB.tombstone<a class="headerlink" href="#scylla-tombstone-type" title="Link to this heading">¶</a></h5>
-<p>Attributes:</p>
-<ul class="simple">
-<li><p>timestamp (integer)</p></li>
-<li><p>deletion_time (<a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a>) - the point in time at which the tombstone was deleted.</p></li>
-</ul>
-</section>
-<section id="scylla-unserialize-clustering-key-method">
-<span id="id59"></span><h5>ScyllaDB.unserialize_clustering_key()<a class="headerlink" href="#scylla-unserialize-clustering-key-method" title="Link to this heading">¶</a></h5>
-<p>Create a <a class="reference internal" href="#scylla-clustering-key-type">ScyllaDB.clustering_key</a> instance.</p>
-<p>Argument is a string representing serialized clustering key in hex format.</p>
-</section>
-<section id="scylladb-unserialize-partition-key">
-<span id="scylla-unserialize-partition-key-method"></span><h5>ScyllaDB.unserialize_partition_key()<a class="headerlink" href="#scylladb-unserialize-partition-key" title="Link to this heading">¶</a></h5>
-<p>Create a <a class="reference internal" href="#scylla-partition-key-type">ScyllaDB.partition_key</a> instance.</p>
-<p>Argument is a string representing serialized partition key in hex format.</p>
-</section>
-</section>
-<section id="id62">
-<h4>Examples<a class="headerlink" href="#id62" title="Link to this heading">¶</a></h4>
+<p>Command line arguments will be received by the <a class="reference internal" href="scylla-sstable-script-api.html#scylla-consume-stream-start-method"><span class="std std-ref">consume_stream_start()</span></a> API method.</p>
+<p>See the <a class="reference internal" href="scylla-sstable-script-api.html"><span class="doc">scripting API</span></a> for more details.</p>
+<section id="id4">
+<h4>Examples<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
 <p>You can find example scripts at <a class="reference external" href="https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts">https://github.com/scylladb/scylladb/tree/master/tools/scylla-sstable-scripts</a>.</p>
 </section>
 </section>
@@ -1505,7 +1089,7 @@ The SSTable version to be used can be overridden with the <code class="docutils 
 <p>SSTables which are already on the designated version are skipped. To force rewriting <em>all</em> SSTables, use the <code class="docutils literal notranslate"><span class="pre">--all</span></code> flag.</p>
 <p>Output SSTables are written to the path provided by the <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code> flag, or to the current directory if not specified.
 This directory is expected to exist and be empty. If not empty the tool will refuse to run. This can be overridden with the <code class="docutils literal notranslate"><span class="pre">--unsafe-accept-nonempty-output-dir</span></code> flag.</p>
-<p>It is strongly recommended to use the system schema tables as the schema source for this command, see the <a class="reference internal" href="#scylla-sstable-schema">schema options</a> for more details.
+<p>It is strongly recommended to use the system schema tables as the schema source for this command, see the <a class="reference internal" href="#scylla-sstable-schema"><span class="std std-ref">schema options</span></a> for more details.
 A schema which is good enough to read the SSTable and dump its content, may not be good enough to write its content back verbatim.
 An incomplete or incorrect schema can lead to the tool crashing or even data loss.</p>
 <p>Altering the schema deliberately to alter the SSTable content or options is possible, by using the <code class="docutils literal notranslate"><span class="pre">--schema-file</span></code> schema source and providing the schema with the desired alterations.
@@ -1514,8 +1098,8 @@ But even an altered schema which changed only the table options can lead to data
 <p>The mapping of input SSTables to output SSTables is printed to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>.</p>
 </section>
 </section>
-<section id="id63">
-<h2>Examples<a class="headerlink" href="#id63" title="Link to this heading">¶</a></h2>
+<section id="id5">
+<h2>Examples<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <p>Dumping the content of the SStable:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable dump-data /path/to/md-123456-big-Data.db</span>
 </pre></div>
@@ -1563,7 +1147,7 @@ But even an altered schema which changed only the table options can lead to data
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1610,9 +1194,9 @@ But even an altered schema which changed only the table options can lead to data
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="scylla-types.html">
+            <a class="navigation__link" href="scylla-sstable-script-api.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />ScyllaDB Types
+                    <span class="colored">NEXT</span> <br />ScyllaDB SStable Script API
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -1632,7 +1216,7 @@ But even an altered schema which changed only the table options can lead to data
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1672,67 +1256,30 @@ But even an altered schema which changed only the table options can lead to data
 <li><a class="reference internal" href="#dump-summary">dump-summary</a></li>
 <li><a class="reference internal" href="#dump-statistics">dump-statistics</a></li>
 <li><a class="reference internal" href="#dump-scylla-metadata">dump-scylla-metadata</a></li>
+<li><a class="reference internal" href="#dump-schema">dump-schema</a></li>
 <li><a class="reference internal" href="#validate">validate</a></li>
 <li><a class="reference internal" href="#scrub">scrub</a></li>
 <li><a class="reference internal" href="#validate-checksums">validate-checksums</a></li>
 <li><a class="reference internal" href="#decompress">decompress</a></li>
-<li><a class="reference internal" href="#write">write</a></li>
+<li><a class="reference internal" href="#write">write</a><ul>
+<li><a class="reference internal" href="#cql-input-format">CQL input format</a></li>
+<li><a class="reference internal" href="#json-input-format">JSON input format</a></li>
+<li><a class="reference internal" href="#output-sstables">Output SSTables</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#shard-of">shard-of</a></li>
 <li><a class="reference internal" href="#query">query</a><ul>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#script">script</a><ul>
-<li><a class="reference internal" href="#scylladb-consume-api">ScyllaDB Consume API</a><ul>
-<li><a class="reference internal" href="#consume-stream-start-args">consume_stream_start(args)</a></li>
-<li><a class="reference internal" href="#consume-sstable-start-sst">consume_sstable_start(sst)</a></li>
-<li><a class="reference internal" href="#consume-partition-start-ps">consume_partition_start(ps)</a></li>
-<li><a class="reference internal" href="#consume-static-row-sr">consume_static_row(sr)</a></li>
-<li><a class="reference internal" href="#consume-clustering-row-cr">consume_clustering_row(cr)</a></li>
-<li><a class="reference internal" href="#consume-range-tombstone-change-crt">consume_range_tombstone_change(crt)</a></li>
-<li><a class="reference internal" href="#scylla-consume-partition-end-method">consume_partition_end()</a></li>
-<li><a class="reference internal" href="#scylla-consume-sstable-end-method">consume_sstable_end()</a></li>
-<li><a class="reference internal" href="#scylla-consume-stream-end-method">consume_stream_end()</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#scylladb-lua-api">ScyllaDB LUA API</a><ul>
-<li><a class="reference internal" href="#scylladb-atomic-cell">ScyllaDB.atomic_cell</a></li>
-<li><a class="reference internal" href="#scylladb-clustering-key">ScyllaDB.clustering_key</a></li>
-<li><a class="reference internal" href="#scylla-clustering-row-type">ScyllaDB.clustering_row</a></li>
-<li><a class="reference internal" href="#scylla-collection-type">ScyllaDB.collection</a></li>
-<li><a class="reference internal" href="#scylladb-collection-cell-value">ScyllaDB.collection_cell_value</a></li>
-<li><a class="reference internal" href="#scylladb-column-definition">ScyllaDB.column_definition</a></li>
-<li><a class="reference internal" href="#scylla-counter-shards-value-type">ScyllaDB.counter_shards_value</a></li>
-<li><a class="reference internal" href="#scylla-data-value-type">ScyllaDB.data_value</a></li>
-<li><a class="reference internal" href="#scylla-gc-clock-time-point-type">ScyllaDB.gc_clock_time_point</a></li>
-<li><a class="reference internal" href="#scylladb-json-writer">ScyllaDB.json_writer</a></li>
-<li><a class="reference internal" href="#scylladb-new-json-writer">ScyllaDB.new_json_writer()</a></li>
-<li><a class="reference internal" href="#scylladb-new-position-in-partition">ScyllaDB.new_position_in_partition()</a></li>
-<li><a class="reference internal" href="#scylladb-new-ring-position">ScyllaDB.new_ring_position()</a></li>
-<li><a class="reference internal" href="#scylla-now-method">ScyllaDB.now()</a></li>
-<li><a class="reference internal" href="#scylla-partition-key-type">ScyllaDB.partition_key</a></li>
-<li><a class="reference internal" href="#scylla-partition-start-type">ScyllaDB.partition_start</a></li>
-<li><a class="reference internal" href="#scylla-position-in-partition-type">ScyllaDB.position_in_partition</a></li>
-<li><a class="reference internal" href="#scylla-range-tombstone-change-type">ScyllaDB.range_tombstone_change</a></li>
-<li><a class="reference internal" href="#scylla-ring-position-type">ScyllaDB.ring_position</a></li>
-<li><a class="reference internal" href="#scylla-row-marker-type">ScyllaDB.row_marker</a></li>
-<li><a class="reference internal" href="#scylladb-schema">ScyllaDB.schema</a></li>
-<li><a class="reference internal" href="#scylla-sstable-type">ScyllaDB.sstable</a></li>
-<li><a class="reference internal" href="#scylla-static-row-type">ScyllaDB.static_row</a></li>
-<li><a class="reference internal" href="#scylla-time-point-from-string-method">ScyllaDB.time_point_from_string()</a></li>
-<li><a class="reference internal" href="#scylladb-token-of">ScyllaDB.token_of()</a></li>
-<li><a class="reference internal" href="#scylla-tombstone-type">ScyllaDB.tombstone</a></li>
-<li><a class="reference internal" href="#scylla-unserialize-clustering-key-method">ScyllaDB.unserialize_clustering_key()</a></li>
-<li><a class="reference internal" href="#scylladb-unserialize-partition-key">ScyllaDB.unserialize_partition_key()</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id62">Examples</a></li>
+<li><a class="reference internal" href="#id4">Examples</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#upgrade">upgrade</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id63">Examples</a></li>
+<li><a class="reference internal" href="#id5">Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -1764,7 +1311,7 @@ But even an altered schema which changed only the table options can lead to data
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.4
+                2026.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1778,13 +1325,13 @@ But even an altered schema which changed only the table options can lead to data
             
                 
                     <li>
-                        <a href="../../../branch-2026.1/operating-scylla/admin-tools/scylla-sstable.html">2026.1</a>
+                        <a href="scylla-sstable.html">2026.1</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="scylla-sstable.html">2025.4</a>
+                        <a href="../../../branch-2025.4/operating-scylla/admin-tools/scylla-sstable.html">2025.4</a>
                     </li>
                 
             
@@ -1813,12 +1360,12 @@ But even an altered schema which changed only the table options can lead to data
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1902,11 +1449,10 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l3"><a class="reference internal" href="../rest.html">Admin REST API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../using-scylla/tracing.html">Tracing</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">ScyllaDB SStable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scylla-sstable-script-api.html">ScyllaDB SStable Script API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="scylla-types.html">ScyllaDB Types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sstableloader.html">SSTableLoader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cassandra-stress.html">cassandra-stress</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sstabledump.html">SSTabledump</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sstablemetadata.html">SSTableMetadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/logging.html">ScyllaDB Logs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="perftune.html">Seastar Perftune</a></li>
 <li class="toctree-l3"><a class="reference internal" href="virtual-tables.html">Virtual Tables</a></li>
@@ -1970,10 +1516,11 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../alternator/alternator.html">Alternator: DynamoDB API in ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/network.html">Reducing network costs in Alternator</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1998,6 +1545,7 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l2"><a class="reference internal" href="../../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/backup-and-restore.html">Backup and Restore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/incremental-repair.html">Incremental Repair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 </ul>
 </li>
@@ -2035,11 +1583,7 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/upgrade/index.html">Upgrade</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/missing-dotmount-files.html">Inaccessible configuration files after ScyllaDB upgrade</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/handling-node-failures.html">Handling Node Failures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-add-remove-replace.html">Failure to Add, Remove, or Replace a Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-decommission.html">Failed Decommission Problem</a></li>
@@ -2049,14 +1593,14 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-schema-sync.html">Failed Schema Sync</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/large-partition-table.html">ScyllaDB Large Partitions Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/large-rows-large-cells-tables.html">ScyllaDB Large Rows and Cells Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/debugging-large-partition.html">Large Partitions Hunting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/failed-update-schema.html">Failure to Update the Schema</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/space-up.html">Space Utilization Increasing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/drop-table-space-up.html">Disk Space is not Reclaimed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/sstable-corruption.html">SSTable Corruption Problem</a></li>
@@ -2064,24 +1608,24 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l3"><a class="reference external" href="https://monitoring.docs.scylladb.com/stable/use-monitoring/advisor/heavyCompaction.html">Limiting Compaction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/time-zone.html">Time Range Query Fails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/copy-from-failed.html">COPY FROM Fails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/clients-table.html">CQL Connection Table</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/manager-monitoring-integration.html">Manager and Monitoring integration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/reverse-dns-sshd.html">Manager lists healthy nodes as down</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/autoremove-ubuntu.html">Removing ScyllaDB on Ubuntu breaks system packages</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/cdc-experimental-upgrade.html">Upgrading from experimental CDC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/compaction.html">Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/consistency.html">Consistency in ScyllaDB</a></li>
@@ -2102,7 +1646,6 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l2"><a class="reference internal" href="../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/ntp.html">NTP Configuration for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/perftune-modes-sync.html">Updating the Mode in perftune.yaml After a ScyllaDB Upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/posix.html">POSIX networking for ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/raid-device.html">Recreate RAID devices</a></li>
@@ -2123,14 +1666,14 @@ But even an altered schema which changed only the table options can lead to data
 <li class="toctree-l2"><a class="reference internal" href="../../kb/yaml-address.html">Configure ScyllaDB Networking with Multiple NIC/IP Combinations</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>

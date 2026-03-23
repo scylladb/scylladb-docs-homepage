@@ -42,9 +42,10 @@ the administrator. The tablet load balancer decides where to migrate
 the tablets, either within the same node to balance the shards or across 
 the nodes to balance the global load in the cluster.
 
-The number of tablets the load balancer maintains on a node is directly
-proportional to the node's storage capacity. A node with twice
-the storage will have twice the number of tablets located on it.
+During this process, the balancer will compute disk usage based on the
+actual disk sizes of the tablets located on the nodes. It will then issue
+tablet migrations which migrate tablets from nodes with higher to nodes
+with lower disk utilization, equalizing the load.
 
 As a table grows, each tablet can split into two, creating a new tablet.
 The load balancer can migrate the split halves independently to different nodes
@@ -186,6 +187,23 @@ You can create a keyspace with tablets enabled with the ``tablets = {'enabled': 
     the keyspace schema with ``tablets = { 'enabled': false }`` or 
     ``tablets = { 'enabled': true }``.
 
+.. _keyspace-rf-rack-valid-to-enforce-rack-list:
+
+Enforcing Rack-List Replication for Tablet Keyspaces
+------------------------------------------------------------------
+
+The ``rf_rack_valid_keyspaces`` is a legacy option that ensures that all keyspaces with tablets enabled are
+:term:`RF-rack-valid <RF-rack-valid keyspace>`.
+
+Requiring every tablet keyspace to use the rack list replication factor exclusively is enough to guarantee the keyspace is
+:term:`RF-rack-valid <RF-rack-valid keyspace>`. It reduces restrictions and provides stronger guarantees compared
+to ``rf_rack_valid_keyspaces`` option.
+
+To enforce rack list in tablet keyspaces, use ``enforce_rack_list`` option. It can be set only if all tablet keyspaces use
+rack list. To ensure that, follow a procedure of :ref:`conversion to rack list replication factor <conversion-to-rack-list-rf>`.
+After that restart all nodes in the cluster, with ``enforce_rack_list`` enabled and ``rf_rack_valid_keyspaces`` disabled. Make
+sure to avoid setting or updating replication factor (with CREATE KEYSPACE or ALTER KEYSPACE) while nodes are being restarted.
+
 .. _tablets-limitations:
 
 Limitations and Unsupported Features
@@ -193,18 +211,18 @@ Limitations and Unsupported Features
 
 .. warning::
 
-    If a keyspace has tablets enabled, it must remain :term:`RF-rack-valid <RF-rack-valid keyspace>`
-    throughout its lifetime. Failing to keep that invariant satisfied may result in data inconsistencies,
-    performance problems, or other issues.
+    If a keyspace has tablets enabled and contains a materialized view or a secondary index, it must
+    remain :term:`RF-rack-valid <RF-rack-valid keyspace>` throughout its lifetime. Failing to keep that
+    invariant satisfied may result in data inconsistencies, performance problems, or other issues.
 
-The following ScyllaDB features are not supported if a keyspace has tablets
-enabled. If you plan to use any of the features listed below, CREATE your keyspace
-:ref:`with tablets disabled <tablets-enable-tablets>`.
+    The invariant is enforced while the keyspace contains a materialized view or a secondary index, or
+    if the `rf_rack_valid_keyspaces` option is set, by rejecting operations that would violate the RF-rack-valid property:
+    Altering a keyspace's replication factor, adding a node in a new rack, or removing the last node
+    in a rack, will be rejected if they would result in an RF-rack-invalid keyspace.
 
-* Counters
-
-To enable materialized views and secondary indexes for tablet keyspaces, use
-the `--rf-rack-valid-keyspaces` See :ref:`Views with tablets <admin-views-with-tablets>` for details.
+To enable materialized views and secondary indexes for tablet keyspaces, the keyspace
+must be :term:`RF-rack-valid <RF-rack-valid keyspace>`.
+See :ref:`Views with tablets <admin-views-with-tablets>` for details.
 
 Resharding in keyspaces with tablets enabled has the following limitations:
 

@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Metrics Update Between 2025.x and 2025.4 | ScyllaDB Docs 
+             Cluster Platform Migration Using Node Cycling | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/cluster-platform-migration.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -315,30 +315,24 @@
     </span>
     
         <span class="bread__item">
-            <a href="../../../operating-scylla/index.html" class="bread__highlight">
+            <a href="../../index.html" class="bread__highlight">
                 ScyllaDB for Administrators
             </a>
         </span>
     
         <span class="bread__item">
-            <a href="../../index.html" class="bread__highlight">
-                Upgrade ScyllaDB
-            </a>
-        </span>
-    
-        <span class="bread__item">
             <a href="../index.html" class="bread__highlight">
-                Upgrade ScyllaDB
+                Procedures
             </a>
         </span>
     
         <span class="bread__item">
             <a href="index.html" class="bread__highlight">
-                Upgrade - ScyllaDB 2025.x to ScyllaDB 2025.4
+                Cluster Management Procedures
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Metrics Update Between 2025.x and 2025.4</span>
+    <span class="bread__item bread__item--last">Cluster Platform Migration Using Node Cycling</span>
 </div>
                     </div>
                 
@@ -350,84 +344,445 @@
                 <div class="content-body">
                     
                         
-    
-
                     
 
-                    <section id="metrics-update-between-src-version-and-new-version">
-<h1>Metrics Update Between 2025.x and 2025.4<a class="headerlink" href="#metrics-update-between-src-version-and-new-version" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-<p>ScyllaDB 2025.4 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
-<section id="new-metrics-in-new-version">
-<h2>New Metrics in 2025.4<a class="headerlink" href="#new-metrics-in-new-version" title="Link to this heading">¶</a></h2>
-<p>The following metrics are new in ScyllaDB 2025.4 compared to 2025.3.</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 14.3%" />
-<col style="width: 85.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Metric</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>scylla_database_total_view_updates_due_to_replica_count_mismatch</p></td>
-<td><p>The total number of view updates for which there were more view replicas
-than base replicas and we had to generate an extra view update because
-the additional view replica wouldn’t get paired with any base replica.
-It should only increase during the Replication Factor (RF) change. It
-should stop increasing shortly after finishing the RF change.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_database_total_writes_rejected_due_to_out_of_space_prevention</p></td>
-<td><p>Counts write operations that were rejected due to disabled user tables
-writes.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_index_query_latencies</p></td>
-<td><p>Index query latencies.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_reactor_aio_retries</p></td>
-<td><p>The total number of IOCB-s re-submitted via thread-pool.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_reactor_io_threaded_fallbacks</p></td>
-<td><p>The total number of io-threaded-fallbacks operations.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_repair_inc_sst_read_bytes</p></td>
-<td><p>The total number of bytes read from SStables for incremental repair
-on this shard.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_repair_inc_sst_skipped_bytes</p></td>
-<td><p>The total number of bytes skipped from SStables for incremental repair
-on this shard.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_repair_tablet_time_ms</p></td>
-<td><p>The time spent on tablet repair on this shard (in milliseconds).</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_s3_downloads_blocked_on_memory</p></td>
-<td><p>Counts the number of times the S3 client downloads were delayed due to
-insufficient memory availability.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_s3_memory_usage</p></td>
-<td><p>The total number of bytes consumed by the S3 client.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_s3_total_read_prefetch_bytes</p></td>
-<td><p>The total number of bytes requested from object.</p></td>
-</tr>
-<tr class="row-odd"><td><p>scylla_storage_proxy_replica_fenced_out_requests</p></td>
-<td><p>The number of requests that resulted in a stale_topology_exception.</p></td>
-</tr>
-<tr class="row-even"><td><p>scylla_vector_store_dns_refreshes</p></td>
-<td><p>The number of DNS refreshes.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="new-and-updated-metrics-in-previous-2025-x-releases">
-<h2>New and Updated Metrics in Previous 2025.x Releases<a class="headerlink" href="#new-and-updated-metrics-in-previous-2025-x-releases" title="Link to this heading">¶</a></h2>
+                    <section id="cluster-platform-migration-using-node-cycling">
+<h1>Cluster Platform Migration Using Node Cycling<a class="headerlink" href="#cluster-platform-migration-using-node-cycling" title="Link to this heading">¶</a></h1>
+<p>This procedure describes how to migrate a ScyllaDB cluster to new instance types
+using the add-and-replace approach, which is commonly used for:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://docs.scylladb.com/manual/branch-2025.3/upgrade/upgrade-guides/upgrade-guide-from-2025.2-to-2025.3/metric-update-2025.2-to-2025.3.html">Metrics Update Between 2025.2 and 2025.3</a></p></li>
-<li><p><a class="reference external" href="https://docs.scylladb.com/manual/branch-2025.2/upgrade/upgrade-guides/upgrade-guide-from-2025.1-to-2025.2/metric-update-2025.1-to-2025.2.html">Metrics Update Between 2025.1 and 2025.2</a></p></li>
+<li><p>Migrating from one CPU architecture to another (e.g., x86_64 to ARM/Graviton)</p></li>
+<li><p>Upgrading to newer instance types with better performance</p></li>
+<li><p>Changing instance families within the same cloud provider</p></li>
+</ul>
+<p>The add-and-replace approach maintains data replication throughout the migration
+and ensures zero downtime for client applications.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This procedure does <strong>not</strong> change the ScyllaDB software version. All nodes
+(both existing and new) must run the same ScyllaDB version. For software
+version upgrades, see <a class="reference internal" href="../../../upgrade/index.html"><span class="doc">Upgrade</span></a>.</p>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The add-and-replace migration follows these steps:</p>
+<ol class="arabic simple">
+<li><p>Add new nodes (on target instance type) to the existing cluster</p></li>
+<li><p>Wait for data to stream to the new nodes</p></li>
+<li><p>Decommission old nodes (on source instance type)</p></li>
+</ol>
+<p>This approach keeps the cluster operational throughout the migration while
+maintaining the configured replication factor.</p>
+<section id="key-characteristics">
+<h3>Key characteristics<a class="headerlink" href="#key-characteristics" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Zero downtime</strong>: Client applications continue to operate during migration</p></li>
+<li><p><strong>Data safety</strong>: Replication factor is maintained throughout the process</p></li>
+<li><p><strong>Flexible</strong>: Works with both vnodes and tablets-enabled clusters</p></li>
+<li><p><strong>Multi-DC support</strong>: Can migrate nodes across multiple datacenters</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Ensure your cluster has sufficient capacity during the migration. At the peak
+of the process, your cluster will temporarily have double the number of nodes.</p>
+</div>
+</section>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<section id="check-cluster-health">
+<h3>Check cluster health<a class="headerlink" href="#check-cluster-health" title="Link to this heading">¶</a></h3>
+<p>Before starting the migration, verify that your cluster is healthy:</p>
+<ol class="arabic">
+<li><p>Check that all nodes are in Up Normal (UN) status:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>status
+</pre></div>
+</div>
+<p>All nodes should show <code class="docutils literal notranslate"><span class="pre">UN</span></code> status. Do not proceed if any nodes are down.</p>
+</li>
+<li><p>Ensure no streaming or repair operations are in progress:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>netstats
+nodetool<span class="w"> </span>compactionstats
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="plan-the-migration">
+<h3>Plan the migration<a class="headerlink" href="#plan-the-migration" title="Link to this heading">¶</a></h3>
+<p>Before provisioning new instances, plan the following:</p>
+<p><strong>Instance type mapping</strong>: Identify the source and target instance types.
+If your cluster uses vnodes (not tablets), consider that mismatched shard
+counts between source and target instance types can cause slower repairs.
+With tablets enabled, shard count mismatch is fully supported.</p>
+<p><strong>Rack assignment planning</strong>: Each new node must be assigned to the same rack
+as the node it will replace. This maintains rack-aware topology for:</p>
+<ul class="simple">
+<li><p>Rack-aware replication (NetworkTopologyStrategy)</p></li>
+<li><p>Proper data distribution across failure domains</p></li>
+<li><p>Minimizing data movement during decommission</p></li>
+</ul>
+<p>Example mapping for a 3-node cluster:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Source nodes (to be decommissioned):     Target nodes (to be added):
+192.168.1.10 - RACK0                 →   192.168.2.10 - RACK0
+192.168.1.11 - RACK1                 →   192.168.2.11 - RACK1
+192.168.1.12 - RACK2                 →   192.168.2.12 - RACK2
+</pre></div>
+</div>
+</section>
+<section id="create-a-backup">
+<h3>Create a backup<a class="headerlink" href="#create-a-backup" title="Link to this heading">¶</a></h3>
+<p>Back up the data before starting the migration. One of the following
+methods can be used:</p>
+<ul>
+<li><p><strong>ScyllaDB Manager</strong> (recommended): Use ScyllaDB Manager to perform a
+cluster-wide backup. See the
+<a class="reference external" href="https://manager.docs.scylladb.com/stable/backup/">ScyllaDB Manager documentation</a>
+for details.</p></li>
+<li><p><strong>Snapshots</strong>: On each node in the cluster, create a snapshot:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>snapshot<span class="w"> </span>-t<span class="w"> </span>pre_migration_backup
+nodetool<span class="w"> </span>listsnapshots
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Snapshots are local to each node and do not protect against node or disk
+failure. For full disaster recovery, use ScyllaDB Manager backup.</p>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="procedure">
+<h2>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">¶</a></h2>
+<section id="adding-new-nodes">
+<h3>Adding new nodes<a class="headerlink" href="#adding-new-nodes" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Provision new instances with the target instance type. Ensure:</p>
+<ul class="simple">
+<li><p>The same ScyllaDB version as existing nodes</p></li>
+<li><p>Same network configuration and security groups</p></li>
+<li><p>Appropriate storage configuration</p></li>
+</ul>
+</li>
+<li><p>On each new node, configure <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> to join the existing
+cluster:</p>
+<ul class="simple">
+<li><p><strong>cluster_name</strong>: Must match the existing cluster name</p></li>
+<li><p><strong>seeds</strong>: IP address of an existing node in the cluster (used to discover cluster topology on join)</p></li>
+<li><p><strong>endpoint_snitch</strong>: Must match the existing cluster configuration</p></li>
+<li><p><strong>listen_address</strong>: IP address of the new node</p></li>
+<li><p><strong>rpc_address</strong>: IP address of the new node</p></li>
+</ul>
+<p>All other cluster-wide settings (tablets configuration, encryption settings,
+experimental features, etc.) must match the existing nodes.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Make sure that the ScyllaDB version on the new node is identical to the
+version on the other nodes in the cluster. Running nodes with different
+versions is not supported.</p>
+</div>
+</li>
+<li><p>If using <code class="docutils literal notranslate"><span class="pre">GossipingPropertyFileSnitch</span></code>, configure
+<code class="docutils literal notranslate"><span class="pre">/etc/scylla/cassandra-rackdc.properties</span></code> with the correct datacenter
+and rack assignment for this node:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dc = &lt;datacenter-name&gt;
+rack = &lt;rack-name&gt;
+prefer_local = true
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Each node must have the correct rack assignment. Using the same rack for
+all new nodes breaks rack-aware replication topology.</p>
+</div>
+</li>
+<li><p>Start ScyllaDB on the new node:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>scylla-server
+</pre></div>
+</div>
+<p>For Docker deployments:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;container-name&gt;<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>scylla
+</pre></div>
+</div>
+</li>
+<li><p>Monitor the bootstrap process from an existing node:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>status
+</pre></div>
+</div>
+<p>The new node will appear with <code class="docutils literal notranslate"><span class="pre">UJ</span></code> (Up, Joining) status while streaming
+data from existing nodes. Wait until it transitions to <code class="docutils literal notranslate"><span class="pre">UN</span></code> (Up, Normal).</p>
+<p><strong>Example output during bootstrap:</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Datacenter:<span class="w"> </span>dc1
+<span class="nv">Status</span><span class="o">=</span>Up/Down
+<span class="nv">State</span><span class="o">=</span>Normal/Leaving/Joining/Moving
+--<span class="w">  </span>Address<span class="w">        </span>Load<span class="w">       </span>Tokens<span class="w">  </span>Owns<span class="w">   </span>Host<span class="w"> </span>ID<span class="w">                               </span>Rack
+UN<span class="w">  </span><span class="m">192</span>.168.1.10<span class="w">   </span><span class="m">500</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span><span class="m">33</span>.3%<span class="w">  </span>8d5ed9f4-7764-4dbd-bad8-43fddce94b7c<span class="w">  </span>RACK0
+UN<span class="w">  </span><span class="m">192</span>.168.1.11<span class="w">   </span><span class="m">500</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span><span class="m">33</span>.3%<span class="w">  </span>125ed9f4-7777-1dbn-mac8-43fddce9123e<span class="w">  </span>RACK1
+UN<span class="w">  </span><span class="m">192</span>.168.1.12<span class="w">   </span><span class="m">500</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span><span class="m">33</span>.3%<span class="w">  </span>675ed9f4-6564-6dbd-can8-43fddce952gy<span class="w">  </span>RACK2
+UJ<span class="w">  </span><span class="m">192</span>.168.2.10<span class="w">   </span><span class="m">250</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span>?<span class="w">      </span>a1b2c3d4-5678-90ab-cdef-112233445566<span class="w">  </span>RACK0
+</pre></div>
+</div>
+<p><strong>Example output after bootstrap completes:</strong></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Datacenter:<span class="w"> </span>dc1
+<span class="nv">Status</span><span class="o">=</span>Up/Down
+<span class="nv">State</span><span class="o">=</span>Normal/Leaving/Joining/Moving
+--<span class="w">  </span>Address<span class="w">        </span>Load<span class="w">       </span>Tokens<span class="w">  </span>Owns<span class="w">   </span>Host<span class="w"> </span>ID<span class="w">                               </span>Rack
+UN<span class="w">  </span><span class="m">192</span>.168.1.10<span class="w">   </span><span class="m">400</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span><span class="m">25</span>.0%<span class="w">  </span>8d5ed9f4-7764-4dbd-bad8-43fddce94b7c<span class="w">  </span>RACK0
+UN<span class="w">  </span><span class="m">192</span>.168.1.11<span class="w">   </span><span class="m">400</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span><span class="m">25</span>.0%<span class="w">  </span>125ed9f4-7777-1dbn-mac8-43fddce9123e<span class="w">  </span>RACK1
+UN<span class="w">  </span><span class="m">192</span>.168.1.12<span class="w">   </span><span class="m">400</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span><span class="m">25</span>.0%<span class="w">  </span>675ed9f4-6564-6dbd-can8-43fddce952gy<span class="w">  </span>RACK2
+UN<span class="w">  </span><span class="m">192</span>.168.2.10<span class="w">   </span><span class="m">400</span><span class="w"> </span>MB<span class="w">     </span><span class="m">256</span><span class="w">     </span><span class="m">25</span>.0%<span class="w">  </span>a1b2c3d4-5678-90ab-cdef-112233445566<span class="w">  </span>RACK0
+</pre></div>
+</div>
+</li>
+<li><p>For tablets-enabled clusters, wait for tablet load balancing to complete.
+After the node reaches <code class="docutils literal notranslate"><span class="pre">UN</span></code> status, verify no streaming is in progress:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>netstats
+</pre></div>
+</div>
+<p>Wait until output shows “Not sending any streams” and no active receiving streams.</p>
+</li>
+<li><p>Repeat steps 1-6 for each new node to be added.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can add multiple nodes in parallel if they are in different datacenters.
+Within a single datacenter, add nodes one at a time for best results.</p>
+</div>
+</section>
+<section id="updating-seed-node-configuration">
+<h3>Updating seed node configuration<a class="headerlink" href="#updating-seed-node-configuration" title="Link to this heading">¶</a></h3>
+<p>If any of your original nodes are configured as seed nodes, you must update
+the seed configuration before decommissioning them.</p>
+<ol class="arabic">
+<li><p>Check the current seed configuration on any node:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="s2">&quot;seed_provider&quot;</span><span class="w"> </span>/etc/scylla/scylla.yaml
+</pre></div>
+</div>
+</li>
+<li><p>If the seeds include nodes you plan to decommission, update <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>
+on <strong>all new nodes</strong> to use the new node IPs as seeds:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">seed_provider</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">class_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.apache.cassandra.locator.SimpleSeedProvider</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">seeds</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;192.168.2.10,192.168.2.11,192.168.2.12&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Updating seed configuration on the <strong>old nodes</strong> (that will be
+decommissioned) is optional. Seeds are only used during node startup
+to discover the cluster. If you don’t plan to restart the old nodes
+before decommissioning them, their seed configuration doesn’t matter.
+However, updating all nodes is recommended for safety in case an old
+node unexpectedly restarts during the migration.</p>
+</div>
+</li>
+<li><p>Restart ScyllaDB on each new node (one at a time) to apply the new seed
+configuration:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
+</pre></div>
+</div>
+<p>Wait for the node to fully start before restarting the next node.</p>
+</li>
+<li><p>After restarting the new nodes, verify the cluster is healthy:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>status
+nodetool<span class="w"> </span>describecluster
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Complete this seed list update on <strong>all new nodes</strong> before decommissioning
+any old nodes. This ensures the new nodes can reform the cluster after
+the old nodes are removed.</p>
+</div>
+</section>
+<section id="decommissioning-old-nodes">
+<h3>Decommissioning old nodes<a class="headerlink" href="#decommissioning-old-nodes" title="Link to this heading">¶</a></h3>
+<p>After all new nodes are added and healthy, decommission the old nodes one
+at a time.</p>
+<ol class="arabic">
+<li><p>Verify all nodes are healthy before starting decommission:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>status
+</pre></div>
+</div>
+<p>All nodes should show <code class="docutils literal notranslate"><span class="pre">UN</span></code> status.</p>
+</li>
+<li><p>On the node to be decommissioned, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>decommission
+</pre></div>
+</div>
+<p>This command blocks until the decommission is complete. The node will
+stream its data to the remaining nodes.</p>
+</li>
+<li><p>Monitor the decommission progress from another node:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>status
+</pre></div>
+</div>
+<p>The decommissioning node will transition from <code class="docutils literal notranslate"><span class="pre">UN</span></code> → <code class="docutils literal notranslate"><span class="pre">UL</span></code> (Up, Leaving)
+→ removed from the cluster.</p>
+<p>You can also monitor streaming progress:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>netstats
+</pre></div>
+</div>
+</li>
+<li><p>After decommission completes, verify the node is no longer in the cluster:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>status
+</pre></div>
+</div>
+<p>The decommissioned node should no longer appear in the output.</p>
+</li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">cleanup</span></code> on the remaining nodes to remove data that
+no longer belongs to them after the topology change:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>cleanup
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">cleanup</span></code> can be resource-intensive. Run it on one node at a
+time during low-traffic periods.</p>
+</div>
+</li>
+<li><p>Wait for the cluster to stabilize before decommissioning the next node.
+Ensure no streaming operations are in progress.</p></li>
+<li><p>Repeat steps 1-7 for each old node to be decommissioned.</p></li>
+</ol>
+</section>
+</section>
+<section id="post-migration-verification">
+<h2>Post-migration verification<a class="headerlink" href="#post-migration-verification" title="Link to this heading">¶</a></h2>
+<p>After all old nodes are decommissioned, verify the migration was successful.</p>
+<section id="verify-cluster-topology">
+<h3>Verify cluster topology<a class="headerlink" href="#verify-cluster-topology" title="Link to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>status
+</pre></div>
+</div>
+<p>Confirm:</p>
+<ul class="simple">
+<li><p>All nodes show <code class="docutils literal notranslate"><span class="pre">UN</span></code> (Up, Normal) status</p></li>
+<li><p>Only the new instance type nodes are present</p></li>
+<li><p>Nodes are balanced across racks</p></li>
+</ul>
+</section>
+<section id="verify-schema-agreement">
+<h3>Verify schema agreement<a class="headerlink" href="#verify-schema-agreement" title="Link to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>describecluster
+</pre></div>
+</div>
+<p>All nodes should report the same schema version.</p>
+</section>
+<section id="verify-data-connectivity">
+<h3>Verify data connectivity<a class="headerlink" href="#verify-data-connectivity" title="Link to this heading">¶</a></h3>
+<p>Connect to the cluster and run a test query:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>&lt;node-ip&gt;<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;SELECT count(*) FROM system_schema.keyspaces;&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If ScyllaDB is configured with <code class="docutils literal notranslate"><span class="pre">listen_interface</span></code>, you must use the
+node’s interface IP address (not localhost) for cqlsh connections.</p>
+</div>
+</section>
+<section id="verify-scylladb-version">
+<h3>Verify ScyllaDB version<a class="headerlink" href="#verify-scylladb-version" title="Link to this heading">¶</a></h3>
+<p>Confirm all nodes are running the same ScyllaDB version:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>scylla<span class="w"> </span>--version
+</pre></div>
+</div>
+</section>
+<section id="verify-data-integrity-optional">
+<h3>Verify data integrity (optional)<a class="headerlink" href="#verify-data-integrity-optional" title="Link to this heading">¶</a></h3>
+<p>Run data validation on each keyspace to verify sstable integrity:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>scrub<span class="w"> </span>--mode<span class="o">=</span>VALIDATE<span class="w"> </span>&lt;keyspace_name&gt;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="rollback">
+<h2>Rollback<a class="headerlink" href="#rollback" title="Link to this heading">¶</a></h2>
+<p>If issues occur during the migration, you can roll back by reversing the
+procedure.</p>
+<section id="during-add-phase">
+<h3>During add phase<a class="headerlink" href="#during-add-phase" title="Link to this heading">¶</a></h3>
+<p>If a new node fails to bootstrap:</p>
+<ol class="arabic">
+<li><p>Stop ScyllaDB on the new node:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>scylla-server
+</pre></div>
+</div>
+</li>
+<li><p>From an existing node, remove the failed node:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>removenode<span class="w"> </span>&lt;host-id-of-failed-node&gt;
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="during-decommission-phase">
+<h3>During decommission phase<a class="headerlink" href="#during-decommission-phase" title="Link to this heading">¶</a></h3>
+<p>If a decommission operation gets stuck:</p>
+<ol class="arabic">
+<li><p>If the node is still reachable, try stopping and restarting ScyllaDB</p></li>
+<li><p>If the node is unresponsive, from another node:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>removenode<span class="w"> </span>&lt;host-id&gt;
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="remove-node.html"><span class="doc">Remove a Node from a ScyllaDB Cluster</span></a>
+for more details.</p>
+</li>
+</ol>
+</section>
+<section id="full-rollback">
+<h3>Full rollback<a class="headerlink" href="#full-rollback" title="Link to this heading">¶</a></h3>
+<p>To roll back after the migration is complete (all nodes on new instance type),
+apply the same add-and-replace procedure in reverse:</p>
+<ol class="arabic simple">
+<li><p>Add new nodes on the original instance type</p></li>
+<li><p>Wait for data streaming to complete</p></li>
+<li><p>Decommission the nodes on the new instance type</p></li>
+</ol>
+</section>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
+<section id="node-stuck-in-joining-uj-state">
+<h3>Node stuck in Joining (UJ) state<a class="headerlink" href="#node-stuck-in-joining-uj-state" title="Link to this heading">¶</a></h3>
+<p>If a new node remains in <code class="docutils literal notranslate"><span class="pre">UJ</span></code> state for an extended period:</p>
+<ul class="simple">
+<li><p>Check ScyllaDB logs for streaming errors: <code class="docutils literal notranslate"><span class="pre">journalctl</span> <span class="pre">-u</span> <span class="pre">scylla-server</span></code></p></li>
+<li><p>Verify network connectivity between nodes</p></li>
+<li><p>Ensure sufficient disk space on all nodes</p></li>
+<li><p>Check for any ongoing operations that may be blocking</p></li>
+</ul>
+</section>
+<section id="decommission-taking-too-long">
+<h3>Decommission taking too long<a class="headerlink" href="#decommission-taking-too-long" title="Link to this heading">¶</a></h3>
+<p>Decommission duration depends on data size. If it appears stuck:</p>
+<ul class="simple">
+<li><p>Check streaming progress: <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">netstats</span></code></p></li>
+<li><p>Look for errors in ScyllaDB logs</p></li>
+<li><p>Verify network bandwidth between nodes</p></li>
+</ul>
+</section>
+<section id="schema-disagreement">
+<h3>Schema disagreement<a class="headerlink" href="#schema-disagreement" title="Link to this heading">¶</a></h3>
+<p>If nodes report different schema versions:</p>
+<ul class="simple">
+<li><p>Wait a few minutes for schema to propagate</p></li>
+<li><p>If disagreement persists, restart the nodes one by one</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">describecluster</span></code> to verify agreement</p></li>
+</ul>
+</section>
+</section>
+<section id="additional-resources">
+<h2>Additional resources<a class="headerlink" href="#additional-resources" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="add-node-to-cluster.html"><span class="doc">Adding a New Node Into an Existing ScyllaDB Cluster</span></a></p></li>
+<li><p><a class="reference internal" href="remove-node.html"><span class="doc">Remove a Node from a ScyllaDB Cluster</span></a></p></li>
+<li><p><a class="reference internal" href="replace-running-node.html"><span class="doc">Replace a Running Node in a ScyllaDB Cluster</span></a></p></li>
+<li><p><a class="reference internal" href="../../../upgrade/index.html"><span class="doc">Upgrade</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -464,7 +819,7 @@ insufficient memory availability.</p></td>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.x and 2025.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Cluster Platform Migration Using Node Cycling&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/procedures/cluster-management/cluster-platform-migration%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -499,21 +854,21 @@ insufficient memory availability.</p></td>
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="upgrade-guide-from-2025.x-to-2025.4.html">
+            <a class="navigation__link" href="arbiter-dc.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Upgrade from ScyllaDB 2025.x to ScyllaDB 2025.4
+                    <span class="colored">PREVIOUS</span> <br />Preventing Quorum Loss in Symmetrical Multi-DC Clusters
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="../upgrade-guide-from-2025.4.x-to-2025.4.y.html">
+            <a class="navigation__link" href="../backup-restore/index.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Upgrade - ScyllaDB 2025.4.x to 2025.4.y (Patch Upgrades)
+                    <span class="colored">NEXT</span> <br />Backup and Restore Procedures
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -533,14 +888,14 @@ insufficient memory availability.</p></td>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2025.x and 2025.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2025.4/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Cluster Platform Migration Using Node Cycling&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/procedures/cluster-management/cluster-platform-migration%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2025.4/metric-update-2025.x-to-2025.4.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/operating-scylla/procedures/cluster-management/cluster-platform-migration.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -552,9 +907,44 @@ insufficient memory availability.</p></td>
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Metrics Update Between 2025.x and 2025.4</a><ul>
-<li><a class="reference internal" href="#new-metrics-in-new-version">New Metrics in 2025.4</a></li>
-<li><a class="reference internal" href="#new-and-updated-metrics-in-previous-2025-x-releases">New and Updated Metrics in Previous 2025.x Releases</a></li>
+<li><a class="reference internal" href="#">Cluster Platform Migration Using Node Cycling</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#key-characteristics">Key characteristics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li><a class="reference internal" href="#check-cluster-health">Check cluster health</a></li>
+<li><a class="reference internal" href="#plan-the-migration">Plan the migration</a></li>
+<li><a class="reference internal" href="#create-a-backup">Create a backup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#procedure">Procedure</a><ul>
+<li><a class="reference internal" href="#adding-new-nodes">Adding new nodes</a></li>
+<li><a class="reference internal" href="#updating-seed-node-configuration">Updating seed node configuration</a></li>
+<li><a class="reference internal" href="#decommissioning-old-nodes">Decommissioning old nodes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#post-migration-verification">Post-migration verification</a><ul>
+<li><a class="reference internal" href="#verify-cluster-topology">Verify cluster topology</a></li>
+<li><a class="reference internal" href="#verify-schema-agreement">Verify schema agreement</a></li>
+<li><a class="reference internal" href="#verify-data-connectivity">Verify data connectivity</a></li>
+<li><a class="reference internal" href="#verify-scylladb-version">Verify ScyllaDB version</a></li>
+<li><a class="reference internal" href="#verify-data-integrity-optional">Verify data integrity (optional)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rollback">Rollback</a><ul>
+<li><a class="reference internal" href="#during-add-phase">During add phase</a></li>
+<li><a class="reference internal" href="#during-decommission-phase">During decommission phase</a></li>
+<li><a class="reference internal" href="#full-rollback">Full rollback</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#node-stuck-in-joining-uj-state">Node stuck in Joining (UJ) state</a></li>
+<li><a class="reference internal" href="#decommission-taking-too-long">Decommission taking too long</a></li>
+<li><a class="reference internal" href="#schema-disagreement">Schema disagreement</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#additional-resources">Additional resources</a></li>
 </ul>
 </li>
 </ul>
@@ -586,7 +976,7 @@ insufficient memory availability.</p></td>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2025.4
+                2026.1
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -594,19 +984,19 @@ insufficient memory availability.</p></td>
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/operating-scylla/procedures/cluster-management/cluster-platform-migration.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../branch-2026.1/index.html">2026.1</a>
+                        <a href="cluster-platform-migration.html">2026.1</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="metric-update-2025.x-to-2025.4.html">2025.4</a>
+                        <a href="../../../../branch-2025.4/index.html">2025.4</a>
                     </li>
                 
             
@@ -635,12 +1025,12 @@ insufficient memory availability.</p></td>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -658,7 +1048,7 @@ insufficient memory availability.</p></td>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../using-scylla/migrate-scylla.html">Migrate to ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migration Process from Cassandra to ScyllaDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cassandra-to-scylla-migration-process.html">Migration Process from Cassandra to ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/cassandra-compatibility.html">ScyllaDB and Apache Cassandra Compatibility</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/mig-tool-review.html">Migration Tools Overview</a></li>
 </ul>
@@ -683,77 +1073,76 @@ insufficient memory availability.</p></td>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../operating-scylla/index.html">ScyllaDB for Administrators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/admin.html">Administration Guide</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/procedures/index.html">Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cluster-management/index.html">Cluster Management</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/backup-restore/index.html">Backup &amp; Restore</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/config-change/index.html">Change Configuration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/maintenance/index.html">Maintenance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">ScyllaDB for Administrators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../admin.html">Administration Guide</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">Procedures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l3 current current-page"><a class="reference internal" href="index.html">Cluster Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backup-restore/index.html">Backup &amp; Restore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../config-change/index.html">Change Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../maintenance/index.html">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tips/index.html">Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/security-checklist.html">ScyllaDB Security Checklist</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/authentication.html">Enable Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/create-superuser.html">Creating a Custom Superuser</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../security/security-checklist.html">ScyllaDB Security Checklist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/authentication.html">Enable Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/encryption-at-rest.html">Encryption at Rest</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authentication.html">LDAP Authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/enable-authorization.html">Enable Authorization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/authorization.html">Grant Authorization CQL Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/auditing.html">ScyllaDB Auditing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/node-node-encryption.html">Encryption: Data in Transit Node to Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/generate-certificate.html">Generating a self-signed Certificate Chain Using openssl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/saslauthd.html">Configure SaslauthdAuthenticator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/encryption-at-rest.html">Encryption at Rest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authentication.html">LDAP Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/ldap-authorization.html">LDAP Authorization (Role Management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/sbom.html">Software Bill Of Materials (SBOM)</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/nodetool.html">Nodetool Reference</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../nodetool.html">Nodetool Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cql/cqlsh.html">CQLSh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/rest.html">Admin REST API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rest.html">Admin REST API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../using-scylla/tracing.html">Tracing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/scylla-types.html">ScyllaDB Types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstableloader.html">SSTableLoader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/cassandra-stress.html">cassandra-stress</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstabledump.html">SSTabledump</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/sstablemetadata.html">SSTableMetadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/scylla-sstable-script-api.html">ScyllaDB SStable Script API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/scylla-types.html">ScyllaDB Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/sstableloader.html">SSTableLoader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/cassandra-stress.html">cassandra-stress</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/logging.html">ScyllaDB Logs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/perftune.html">Seastar Perftune</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/virtual-tables.html">Virtual Tables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/select-from-mutation-fragments.html">Reading mutation fragments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/perftune.html">Seastar Perftune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/virtual-tables.html">Virtual Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/select-from-mutation-fragments.html">Reading mutation fragments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-socket.html">Maintenance socket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-mode.html">Maintenance mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/task-manager.html">Task manager</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">Upgrade Procedures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../../about-upgrade.html">About Upgrade</a></li>
-<li class="toctree-l3 current current-page"><a class="reference internal" href="../index.html">Upgrade Guides</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../upgrade/about-upgrade.html">About Upgrade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../operating-scylla/system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../system-configuration/index.html">System Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/system-configuration.html">System Configuration Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/admin.html">scylla.yaml</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin.html">scylla.yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../system-configuration/snitch.html">ScyllaDB Snitches</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../operating-scylla/diagnostics.html">ScyllaDB Diagnostic Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagnostics.html">ScyllaDB Diagnostic Tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../using-scylla/index.html">ScyllaDB for Developers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -792,10 +1181,11 @@ insufficient memory availability.</p></td>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../alternator/alternator.html">Alternator: DynamoDB API in Scylla</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../alternator/alternator.html">Alternator: DynamoDB API in ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/new-apis.html">Alternator-specific APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../alternator/network.html">Reducing network costs in Alternator</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -820,6 +1210,7 @@ insufficient memory availability.</p></td>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/workload-prioritization.html">Workload Prioritization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/backup-and-restore.html">Backup and Restore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/incremental-repair.html">Incremental Repair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/vector-search.html">Vector Search</a></li>
 </ul>
 </li>
@@ -831,7 +1222,7 @@ insufficient memory availability.</p></td>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../architecture/anti-entropy/index.html">ScyllaDB Anti-Entropy</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../architecture/anti-entropy/hinted-handoff.html">ScyllaDB Hinted Handoff</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../architecture/anti-entropy/read-repair.html">ScyllaDB Read Repair</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../operating-scylla/procedures/maintenance/repair.html">ScyllaDB Repair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../maintenance/repair.html">ScyllaDB Repair</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../architecture/sstable/index.html">SSTable</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label for="toctree-checkbox-20"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -857,11 +1248,7 @@ insufficient memory availability.</p></td>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/upgrade/index.html">Upgrade</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/missing-dotmount-files.html">Inaccessible configuration files after ScyllaDB upgrade</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/handling-node-failures.html">Handling Node Failures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/failed-add-remove-replace.html">Failure to Add, Remove, or Replace a Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/failed-decommission.html">Failed Decommission Problem</a></li>
@@ -871,14 +1258,14 @@ insufficient memory availability.</p></td>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/failed-schema-sync.html">Failed Schema Sync</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/large-partition-table.html">ScyllaDB Large Partitions Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/large-rows-large-cells-tables.html">ScyllaDB Large Rows and Cells Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/debugging-large-partition.html">Large Partitions Hunting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/failed-update-schema.html">Failure to Update the Schema</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/space-up.html">Space Utilization Increasing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/drop-table-space-up.html">Disk Space is not Reclaimed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/sstable-corruption.html">SSTable Corruption Problem</a></li>
@@ -886,24 +1273,24 @@ insufficient memory availability.</p></td>
 <li class="toctree-l3"><a class="reference external" href="https://monitoring.docs.scylladb.com/stable/use-monitoring/advisor/heavyCompaction.html">Limiting Compaction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/time-zone.html">Time Range Query Fails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/copy-from-failed.html">COPY FROM Fails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/clients-table.html">CQL Connection Table</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/manager-monitoring-integration.html">Manager and Monitoring integration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/reverse-dns-sshd.html">Manager lists healthy nodes as down</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/autoremove-ubuntu.html">Removing ScyllaDB on Ubuntu breaks system packages</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/cdc-experimental-upgrade.html">Upgrading from experimental CDC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/compaction.html">Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/consistency.html">Consistency in ScyllaDB</a></li>
@@ -924,7 +1311,6 @@ insufficient memory availability.</p></td>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/ntp.html">NTP Configuration for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../kb/perftune-modes-sync.html">Updating the Mode in perftune.yaml After a ScyllaDB Upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/posix.html">POSIX networking for ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/raid-device.html">Recreate RAID devices</a></li>
@@ -945,14 +1331,14 @@ insufficient memory availability.</p></td>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/yaml-address.html">Configure ScyllaDB Networking with Multiple NIC/IP Combinations</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/gcp-images.html">GCP Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/limits.html">Limits</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/cache-service.html">Cache Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/collectd.html">Collectd</a></li>
