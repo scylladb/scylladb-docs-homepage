@@ -405,13 +405,11 @@ train and publish new dictionaries.</p></li>
 <span class="n">rpc_dict_training_when</span><span class="p">:</span> <span class="n">when_leader</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Enabling shared dictionary training might leak unencrypted data to disk.</p>
-<p>Trained dictionaries contain randomly chosen samples of data transferred between
-nodes. The data samples are persisted in the Raft log, which is not encrypted.
-As a result, some data from otherwise encrypted tables might be stored on disk
-unencrypted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some dictionary training data may be encrypted using storage-level encryption
+(if enabled) instead of database-level encryption, meaning protection is
+applied at the storage layer rather than within the database itself.</p>
 </div>
 </section>
 <section id="reference">
@@ -1001,7 +999,7 @@ for a complete list of internode compression options.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Mar 2026.
+                        Last updated on 30 Mar 2026.
                     
                 </div>
             
