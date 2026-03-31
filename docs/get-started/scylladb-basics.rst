@@ -58,7 +58,7 @@ How can I monitor my cluster?
 On ScyllaDB Cloud, you have access to a set of dashboards that let you monitor your cluster’s state in 
 real time. See `Monitoring ScyllaDB Cloud <https://cloud.docs.scylladb.com/stable/monitoring/index.html>`_.
 
-For ScyllaDB, you can use `ScyllaDB Monitoring Stack <https://www.scylladb.com/download/#monitor>`_, 
+For ScyllaDB, you can use `ScyllaDB Monitoring Stack <https://monitoring.docs.scylladb.com/stable/install/index.html>`_, 
 which allows you to view real-time and historical trend information on ScyllaDB clusters.
 
 How can I learn to use ScyllaDB?
