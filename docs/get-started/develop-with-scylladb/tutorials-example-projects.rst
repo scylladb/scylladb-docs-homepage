@@ -47,10 +47,3 @@ Shopping Cart
 The `Shopping Cart sample application <https://shopping-cart.scylladb.com/stable/>`_ 
 will guide you through the process of creating a new ScyllaDB cluster and running
 the shopping cart API server. 
-
-Gaming Leaderboard
----------------------
-
-The `Gaming Leaderboard sample application <https://gaming-leaderboard.scylladb.com/>`_ 
-will guide you through the process of creating a leaderboard for your gaming 
-application using ScyllaDB Cloud and NextJS.
