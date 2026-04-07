@@ -12,8 +12,8 @@ Rules and Guidelines
   tested by ScyllaDB.
 * You should upgrade to a supported version of ScyllaDB.
   See :doc:`ScyllaDB Version Support </versioning/version-support/>`.
-* All nodes in the cluster must be on the same version before advancing to the next version.
-* You cannot perform an upgrade by replacing the nodes in the cluster with new nodes with a different ScyllaDB version. You should never add a new node with a different version to a cluster - if you add a node, it must have the same X.Y.Z (major.minor.patch) version as the other nodes in the cluster.
+* All nodes in the cluster must be on the same version before advancing to
+  the next version.
 
 Upgrade Paths
 --------------------
