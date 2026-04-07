@@ -8,7 +8,15 @@ Keyspace
 ---------------
 
 A ScyllaDB keyspace contains tables and defines settings for replication.
-To create a keyspace, use the following syntax:
+To create a keyspace, use the following simplified form:
+
+.. code::
+
+    CREATE KEYSPACE my_keyspace;
+
+ScyllaDB applies default replication settings when explicit replication
+options are omitted. If you need to control replication explicitly, use the
+extended form:
 
 .. code::
 
@@ -23,15 +31,15 @@ Let's break down the key concepts related to keyspace creation and replication i
 **Keyspace Creation**
 
 To create a keyspace, you use the ``CREATE KEYSPACE`` command followed by
-a keyspace name. In the example above, ``my_keyspace`` is the name of 
+a keyspace name. In the examples above, ``my_keyspace`` is the name of 
 the keyspace you want to create.
 
 **Replication Strategy**
 
 Replication in ScyllaDB is the process of storing copies of data across multiple 
 nodes to ensure fault tolerance and high availability. The replication strategy 
-defines how data should be replicated across nodes in the cluster. In the example 
-above, the replication strategy is set to ``NetworkTopologyStrategy``.
+defines how data should be replicated across nodes in the cluster. In the extended 
+example above, the replication strategy is set to ``NetworkTopologyStrategy``.
 
 This is a commonly used replication strategy in ScyllaDB, especially in 
 production deployments. It allows you to specify the number of replicas
@@ -44,7 +52,7 @@ according to your specific requirements.
 **Replication Factor**
 
 The replication factor specifies how many copies (or replicas) of each piece of 
-data should be stored in the cluster. In the example above, the replication 
+data should be stored in the cluster. In the extended example above, the replication 
 factor is set to 3. This means that each piece of data will be replicated to 
 three different nodes in the cluster.
 
