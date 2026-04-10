@@ -356,23 +356,23 @@
 
                     <section id="scylladb-auditing-guide">
 <h1>ScyllaDB Auditing Guide<a class="headerlink" href="#scylladb-auditing-guide" title="Link to this heading">¶</a></h1>
-<p>Auditing allows the administrator to monitor activities on a Scylla cluster, including queries and data changes.
-The information is stored in a Syslog or a Scylla table.</p>
+<p>Auditing allows the administrator to monitor activities on a ScyllaDB cluster, including CQL queries and data changes, as well as Alternator (DynamoDB-compatible API) requests.
+The information is stored in a Syslog or a ScyllaDB table.</p>
 <section id="prerequisite">
 <h2>Prerequisite<a class="headerlink" href="#prerequisite" title="Link to this heading">¶</a></h2>
 <p>Enable ScyllaDB <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a> and <a class="reference internal" href="enable-authorization.html"><span class="doc">Authorization</span></a>.</p>
 </section>
 <section id="enabling-audit">
 <h2>Enabling Audit<a class="headerlink" href="#enabling-audit" title="Link to this heading">¶</a></h2>
-<p>By default, table auditing is <strong>enabled</strong>. Enabling auditing is controlled by the <code class="docutils literal notranslate"><span class="pre">audit:</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.
+<p>By default, auditing is <strong>enabled</strong> with the <code class="docutils literal notranslate"><span class="pre">table</span></code> backend. Enabling auditing is controlled by the <code class="docutils literal notranslate"><span class="pre">audit:</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file.
 You can set the following options:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">none</span></code> - Audit is disabled.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">table</span></code> - Audit is enabled, and messages are stored in a Scylla table (default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">table</span></code> - Audit is enabled, and messages are stored in a ScyllaDB table (default).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">syslog</span></code> - Audit is enabled, and messages are sent to Syslog.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">syslog,table</span></code> - Audit is enabled, and messages are stored in a Scylla table and sent to Syslog.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">syslog,table</span></code> - Audit is enabled, and messages are stored in a ScyllaDB table and sent to Syslog.</p></li>
 </ul>
-<p>Configuring any other value results in an error at Scylla startup.</p>
+<p>Configuring any other value results in an error at ScyllaDB startup.</p>
 </section>
 <section id="configuring-audit">
 <h2>Configuring Audit<a class="headerlink" href="#configuring-audit" title="Link to this heading">¶</a></h2>
@@ -391,7 +391,9 @@ You can set the following options:</p>
 </tr>
 <tr class="row-odd"><td><p>audit_tables</p></td>
 <td><p>“”</p></td>
-<td><p>Comma-separated list of table names that should be audited, in the format of &lt;keyspacename&gt;.&lt;tablename&gt;</p></td>
+<td><p>Comma-separated list of table names that should be audited, in the format <code class="docutils literal notranslate"><span class="pre">&lt;keyspace_name&gt;.&lt;table_name&gt;</span></code>.</p>
+<p>For Alternator tables use the <code class="docutils literal notranslate"><span class="pre">alternator.&lt;table_name&gt;</span></code> format (see <a class="reference internal" href="#alternator-auditing"><span class="std std-ref">Auditing Alternator Requests</span></a>).</p>
+</td>
 </tr>
 <tr class="row-even"><td><p>audit_keyspaces</p></td>
 <td><p>“”</p></td>
@@ -408,37 +410,142 @@ If you leave this option empty, no keyspace will be audited.</p></td>
 <thead>
 <tr class="row-odd"><th class="head"><p>Parameter</p></th>
 <th class="head"><p>Logs Description</p></th>
+<th class="head"><p>Applies To</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>AUTH</p></td>
 <td><p>Logs login events</p></td>
+<td><p>CQL</p></td>
 </tr>
 <tr class="row-odd"><td><p>DML</p></td>
 <td><p>Logs insert, update, delete, and other data manipulation language (DML) events</p></td>
+<td><p>CQL, Alternator</p></td>
 </tr>
 <tr class="row-even"><td><p>DDL</p></td>
 <td><p>Logs object and role create, alter, drop, and other data definition language (DDL) events</p></td>
+<td><p>CQL, Alternator</p></td>
 </tr>
 <tr class="row-odd"><td><p>DCL</p></td>
 <td><p>Logs grant, revoke, create role, drop role, and list roles events</p></td>
+<td><p>CQL</p></td>
 </tr>
 <tr class="row-even"><td><p>QUERY</p></td>
 <td><p>Logs all queries</p></td>
+<td><p>CQL, Alternator</p></td>
 </tr>
 <tr class="row-odd"><td><p>ADMIN</p></td>
 <td><p>Logs service level operations: create, alter, drop, attach, detach, list.
 For <a class="reference internal" href="../../features/workload-prioritization.html#workload-priorization-service-level-management"><span class="std std-ref">service level</span></a>
 auditing.</p></td>
+<td><p>CQL</p></td>
 </tr>
 </tbody>
 </table>
+<p>For details on auditing Alternator operations, see <a class="reference internal" href="#alternator-auditing"><span class="std std-ref">Auditing Alternator Requests</span></a>.</p>
 <p>Note that enabling audit may negatively impact performance and audit-to-table may consume extra storage. That’s especially true when auditing DML and QUERY categories, which generate a high volume of audit messages.</p>
+</section>
+<section id="auditing-alternator-requests">
+<span id="alternator-auditing"></span><h3>Auditing Alternator Requests<a class="headerlink" href="#auditing-alternator-requests" title="Link to this heading">¶</a></h3>
+<p>When auditing is enabled, Alternator (DynamoDB-compatible API) requests are audited using the same
+backends and the same filtering configuration (<code class="docutils literal notranslate"><span class="pre">audit_categories</span></code>, <code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audit_tables</span></code>) as CQL operations. No additional configuration is needed.</p>
+<p>Both successful and failed Alternator requests are audited.</p>
+<section id="alternator-operation-categories">
+<h4>Alternator Operation Categories<a class="headerlink" href="#alternator-operation-categories" title="Link to this heading">¶</a></h4>
+<p>Each Alternator API operation is assigned to one of the standard audit categories:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Category</p></th>
+<th class="head"><p>Alternator Operations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DDL</p></td>
+<td><p>CreateTable, DeleteTable, UpdateTable, TagResource, UntagResource, UpdateTimeToLive</p></td>
+</tr>
+<tr class="row-odd"><td><p>DML</p></td>
+<td><p>PutItem, UpdateItem, DeleteItem, BatchWriteItem</p></td>
+</tr>
+<tr class="row-even"><td><p>QUERY</p></td>
+<td><p>GetItem, BatchGetItem, Query, Scan, DescribeTable, ListTables, DescribeEndpoints,
+ListTagsOfResource, DescribeTimeToLive, DescribeContinuousBackups,
+ListStreams, DescribeStream, GetShardIterator, GetRecords</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>AUTH, DCL, and ADMIN categories do not apply to Alternator operations. These categories
+are specific to CQL authentication, authorization, and service-level management.</p>
+</div>
+</section>
+<section id="operation-field-format">
+<h4>Operation Field Format<a class="headerlink" href="#operation-field-format" title="Link to this heading">¶</a></h4>
+<p>For CQL operations, the <code class="docutils literal notranslate"><span class="pre">operation</span></code> field in the audit log contains the raw CQL query string.
+For Alternator operations, the format is:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;OperationName&gt;|&lt;JSON request body&gt;
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PutItem|{&quot;TableName&quot;:&quot;my_table&quot;,&quot;Item&quot;:{&quot;p&quot;:{&quot;S&quot;:&quot;pk_val&quot;},&quot;c&quot;:{&quot;S&quot;:&quot;ck_val&quot;},&quot;v&quot;:{&quot;S&quot;:&quot;data&quot;}}}
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The full JSON request body is included in the <code class="docutils literal notranslate"><span class="pre">operation</span></code> field. For batch operations
+(such as BatchWriteItem), this can be very large (up to 16 MB).</p>
+</div>
+</section>
+<section id="keyspace-and-table-filtering-for-alternator">
+<h4>Keyspace and Table Filtering for Alternator<a class="headerlink" href="#keyspace-and-table-filtering-for-alternator" title="Link to this heading">¶</a></h4>
+<p>The real keyspace name of an Alternator table <code class="docutils literal notranslate"><span class="pre">T</span></code> is <code class="docutils literal notranslate"><span class="pre">alternator_T</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">audit_tables</span></code> config flag uses the shorthand format <code class="docutils literal notranslate"><span class="pre">alternator.T</span></code> to refer to such
+tables – the parser expands it to the real keyspace name automatically.
+For <code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code>, use the real keyspace name directly.</p>
+<p>For example, to audit an Alternator table called <code class="docutils literal notranslate"><span class="pre">my_table_name</span></code> use either of the below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using audit_tables - use &#39;alternator&#39; as the keyspace name:</span>
+<span class="nt">audit_tables</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alternator.my_table_name&quot;</span>
+
+<span class="c1"># Using audit_keyspaces - use the real keyspace name:</span>
+<span class="nt">audit_keyspaces</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alternator_my_table_name&quot;</span>
+</pre></div>
+</div>
+<p><strong>Global and batch operations</strong>: Some Alternator operations are not scoped to a single table:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ListTables</span></code> and <code class="docutils literal notranslate"><span class="pre">DescribeEndpoints</span></code> have no associated keyspace or table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code> and <code class="docutils literal notranslate"><span class="pre">BatchGetItem</span></code> may span multiple tables.</p></li>
+</ul>
+<p>These operations are logged whenever their category matches <code class="docutils literal notranslate"><span class="pre">audit_categories</span></code>, regardless of
+<code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code> or <code class="docutils literal notranslate"><span class="pre">audit_tables</span></code> filters. Their <code class="docutils literal notranslate"><span class="pre">keyspace_name</span></code> field is empty, and for
+batch operations the <code class="docutils literal notranslate"><span class="pre">table_name</span></code> field contains a pipe-separated (<code class="docutils literal notranslate"><span class="pre">|</span></code>) list of all involved table names.</p>
+<p><strong>DynamoDB Streams operations</strong>: For streams-related operations (<code class="docutils literal notranslate"><span class="pre">DescribeStream</span></code>, <code class="docutils literal notranslate"><span class="pre">GetShardIterator</span></code>,
+<code class="docutils literal notranslate"><span class="pre">GetRecords</span></code>), the <code class="docutils literal notranslate"><span class="pre">table_name</span></code> field contains the base table name and the CDC log table name
+separated by a pipe (e.g., <code class="docutils literal notranslate"><span class="pre">my_table|my_table_scylla_cdc_log</span></code>).</p>
+</section>
+<section id="alternator-audit-log-examples">
+<h4>Alternator Audit Log Examples<a class="headerlink" href="#alternator-audit-log-examples" title="Link to this heading">¶</a></h4>
+<p>Syslog output example (PutItem):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">10</span>:15:03<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="nv">node</span><span class="o">=</span><span class="s2">&quot;10.143.2.108&quot;</span>,<span class="w"> </span><span class="nv">category</span><span class="o">=</span><span class="s2">&quot;DML&quot;</span>,<span class="w"> </span><span class="nv">cl</span><span class="o">=</span><span class="s2">&quot;LOCAL_QUORUM&quot;</span>,<span class="w"> </span><span class="nv">error</span><span class="o">=</span><span class="s2">&quot;false&quot;</span>,<span class="w"> </span><span class="nv">keyspace</span><span class="o">=</span><span class="s2">&quot;alternator_my_table&quot;</span>,<span class="w"> </span><span class="nv">query</span><span class="o">=</span><span class="s2">&quot;PutItem|{\&quot;TableName\&quot;:\&quot;my_table\&quot;,\&quot;Item\&quot;:{\&quot;p\&quot;:{\&quot;S\&quot;:\&quot;pk_val\&quot;}}}&quot;</span>,<span class="w"> </span><span class="nv">client_ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span>,<span class="w"> </span><span class="nv">table</span><span class="o">=</span><span class="s2">&quot;my_table&quot;</span>,<span class="w"> </span><span class="nv">username</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span>
+</pre></div>
+</div>
+<p>Table output example (PutItem):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>SELECT<span class="w"> </span>*<span class="w"> </span>FROM<span class="w"> </span>audit.audit_log<span class="w"> </span><span class="p">;</span>
+</pre></div>
+</div>
+<p>returns:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> date                    | node         | event_time                           | category | consistency  | error | keyspace_name         | operation                                                                        | source    | table_name | username  |
+-------------------------+--------------+--------------------------------------+----------+--------------+-------+-----------------------+----------------------------------------------------------------------------------+-----------+------------+-----------+
+2026-03-18 00:00:00+0000 | 10.143.2.108 | 3429b1a5-2a94-11e8-8f4e-000000000001 |      DML | LOCAL_QUORUM | False | alternator_my_table   | PutItem|{&quot;TableName&quot;:&quot;my_table&quot;,&quot;Item&quot;:{&quot;p&quot;:{&quot;S&quot;:&quot;pk_val&quot;}}}                     | 127.0.0.1 |   my_table | anonymous |
+(1 row)
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 <section id="configuring-audit-storage">
 <h2>Configuring Audit Storage<a class="headerlink" href="#configuring-audit-storage" title="Link to this heading">¶</a></h2>
-<p>Auditing messages can be sent to <a class="reference internal" href="#auditing-syslog-storage"><span class="std std-ref">Syslog</span></a> or stored in a Scylla <a class="reference internal" href="#auditing-table-storage"><span class="std std-ref">table</span></a> or both.</p>
+<p>Auditing messages can be sent to <a class="reference internal" href="#auditing-syslog-storage"><span class="std std-ref">Syslog</span></a> or stored in a ScyllaDB <a class="reference internal" href="#auditing-table-storage"><span class="std std-ref">table</span></a> or both.</p>
 <section id="storing-audit-messages-in-syslog">
 <span id="auditing-syslog-storage"></span><h3>Storing Audit Messages in Syslog<a class="headerlink" href="#storing-audit-messages-in-syslog" title="Link to this heading">¶</a></h3>
 <p><strong>Procedure</strong></p>
@@ -461,7 +568,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 </pre></div>
 </div>
 </li>
-<li><p>Restart the Scylla node.</p></li>
+<li><p>Restart the ScyllaDB node.</p></li>
 </ol>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-0-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-0-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-0-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
@@ -472,8 +579,8 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 </div>
 <p>(without restarting <em>some-scylla</em> container)</p>
 </div></div>
-<p>By default, audit messages are written to the same destination as Scylla <a class="reference internal" href="../../getting-started/logging.html"><span class="doc">logging</span></a>, with <code class="docutils literal notranslate"><span class="pre">scylla-audit</span></code> as the process name.</p>
-<p>Logging output example (drop table):</p>
+<p>By default, audit messages are written to the same destination as ScyllaDB <a class="reference internal" href="../../getting-started/logging.html"><span class="doc">logging</span></a>, with <code class="docutils literal notranslate"><span class="pre">scylla-audit</span></code> as the process name.</p>
+<p>Logging output example (CQL drop table):</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">09</span>:53:52<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="nv">node</span><span class="o">=</span><span class="s2">&quot;10.143.2.108&quot;</span>,<span class="w"> </span><span class="nv">category</span><span class="o">=</span><span class="s2">&quot;DDL&quot;</span>,<span class="w"> </span><span class="nv">cl</span><span class="o">=</span><span class="s2">&quot;ONE&quot;</span>,<span class="w"> </span><span class="nv">error</span><span class="o">=</span><span class="s2">&quot;false&quot;</span>,<span class="w"> </span><span class="nv">keyspace</span><span class="o">=</span><span class="s2">&quot;nba&quot;</span>,<span class="w"> </span><span class="nv">query</span><span class="o">=</span><span class="s2">&quot;DROP TABLE nba.team_roster ;&quot;</span>,<span class="w"> </span><span class="nv">client_ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span>,<span class="w"> </span><span class="nv">table</span><span class="o">=</span><span class="s2">&quot;team_roster&quot;</span>,<span class="w"> </span><span class="nv">username</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span>
 </pre></div>
 </div>
@@ -487,7 +594,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 </section>
 <section id="storing-audit-messages-in-a-table">
 <span id="auditing-table-storage"></span><h3>Storing Audit Messages in a Table<a class="headerlink" href="#storing-audit-messages-in-a-table" title="Link to this heading">¶</a></h3>
-<p>Messages are stored in a Scylla table named <code class="docutils literal notranslate"><span class="pre">audit.audit_log</span></code>.</p>
+<p>Messages are stored in a ScyllaDB table named <code class="docutils literal notranslate"><span class="pre">audit.audit_log</span></code>.</p>
 <p>For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>CREATE<span class="w"> </span>TABLE<span class="w"> </span>IF<span class="w"> </span>NOT<span class="w"> </span>EXISTS<span class="w"> </span>audit.audit_log<span class="w"> </span><span class="o">(</span>
 <span class="w">      </span>date<span class="w"> </span>timestamp,
@@ -532,7 +639,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 </pre></div>
 </div>
 </li>
-<li><p>Restart Scylla node.</p>
+<li><p>Restart the ScyllaDB node.</p>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-1-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-1-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-1-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
 </pre></div>
@@ -542,7 +649,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 </div>
 <p>(without restarting <em>some-scylla</em> container)</p>
 </div></div>
-<p>Table output example (drop table):</p>
+<p>Table output example (CQL drop table):</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>SELECT<span class="w"> </span>*<span class="w"> </span>FROM<span class="w"> </span>audit.audit_log<span class="w"> </span><span class="p">;</span>
 </pre></div>
 </div>
@@ -560,7 +667,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <span id="auditing-table-and-syslog-storage"></span><h3>Storing Audit Messages in a Table and Syslog Simultaneously<a class="headerlink" href="#storing-audit-messages-in-a-table-and-syslog-simultaneously" title="Link to this heading">¶</a></h3>
 <p><strong>Procedure</strong></p>
 <ol class="arabic">
-<li><p>Follow both procedures from above, and set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to both <code class="docutils literal notranslate"><span class="pre">syslog</span></code> and <code class="docutils literal notranslate"><span class="pre">table</span></code>. You need to restart scylla only once.</p>
+<li><p>Follow both procedures from above, and set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to both <code class="docutils literal notranslate"><span class="pre">syslog</span></code> and <code class="docutils literal notranslate"><span class="pre">table</span></code>. You need to restart ScyllaDB only once.</p>
 <p>To have both syslog and table you need to specify both backends separated by a comma:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>audit:<span class="w"> </span><span class="s2">&quot;syslog,table&quot;</span>
 </pre></div>
@@ -718,6 +825,13 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <li><a class="reference internal" href="#enabling-audit">Enabling Audit</a></li>
 <li><a class="reference internal" href="#configuring-audit">Configuring Audit</a><ul>
 <li><a class="reference internal" href="#audit-categories-parameter-description">audit_categories parameter description</a></li>
+<li><a class="reference internal" href="#auditing-alternator-requests">Auditing Alternator Requests</a><ul>
+<li><a class="reference internal" href="#alternator-operation-categories">Alternator Operation Categories</a></li>
+<li><a class="reference internal" href="#operation-field-format">Operation Field Format</a></li>
+<li><a class="reference internal" href="#keyspace-and-table-filtering-for-alternator">Keyspace and Table Filtering for Alternator</a></li>
+<li><a class="reference internal" href="#alternator-audit-log-examples">Alternator Audit Log Examples</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuring-audit-storage">Configuring Audit Storage</a><ul>
@@ -1204,7 +1318,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Apr 2026.
+                        Last updated on 10 Apr 2026.
                     
                 </div>
             

@@ -743,7 +743,7 @@
                "parameters":[
                   {
                      "name":"tag",
-                     "description":"the tag given to the snapshot",
+                     "description":"The snapshot tag to delete. If omitted, all snapshots are removed.",
                      "required":false,
                      "allowMultiple":false,
                      "type":"string",
@@ -751,7 +751,7 @@
                   },
                   {
                      "name":"kn",
-                     "description":"Comma-separated keyspaces name that their snapshot will be deleted",
+                     "description":"Comma-separated list of keyspace names to delete snapshots from. If omitted, snapshots are deleted from all keyspaces.",
                      "required":false,
                      "allowMultiple":false,
                      "type":"string",
@@ -759,7 +759,7 @@
                   },
                   {
                      "name":"cf",
-                     "description":"an optional table name that its snapshot will be deleted",
+                     "description":"A table name used to filter which table's snapshots are deleted. If omitted or empty, snapshots for all tables are eligible. When provided together with 'kn', the table is looked up in each listed keyspace independently. For secondary indexes, the logical index name (e.g. 'myindex') can be used and is resolved automatically.",
                      "required":false,
                      "allowMultiple":false,
                      "type":"string",
