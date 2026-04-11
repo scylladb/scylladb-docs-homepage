@@ -563,8 +563,49 @@ Valid only for quantization below <code class="docutils literal notranslate"><sp
 </td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">source_model</span></code></p></td>
+<td><p>The name of the embedding model that produced the vectors (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;ada002&quot;</span></code>). Cassandra client
+libraries such as CassIO send this option to tag the index with the model. Cassandra SAI rejects it as
+an unrecognized property; ScyllaDB accepts and preserves it in <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span></code> output for compatibility
+with those libraries, but does not act on it.</p></td>
+<td><p><em>(none)</em></p></td>
+</tr>
 </tbody>
 </table>
+<section id="cassandra-sai-compatibility-for-vector-search">
+<span id="cassandra-sai-compatibility"></span><h3>Cassandra SAI Compatibility for Vector Search<a class="headerlink" href="#cassandra-sai-compatibility-for-vector-search" title="Link to this heading">¶</a></h3>
+<p>ScyllaDB accepts the Cassandra <code class="docutils literal notranslate"><span class="pre">StorageAttachedIndex</span></code> (SAI) class name in <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">CUSTOM</span> <span class="pre">INDEX</span></code>
+statements <strong>for vector columns</strong>. Cassandra libraries such as
+<a class="reference external" href="https://cassio.org/">CassIO</a> and <a class="reference external" href="https://www.langchain.com/">LangChain</a> use SAI to create
+vector indexes; ScyllaDB recognizes these statements for compatibility.</p>
+<p>When ScyllaDB encounters an SAI class name on a <strong>vector column</strong>, the index is automatically
+created as a native <code class="docutils literal notranslate"><span class="pre">vector_index</span></code>. The following class names are recognized:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">org.apache.cassandra.index.sai.StorageAttachedIndex</span></code> (exact case required)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">StorageAttachedIndex</span></code> (case-insensitive)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SAI</span></code> (case-insensitive)</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Cassandra SAI statement accepted by ScyllaDB:</span>
+<span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
+<span class="k">USING</span> <span class="s1">&#39;org.apache.cassandra.index.sai.StorageAttachedIndex&#39;</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">};</span>
+
+<span class="c1">-- Equivalent to:</span>
+<span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
+<span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">similarity_function</span></code> option is supported by both Cassandra SAI and ScyllaDB.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SAI class names are only supported on <strong>vector columns</strong>. Using an SAI class name on a
+non-vector column (e.g., <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>) will result in an error. General SAI
+indexing of non-vector columns is not supported by ScyllaDB; use a
+<a class="reference internal" href="#"><span class="doc">secondary index</span></a> instead.</p>
+</div>
+</section>
 </section>
 <section id="drop-index">
 <span id="drop-index-statement"></span><h2>DROP INDEX<a class="headerlink" href="#drop-index" title="Link to this heading">¶</a></h2>
@@ -718,7 +759,10 @@ the system stops the build process and cleans up any partially built data associ
 <li><a class="reference internal" href="#">Global Secondary Indexes</a><ul>
 <li><a class="reference internal" href="#create-index">CREATE INDEX</a></li>
 <li><a class="reference internal" href="#local-secondary-index">Local Secondary Index</a></li>
-<li><a class="reference internal" href="#vector-index-scylladb-cloud">Vector Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
+<li><a class="reference internal" href="#vector-index-scylladb-cloud">Vector Index <span class="label label--note">ScyllaDB Cloud</span></a><ul>
+<li><a class="reference internal" href="#cassandra-sai-compatibility-for-vector-search">Cassandra SAI Compatibility for Vector Search</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#drop-index">DROP INDEX</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
 </ul>
@@ -1197,7 +1241,7 @@ the system stops the build process and cleans up any partially built data associ
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Apr 2026.
+                        Last updated on 11 Apr 2026.
                     
                 </div>
             
