@@ -33,10 +33,8 @@
 
         
             
-        <!-- increase expertrec loading priority-->
-        <link rel="dns-prefetch" href="https://cse.expertrec.com">
+        
 
-        <!-- increase font loading priority -->
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="preload" as="style"
               href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap" />
@@ -62,7 +60,7 @@
             
         
             
-                <link rel="stylesheet" type="text/css" href="../_static/css/main.css?v=31980c35" />
+                <link rel="stylesheet" type="text/css" href="../_static/css/main.css?v=041c0933" />
             
         
             
@@ -149,15 +147,7 @@
 <!-- End Google Tag Manager -->
 
 <!-- Expertrec -->
-<script>
-    var id = "e2077224-9ccf-11e9-a0c9-0242ac130002";
-    var ci_search = document.createElement("script");
-    ci_search.type = "text/javascript";
-    ci_search.async = true;
-    ci_search.src = "https://cse.expertrec.com/api/js/ci_common.js?id=" + id;
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(ci_search, s);
-</script>
+
 <!-- End Expertrec -->
             
         
@@ -274,17 +264,24 @@
     </div>
     <div class="header-search-box">
         <i class="dark-theme-toggler icon-theme"></i>
-        <div class="search-box">
-            <ci-search></ci-search>
-        </div>
         
-            <biel-button class="header-ask-ai" project="ddfdo8m94k"
-                         header-title="ScyllaDB chatbot (beta)"
-                         button-position="default"
-                         modal-position="bottom-right"
-                         button-style="dark">
-                Ask AI
-            </biel-button>
+            <biel-search-button
+                project="ddfdo8m94k"
+                button-style="rounded"
+                hide-filters="false"
+                header-title="ScyllaDB chatbot (beta)"
+                modal-position="top-center">
+                Search
+            </biel-search-button>
+            
+                <biel-button class="header-ask-ai" project="ddfdo8m94k"
+                             header-title="ScyllaDB chatbot (beta)"
+                             button-position="default"
+                             modal-position="sidebar-right"
+                             button-style="dark">
+                    Ask AI
+                </biel-button>
+            
         
     </div>
     <div class="side-nav-toggle">
@@ -329,7 +326,10 @@
                         <div class="body-container">
                 
 
-                <div class="content-body">
+                <div class="content-body"
+                     
+                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/ddl.rst"
+                     >
                     
                         
     <div class="admonition caution">
@@ -741,6 +741,25 @@ No need for manual repair afterwards.</p>
 </pre></div>
 </div>
 </section>
+<section id="fixing-invalid-replica-state-with-rf-change">
+<span id="fix-rf-change-tablet-rebuilds"></span><h3>Fixing invalid replica state with RF change<a class="headerlink" href="#fixing-invalid-replica-state-with-rf-change" title="Link to this heading">¶</a></h3>
+<p>If a tablet rebuild fails during an RF change, the state of replicas will be invalid, even though the RF change is marked as successful. The missing replicas will be eventually added in the background. However, until then, the following RF changes will fail.</p>
+<p>To fix the state of replicas in the foreground, retry the previous ALTER KEYSPACE statement, i.e. update the replication factor to the same value it currently has.</p>
+<p>For example, if the following statement fails due to invalid replica state:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="mf">1</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>Check the current replication factor with DESCRIBE KEYSPACE:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="mf">2</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>Ensure that reaching the valid replicas state is possible (e.g. there is enough non-excluded racks) and alter keyspace with the current replication factor:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="mf">2</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>This should fix the state of replicas and allow future RF changes to succeed.</p>
+</section>
 </section>
 <section id="drop-keyspace-statement">
 <span id="id5"></span><h2>DROP KEYSPACE<a class="headerlink" href="#drop-keyspace-statement" title="Link to this heading">¶</a></h2>
@@ -796,6 +815,7 @@ operation is a no-op.</p>
 <span class="n">tablet_option</span><span class="p">:</span> <span class="s1">&#39;expected_data_size_in_gb&#39;</span> <span class="s1">&#39;:&#39;</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>
           <span class="p">:</span> <span class="o">|</span> <span class="s1">&#39;min_per_shard_tablet_count&#39;</span> <span class="s1">&#39;:&#39;</span> <span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;</span>
           <span class="p">:</span> <span class="o">|</span> <span class="s1">&#39;min_tablet_count&#39;</span> <span class="s1">&#39;:&#39;</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span>
+          <span class="p">:</span> <span class="o">|</span> <span class="s1">&#39;pow2_count&#39;</span> <span class="s1">&#39;:&#39;</span> <span class="p">(</span> <span class="s1">&#39;true&#39;</span> <span class="o">|</span> <span class="s1">&#39;false&#39;</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>For instance:</p>
@@ -1435,6 +1455,11 @@ This enables efficient file-based streaming during restore. Setting both
 <code class="docutils literal notranslate"><span class="pre">min_tablet_count</span></code> and <code class="docutils literal notranslate"><span class="pre">max_tablet_count</span></code> to the same value fixes the
 tablet count for the table.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pow2_count</span></code></p></td>
+<td><p>“true”</p></td>
+<td><p>When set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the tablet count of a table is always a power of 2. The
+count wanted due to all other factors is rounded up to the nearest power of 2.</p></td>
+</tr>
 </tbody>
 </table>
 <p>When allocating tablets for a new table, ScyllaDB uses the maximum of the <code class="docutils literal notranslate"><span class="pre">initial</span></code> tablets configured for the keyspace
@@ -1734,6 +1759,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#alter-keyspace-with-tablets">ALTER KEYSPACE with Tablets</a></li>
 <li><a class="reference internal" href="#rack-list-replication-factor">Rack-list replication factor</a></li>
 <li><a class="reference internal" href="#conversion-to-rack-list-replication-factor">Conversion to rack-list replication factor</a></li>
+<li><a class="reference internal" href="#fixing-invalid-replica-state-with-rf-change">Fixing invalid replica state with RF change</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#drop-keyspace-statement">DROP KEYSPACE</a></li>
@@ -1792,9 +1818,26 @@ that can be truncated currently and so the <code class="docutils literal notrans
             <a href="../index.html">ScyllaDB Manual</a>
         </div>
         <div class="side-nav__search">
-            <div class="search-box">
-                <ci-search></ci-search>
-            </div>
+            
+                <biel-search-button
+                    project="ddfdo8m94k"
+                    button-style="rounded"
+                    hide-filters="false"
+                    hide-ctrl-k="true"
+                    header-title="ScyllaDB chatbot (beta)"
+                    modal-position="top-center">
+                    Search
+                </biel-search-button>
+                
+                    <biel-button class="side-nav__ask-ai" project="ddfdo8m94k"
+                                 header-title="ScyllaDB chatbot (beta)"
+                                 button-position="default"
+                                 modal-position="sidebar-right"
+                                 button-style="dark">
+                        Ask AI
+                    </biel-button>
+                
+            
         </div>
         <div class="side-nav__versions"><ul class="dropdown menu scylla-dropdown scylla-dropdown--versions" data-dropdown-menu>
     <li class="scylla-dropdown__item">
@@ -2244,26 +2287,17 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Apr 2026.
+                        Last updated on 16 Apr 2026.
                     
                 </div>
             
             <div class="footer-bottom__version">
                 Powered by
                 <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 9.1.0</a> &amp;
-                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.9.1</a>
+                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.9.2</a>
             </div>
         </div>
     </div>
-    
-        <biel-button class="footer-ask-ai" project="ddfdo8m94k"
-                     header-title="ScyllaDB chatbot (beta)"
-                     button-position="bottom-right"
-                     modal-position="bottom-right"
-                     button-style="dark">
-            Ask AI
-        </biel-button>
-    
 </footer>
 
         <noscript>

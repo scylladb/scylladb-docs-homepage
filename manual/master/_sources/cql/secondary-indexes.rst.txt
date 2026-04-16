@@ -151,6 +151,11 @@ columns are treated as filtering columns. The local vector index requires that t
 of the base table is also the partition key of the index and the vector column is the first one
 from the following columns.
 
+ScyllaDB allows creating multiple **named** vector indexes on the same vector column.
+This can be used to create a replacement index before dropping an older one.
+Unnamed duplicate vector index definitions are still rejected, and index names
+must remain unique within a keyspace.
+
 Example of a simple index:
 
 .. code-block:: cql
