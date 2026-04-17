@@ -469,7 +469,69 @@ Partitions that are bigger than the size threshold and/or hold more than the row
 <section id="expiring-data">
 <h2>Expiring Data<a class="headerlink" href="#expiring-data" title="Link to this heading">¶</a></h2>
 <p>In order to prevent stale data from appearing, all rows in <code class="docutils literal notranslate"><span class="pre">system.large_partitions</span></code> table are inserted with Time To Live (TTL) equal to 30 days.</p>
+</section>
+<section id="virtual-tables-large-data-virtual-tables-feature">
+<span id="large-data-virtual-tables"></span><h2>Virtual Tables (<code class="docutils literal notranslate"><span class="pre">LARGE_DATA_VIRTUAL_TABLES</span></code> Feature)<a class="headerlink" href="#virtual-tables-large-data-virtual-tables-feature" title="Link to this heading">¶</a></h2>
+<p>Starting with ScyllaDB 2026.2, the <code class="docutils literal notranslate"><span class="pre">system.large_partitions</span></code>,
+<code class="docutils literal notranslate"><span class="pre">system.large_rows</span></code>, and <code class="docutils literal notranslate"><span class="pre">system.large_cells</span></code> tables are implemented as
+<strong>virtual tables</strong> that read directly from metadata stored inside each SSTable
+rather than from separate physical system tables.</p>
+<section id="how-it-works">
+<h3>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h3>
+<p>When an SSTable is written (during flush or compaction), the SSTable writer
+records the top-N above-threshold large data entries into a
+<code class="docutils literal notranslate"><span class="pre">LargeDataRecords</span></code> component in the SSTable’s <code class="docutils literal notranslate"><span class="pre">.Scylla</span></code> metadata file.
+The virtual tables query this metadata from all live SSTables at read time,
+so large data records automatically follow their SSTables when they are
+migrated between shards or nodes (e.g. during tablet migration or repair).</p>
+<p>The maximum number of records stored per large data type per SSTable is
+controlled by the <code class="docutils literal notranslate"><span class="pre">compaction_large_data_records_per_sstable</span></code> configuration
+option (default: 10).</p>
+</section>
+<section id="activation">
+<h3>Activation<a class="headerlink" href="#activation" title="Link to this heading">¶</a></h3>
+<p>The transition is gated by the <code class="docutils literal notranslate"><span class="pre">LARGE_DATA_VIRTUAL_TABLES</span></code> cluster feature
+flag, which is automatically enabled once all nodes in the cluster are
+upgraded to a version that supports it.</p>
+<p>When the feature is enabled on a node:</p>
+<ol class="arabic simple">
+<li><p>The old physical <code class="docutils literal notranslate"><span class="pre">system.large_partitions</span></code>, <code class="docutils literal notranslate"><span class="pre">system.large_rows</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">system.large_cells</span></code> tables are dropped.</p></li>
+<li><p>Virtual table replacements are registered in their place.</p></li>
+<li><p>New SSTable writes stop populating the old physical tables.</p></li>
+</ol>
+<p>During a rolling upgrade, as long as any node in the cluster has not been
+upgraded, the feature remains disabled and all nodes continue writing to
+the old physical tables. This ensures safe rollback if the upgrade needs
+to be reverted.</p>
+</section>
+<section id="upgrade-considerations">
+<h3>Upgrade considerations<a class="headerlink" href="#upgrade-considerations" title="Link to this heading">¶</a></h3>
+<p>After the <code class="docutils literal notranslate"><span class="pre">LARGE_DATA_VIRTUAL_TABLES</span></code> feature is enabled, the virtual tables
+derive their content from <code class="docutils literal notranslate"><span class="pre">LargeDataRecords</span></code> metadata stored in SSTables.
+SSTables written by older versions do not contain this metadata.  As a result,
+<strong>the virtual tables may appear empty until those older SSTables are rewritten</strong>
+by compaction.</p>
+<p>To populate the virtual tables promptly after upgrade, run one of the following
+on each node:</p>
+<ul>
+<li><p><strong>Upgrade SSTables compaction</strong> (recommended – rewrites SSTables without
+waiting for normal compaction triggers):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool upgradesstables --include-all-sstables</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Major compaction</strong> (rewrites all SSTables into a single set, but may
+temporarily increase disk usage):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool compact</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Once the SSTables have been rewritten, the virtual tables will show the
+current large data records.</p>
 <p><a class="reference internal" href="index.html"><span class="doc">Troubleshoot</span></a></p>
+</section>
 </section>
 <section id="additional-resources">
 <h2>Additional Resources<a class="headerlink" href="#additional-resources" title="Link to this heading">¶</a></h2>
@@ -602,6 +664,12 @@ Partitions that are bigger than the size threshold and/or hold more than the row
 <li><a class="reference internal" href="#configure">Configure</a></li>
 <li><a class="reference internal" href="#storing">Storing</a></li>
 <li><a class="reference internal" href="#expiring-data">Expiring Data</a></li>
+<li><a class="reference internal" href="#virtual-tables-large-data-virtual-tables-feature">Virtual Tables (<code class="docutils literal notranslate"><span class="pre">LARGE_DATA_VIRTUAL_TABLES</span></code> Feature)</a><ul>
+<li><a class="reference internal" href="#how-it-works">How it works</a></li>
+<li><a class="reference internal" href="#activation">Activation</a></li>
+<li><a class="reference internal" href="#upgrade-considerations">Upgrade considerations</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#additional-resources">Additional Resources</a></li>
 </ul>
 </li>
@@ -1095,7 +1163,7 @@ Partitions that are bigger than the size threshold and/or hold more than the row
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Apr 2026.
+                        Last updated on 17 Apr 2026.
                     
                 </div>
             

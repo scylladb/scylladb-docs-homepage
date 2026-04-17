@@ -813,6 +813,7 @@ $SSTABLE := {
     &quot;scylla_version&quot;: String
     &quot;ext_timestamp_stats&quot;: {&quot;$key&quot;: int64, ...}
     &quot;sstable_identifier&quot;: String, // UUID
+    &quot;large_data_records&quot;: [$LARGE_DATA_RECORD, ...]
 }
 
 $SHARDING_METADATA := {
@@ -835,6 +836,17 @@ $LARGE_DATA_STATS_METADATA := {
     &quot;max_value&quot;: Uint64,
     &quot;threshold&quot;: Uint64,
     &quot;above_threshold&quot;: Uint
+}
+
+$LARGE_DATA_RECORD := {
+    &quot;type&quot;: String,              // large_data_type name
+    &quot;partition_key&quot;: String,     // human-readable partition key (decoded from binary)
+    &quot;clustering_key&quot;: String,    // human-readable clustering key (decoded from binary), empty if N/A
+    &quot;column_name&quot;: String,       // column name, empty for partition/row entries
+    &quot;value&quot;: Uint64,             // size in bytes (partition, row, or cell size depending on type)
+    &quot;elements_count&quot;: Uint64,    // rows (partition_size, rows_in_partition) or collection elements (cell_size, elements_in_collection), 0 for row_size
+    &quot;range_tombstones&quot;: Uint64,  // range tombstones (partition_size records only, 0 otherwise)
+    &quot;dead_rows&quot;: Uint64          // dead rows (partition_size records only, 0 otherwise)
 }
 </pre></div>
 </div>
@@ -1839,7 +1851,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Apr 2026.
+                        Last updated on 17 Apr 2026.
                     
                 </div>
             

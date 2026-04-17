@@ -524,6 +524,7 @@ The content is dumped in JSON, using the following schema:
         "scylla_version": String
         "ext_timestamp_stats": {"$key": int64, ...}
         "sstable_identifier": String, // UUID
+        "large_data_records": [$LARGE_DATA_RECORD, ...]
     }
 
     $SHARDING_METADATA := {
@@ -546,6 +547,17 @@ The content is dumped in JSON, using the following schema:
         "max_value": Uint64,
         "threshold": Uint64,
         "above_threshold": Uint
+    }
+
+    $LARGE_DATA_RECORD := {
+        "type": String,              // large_data_type name
+        "partition_key": String,     // human-readable partition key (decoded from binary)
+        "clustering_key": String,    // human-readable clustering key (decoded from binary), empty if N/A
+        "column_name": String,       // column name, empty for partition/row entries
+        "value": Uint64,             // size in bytes (partition, row, or cell size depending on type)
+        "elements_count": Uint64,    // rows (partition_size, rows_in_partition) or collection elements (cell_size, elements_in_collection), 0 for row_size
+        "range_tombstones": Uint64,  // range tombstones (partition_size records only, 0 otherwise)
+        "dead_rows": Uint64          // dead rows (partition_size records only, 0 otherwise)
     }
 
 dump-schema

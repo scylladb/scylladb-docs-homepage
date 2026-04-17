@@ -128,6 +128,79 @@ Expiring Data
 
 In order to prevent stale data from appearing, all rows in ``system.large_partitions`` table are inserted with Time To Live (TTL) equal to 30 days.
 
+
+.. _large-data-virtual-tables:
+
+Virtual Tables (``LARGE_DATA_VIRTUAL_TABLES`` Feature)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Starting with ScyllaDB 2026.2, the ``system.large_partitions``,
+``system.large_rows``, and ``system.large_cells`` tables are implemented as
+**virtual tables** that read directly from metadata stored inside each SSTable
+rather than from separate physical system tables.
+
+How it works
+""""""""""""
+
+When an SSTable is written (during flush or compaction), the SSTable writer
+records the top-N above-threshold large data entries into a
+``LargeDataRecords`` component in the SSTable's ``.Scylla`` metadata file.
+The virtual tables query this metadata from all live SSTables at read time,
+so large data records automatically follow their SSTables when they are
+migrated between shards or nodes (e.g. during tablet migration or repair).
+
+The maximum number of records stored per large data type per SSTable is
+controlled by the ``compaction_large_data_records_per_sstable`` configuration
+option (default: 10).
+
+Activation
+""""""""""
+
+The transition is gated by the ``LARGE_DATA_VIRTUAL_TABLES`` cluster feature
+flag, which is automatically enabled once all nodes in the cluster are
+upgraded to a version that supports it.
+
+When the feature is enabled on a node:
+
+1. The old physical ``system.large_partitions``, ``system.large_rows``, and
+   ``system.large_cells`` tables are dropped.
+2. Virtual table replacements are registered in their place.
+3. New SSTable writes stop populating the old physical tables.
+
+During a rolling upgrade, as long as any node in the cluster has not been
+upgraded, the feature remains disabled and all nodes continue writing to
+the old physical tables. This ensures safe rollback if the upgrade needs
+to be reverted.
+
+Upgrade considerations
+""""""""""""""""""""""
+
+After the ``LARGE_DATA_VIRTUAL_TABLES`` feature is enabled, the virtual tables
+derive their content from ``LargeDataRecords`` metadata stored in SSTables.
+SSTables written by older versions do not contain this metadata.  As a result,
+**the virtual tables may appear empty until those older SSTables are rewritten**
+by compaction.
+
+To populate the virtual tables promptly after upgrade, run one of the following
+on each node:
+
+* **Upgrade SSTables compaction** (recommended -- rewrites SSTables without
+  waiting for normal compaction triggers):
+
+  .. code-block:: console
+
+     nodetool upgradesstables --include-all-sstables
+
+* **Major compaction** (rewrites all SSTables into a single set, but may
+  temporarily increase disk usage):
+
+  .. code-block:: console
+
+     nodetool compact
+
+Once the SSTables have been rewritten, the virtual tables will show the
+current large data records.
+
 .. include:: /troubleshooting/_common/ts-return.rst
 
 Additional Resources

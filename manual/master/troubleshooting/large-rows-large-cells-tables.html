@@ -530,6 +530,13 @@ In addition,  a warning message is logged in the ScyllaDB log (refer to <a class
 <section id="expiring-data">
 <h2>Expiring Data<a class="headerlink" href="#expiring-data" title="Link to this heading">¶</a></h2>
 <p>In order to prevent stale data from appearing, all rows in the <code class="docutils literal notranslate"><span class="pre">system.large_rows</span></code> and <code class="docutils literal notranslate"><span class="pre">system.large_cells</span></code> tables are inserted with Time To Live (TTL) equal to 30 days.</p>
+</section>
+<section id="virtual-tables">
+<h2>Virtual Tables<a class="headerlink" href="#virtual-tables" title="Link to this heading">¶</a></h2>
+<p>Starting with ScyllaDB 2026.2, <code class="docutils literal notranslate"><span class="pre">system.large_rows</span></code> and <code class="docutils literal notranslate"><span class="pre">system.large_cells</span></code>
+are implemented as virtual tables that read from SSTable metadata. See
+<a class="reference internal" href="large-partition-table.html#large-data-virtual-tables"><span class="std std-ref">Virtual Tables (LARGE_DATA_VIRTUAL_TABLES Feature)</span></a> for details on the
+<code class="docutils literal notranslate"><span class="pre">LARGE_DATA_VIRTUAL_TABLES</span></code> feature and upgrade considerations.</p>
 <p><a class="reference internal" href="index.html"><span class="doc">Troubleshoot</span></a></p>
 </section>
 </section>
@@ -660,6 +667,7 @@ In addition,  a warning message is logged in the ScyllaDB log (refer to <a class
 <li><a class="reference internal" href="#configure">Configure</a></li>
 <li><a class="reference internal" href="#storing">Storing</a></li>
 <li><a class="reference internal" href="#expiring-data">Expiring Data</a></li>
+<li><a class="reference internal" href="#virtual-tables">Virtual Tables</a></li>
 </ul>
 </li>
 </ul>
@@ -1152,7 +1160,7 @@ In addition,  a warning message is logged in the ScyllaDB log (refer to <a class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Apr 2026.
+                        Last updated on 17 Apr 2026.
                     
                 </div>
             
