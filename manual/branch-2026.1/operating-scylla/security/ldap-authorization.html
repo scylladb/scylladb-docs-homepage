@@ -365,6 +365,17 @@ The user keeps the granted roles until logout; any subsequent changes to the LDA
 This configuration takes the form of a query template which is defined in the scylla.yaml configuration file using the parameter <code class="docutils literal notranslate"><span class="pre">ldap_url_template</span></code>.
 The value of <code class="docutils literal notranslate"><span class="pre">ldap_url_template</span></code> parameter should contain a valid LDAP URL (e.g., as returned by the ldapurl utility from OpenLDAP) representing an LDAP query that returns entries for all the user’s roles.
 Scylla will replace the text <code class="docutils literal notranslate"><span class="pre">{USER}</span></code> in the URL with the user’s Scylla username before querying LDAP.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Usernames substituted into <code class="docutils literal notranslate"><span class="pre">{USER}</span></code> are automatically escaped
+using RFC 4515 filter escaping and URL percent-encoding, so LDAP filter
+metacharacters (<code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">(</span></code>, <code class="docutils literal notranslate"><span class="pre">)</span></code>, <code class="docutils literal notranslate"><span class="pre">\</span></code>, NUL) and URL metacharacters
+(<code class="docutils literal notranslate"><span class="pre">%</span></code>, <code class="docutils literal notranslate"><span class="pre">?</span></code>, <code class="docutils literal notranslate"><span class="pre">#</span></code>) in usernames are handled safely.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{USER}</span></code> must appear only in the <strong>filter</strong> component of the LDAP URL
+(the part after the third <code class="docutils literal notranslate"><span class="pre">?</span></code>).  Templates that place <code class="docutils literal notranslate"><span class="pre">{USER}</span></code> in the
+host, base DN, attributes, or extensions are rejected at startup, because
+filter escaping is not the correct encoding for those components.</p>
+</div>
 </section>
 <section id="workflow">
 <h2>Workflow<a class="headerlink" href="#workflow" title="Link to this heading">¶</a></h2>
@@ -1112,7 +1123,7 @@ Then check the LDAP logs and see if there are any subtle differences between the
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Apr 2026.
+                        Last updated on 18 Apr 2026.
                     
                 </div>
             

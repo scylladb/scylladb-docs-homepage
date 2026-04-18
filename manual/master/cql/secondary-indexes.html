@@ -440,8 +440,8 @@ the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></
 add additional columns to the index for filtering the search results. The partition column
 specified in the global vector index definition must be the vector column, and any subsequent
 columns are treated as filtering columns. The local vector index requires that the partition key
-of the base table is also the partition key of the index and the vector column is the first one
-from the following columns.</p>
+of the index is a subset of the table’s partition key columns and the vector column is the first
+one from the following columns.</p>
 <p>ScyllaDB allows creating multiple <strong>named</strong> vector indexes on the same vector column.
 This can be used to create a replacement index before dropping an older one.
 Unnamed duplicate vector index definitions are still rejected, and index names
@@ -474,8 +474,9 @@ of the base table.</p>
 <p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed for similarity search (a local
 index) and additional columns are added for filtering the search results. The
 filtering is possible on <code class="docutils literal notranslate"><span class="pre">category</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code> and all primary key columns of
-the base table. The columns <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> must be the partition key
-of the base table.</p>
+the base table. The partition key of the base table must contains both columns
+<code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code>. It is allowed to create a local vector index using
+only a part of the partition key columns of the base table.</p>
 <p>Vector indexes support additional filtering columns of native data types
 (excluding counter and duration). The indexed column itself must be a vector
 column, while the extra columns can be used to filter search results.</p>
@@ -1027,6 +1028,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1261,7 +1263,7 @@ the system stops the build process and cleans up any partially built data associ
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Apr 2026.
+                        Last updated on 18 Apr 2026.
                     
                 </div>
             

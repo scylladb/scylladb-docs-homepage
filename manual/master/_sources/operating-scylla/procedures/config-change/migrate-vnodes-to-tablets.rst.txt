@@ -53,9 +53,6 @@ Limitations
 
 The current migration procedure has the following limitations:
 
-* The total number of **vnode tokens** in the cluster must be a **power of two**
-  and the tokens must be **evenly spaced** across the token ring. This is
-  verified automatically when starting the migration.
 * **No schema changes** during the migration. Do not create, alter, or drop
   tables in the migrating keyspace until the migration is finished.
 * **No topology changes** during the migration. Do not add, remove, decommission,
