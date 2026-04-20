@@ -45,19 +45,8 @@ jobs:
       - name: Set up env
         run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" setupenv
 
-      - name: Patch conf.py to set tag from env var
-        run: |
-          python3 -c "
-          p = 'submodules/scylladb/docs/conf.py'
-          t = open(p).read()
-          t = t.replace(\"FLAG = os.getenv('FLAG', 'manual')\", \"FLAG = os.getenv('FLAG', 'manual')\nif FLAG:\n    tags.add(FLAG)\")
-          open(p, 'w').write(t)
-          "
-
       - name: Build docs
-        run: |
-          make -C submodules/scylladb/docs setup
-          cd submodules/scylladb/docs && FLAG=${{ env.FLAG }} uv run sphinx-multiversion . _build/dirhtml -D html_theme_options.collapse_navigation='false' -D html_theme_options.navigation_depth=3 -c ./
+        run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" multiversion
 
       - name: Build redirects
         run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" redirects
