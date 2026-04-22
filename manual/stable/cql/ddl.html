@@ -731,6 +731,25 @@ No need for manual repair afterwards.</p>
 </pre></div>
 </div>
 </section>
+<section id="fixing-invalid-replica-state-with-rf-change">
+<span id="fix-rf-change-tablet-rebuilds"></span><h3>Fixing invalid replica state with RF change<a class="headerlink" href="#fixing-invalid-replica-state-with-rf-change" title="Link to this heading">¶</a></h3>
+<p>If a tablet rebuild fails during an RF change, the state of replicas will be invalid, even though the RF change is marked as successful. The missing replicas will be eventually added in the background. However, until then, the following RF changes will fail.</p>
+<p>To fix the state of replicas in the foreground, retry the previous ALTER KEYSPACE statement, i.e. update the replication factor to the same value it currently has.</p>
+<p>For example, if the following statement fails due to invalid replica state:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="mf">1</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>Check the current replication factor with DESCRIBE KEYSPACE:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DESCRIBE</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="mf">2</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>Ensure that reaching the valid replicas state is possible (e.g. there is enough non-excluded racks) and alter keyspace with the current replication factor:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc1&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="mf">2</span><span class="p">}</span> <span class="k">AND</span> <span class="n">tablets</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>This should fix the state of replicas and allow future RF changes to succeed.</p>
+</section>
 </section>
 <section id="drop-keyspace-statement">
 <span id="id5"></span><h2>DROP KEYSPACE<a class="headerlink" href="#drop-keyspace-statement" title="Link to this heading">¶</a></h2>
@@ -1685,6 +1704,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li><a class="reference internal" href="#alter-keyspace-with-tablets">ALTER KEYSPACE with Tablets</a></li>
 <li><a class="reference internal" href="#rack-list-replication-factor">Rack-list replication factor</a></li>
 <li><a class="reference internal" href="#conversion-to-rack-list-replication-factor">Conversion to rack-list replication factor</a></li>
+<li><a class="reference internal" href="#fixing-invalid-replica-state-with-rf-change">Fixing invalid replica state with RF change</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#drop-keyspace-statement">DROP KEYSPACE</a></li>
@@ -2214,7 +2234,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Apr 2026.
+                        Last updated on 22 Apr 2026.
                     
                 </div>
             

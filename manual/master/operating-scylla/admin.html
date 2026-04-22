@@ -620,6 +620,19 @@ AWS Security Token Service (STS) or the EC2 Instance Metadata Service.</p>
 <li><p>If not set, requests are sent unsigned, which may not be accepted by all servers.</p></li>
 </ul>
 </div>
+<section id="using-oracle-oci-object-storage">
+<span id="admin-oci-object-storage"></span><h3>Using Oracle OCI Object Storage<a class="headerlink" href="#using-oracle-oci-object-storage" title="Link to this heading">¶</a></h3>
+<p>Oracle Cloud Infrastructure (OCI) Object Storage is compatible with the Amazon
+S3 API, so it works with ScyllaDB without additional configuration.</p>
+<p>To use OCI Object Storage, follow the same configuration as for AWS S3, and
+specify your OCI S3-compatible endpoint.</p>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://idedxcgnkfkt.compat.objectstorage.us-ashburn-1.oci.customer-oci.com:443</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-ashburn-1</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="compression">
 <span id="admin-compression"></span><h2>Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h2>
@@ -1033,7 +1046,10 @@ with the ScyllaDB REST API.</p>
 <li><a class="reference internal" href="#ipv6-addresses">IPv6 Addresses</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuring-object-storage">Configuring Object Storage</a></li>
+<li><a class="reference internal" href="#configuring-object-storage">Configuring Object Storage</a><ul>
+<li><a class="reference internal" href="#using-oracle-oci-object-storage">Using Oracle OCI Object Storage</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#compression">Compression</a><ul>
 <li><a class="reference internal" href="#client-node-compression">Client - Node Compression</a></li>
 <li><a class="reference internal" href="#internode-compression">Internode Compression</a></li>
@@ -1559,7 +1575,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Apr 2026.
+                        Last updated on 22 Apr 2026.
                     
                 </div>
             
