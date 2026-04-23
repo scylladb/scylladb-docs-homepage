@@ -102,6 +102,34 @@ Procedure
 
          Consider :ref:`upgrading rf_rack_valid_keyspaces option to enforce_rack_list option <keyspace-rf-rack-valid-to-enforce-rack-list>` to ensure all tablet keyspaces use rack lists.
 
+   If the keyspace uses rack list replication, update the replication factor in one ``ALTER KEYSPACE`` statement, under the following rules:
+      * Existing datacenters must keep their current replication factor.
+      * An existing datacenter can be removed (**N to 0**).
+      * A new datacenter can be assigned a replication factor (**0 to N**).
+
+   .. warning::
+
+      While removing a datacenter and altering keyspaces, do **not** perform any reads or writes that involve the datacenter being removed.
+      In particular, avoid using global consistency levels (such as ``ALL``, ``EACH_QUORUM``) that would include the decommissioned datacenter in the operation.
+      Use ``LOCAL_*`` consistency levels (e.g., ``LOCAL_QUORUM``, ``LOCAL_ONE``) until the datacenter is fully decommissioned.
+
+   .. code-block:: shell
+
+      cqlsh> DESCRIBE nba4
+      cqlsh> CREATE KEYSPACE nba4 WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'US-DC' : ['RAC1', 'RAC2', 'RAC3'], 'ASIA-DC' : ['RAC4', 'RAC5'], 'EUROPE-DC' : ['RAC6', 'RAC7', 'RAC8']} AND tablets = { 'enabled': true };
+
+   The following is **not** allowed because it changes the replication factor of ``EUROPE-DC`` (adds ``RAC9``) and removes ``ASIA-DC`` in the same statement:
+
+   .. code-block:: shell
+
+      cqlsh> ALTER KEYSPACE nba4 WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'US-DC' : ['RAC1', 'RAC2', 'RAC3'], 'ASIA-DC' : [], 'EUROPE-DC' : ['RAC6', 'RAC7', 'RAC8', 'RAC9']} AND tablets = { 'enabled': true };
+
+   Remove all replicas from the decommissioned datacenter:
+
+   .. code-block:: shell
+
+      cqlsh> ALTER KEYSPACE nba4 WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'US-DC' : ['RAC1', 'RAC2', 'RAC3'], 'ASIA-DC' : [], 'EUROPE-DC' : ['RAC6', 'RAC7', 'RAC8']} AND tablets = { 'enabled': true };
+
    .. note::
 
       If table audit is enabled, the ``audit`` keyspace is automatically created with ``NetworkTopologyStrategy``.
@@ -112,6 +140,10 @@ Procedure
          cqlsh> ALTER KEYSPACE audit WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'US-DC' : 3, 'ASIA-DC' : 0, 'EUROPE-DC' : 3};
 
       Failure to do so will result in decommission errors such as "zero replica after the removal".
+
+   .. warning::
+
+         Removal of replicas from a datacenter cannot be aborted. To get back to the previous replication, wait until the ALTER KEYSPACE finishes and then add the replicas back by running another ALTER KEYSPACE statement.
 
 #. Run :doc:`nodetool decommission </operating-scylla/nodetool-commands/decommission>` on every node in the data center that is to be removed.
    Refer to :doc:`Remove a Node from a ScyllaDB Cluster - Down Scale </operating-scylla/procedures/cluster-management/remove-node>` for further information.

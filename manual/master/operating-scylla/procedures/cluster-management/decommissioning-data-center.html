@@ -441,6 +441,32 @@ cqlsh&gt;<span class="w"> </span>ALTER<span class="w"> </span>KEYSPACE<span clas
 </div>
 <p>Consider <a class="reference internal" href="../../../architecture/tablets.html#keyspace-rf-rack-valid-to-enforce-rack-list"><span class="std std-ref">upgrading rf_rack_valid_keyspaces option to enforce_rack_list option</span></a> to ensure all tablet keyspaces use rack lists.</p>
 </div>
+<dl class="simple">
+<dt>If the keyspace uses rack list replication, update the replication factor in one <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> statement, under the following rules:</dt><dd><ul class="simple">
+<li><p>Existing datacenters must keep their current replication factor.</p></li>
+<li><p>An existing datacenter can be removed (<strong>N to 0</strong>).</p></li>
+<li><p>A new datacenter can be assigned a replication factor (<strong>0 to N</strong>).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>While removing a datacenter and altering keyspaces, do <strong>not</strong> perform any reads or writes that involve the datacenter being removed.
+In particular, avoid using global consistency levels (such as <code class="docutils literal notranslate"><span class="pre">ALL</span></code>, <code class="docutils literal notranslate"><span class="pre">EACH_QUORUM</span></code>) that would include the decommissioned datacenter in the operation.
+Use <code class="docutils literal notranslate"><span class="pre">LOCAL_*</span></code> consistency levels (e.g., <code class="docutils literal notranslate"><span class="pre">LOCAL_QUORUM</span></code>, <code class="docutils literal notranslate"><span class="pre">LOCAL_ONE</span></code>) until the datacenter is fully decommissioned.</p>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh&gt;<span class="w"> </span>DESCRIBE<span class="w"> </span>nba4
+cqlsh&gt;<span class="w"> </span>CREATE<span class="w"> </span>KEYSPACE<span class="w"> </span>nba4<span class="w"> </span>WITH<span class="w"> </span><span class="nv">REPLICATION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s1">&#39;class&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span>,<span class="w"> </span><span class="s1">&#39;US-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC3&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;ASIA-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC4&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC5&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;EUROPE-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC6&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC7&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC8&#39;</span><span class="o">]}</span><span class="w"> </span>AND<span class="w"> </span><span class="nv">tablets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s1">&#39;enabled&#39;</span>:<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The following is <strong>not</strong> allowed because it changes the replication factor of <code class="docutils literal notranslate"><span class="pre">EUROPE-DC</span></code> (adds <code class="docutils literal notranslate"><span class="pre">RAC9</span></code>) and removes <code class="docutils literal notranslate"><span class="pre">ASIA-DC</span></code> in the same statement:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh&gt;<span class="w"> </span>ALTER<span class="w"> </span>KEYSPACE<span class="w"> </span>nba4<span class="w"> </span>WITH<span class="w"> </span><span class="nv">REPLICATION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s1">&#39;class&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span>,<span class="w"> </span><span class="s1">&#39;US-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC3&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;ASIA-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[]</span>,<span class="w"> </span><span class="s1">&#39;EUROPE-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC6&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC7&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC8&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC9&#39;</span><span class="o">]}</span><span class="w"> </span>AND<span class="w"> </span><span class="nv">tablets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s1">&#39;enabled&#39;</span>:<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Remove all replicas from the decommissioned datacenter:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh&gt;<span class="w"> </span>ALTER<span class="w"> </span>KEYSPACE<span class="w"> </span>nba4<span class="w"> </span>WITH<span class="w"> </span><span class="nv">REPLICATION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s1">&#39;class&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span>,<span class="w"> </span><span class="s1">&#39;US-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC3&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;ASIA-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[]</span>,<span class="w"> </span><span class="s1">&#39;EUROPE-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC6&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC7&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC8&#39;</span><span class="o">]}</span><span class="w"> </span>AND<span class="w"> </span><span class="nv">tablets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s1">&#39;enabled&#39;</span>:<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If table audit is enabled, the <code class="docutils literal notranslate"><span class="pre">audit</span></code> keyspace is automatically created with <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code>.
@@ -449,6 +475,10 @@ You must also alter the <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 <p>Failure to do so will result in decommission errors such as “zero replica after the removal”.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Removal of replicas from a datacenter cannot be aborted. To get back to the previous replication, wait until the ALTER KEYSPACE finishes and then add the replicas back by running another ALTER KEYSPACE statement.</p>
 </div>
 </li>
 <li><p>Run <a class="reference internal" href="../../nodetool-commands/decommission.html"><span class="doc">nodetool decommission</span></a> on every node in the data center that is to be removed.
@@ -1096,7 +1126,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Apr 2026.
+                        Last updated on 23 Apr 2026.
                     
                 </div>
             
