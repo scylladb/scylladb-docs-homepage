@@ -430,8 +430,8 @@ the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></
 add additional columns to the index for filtering the search results. The partition column
 specified in the global vector index definition must be the vector column, and any subsequent
 columns are treated as filtering columns. The local vector index requires that the partition key
-of the base table is also the partition key of the index and the vector column is the first one
-from the following columns.</p>
+of the index is a subset of the table’s partition key columns and the vector column is the first
+one from the following columns.</p>
 <p>Example of a simple index:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="n">vectorIndex</span> <span class="k">ON</span> <span class="n">ImageEmbeddings</span> <span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
 <span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
@@ -460,8 +460,9 @@ of the base table.</p>
 <p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed for similarity search (a local
 index) and additional columns are added for filtering the search results. The
 filtering is possible on <code class="docutils literal notranslate"><span class="pre">category</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code> and all primary key columns of
-the base table. The columns <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> must be the partition key
-of the base table.</p>
+the base table. The partition key of the base table must contains both columns
+<code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code>. It is allowed to create a local vector index using
+only a part of the partition key columns of the base table.</p>
 <p>Vector indexes support additional filtering columns of native data types
 (excluding counter and duration). The indexed column itself must be a vector
 column, while the extra columns can be used to filter search results.</p>
@@ -1203,7 +1204,7 @@ name, which may optionally specify the keyspace of the index.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Apr 2026.
+                        Last updated on 26 Apr 2026.
                     
                 </div>
             
