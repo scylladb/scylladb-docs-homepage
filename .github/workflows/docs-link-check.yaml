@@ -1,0 +1,118 @@
+name: "Docs / Link check"
+
+on:
+  schedule:
+    # Mondays at 08:00 UTC.
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  matrix:
+    name: Build matrix
+    runs-on: ubuntu-latest
+    outputs:
+      sites: ${{ steps.read.outputs.sites }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml
+
+      - name: Read sites.yml
+        id: read
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import yaml
+          with open("scripts/link-check/sites.yml") as f:
+              cfg = yaml.safe_load(f)
+          sites = [
+              {"name": s["name"], "slug": s["slug"], "url": s["url"]}
+              for s in cfg["sites"]
+          ]
+          print("sites=" + json.dumps(sites))
+          PY
+
+  check:
+    name: ${{ matrix.site.name }}
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site: ${{ fromJson(needs.matrix.outputs.sites) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml
+
+      - name: Expand sitemap
+        run: |
+          python scripts/link-check/expand_sitemaps.py "${{ matrix.site.url }}" \
+            > scripts/link-check/urls.txt
+          echo "Inputs: $(wc -l < scripts/link-check/urls.txt)"
+
+      - name: Run lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config scripts/link-check/lychee.toml
+            --format json
+            --output scripts/link-check/lychee-report.json
+            --no-progress
+            --files-from scripts/link-check/urls.txt
+          fail: false
+
+      - name: Fetch open issues for this site
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list \
+            --label "link-check:${{ matrix.site.slug }}" \
+            --state open \
+            --json body \
+            --limit 100 \
+            > scripts/link-check/open-issues.json
+
+      - name: Process report
+        id: process
+        env:
+          SITE_NAME: ${{ matrix.site.name }}
+          SITE_URL: ${{ matrix.site.url }}
+        run: python scripts/link-check/process.py
+
+      - name: Ensure labels exist
+        if: steps.process.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "link-check" \
+            --color "d73a4a" \
+            --description "Automated link-check report" \
+            --force >/dev/null
+          gh label create "link-check:${{ matrix.site.slug }}" \
+            --color "fbca04" \
+            --description "${{ matrix.site.name }}" \
+            --force >/dev/null
+
+      - name: Open issue
+        if: steps.process.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "${{ steps.process.outputs.title }}" \
+            --body-file scripts/link-check/issue-body.md \
+            --label "link-check" \
+            --label "link-check:${{ matrix.site.slug }}"
