@@ -324,6 +324,13 @@ experimental:
     stream events. Without this option, such no-op operations may still
     generate spurious stream events.
     <https://github.com/scylladb/scylladb/issues/28368>
+  * When a stream is disabled, no new records are written but the existing
+    stream data is preserved and remains readable through its original
+    StreamArn. The data expires via TTL after 24 hours. Re-enabling the
+    stream purges the old data immediately and produces a new StreamArn.
+    In contrast, DynamoDB keeps the old stream and its data readable for
+    24 hours through the old StreamArn even after re-enabling.
+    <https://scylladb.atlassian.net/browse/SCYLLADB-1873>
 
 ## Unimplemented API features
 

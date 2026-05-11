@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Upgrade from ScyllaDB 2025.x to ScyllaDB 2026.1 | ScyllaDB Docs 
+             Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2026.1/upgrade-guide-from-2025.x-to-2026.1.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -335,11 +335,11 @@
     
         <span class="bread__item">
             <a href="index.html" class="bread__highlight">
-                Upgrade - ScyllaDB 2025.x to ScyllaDB 2026.1
+                Upgrade - ScyllaDB 2026.1 to ScyllaDB 2026.2
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Upgrade from ScyllaDB 2025.x to ScyllaDB 2026.1</span>
+    <span class="bread__item bread__item--last">Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2</span>
 </div>
                     </div>
                 
@@ -350,7 +350,7 @@
 
                 <div class="content-body"
                      
-                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2026.1/upgrade-guide-from-2025.x-to-2026.1.rst"
+                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.rst"
                      >
                     
                         
@@ -359,9 +359,9 @@
                     
 
                     <section id="upgrade-from-scylla-name-src-version-to-scylla-name-new-version">
-<h1>Upgrade from ScyllaDB 2025.x to ScyllaDB 2026.1<a class="headerlink" href="#upgrade-from-scylla-name-src-version-to-scylla-name-new-version" title="Link to this heading">¶</a></h1>
-<p>This document describes a step-by-step procedure for upgrading from ScyllaDB 2025.x
-to ScyllaDB 2026.1 and rollback to version 2025.x if necessary.</p>
+<h1>Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2<a class="headerlink" href="#upgrade-from-scylla-name-src-version-to-scylla-name-new-version" title="Link to this heading">¶</a></h1>
+<p>This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.1
+to ScyllaDB 2026.2 and rollback to version 2026.1 if necessary.</p>
 <p>This guide covers upgrading ScyllaDB on Red Hat Enterprise Linux (RHEL), CentOS, Debian,
 and Ubuntu. See <a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support by Platform and Version</a>
 for information about supported versions. It also applies when using the ScyllaDB official image on EC2, GCP, or Azure.</p>
@@ -401,7 +401,7 @@ validating that the node you upgraded is up and running the new version.</p>
 </div>
 <p><strong>During</strong> the rolling upgrade, it is highly recommended:</p>
 <ul class="simple">
-<li><p>Not to use the new 2026.1 features.</p></li>
+<li><p>Not to use the new 2026.2 features.</p></li>
 <li><p>Not to run administration functions, such as repairs, refresh, rebuild, or add
 or remove nodes. See <a class="reference external" href="https://manager.docs.scylladb.com/stable/sctool/">sctool</a> for suspending
 ScyllaDB Manager’s scheduled or running repairs.</p></li>
@@ -462,9 +462,9 @@ sudo<span class="w"> </span>cp<span class="w"> </span>/etc/yum.repos.d/scylla.re
 You should take note of the current version in case you want to <a class="reference external" href="./#rollback-procedure">rollback</a> the upgrade.</p>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-RGViaWFuL1VidW50dQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tab" tabindex="0">Debian/Ubuntu</button><button aria-controls="panel-1-UkhFTC9DZW50T1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tab" tabindex="-1">RHEL/CentOS</button><button aria-controls="panel-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" name="RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" role="tab" tabindex="-1">EC2/GCP/Azure Ubuntu Image</button></div><div aria-labelledby="tab-1-RGViaWFuL1VidW50dQ==" class="sphinx-tabs-panel group-tab" id="panel-1-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Update the ScyllaDB deb repo to 2026.1.</p>
+<li><p>Update the ScyllaDB deb repo to 2026.2.</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.1.list</span>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.2.list</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -481,9 +481,9 @@ You should take note of the current version in case you want to <a class="refere
 </ol>
 <p>Answer ‘y’ to the first two questions.</p>
 </div><div aria-labelledby="tab-1-UkhFTC9DZW50T1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Update the ScyllaDB rpm repo to 2026.1.</p>
+<li><p>Update the ScyllaDB rpm repo to 2026.2.</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.1.repo</span>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.2.repo</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -543,21 +543,21 @@ validate there are no new errors in the log.</p></li>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The rollback procedure can be applied <strong>only</strong> if some nodes have not been
-upgraded to 2026.1 yet. As soon as the last node in the rolling upgrade
-procedure is started with 2026.1, rollback becomes impossible. At that
-point, the only way to restore a cluster to 2025.x is by restoring it
+upgraded to 2026.2 yet. As soon as the last node in the rolling upgrade
+procedure is started with 2026.2, rollback becomes impossible. At that
+point, the only way to restore a cluster to 2026.1 is by restoring it
 from backup.</p>
 </div>
-<p>The following procedure describes a rollback from ScyllaDB 2026.1 to
-2025.x. Apply this procedure if an upgrade from 2025.x to
-2026.1 fails before completing on all nodes.</p>
+<p>The following procedure describes a rollback from ScyllaDB 2026.2 to
+2026.1. Apply this procedure if an upgrade from 2026.1 to
+2026.2 fails before completing on all nodes.</p>
 <ul class="simple">
-<li><p>Use this procedure only on the nodes you upgraded to 2026.1.</p></li>
+<li><p>Use this procedure only on the nodes you upgraded to 2026.2.</p></li>
 <li><p>Execute the following commands one node at a time, moving to the next node
 only after the rollback procedure is completed successfully.</p></li>
 </ul>
 <p>ScyllaDB rollback is a rolling procedure that does <strong>not</strong> require full cluster shutdown.
-For each of the nodes you rollback to 2025.x, serially (i.e., one node
+For each of the nodes you rollback to 2026.1, serially (i.e., one node
 at a time), you will:</p>
 <ul class="simple">
 <li><p>Drain the node and stop ScyllaDB</p></li>
@@ -591,7 +591,7 @@ sudo<span class="w"> </span>service<span class="w"> </span>scylla-server<span cl
 </div>
 </div></blockquote>
 </li>
-<li><p>Restore the 2025.x packages backed up during the upgrade.</p>
+<li><p>Restore the 2026.1 packages backed up during the upgrade.</p>
 <blockquote>
 <div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>~/scylla.list-backup<span class="w"> </span>/etc/apt/sources.list.d/scylla.list
 sudo<span class="w"> </span>chown<span class="w"> </span>root.root<span class="w"> </span>/etc/apt/sources.list.d/scylla.list
@@ -619,7 +619,7 @@ sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</sp
 </div>
 </div></blockquote>
 </li>
-<li><p>Restore the 2025.x packages backed up during the upgrade procedure.</p>
+<li><p>Restore the 2026.1 packages backed up during the upgrade procedure.</p>
 <blockquote>
 <div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>~/scylla.repo-backup<span class="w"> </span>/etc/yum.repos.d/scylla.repo
 sudo<span class="w"> </span>chown<span class="w"> </span>root.root<span class="w"> </span>/etc/yum.repos.d/scylla.repo
@@ -643,7 +643,7 @@ tab for upgrade instructions.</p>
 <p>If you’re using your own image and installed ScyllaDB packages for Ubuntu or Debian,
 you need to additionally restore the <code class="docutils literal notranslate"><span class="pre">scylla-machine-image</span></code> package.</p>
 <ol class="arabic">
-<li><p>Restore the 2025.x packages backed up during the upgrade
+<li><p>Restore the 2026.1 packages backed up during the upgrade
 (see the <strong>Debian/Ubuntu</strong> tab).</p></li>
 <li><p>Install:</p>
 <blockquote>
@@ -721,7 +721,7 @@ rollback is successful, move to the next node in the cluster.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2025.x to ScyllaDB 2026.1&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2026.1/upgrade-guide-from-2025.x-to-2026.1%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -761,16 +761,16 @@ rollback is successful, move to the next node in the cluster.</p>
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Upgrade - ScyllaDB 2025.x to ScyllaDB 2026.1
+                    <span class="colored">PREVIOUS</span> <br />Upgrade - ScyllaDB 2026.1 to ScyllaDB 2026.2
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="metric-update-2025.x-to-2026.1.html">
+            <a class="navigation__link" href="metric-update-2026.1-to-2026.2.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Metrics Update Between 2025.x and 2026.1
+                    <span class="colored">NEXT</span> <br />Metrics Update Between 2026.1 and 2026.2
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -790,14 +790,14 @@ rollback is successful, move to the next node in the cluster.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2025.x to ScyllaDB 2026.1&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2026.1/upgrade-guide-from-2025.x-to-2026.1%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2026.1/upgrade-guide-from-2025.x-to-2026.1.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -809,7 +809,7 @@ rollback is successful, move to the next node in the cluster.</p>
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Upgrade from ScyllaDB 2025.x to ScyllaDB 2026.1</a><ul>
+<li><a class="reference internal" href="#">Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2</a><ul>
 <li><a class="reference internal" href="#before-you-upgrade-scylladb">Before You Upgrade ScyllaDB</a></li>
 <li><a class="reference internal" href="#upgrade-procedure">Upgrade Procedure</a></li>
 <li><a class="reference internal" href="#upgrade-steps">Upgrade Steps</a><ul>
@@ -880,7 +880,7 @@ rollback is successful, move to the next node in the cluster.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                master
+                2026.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -888,19 +888,19 @@ rollback is successful, move to the next node in the cluster.</p>
             
                 
                     <li>
-                        <a href="upgrade-guide-from-2025.x-to-2026.1.html">master</a>
+                        <a href="../../../../master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../branch-2026.2/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2026.1/upgrade-guide-from-2025.x-to-2026.1.html">2026.2</a>
+                        <a href="upgrade-guide-from-2026.1-to-2026.2.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2025.x-to-2026.1/upgrade-guide-from-2025.x-to-2026.1.html">2026.1</a>
+                        <a href="../../../../stable/index.html">2026.1</a>
                     </li>
                 
             
@@ -935,12 +935,12 @@ rollback is successful, move to the next node in the cluster.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1331,7 +1331,7 @@ rollback is successful, move to the next node in the cluster.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 May 2026.
+                        Last updated on 11 May 2026.
                     
                 </div>
             
