@@ -384,7 +384,7 @@ Down (DN), and the node can be replaced.</p>
 --<span class="w">  </span>Address<span class="w">        </span>Load<span class="w">       </span>Tokens<span class="w">  </span>Owns<span class="w"> </span><span class="o">(</span>effective<span class="o">)</span><span class="w">                         </span>Host<span class="w"> </span>ID<span class="w">         </span>Rack
 UN<span class="w">  </span><span class="m">192</span>.168.1.201<span class="w">  </span><span class="m">112</span>.82<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.7%<span class="w">             </span>8d5ed9f4-7764-4dbd-bad8-43fddce94b7c<span class="w">   </span>B1
 UN<span class="w">  </span><span class="m">192</span>.168.1.202<span class="w">  </span><span class="m">91</span>.11<span class="w"> </span>KB<span class="w">   </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.9%<span class="w">             </span>125ed9f4-7777-1dbn-mac8-43fddce9123e<span class="w">   </span>B1
-DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-can8-43fddce952gy<span class="w">   </span>B1
+DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-ca08-43fddce952de<span class="w">   </span>B1
 </pre></div>
 </div>
 </section>
@@ -437,7 +437,7 @@ For example, use the following for installing ScyllaDB patch release (use your d
 </li>
 <li><p>Add the <code class="docutils literal notranslate"><span class="pre">replace_node_first_boot</span></code> parameter to the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> config file on the new node. This line can be added to any place in the config file. After a successful node replacement, there is no need to remove it from the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file. (Note: The obsolete parameters “replace_address” and “replace_address_first_boot” are not supported and should not be used). The value of the <code class="docutils literal notranslate"><span class="pre">replace_node_first_boot</span></code> parameter should be the Host ID of the node to be replaced.</p>
 <p>For example (using the Host ID of the failed node from above):</p>
-<p><code class="docutils literal notranslate"><span class="pre">replace_node_first_boot:</span> <span class="pre">675ed9f4-6564-6dbd-can8-43fddce952gy</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">replace_node_first_boot:</span> <span class="pre">675ed9f4-6564-6dbd-ca08-43fddce952de</span></code></p>
 </li>
 <li><p>Start the new node.</p>
 <div class="sphinx-tabs docutils container">
@@ -459,7 +459,7 @@ For example, use the following for installing ScyllaDB patch release (use your d
 --<span class="w">  </span>Address<span class="w">        </span>Load<span class="w">       </span>Tokens<span class="w">  </span>Owns<span class="w"> </span><span class="o">(</span>effective<span class="o">)</span><span class="w">                         </span>Host<span class="w"> </span>ID<span class="w">         </span>Rack
 UN<span class="w">  </span><span class="m">192</span>.168.1.201<span class="w">  </span><span class="m">112</span>.82<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.7%<span class="w">             </span>8d5ed9f4-7764-4dbd-bad8-43fddce94b7c<span class="w">   </span>B1
 UN<span class="w">  </span><span class="m">192</span>.168.1.202<span class="w">  </span><span class="m">91</span>.11<span class="w"> </span>KB<span class="w">   </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.9%<span class="w">             </span>125ed9f4-7777-1dbn-mac8-43fddce9123e<span class="w">   </span>B1
-DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-can8-43fddce952gy<span class="w">   </span>B1
+DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-ca08-43fddce952de<span class="w">   </span>B1
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">192.168.1.203</span></code> is the dead node.</p>
@@ -486,7 +486,7 @@ We will not see <code class="docutils literal notranslate"><span class="pre">192
 /192.168.1.203
 <span class="w">  </span>generation:1553759866
 <span class="w">  </span>heartbeat:2147483647
-<span class="w">  </span>HOST_ID:675ed9f4-6564-6dbd-can8-43fddce952gy
+<span class="w">  </span>HOST_ID:675ed9f4-6564-6dbd-ca08-43fddce952de
 <span class="w">  </span>STATUS:shutdown,true
 <span class="w">  </span>RELEASE_VERSION:3.0.8
 <span class="w">  </span>X3:3
@@ -548,7 +548,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
 </div>
 </li>
 <li><p>Run the following command to replace the instance whose ephemeral volumes were erased (previously known by the Host ID of the node you are restarting) with the restarted instance. The restarted node will be assigned a new random Host ID.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>echo &#39;replace_node_first_boot: 675ed9f4-6564-6dbd-can8-43fddce952gy&#39; | sudo tee --append /etc/scylla/scylla.yaml
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>echo &#39;replace_node_first_boot: 675ed9f4-6564-6dbd-ca08-43fddce952de&#39; | sudo tee --append /etc/scylla/scylla.yaml
 </pre></div>
 </div>
 </li>
@@ -1202,7 +1202,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 May 2026.
+                        Last updated on 12 May 2026.
                     
                 </div>
             
