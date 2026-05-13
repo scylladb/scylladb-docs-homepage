@@ -975,6 +975,54 @@
           ]
       },
       {
+         "path":"/storage_service/tablets/restore",
+         "operations":[
+            {
+               "method":"POST",
+               "summary":"Starts copying SSTables from a designated bucket in object storage to a specified keyspace",
+               "type":"string",
+               "nickname":"tablet_aware_restore",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"keyspace",
+                     "description":"Name of a keyspace to copy SSTables to",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"table",
+                     "description":"Name of a table to copy SSTables to",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"snapshot",
+                     "description":"Name of the snapshot to restore from",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"backup_location",
+                     "description":"JSON array of backup location objects. Each object must contain: 'datacenter' (string), 'endpoint' (string), 'bucket' (string), and 'manifests' (array of strings). Currently, the array must contain exactly one entry.",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"array",
+                     "paramType":"body"
+                  }
+               ]
+            }
+         ]
+      },
+      {
          "path":"/storage_service/keyspace_compaction/{keyspace}",
          "operations":[
             {
