@@ -724,7 +724,7 @@ For example:</p>
 No need for manual repair afterwards.</p>
 <p>An empty list is allowed, and it’s equivalent to numeric replication factor of 0:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">Excelsior</span>
- <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="n">dc2</span><span class="s1">&#39; : []};</span>
+ <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;dc2&#39;</span> <span class="p">:</span> <span class="p">[]};</span>
 </pre></div>
 </div>
 <p>Altering from a rack list to a numeric replication factor is not supported.</p>
@@ -1291,11 +1291,11 @@ table before making the write into the corresponding CDC log table.</p></td>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">customer_data</span> <span class="p">(</span>
     <span class="n">cust_id</span> <span class="nb">uuid</span><span class="p">,</span>
-    <span class="n">cust_first</span><span class="o">-</span><span class="n">name</span> <span class="nb">text</span><span class="p">,</span>
-    <span class="n">cust_last</span><span class="o">-</span><span class="n">name</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="s s-Name">&quot;cust_first-name&quot;</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="s s-Name">&quot;cust_last-name&quot;</span> <span class="nb">text</span><span class="p">,</span>
     <span class="n">cust_phone</span> <span class="nb">text</span><span class="p">,</span>
-    <span class="n">cust_get</span><span class="o">-</span><span class="n">sms</span> <span class="nb">text</span><span class="p">,</span>
-    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">customer_id</span><span class="p">)</span>
+    <span class="s s-Name">&quot;cust_get-sms&quot;</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">cust_id</span><span class="p">)</span>
 <span class="p">)</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;enabled&#39;</span> <span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;preimage&#39;</span> <span class="p">:</span> <span class="s1">&#39;true&#39;</span> <span class="p">};</span>
 </pre></div>
 </div>
@@ -2294,7 +2294,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 May 2026.
+                        Last updated on 15 May 2026.
                     
                 </div>
             

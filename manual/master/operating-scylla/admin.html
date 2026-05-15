@@ -623,10 +623,32 @@ AWS Security Token Service (STS) or the EC2 Instance Metadata Service.</p>
 <section id="using-oracle-oci-object-storage">
 <span id="admin-oci-object-storage"></span><h3>Using Oracle OCI Object Storage<a class="headerlink" href="#using-oracle-oci-object-storage" title="Link to this heading">¶</a></h3>
 <p>Oracle Cloud Infrastructure (OCI) Object Storage is compatible with the Amazon
-S3 API, so it works with ScyllaDB without additional configuration.</p>
-<p>To use OCI Object Storage, follow the same configuration as for AWS S3, and
-specify your OCI S3-compatible endpoint.</p>
-<p>Example:</p>
+S3 API, so ScyllaDB can use it without any special configuration beyond
+specifying the OCI S3-compatible endpoint.</p>
+<p><strong>Endpoint URL format</strong></p>
+<p>OCI S3-compatible endpoint URLs follow this pattern:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>https://&lt;namespace&gt;.compat.objectstorage.&lt;region&gt;.oci.customer-oci.com:443
+</pre></div>
+</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;namespace&gt;</span></code> is your OCI Object Storage namespace.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;region&gt;</span></code> is the OCI region identifier, e.g. <code class="docutils literal notranslate"><span class="pre">us-ashburn-1</span></code>.</p></li>
+</ul>
+<p><strong>Credentials</strong></p>
+<p>OCI does not expose an instance metadata endpoint compatible with AWS STS/EC2,
+so credentials <strong>must</strong> be supplied explicitly via environment variables. You
+need to create a Customer Secret Key in the OCI Console and set:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>&lt;customer_secret_key_access_key&gt;
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>&lt;customer_secret_key_secret&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">iam_role_arn</span></code> field is specific to AWS IAM and should be omitted
+when configuring an OCI endpoint.</p>
+</div>
+<p><strong>Configuration example</strong></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://idedxcgnkfkt.compat.objectstorage.us-ashburn-1.oci.customer-oci.com:443</span>
 <span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-ashburn-1</span>
@@ -1581,7 +1603,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 May 2026.
+                        Last updated on 15 May 2026.
                     
                 </div>
             
