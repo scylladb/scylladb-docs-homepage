@@ -436,10 +436,10 @@ You can clean snapshots by using <a class="reference internal" href="operating-s
 <p><code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">your_node</span> <span class="pre">vi</span> <span class="pre">/etc/scylla/scylla.yaml</span></code></p>
 </li>
 <li><p>Add the features you want to enable</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: enabling UDF and Alternator Streams features</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: enabling UDF and Strongly Consistent Tables features</span>
 <span class="nt">experimental_features</span><span class="p">:</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udf</span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alternator-streams</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">strongly-consistent-tables</span>
 </pre></div>
 </div>
 </li>
@@ -451,10 +451,10 @@ You can clean snapshots by using <a class="reference internal" href="operating-s
 <p><code class="code docutils literal notranslate"><span class="pre">$</span> <span class="pre">docker</span> <span class="pre">stop</span> <span class="pre">&lt;your_node&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">docker</span> <span class="pre">start</span> <span class="pre">&lt;your_node&gt;</span></code></p>
 </li>
 </ol>
-<p>Alternately, starting from ScyllaDB 3.3, you can enable features directly via command line flags the <code class="code docutils literal notranslate"><span class="pre">--experimental-features</span></code> flag as follows. This command line options can be repeated multiple times. For example, to enable UDF and Alternator Streams:</p>
+<p>Alternately, starting from ScyllaDB 3.3, you can enable features directly via command line flags the <code class="code docutils literal notranslate"><span class="pre">--experimental-features</span></code> flag as follows. This command line options can be repeated multiple times. For example, to enable UDF and Strongly Consistent Tables:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>&lt;your_node&gt;<span class="w"> </span>-d<span class="w"> </span>scylladb/scylla<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--experimental-features<span class="o">=</span>udf<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--experimental-features<span class="o">=</span>alternator-streams
+<span class="w">    </span>--experimental-features<span class="o">=</span>strongly-consistent-tables
 </pre></div>
 </div>
 <p>You should now be able to use the specified experimental features.</p>
@@ -1352,7 +1352,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 May 2026.
+                        Last updated on 17 May 2026.
                     
                 </div>
             
