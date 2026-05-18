@@ -1,25 +1,21 @@
 #!/usr/bin/env python3
 """Second-opinion verifier for lychee failures.
 
-Lychee can't retry on 4xx, and two upstream hosts misbehave for the kind
-of traffic lychee sends:
-
-  - github.com sometimes 404s as anti-abuse to repeated calls.
-  - university.scylladb.com sits behind Cloudflare and rejects lychee's
-    custom UA from Actions IPs.
-
+Lychee can't retry on 4xx, and several hosts (github.com,
+Cloudflare-fronted *.scylladb.com properties, etc.) return
+false positive 404 due to bot protection measures.
 For each URL that lychee marked as failed, we re-check it directly with
 urllib + a browser-like User-Agent + retries with backoff. URLs that
 respond acceptably are removed from the report before process.py turns
 the rest into a GitHub issue.
 """
 
+import concurrent.futures
 import json
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from urllib.parse import urlparse
 
 REPORT_FILE = Path(__file__).parent / "lychee-report.json"
 
@@ -28,13 +24,6 @@ REPORT_FILE = Path(__file__).parent / "lychee-report.json"
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-)
-
-# Hosts where lychee's "broken" verdict is unreliable and worth a second
-# look. Keep this conservative — every host added here costs time.
-FLAKY_HOST_SUFFIXES = (
-    "github.com",
-    "university.scylladb.com",
 )
 
 # Wait times between successive attempts. 4 attempts total (initial +
@@ -46,13 +35,9 @@ BACKOFFS = (5, 15, 30)
 # include for safety).
 ACCEPTED = set(range(200, 300)) | {301, 302, 303, 307, 308, 403, 429}
 
-
-def is_flaky(url):
-    try:
-        host = (urlparse(url).hostname or "").lower()
-    except ValueError:
-        return False
-    return any(host == s or host.endswith("." + s) for s in FLAKY_HOST_SUFFIXES)
+# Cap parallel verifications. Lychee was already polite; this is a
+# small follow-up burst per site, so a modest pool is plenty.
+MAX_WORKERS = 8
 
 
 def verify(url):
@@ -84,22 +69,23 @@ def main():
     if not fail_map:
         return
 
-    all_urls = {
+    all_urls = sorted({
         e["url"]
         for entries in fail_map.values()
         for e in entries
         if e.get("url")
-    }
-    targets = sorted(u for u in all_urls if is_flaky(u))
-    if not targets:
-        print(
-            f"verify: 0 of {len(all_urls)} failed URL(s) on flaky hosts; "
-            f"nothing to re-verify."
-        )
+    })
+    if not all_urls:
         return
 
-    print(f"verify: re-checking {len(targets)} URL(s) on flaky hosts...")
-    rescued = {u for u in targets if verify(u)}
+    print(
+        f"verify: re-checking {len(all_urls)} failed URL(s) with "
+        f"{MAX_WORKERS} workers..."
+    )
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        results = dict(zip(all_urls, ex.map(verify, all_urls)))
+    rescued = {url for url, ok in results.items() if ok}
+
     if not rescued:
         print("verify: no false positives; all failures confirmed.")
         return
