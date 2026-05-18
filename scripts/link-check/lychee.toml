@@ -23,6 +23,11 @@ exclude = [
   # Localhost dev preview URLs. lychee's `exclude_loopback` covers
   # 127.0.0.0/8 but not the all-zeros address.
   "^https?://0\\.0\\.0\\.0",
+
+  # downloads.scylladb.com is an S3 bucket served via CloudFront.
+  # Directory URLs (e.g. /downloads/scylla-doctor/rpm/) have no index.html
+  # object, so S3 returns a 404.
+  "^https?://downloads\\.scylladb\\.com/",
 ]
 
 # Identify ourselves so server admins can contact us if needed.
