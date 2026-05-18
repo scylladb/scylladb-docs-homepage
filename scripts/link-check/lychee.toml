@@ -2,13 +2,13 @@
 # Reference: https://github.com/lycheeverse/lychee/blob/master/lychee.example.toml
 
 # Be polite to upstream sites.
-max_concurrency = 8
+max_concurrency = 2
 max_redirects = 5
 timeout = 30
 
 # Retry transient failures so we don't report flakes as broken links.
-retry_wait_time = 5
-max_retries = 3
+retry_wait_time = 10
+max_retries = 5
 
 # Treat these as healthy. Many docs links return 403/429 to bots without it
 # meaning the page is broken; rate limiting and bot detection are common.
@@ -26,11 +26,6 @@ exclude = [
   # Localhost dev preview URLs. lychee's `exclude_loopback` covers
   # 127.0.0.0/8 but not the all-zeros address.
   "^https?://0\\.0\\.0\\.0",
-
-  # Cloudflare bot protection in front of WP Engine returns 504 to GitHub
-  # Actions IPs even though pages load fine in a browser. Excluding for now;
-  # revisit if the host moves off Cloudflare or relaxes its bot rules.
-  "^https?://university\\.scylladb\\.com/",
 ]
 
 # Identify ourselves so server admins can contact us if needed.

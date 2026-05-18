@@ -67,6 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 4
       matrix:
         site: ${{ fromJson(needs.matrix.outputs.sites) }}
     steps:
@@ -95,6 +96,9 @@ jobs:
           output: scripts/link-check/lychee-report.json
           fail: false
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Re-verify failures
+        run: python scripts/link-check/verify_failures.py
 
       - name: Fetch open issues for this site
         env:
