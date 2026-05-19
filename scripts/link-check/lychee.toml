@@ -28,6 +28,18 @@ exclude = [
   # Directory URLs (e.g. /downloads/scylla-doctor/rpm/) have no index.html
   # object, so S3 returns a 404.
   "^https?://downloads\\.scylladb\\.com/",
+
+  # CarePet tutorial (iot.scylladb.com) — broken links pending upstream fix
+  # in https://github.com/scylladb/care-pet:
+  #
+  # docs/build-with-cpp.md: the scylla-cpp-driver repo was renamed to cpp-driver.
+  # Replace with: https://github.com/scylladb/cpp-driver
+  "^https://github\\.com/scylladb/scylla-cpp-driver$",
+  #
+  # docs/build-with-python.md: Cassandra reorganised their docs and the
+  # /cassandra/tools/cqlsh.html path no longer exists.
+  # Replace with: https://opensource.docs.scylladb.com/stable/cql/cqlsh.html
+  "^https://cassandra\\.apache\\.org/doc/latest/cassandra/tools/cqlsh\\.html$",
 ]
 
 # Identify ourselves so server admins can contact us if needed.
