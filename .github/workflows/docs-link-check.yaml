@@ -1,0 +1,144 @@
+name: "Docs / Link check"
+
+on:
+  schedule:
+    # Mondays at 08:00 UTC.
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Run only the site with this slug (e.g. `python-driver`). Leave empty to run every site."
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  matrix:
+    name: Build matrix
+    runs-on: ubuntu-latest
+    outputs:
+      sites: ${{ steps.read.outputs.sites }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml
+
+      - name: Read sites.yml
+        id: read
+        env:
+          REQUESTED_SLUG: ${{ inputs.slug }}
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import os
+          import sys
+          import yaml
+          with open("scripts/link-check/sites.yml") as f:
+              cfg = yaml.safe_load(f)
+          sites = [
+              {"name": s["name"], "slug": s["slug"], "url": s["url"]}
+              for s in cfg["sites"]
+          ]
+          slug = os.environ.get("REQUESTED_SLUG", "").strip()
+          if slug:
+              filtered = [s for s in sites if s["slug"] == slug]
+              if not filtered:
+                  valid = ", ".join(sorted(s["slug"] for s in sites))
+                  print(
+                      f"::error::Unknown slug '{slug}'. Valid slugs: {valid}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+              sites = filtered
+          print("sites=" + json.dumps(sites))
+          PY
+
+  check:
+    name: ${{ matrix.site.name }}
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        site: ${{ fromJson(needs.matrix.outputs.sites) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml
+
+      - name: Expand sitemap
+        run: |
+          python scripts/link-check/expand_sitemaps.py "${{ matrix.site.url }}" \
+            > scripts/link-check/urls.txt
+          echo "Inputs: $(wc -l < scripts/link-check/urls.txt)"
+
+      - name: Run lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config scripts/link-check/lychee.toml
+            --no-progress
+            --files-from scripts/link-check/urls.txt
+          format: json
+          output: scripts/link-check/lychee-report.json
+          fail: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Re-verify failures
+        run: python scripts/link-check/verify_failures.py
+
+      - name: Fetch open issues for this site
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list \
+            --label "link-check:${{ matrix.site.slug }}" \
+            --state open \
+            --json body \
+            --limit 100 \
+            > scripts/link-check/open-issues.json
+
+      - name: Process report
+        id: process
+        env:
+          SITE_NAME: ${{ matrix.site.name }}
+          SITE_URL: ${{ matrix.site.url }}
+        run: python scripts/link-check/process.py
+
+      - name: Ensure labels exist
+        if: steps.process.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "link-check" \
+            --color "d73a4a" \
+            --description "Automated link-check report" \
+            --force >/dev/null
+          gh label create "link-check:${{ matrix.site.slug }}" \
+            --color "fbca04" \
+            --description "${{ matrix.site.name }}" \
+            --force >/dev/null
+
+      - name: Open issue
+        if: steps.process.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "${{ steps.process.outputs.title }}" \
+            --body-file scripts/link-check/issue-body.md \
+            --label "link-check" \
+            --label "link-check:${{ matrix.site.slug }}"

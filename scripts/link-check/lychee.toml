@@ -1,0 +1,34 @@
+# lychee configuration for the weekly link check.
+# Reference: https://github.com/lycheeverse/lychee/blob/master/lychee.example.toml
+
+# Be polite to upstream sites.
+max_concurrency = 2
+max_redirects = 5
+timeout = 30
+
+# Fail fast on transient errors
+# Treat these as healthy. Many docs links return 403/429 to bots without it
+# meaning the page is broken; rate limiting and bot detection are common.
+accept = [
+  "200..=299",
+  "403",
+  "429",
+]
+
+# Skip mailto links and loopback URLs.
+include_mail = false
+exclude_loopback = true
+
+exclude = [
+  # Localhost dev preview URLs. lychee's `exclude_loopback` covers
+  # 127.0.0.0/8 but not the all-zeros address.
+  "^https?://0\\.0\\.0\\.0",
+
+  # downloads.scylladb.com is an S3 bucket served via CloudFront.
+  # Directory URLs (e.g. /downloads/scylla-doctor/rpm/) have no index.html
+  # object, so S3 returns a 404.
+  "^https?://downloads\\.scylladb\\.com/",
+]
+
+# Identify ourselves so server admins can contact us if needed.
+user_agent = "scylladb-docs-link-check (+https://github.com/scylladb/scylladb-docs-homepage)"
