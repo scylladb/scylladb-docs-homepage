@@ -427,12 +427,24 @@ headers that are unnecessary or unnecessarily long.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Content</span><span class="o">-</span><span class="n">Length</span><span class="p">:</span> <span class="mi">2</span>
 <span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="p">:</span> <span class="n">application</span><span class="o">/</span><span class="n">x</span><span class="o">-</span><span class="n">amz</span><span class="o">-</span><span class="n">json</span><span class="o">-</span><span class="mf">1.0</span>
 <span class="n">Date</span><span class="p">:</span> <span class="n">Tue</span><span class="p">,</span> <span class="mi">30</span> <span class="n">Dec</span> <span class="mi">2025</span> <span class="mi">20</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">01</span> <span class="n">GMT</span>
-<span class="n">Server</span><span class="p">:</span> <span class="n">Seastar</span> <span class="n">httpd</span>
 </pre></div>
 </div>
-<p>This is a bit over 100 bytes. Most of it is necessary, but the <code class="docutils literal notranslate"><span class="pre">Date</span></code>
-and <code class="docutils literal notranslate"><span class="pre">Server</span></code> headers are not strictly necessary and a future version of
-Alternator will most likely make them optional (or remove them altogether).</p>
+<p>Previously, Alternator also sent a <code class="docutils literal notranslate"><span class="pre">Server:</span> <span class="pre">Seastar</span> <span class="pre">httpd</span></code> header, bringing
+the total to over 100 bytes per response — mostly unnecessary overhead. The
+<code class="docutils literal notranslate"><span class="pre">Server</span></code> header is now removed by default, and Alternator allows suppressing
+<code class="docutils literal notranslate"><span class="pre">Date</span></code> and <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> as well via the options below.</p>
+<p>All three options below support live update — no Alternator restart is needed.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">alternator_http_response_server_header</span></code></strong> (string, default <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>):
+Controls the <code class="docutils literal notranslate"><span class="pre">Server</span></code> header. By default, no <code class="docutils literal notranslate"><span class="pre">Server</span></code> header is sent.
+Set to a non-empty string to restore it with a custom value.
+A whitespace-only string is treated as empty (no header).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">alternator_http_response_disable_date_header</span></code></strong> (boolean, default <code class="docutils literal notranslate"><span class="pre">false</span></code>):
+When <code class="docutils literal notranslate"><span class="pre">true</span></code>, the <code class="docutils literal notranslate"><span class="pre">Date</span></code> header is omitted from all responses.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">alternator_http_response_disable_content_type_header</span></code></strong> (boolean, default <code class="docutils literal notranslate"><span class="pre">false</span></code>):
+When <code class="docutils literal notranslate"><span class="pre">true</span></code>, the <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header is omitted from all responses. Note
+that some client SDKs may rely on this header being present.</p></li>
+</ul>
 <p>The request headers add significantly larger overhead, and AWS SDKs add
 even more than necessary. Here is an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Content</span><span class="o">-</span><span class="n">Length</span><span class="p">:</span> <span class="mi">300</span>
@@ -1120,7 +1132,7 @@ for instructions on how to enable it.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 May 2026.
+                        Last updated on 20 May 2026.
                     
                 </div>
             
