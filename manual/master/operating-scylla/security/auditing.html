@@ -542,6 +542,51 @@ separated by a pipe (e.g., <code class="docutils literal notranslate"><span clas
 </div>
 </section>
 </section>
+<section id="audit-rules">
+<h3>Audit Rules<a class="headerlink" href="#audit-rules" title="Link to this heading">¶</a></h3>
+<p>Audit rules provide fine-grained, role-aware auditing. They can be used together
+with <code class="docutils literal notranslate"><span class="pre">audit_categories</span></code>, <code class="docutils literal notranslate"><span class="pre">audit_tables</span></code>, and <code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code> to extend an
+existing audit configuration with more granular rules. The settings do not
+override each other: for each event, ScyllaDB evaluates both mechanisms
+independently, and the event is audited if either one matches.</p>
+<p>For new configurations, prefer <code class="docutils literal notranslate"><span class="pre">audit_rules</span></code> because they provide more precise
+matching options, including table patterns and role patterns.</p>
+<p>Each rule contains the following fields:</p>
+<ul class="simple">
+<li><p><strong>sinks</strong> — target sinks for matched events (e.g. <code class="docutils literal notranslate"><span class="pre">table</span></code>, <code class="docutils literal notranslate"><span class="pre">syslog</span></code>).
+Must be a subset of the global <code class="docutils literal notranslate"><span class="pre">audit</span></code> setting; a rule referencing a sink
+not enabled globally will log an error and events for that sink will not be
+written.</p></li>
+<li><p><strong>categories</strong> — which operation types to audit: <code class="docutils literal notranslate"><span class="pre">DML</span></code>, <code class="docutils literal notranslate"><span class="pre">DDL</span></code>,
+<code class="docutils literal notranslate"><span class="pre">QUERY</span></code>, <code class="docutils literal notranslate"><span class="pre">AUTH</span></code>, <code class="docutils literal notranslate"><span class="pre">ADMIN</span></code>, <code class="docutils literal notranslate"><span class="pre">DCL</span></code>. An empty list matches nothing.</p></li>
+<li><p><strong>qualified_table_names</strong> — <code class="docutils literal notranslate"><span class="pre">keyspace.table</span></code> patterns to match. For
+table-independent categories (<code class="docutils literal notranslate"><span class="pre">AUTH</span></code>, <code class="docutils literal notranslate"><span class="pre">ADMIN</span></code>, <code class="docutils literal notranslate"><span class="pre">DCL</span></code>) this field is
+ignored. An empty list prevents matching for table-scoped categories
+(<code class="docutils literal notranslate"><span class="pre">DML</span></code>, <code class="docutils literal notranslate"><span class="pre">DDL</span></code>, <code class="docutils literal notranslate"><span class="pre">QUERY</span></code>).</p></li>
+<li><p><strong>roles</strong> — role patterns to match. An empty list matches nothing.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">qualified_table_names</span></code> and <code class="docutils literal notranslate"><span class="pre">roles</span></code> fields support fnmatch glob patterns
+with extended syntax (<code class="docutils literal notranslate"><span class="pre">FNM_EXTMATCH</span></code>), including negation <code class="docutils literal notranslate"><span class="pre">!(…)</span></code>,
+alternation <code class="docutils literal notranslate"><span class="pre">&#64;(a|b)</span></code>, and quantifiers <code class="docutils literal notranslate"><span class="pre">+(…)</span></code>, <code class="docutils literal notranslate"><span class="pre">*(…)</span></code>, <code class="docutils literal notranslate"><span class="pre">?(…)</span></code>. For
+example, <code class="docutils literal notranslate"><span class="pre">&quot;prod_ks.*&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;!(system).*&quot;</span></code> for tables and <code class="docutils literal notranslate"><span class="pre">&quot;admin_*&quot;</span></code> for
+roles.</p>
+<p><code class="docutils literal notranslate"><span class="pre">audit_rules</span></code> is a live-updatable parameter. To apply changes at runtime, edit
+<code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> and send <code class="docutils literal notranslate"><span class="pre">SIGHUP</span></code> to the ScyllaDB process. See
+<a class="reference internal" href="../../reference/configuration-parameters.html"><span class="doc">Configuration Parameters</span></a> for details on live updates and
+configuration precedence.</p>
+<p>Example <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">audit_rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">sinks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">table</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">categories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">DML</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">DDL</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">qualified_table_names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;prod_ks.*&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;admin_*&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">sinks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">syslog</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">categories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">AUTH</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">qualified_table_names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="configuring-audit-storage">
 <h2>Configuring Audit Storage<a class="headerlink" href="#configuring-audit-storage" title="Link to this heading">¶</a></h2>
@@ -832,6 +877,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <li><a class="reference internal" href="#alternator-audit-log-examples">Alternator Audit Log Examples</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#audit-rules">Audit Rules</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuring-audit-storage">Configuring Audit Storage</a><ul>
@@ -1341,7 +1387,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 May 2026.
+                        Last updated on 21 May 2026.
                     
                 </div>
             

@@ -4542,6 +4542,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-audit-rules">
+<dt class="sig sig-object std" id="confval-audit_rules">
+<span class="sig-name descname"><span class="pre">audit_rules</span></span><a class="headerlink" href="#confval-audit_rules" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>List of granular audit rules. Each rule has: sinks, categories, qualified_table_names, roles.     When non-empty, these rules extend audit_categories, audit_tables, and audit_keyspaces;     events are audited if matched by either mechanism. Prefer audit_rules for new configurations.     Empty categories or roles lists mean ‘match nothing’.     Empty qualified_table_names prevents matching for table-scoped categories (DML, DDL, QUERY)     but has no effect on table-independent categories (AUTH, ADMIN, DCL).     Rule sinks must be a subset of the global ‘audit’ config.     In YAML, use a list of maps. In CQL, use a JSON array of objects.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">std::vector&lt;audit::audit_rule&gt;</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-ldap-url-template">
 <dt class="sig sig-object std" id="confval-ldap_url_template">
 <span class="sig-name descname"><span class="pre">ldap_url_template</span></span><a class="headerlink" href="#confval-ldap_url_template" title="Link to this definition">¶</a></dt>
@@ -5657,7 +5671,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 May 2026.
+                        Last updated on 21 May 2026.
                     
                 </div>
             
