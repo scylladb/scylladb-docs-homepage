@@ -605,10 +605,27 @@ created as a native <code class="docutils literal notranslate"><span class="pre"
 <p>The <code class="docutils literal notranslate"><span class="pre">similarity_function</span></code> option is supported by both Cassandra SAI and ScyllaDB.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>SAI class names are only supported on <strong>vector columns</strong>. Using an SAI class name on a
-non-vector column (e.g., <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>) will result in an error. General SAI
-indexing of non-vector columns is not supported by ScyllaDB; use a
+<p>SAI class names are supported on <strong>vector columns</strong> and on <strong>ENTRIES of non-frozen map
+columns</strong> (the CassIO metadata-map pattern).</p>
+<ul class="simple">
+<li><p>For vector columns, the index is rewritten to a native <code class="docutils literal notranslate"><span class="pre">vector_index</span></code>.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">ENTRIES(map_column)</span></code>, the SAI class is stripped and a standard secondary index
+is created instead. A CQL warning is emitted noting possible behavioral differences
+with Cassandra SAI metadata filtering. This rewrite requires the
+<code class="docutils literal notranslate"><span class="pre">enable_cassio_compatibility</span></code> configuration option to be set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></li>
+</ul>
+<p>Using an SAI class name on any other non-vector column (e.g., <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>) will
+result in an error. General SAI indexing is not supported by ScyllaDB; use a
 <a class="reference internal" href="#"><span class="doc">secondary index</span></a> instead.</p>
+<p>Example of the metadata-map rewrite:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- CassIO issues this during schema setup:</span>
+<span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="k">ENTRIES</span><span class="p">(</span><span class="n">metadata_s</span><span class="p">))</span>
+<span class="k">USING</span> <span class="s1">&#39;org.apache.cassandra.index.sai.StorageAttachedIndex&#39;</span><span class="p">;</span>
+
+<span class="c1">-- ScyllaDB creates the equivalent of:</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="k">ENTRIES</span><span class="p">(</span><span class="n">metadata_s</span><span class="p">));</span>
+</pre></div>
+</div>
 </div>
 </section>
 </section>
@@ -1269,7 +1286,7 @@ the system stops the build process and cleans up any partially built data associ
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 May 2026.
+                        Last updated on 26 May 2026.
                     
                 </div>
             

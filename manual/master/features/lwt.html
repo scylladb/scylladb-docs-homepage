@@ -639,6 +639,35 @@ You can use lightweight transactions for any of the following activities:</p>
 </li>
 </ol>
 </section>
+<section id="arithmetic-set-in-a-lwt-update-scylladb-extension">
+<h3>Arithmetic SET in a LWT update (ScyllaDB extension)<a class="headerlink" href="#arithmetic-set-in-a-lwt-update-scylladb-extension" title="Link to this heading">¶</a></h3>
+<p>ScyllaDB allows <code class="docutils literal notranslate"><span class="pre">SET</span> <span class="pre">col</span> <span class="pre">=</span> <span class="pre">col</span> <span class="pre">+</span> <span class="pre">value</span></code> and <code class="docutils literal notranslate"><span class="pre">SET</span> <span class="pre">col</span> <span class="pre">=</span> <span class="pre">col</span> <span class="pre">-</span> <span class="pre">value</span></code> on
+non-counter numeric columns in a conditional <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>. Because the statement
+is executed as an LWT, the read-modify-write is atomic: no separate read and
+no race condition. An <code class="docutils literal notranslate"><span class="pre">IF</span></code> condition is required; without it ScyllaDB
+rejects the statement.</p>
+<p>If the column is null, the arithmetic result is also null (standard SQL
+null-propagation semantics), so the column remains unset. To catch an
+uninitialized column, use an <code class="docutils literal notranslate"><span class="pre">IF</span></code> condition that checks the column directly
+(e.g. <code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">r</span> <span class="pre">!=</span> <span class="pre">null</span></code>) rather than <code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">EXISTS</span></code>.</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Initialize a row, with numeric regular column r set to 0:</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">mytable</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">1</span><span class="p">,</span> <span class="mf">0</span><span class="p">)</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
+
+<span class="c1">-- Increment r atomically:</span>
+<span class="k">UPDATE</span> <span class="n">mytable</span> <span class="k">SET</span> <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mf">1</span> <span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">IF</span> <span class="k">EXISTS</span><span class="p">;</span>
+
+<span class="c1">-- Increment r atomically - and visibly fail if r was not initialized:</span>
+<span class="k">UPDATE</span> <span class="n">mytable</span> <span class="k">SET</span> <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="mf">1</span> <span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">IF</span> <span class="n">r</span> <span class="o">!=</span> <span class="k">null</span><span class="p">;</span>
+
+<span class="c1">-- Decrement r by 5 only when the value is large enough:</span>
+<span class="k">UPDATE</span> <span class="n">mytable</span> <span class="k">SET</span> <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="mf">5</span> <span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">IF</span> <span class="n">r</span> <span class="o">&gt;=</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This syntax is a ScyllaDB extension and is not supported by Apache Cassandra.</p>
+</div>
+</section>
 <section id="update-a-table-using-a-lwt">
 <h3>Update a table using a LWT<a class="headerlink" href="#update-a-table-using-a-lwt" title="Link to this heading">¶</a></h3>
 <p>In this example the Times Square AMC theater needs to change the
@@ -986,6 +1015,7 @@ during these are still returned as write timeouts.</p></td>
 <li><a class="reference internal" href="#reading-with-paxos">Reading with Paxos</a></li>
 <li><a class="reference internal" href="#cql-examples-with-lightweight-transactions">CQL examples with lightweight transactions</a><ul>
 <li><a class="reference internal" href="#add-values-to-a-table-with-lwt">Add values to a table with LWT</a></li>
+<li><a class="reference internal" href="#arithmetic-set-in-a-lwt-update-scylladb-extension">Arithmetic SET in a LWT update (ScyllaDB extension)</a></li>
 <li><a class="reference internal" href="#update-a-table-using-a-lwt">Update a table using a LWT</a></li>
 <li><a class="reference internal" href="#update-a-table-using-a-conditional-batch">Update a table using a conditional batch</a></li>
 <li><a class="reference internal" href="#delete-a-partition-using-a-conditional-batch">Delete a partition using a conditional batch</a></li>
@@ -1496,7 +1526,7 @@ during these are still returned as write timeouts.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 May 2026.
+                        Last updated on 26 May 2026.
                     
                 </div>
             
