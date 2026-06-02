@@ -438,15 +438,6 @@ So when a slice of data is being read, it may contain an end RT marker without t
 Its size is the same as the value stored in <code class="docutils literal notranslate"><span class="pre">promoted_index_blocks_count</span></code>. The first offset is always 0, and others are the offsets of corresponding promoted index blocks from the beginning of <code class="docutils literal notranslate"><span class="pre">promoted_index.blocks</span></code>.</p>
 <p>It is possible to read those offsets (commonly referred to as “offsets map”) directly without reading the entire promoted index. This, in turn, allows searching through the promoted index using binary search which results in O(log N) reads instead of O (N).</p>
 </section>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<p>The following code parts in Cassandra deal with index serialisation/de-serialisation:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/apache/cassandra/blob/trunk/src/java/org/apache/cassandra/db/ColumnIndex.java">ColumnIndex.java, buildRowIndex</a></p></li>
-<li><p><a class="reference external" href="https://github.com/apache/cassandra/blob/trunk/src/java/org/apache/cassandra/db/RowIndexEntry.java">RowIndexEntry.java</a></p></li>
-<li><p><a class="reference external" href="https://github.com/apache/cassandra/blob/trunk/src/java/org/apache/cassandra/io/sstable/IndexInfo.java">IndexInfo.java</a></p></li>
-</ul>
 <section id="additional-information">
 <h3>Additional Information<a class="headerlink" href="#additional-information" title="Link to this heading">¶</a></h3>
 <p>The offset map reduces the complexity of search in the promoted index from O(N) to O(log N) using the offsets map.
@@ -585,9 +576,6 @@ There are some better alternatives that should further improve the performance o
 <li><a class="reference internal" href="#promoted-index-blocks">Promoted Index Blocks</a></li>
 <li><a class="reference internal" href="#clustering-prefixes">Clustering Prefixes</a></li>
 <li><a class="reference internal" href="#other-promoted-index-blocks-fields">Other Promoted Index Blocks Fields</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#references">References</a><ul>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
 </ul>
 </li>
@@ -1091,7 +1079,7 @@ There are some better alternatives that should further improve the performance o
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Jun 2026.
+                        Last updated on 02 Jun 2026.
                     
                 </div>
             
