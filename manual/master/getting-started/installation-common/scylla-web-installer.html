@@ -382,6 +382,45 @@ option to specify the version you want to install.</p>
 </pre></div>
 </div>
 </section>
+<section id="installing-via-tarball">
+<h2>Installing via Tarball<a class="headerlink" href="#installing-via-tarball" title="Link to this heading">¶</a></h2>
+<p>The Web Installer supports tarball installation as an alternative
+to the default package manager-based installation. This is useful for installing ScyllaDB
+on Linux distributions that are not officially supported via packages, or when you prefer
+not to use the system package manager or when you do not have superuser privileges.</p>
+<p>To install ScyllaDB using the tarball, run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --tarball</span>
+</pre></div>
+</div>
+<p>You can combine <code class="docutils literal notranslate"><span class="pre">--tarball</span></code> with <code class="docutils literal notranslate"><span class="pre">--scylla-version</span></code> to install a specific version:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --tarball --scylla-version |CURRENT_VERSION|</span>
+</pre></div>
+</div>
+<p>On Linux distributions not supported via native packages, the Web Installer
+automatically falls back to tarball installation.</p>
+<p>See <a class="reference internal" href="unified-installer.html"><span class="doc">Install ScyllaDB Without root Privileges</span></a> for more information on the tarball-based (unified) installer.</p>
+</section>
+<section id="install-scylladb-manager-with-web-installer">
+<h2>Install ScyllaDB Manager with Web Installer<a class="headerlink" href="#install-scylladb-manager-with-web-installer" title="Link to this heading">¶</a></h2>
+<p>You can use the Web Installer to install <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a>, which provides automated backup, repair, and cluster management capabilities.</p>
+<p>To install ScyllaDB Manager, run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/manager | sudo bash</span>
+</pre></div>
+</div>
+<p>By default, this installs the latest official version of ScyllaDB Manager, including both
+<code class="docutils literal notranslate"><span class="pre">scylla-manager-server</span></code> and <code class="docutils literal notranslate"><span class="pre">scylla-manager-client</span></code> packages.</p>
+<p>To install a specific version, use the <code class="docutils literal notranslate"><span class="pre">--manager-version</span></code> option:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/manager | sudo bash -s -- --manager-version 3.10</span>
+</pre></div>
+</div>
+<p>Supported platforms for ScyllaDB Manager installation via Web Installer:</p>
+<ul class="simple">
+<li><p>Debian / Ubuntu</p></li>
+<li><p>RHEL / CentOS / Rocky Linux / Amazon Linux</p></li>
+</ul>
+<p>For full ScyllaDB Manager documentation, configuration, and usage instructions,
+see <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager Docs</a>.</p>
+</section>
 <section id="configure-and-run-scylladb">
 <h2>Configure and Run ScyllaDB<a class="headerlink" href="#configure-and-run-scylladb" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
@@ -551,6 +590,8 @@ We recommend against enabling developer mode in production environments to ensur
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#install-scylladb-with-web-installer">Install ScyllaDB with Web Installer</a></li>
 <li><a class="reference internal" href="#installing-a-non-default-version">Installing a Non-default Version</a></li>
+<li><a class="reference internal" href="#installing-via-tarball">Installing via Tarball</a></li>
+<li><a class="reference internal" href="#install-scylladb-manager-with-web-installer">Install ScyllaDB Manager with Web Installer</a></li>
 <li><a class="reference internal" href="#configure-and-run-scylladb">Configure and Run ScyllaDB</a></li>
 </ul>
 </li>
@@ -1052,7 +1093,7 @@ We recommend against enabling developer mode in production environments to ensur
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Jun 2026.
+                        Last updated on 04 Jun 2026.
                     
                 </div>
             

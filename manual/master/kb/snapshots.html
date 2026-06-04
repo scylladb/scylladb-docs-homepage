@@ -364,6 +364,10 @@ To prevent any issues with restoring your data, the backup strategy must include
 <p>If snapshots (hard links) were created to existing SSTables on disk they are preserved even if table data is eventually stored in one or more of the new SSTables. The <a class="reference internal" href="../cql/compaction.html"><span class="doc">compaction process</span></a> removes files in the data directory, but the snapshot hard links <strong>will still</strong> be pointing to the <strong>old files</strong>. Only after all of the pointers are removed, the actual file is removed. If even one pointer exists, the file will remain. Therefore, even as the database is moving on, once the snapshot hard links are created, the content of the data files can be copied off to another storage and serve as the foundation for a table, keyspace, or entire database restore (on that node, as this backup and restore process is node specific).</p>
 <p>Apart from <em>planned backup</em> procedure described above, and as a safeguard from <em>accidental</em> loss of data, the ScyllaDB database includes an optional creation of an automatic snapshot every time a table is dropped or truncated.  As dropping a keyspace involves dropping tables within that keyspace, these actions will invoke auto snapshots as well. This option is enabled out of the box and is controlled by the auto_snapshot flag in the <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> configuration file. Note that a keyspace cannot be truncated. It can only be dropped. A table, on the other hand, can  be either truncated or dropped. The data in a table can also be deleted, which is different from being truncated.</p>
 <p>The default setting for the <code class="docutils literal notranslate"><span class="pre">auto_snapshot</span></code> flag in <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> file is <code class="docutils literal notranslate"><span class="pre">true</span></code>. It is <strong>not</strong> recommended to set it to <code class="docutils literal notranslate"><span class="pre">false</span></code>, unless there is a good backup and recovery strategy in place.</p>
+<p>The automatically created snapshots remain on local storage until they are backed-up using the <code class="docutils literal notranslate"><span class="pre">move_files</span></code> option or they are explicitly deleted.
+Otherwise, stale snapshots might cause a node to run out of storage space by holding up to the SSTables in the snapshot after they are deleted from the table (by compaction, tablet-migration, TRUNCATE, DROP TABLE, and so on).
+The <code class="docutils literal notranslate"><span class="pre">auto_snapshot_ttl</span></code> configuration option can be used to automatically delete stale snapshots.</p>
+<p>The default setting for the <code class="docutils literal notranslate"><span class="pre">auto_snapshot_ttl</span></code> option in <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> file is <code class="docutils literal notranslate"><span class="pre">864000</span></code> seconds (10 days). It is recommended to set it to a reasonable time allowing backup of the auto-snapshot, yet have a safety net that will automatically clean up stale snapshots to reclaim their disk space.</p>
 </section>
 <section id="snapshot-creation">
 <h2>Snapshot Creation<a class="headerlink" href="#snapshot-creation" title="Link to this heading">¶</a></h2>
@@ -1057,7 +1061,7 @@ To prevent any issues with restoring your data, the backup strategy must include
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Jun 2026.
+                        Last updated on 04 Jun 2026.
                     
                 </div>
             
