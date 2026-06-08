@@ -375,21 +375,27 @@ The location of ScyllaDB SSTables is specified in scylla.yaml <code class="docut
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">ms</span></code>)</p></td>
+<tr class="row-even"><td><p>3.x (‘mt’)</p></td>
+<td><p>2026.2 and above</p></td>
+</tr>
+<tr class="row-odd"><td><p>3.x (‘ms’)</p></td>
 <td><p>2025.4 and above</p></td>
 </tr>
-<tr class="row-odd"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">me</span></code>)</p></td>
+<tr class="row-even"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">me</span></code>)</p></td>
 <td><p>2022.2 and above</p></td>
 </tr>
-<tr class="row-even"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">md</span></code>)</p></td>
+<tr class="row-odd"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">md</span></code>)</p></td>
 <td><p>2021.1</p></td>
 </tr>
 </tbody>
 </table>
 <ul class="simple">
-<li><p>The supported formats are <code class="docutils literal notranslate"><span class="pre">me</span></code> and <code class="docutils literal notranslate"><span class="pre">ms</span></code>.</p></li>
+<li><p>The supported formats are <code class="docutils literal notranslate"><span class="pre">me</span></code> and <code class="docutils literal notranslate"><span class="pre">mt</span></code>.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">md</span></code> format is used only when upgrading from an existing cluster using
 <code class="docutils literal notranslate"><span class="pre">md</span></code>. The <code class="docutils literal notranslate"><span class="pre">sstable_format</span></code> parameter is ignored if it is set to <code class="docutils literal notranslate"><span class="pre">md</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ms</span></code> format has been superseded by <code class="docutils literal notranslate"><span class="pre">mt</span></code>, and is used only when upgrading
+from an existing cluster using <code class="docutils literal notranslate"><span class="pre">ms</span></code>. If the <code class="docutils literal notranslate"><span class="pre">sstable_format</span></code> parameter is
+set to <code class="docutils literal notranslate"><span class="pre">ms</span></code>, <code class="docutils literal notranslate"><span class="pre">mt</span></code> files will be written.</p></li>
 <li><p>Note: The <code class="docutils literal notranslate"><span class="pre">sstable_format</span></code> parameter specifies the SSTable format used for
 <strong>writes</strong>. The legacy SSTable formats (<code class="docutils literal notranslate"><span class="pre">ka</span></code>, <code class="docutils literal notranslate"><span class="pre">la</span></code>, <code class="docutils literal notranslate"><span class="pre">mc</span></code>) remain
 supported for reads, which is essential for restoring clusters from existing
@@ -1039,7 +1045,7 @@ backups.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Jun 2026.
+                        Last updated on 08 Jun 2026.
                     
                 </div>
             
