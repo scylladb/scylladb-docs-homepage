@@ -357,6 +357,11 @@
 Immutable means SSTables are never modified; they are created by a MemTable flush and are deleted by a compaction.
 The location of ScyllaDB SSTables is specified in scylla.yaml <code class="docutils literal notranslate"><span class="pre">data_file_directories</span></code> parameter (default location: <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data</span></code>).</p>
 <p>SSTable 3.x is more efficient and requires less disk space than the SSTable 2.x.</p>
+<p>For more information on each of the SSTable formats, see below:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../sstable2/index.html"><span class="doc">SSTable 2.x</span></a></p></li>
+<li><p><a class="reference internal" href="#"><span class="doc">SSTable 3.x</span></a></p></li>
+</ul>
 <section id="sstable-version-support">
 <h2>SSTable Version Support<a class="headerlink" href="#sstable-version-support" title="Link to this heading">¶</a></h2>
 <table class="docutils align-default">
@@ -370,13 +375,13 @@ The location of ScyllaDB SSTables is specified in scylla.yaml <code class="docut
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>3.x (‘ms’)</p></td>
+<tr class="row-even"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">ms</span></code>)</p></td>
 <td><p>2025.4 and above</p></td>
 </tr>
-<tr class="row-odd"><td><p>3.x (‘me’)</p></td>
+<tr class="row-odd"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">me</span></code>)</p></td>
 <td><p>2022.2 and above</p></td>
 </tr>
-<tr class="row-even"><td><p>3.x (‘md’)</p></td>
+<tr class="row-even"><td><p>3.x (<code class="docutils literal notranslate"><span class="pre">md</span></code>)</p></td>
 <td><p>2021.1</p></td>
 </tr>
 </tbody>
@@ -391,6 +396,11 @@ supported for reads, which is essential for restoring clusters from existing
 backups.</p></li>
 </ul>
 </section>
+<section id="the-ms-format-trie-based-sstable-index">
+<h2>The ms Format: Trie-Based SSTable Index<a class="headerlink" href="#the-ms-format-trie-based-sstable-index" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ms</span></code> format introduces a <em>trie-based</em> SSTable index.</p>
+<p>For a detailed description of the trie index format, see <a class="reference internal" href="sstable-ms-index.html"><span class="doc">SSTable ms Index</span></a>.</p>
+</section>
 <section id="additional-information">
 <h2>Additional Information<a class="headerlink" href="#additional-information" title="Link to this heading">¶</a></h2>
 <p>For more information on ScyllaDB 3.x SSTable formats, see below:</p>
@@ -398,7 +408,8 @@ backups.</p></li>
 <li><p><a class="reference internal" href="sstables-3-data-file-format.html"><span class="doc">SSTable 3.0 Data File Format</span></a></p></li>
 <li><p><a class="reference internal" href="sstables-3-statistics.html"><span class="doc">SSTable 3.0 Statistics</span></a></p></li>
 <li><p><a class="reference internal" href="sstables-3-summary.html"><span class="doc">SSTable 3.0 Summary</span></a></p></li>
-<li><p><a class="reference internal" href="sstables-3-index.html"><span class="doc">SSTable 3.0 Index</span></a></p></li>
+<li><p><a class="reference internal" href="sstables-3-index.html"><span class="doc">SSTable 3.0 Index (me/md format)</span></a></p></li>
+<li><p><a class="reference internal" href="sstable-ms-index.html"><span class="doc">SSTable ms Index (Trie-Based)</span></a></p></li>
 <li><p><a class="reference internal" href="sstable-format.html"><span class="doc">SSTable 3.0 Format in ScyllaDB</span></a></p></li>
 </ul>
 </section>
@@ -526,6 +537,7 @@ backups.</p></li>
             <ul>
 <li><a class="reference internal" href="#">ScyllaDB SSTable - 3.x</a><ul>
 <li><a class="reference internal" href="#sstable-version-support">SSTable Version Support</a></li>
+<li><a class="reference internal" href="#the-ms-format-trie-based-sstable-index">The ms Format: Trie-Based SSTable Index</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
 </ul>
 </li>

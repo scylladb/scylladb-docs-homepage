@@ -365,11 +365,28 @@ and use the <code class="docutils literal notranslate"><span class="pre">nodetoo
 smaller, SSTables than Cassandra does. On ScyllaDB, each core manages its
 own subset of SSTables. This internal sharding allows each core (shard)
 to work more efficiently, avoiding the complexity and delays of multiple
-cores competing for the same data</p>
+cores competing for the same data.</p>
+<section id="sstable-format-variants">
+<h2>SSTable Format Variants<a class="headerlink" href="#sstable-format-variants" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB 3.x SSTables come in three format variants, selected via the <code class="docutils literal notranslate"><span class="pre">sstable_format</span></code>
+parameter in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">ms</span></code></dt><dd><p>Introduces a trie-based SSTable index.
+For details, see <a class="reference internal" href="sstable-ms-index.html"><span class="doc">SSTable ms Index (Trie-Based)</span></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">me</span></code></dt><dd><p>The baseline 3.x format, default from ScyllaDB 2022.2 through 2026.1.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">md</span></code></dt><dd><p>An earlier 3.x variant. Only used when upgrading from an existing <code class="docutils literal notranslate"><span class="pre">md</span></code> cluster.
+The <code class="docutils literal notranslate"><span class="pre">sstable_format</span></code> parameter is ignored if set to <code class="docutils literal notranslate"><span class="pre">md</span></code>.</p>
+</dd>
+</dl>
+<p>Existing SSTables are not rewritten automatically when upgrading to 2026.2.
+They are upgraded to the <code class="docutils literal notranslate"><span class="pre">ms</span></code> format on the next compaction.</p>
 <p><a class="reference internal" href="../../index.html"><span class="doc">ScyllaDB Architecture</span></a></p>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
 <p>Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.</p>
+</section>
 </section>
 
                 </div>
@@ -439,12 +456,12 @@ cores competing for the same data</p>
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="sstables-3-index.html">
+            <a class="navigation__link" href="sstable-ms-index.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />SSTables 3.0 Index File Format
+                    <span class="colored">PREVIOUS</span> <br />SSTable ms Index: Trie-Based Format
                 </div>
             </a>
         
@@ -488,6 +505,17 @@ cores competing for the same data</p>
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">SSTable 3.0 Format in ScyllaDB</a><ul>
+<li><a class="reference internal" href="#sstable-format-variants">SSTable Format Variants</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                     </div>
