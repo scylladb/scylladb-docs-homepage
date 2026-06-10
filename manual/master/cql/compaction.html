@@ -505,20 +505,20 @@ configuration option is set in the scylla.yaml configuration file.</p>
 </div>
 <hr class="docutils" />
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> (default: 1.5)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is <strong>less than</strong>
+<dt><code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> (default: 1.4142)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is <strong>less than</strong>
 bucket_high * the average size of that bucket (and if the bucket_low condition also holds).
-For example, if <strong>‘bucket_high = 1.5’</strong> and the <strong>SSTable size = 14MB</strong>, does the SSTable belong to a bucket with an average size of 10MB?
-Yes, because the <strong>SSTable size = 14</strong>, which is <strong>less</strong> than <strong>‘bucket_high’ * average bucket size = 15</strong>.
+For example, if <strong>‘bucket_high = 1.4142’</strong> and the <strong>SSTable size = 14MB</strong>, does the SSTable belong to a bucket with an average size of 10MB?
+Yes, because the <strong>SSTable size = 14</strong>, which is <strong>less</strong> than <strong>‘bucket_high’ * average bucket size = 14.142</strong>.
 So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.</p>
 </dd>
 </dl>
 <hr class="docutils" />
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">bucket_low</span></code> (default: 0.5)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is <strong>more than</strong>
+<dt><code class="docutils literal notranslate"><span class="pre">bucket_low</span></code> (default: 0.7071)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is <strong>more than</strong>
 bucket_low * the average size of that bucket (and if the bucket_high condition also holds).
-For example, if <strong>‘bucket_high = 0.5’</strong> and the <strong>SSTable size is 10MB</strong>, does the SSTable belong to a bucket with an average size of 15MB?
-Yes, because the <strong>SSTable size = 10</strong>, which is <strong>more</strong> than <strong>‘bucket_low’ * average bucket size = 7.5</strong>.
-So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.</p>
+For example, if <strong>‘bucket_low = 0.7071’</strong> and the <strong>SSTable size is 10MB</strong>, does the SSTable belong to a bucket with an average size of 15MB?
+No, because the <strong>SSTable size = 10</strong>, which is <strong>less</strong> than <strong>‘bucket_low’ * average bucket size = 10.607</strong>.
+So, the SSTable will not be added to the bucket.</p>
 </dd>
 </dl>
 <hr class="docutils" />
@@ -1277,7 +1277,7 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jun 2026.
+                        Last updated on 10 Jun 2026.
                     
                 </div>
             
