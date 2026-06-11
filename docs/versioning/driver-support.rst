@@ -45,8 +45,8 @@ versions.
       - * 1.18
         * 1.17
     * - `Rust Driver <https://rust-driver.docs.scylladb.com/>`_
-      - * 1.6
-        * 1.5
+      - * 1.7
+        * 1.6
     * - `C# Driver <https://csharp-driver.docs.scylladb.com/>`_
       - * 3.22
     * - `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_
