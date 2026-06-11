@@ -53,6 +53,6 @@ versions.
       - * 1.0
     * - `C++ Driver <https://cpp-driver.docs.scylladb.com/>`_
       - Deprecated. Migrate to `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_.
-    * - `Node.js RS Driver <https://github.com/scylladb/nodejs-rs-driver/>`_
+    * - `Node.js RS Driver <https://nodejs-rs-driver.docs.scylladb.com/>`_
       - * 0.5 (Beta)
 
