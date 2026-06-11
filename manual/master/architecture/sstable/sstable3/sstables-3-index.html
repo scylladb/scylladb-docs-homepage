@@ -442,7 +442,7 @@ It can be either 4 (for <cite>CLUSTERING</cite>) when corresponds to a row or on
 In other words, that means that the block of <code class="docutils literal notranslate"><span class="pre">unfiltereds</span></code> in the data file that corresponds to this promoted index block contains a range tombstone start marker but its counterpart (range tombstone end marker) lies somewhere past that block.
 It is set for a range tombstone marker of either the <code class="docutils literal notranslate"><span class="pre">INCL_START_BOUND</span></code> or the <code class="docutils literal notranslate"><span class="pre">EXCL_END_INCL_START_BOUNDARY</span></code> kind and contains the open bound deletion time.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">end_open_marker</span></code> has to do with how range tombstones are organised in SSTables 3.0. and is closely connected with the merging logic of storage engine code. That code expects all the data it reads from SSTables to come strictly ordered and it expects range tombstone markers to always come in pairs (the combined “boundary” type marker is just treated as two markers - an end marker for the previous RT followed immediately by a start marker for a new RT.
-So when a slice of data is being read, it may contain an end RT marker without the corresponding start RT marker. In order to properly handle this, reader code returns a start RT marker corresponding to the slice start bound with the deletion time taken from the <code class="docutils literal notranslate"><span class="pre">end_open_marker</span></code> structure see: <a class="reference external" href="https://github.com/apache/cassandra/blob/trunk/src/java/org/apache/cassandra/db/columniterator/SSTableIterator.java#L125">SSTableIterator.java.handlePreSliceData</a></p>
+So when a slice of data is being read, it may contain an end RT marker without the corresponding start RT marker. In order to properly handle this, reader code returns a start RT marker corresponding to the slice start bound with the deletion time taken from the <code class="docutils literal notranslate"><span class="pre">end_open_marker</span></code> structure.</p>
 <p>The higher-level reason for this design is that C* 3.0 storage design aims to be as iterator-based as possible and as such doesn’t re-arrange the data it reads (and without start RT marker, such re-arrangement would be due).</p>
 <p>Lastly, there is an <cite>offsets</cite> array which stores the offsets for all the promoted index blocks.
 Its size is the same as the value stored in <code class="docutils literal notranslate"><span class="pre">promoted_index_blocks_count</span></code>. The first offset is always 0, and others are the offsets of corresponding promoted index blocks from the beginning of <code class="docutils literal notranslate"><span class="pre">promoted_index.blocks</span></code>.</p>
@@ -1089,7 +1089,7 @@ There are some better alternatives that should further improve the performance o
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Jun 2026.
+                        Last updated on 11 Jun 2026.
                     
                 </div>
             
