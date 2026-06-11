@@ -92,7 +92,7 @@ Click the documentation link to view the documentation for each driver.
           it provides fully asynchronous operations, efficient resource usage,
           and high-throughput, low-latency database access for Node.js applications.
 
-        `Node.js RS Driver documentation <https://github.com/scylladb/nodejs-rs-driver/>`_
+        `Node.js RS Driver documentation <https://nodejs-rs-driver.docs.scylladb.com/>`_
 
     * - C++ Driver
       - | This driver is no longer actively maintained. We recommend using
