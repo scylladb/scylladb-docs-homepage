@@ -448,8 +448,9 @@ auditing.</p></td>
 <section id="auditing-alternator-requests">
 <span id="alternator-auditing"></span><h3>Auditing Alternator Requests<a class="headerlink" href="#auditing-alternator-requests" title="Link to this heading">¶</a></h3>
 <p>When auditing is enabled, Alternator (DynamoDB-compatible API) requests are audited using the same
-backends and the same filtering configuration (<code class="docutils literal notranslate"><span class="pre">audit_categories</span></code>, <code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code>,
-<code class="docutils literal notranslate"><span class="pre">audit_tables</span></code>) as CQL operations. No additional configuration is needed.</p>
+backends and filtering configuration as CQL operations. There are no separate Alternator audit settings.
+The filtering configuration includes <code class="docutils literal notranslate"><span class="pre">audit_categories</span></code>, <code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code>, <code class="docutils literal notranslate"><span class="pre">audit_tables</span></code>,
+and, for operations with table context, <code class="docutils literal notranslate"><span class="pre">audit_rules</span></code>.</p>
 <p>Both successful and failed Alternator requests are audited.</p>
 <section id="alternator-operation-categories">
 <h4>Alternator Operation Categories<a class="headerlink" href="#alternator-operation-categories" title="Link to this heading">¶</a></h4>
@@ -513,12 +514,26 @@ For <code class="docutils literal notranslate"><span class="pre">audit_keyspaces
 </div>
 <p><strong>Global and batch operations</strong>: Some Alternator operations are not scoped to a single table:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ListTables</span></code> and <code class="docutils literal notranslate"><span class="pre">DescribeEndpoints</span></code> have no associated keyspace or table.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code> and <code class="docutils literal notranslate"><span class="pre">BatchGetItem</span></code> may span multiple tables.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ListTables</span></code> and <code class="docutils literal notranslate"><span class="pre">DescribeEndpoints</span></code> have no associated keyspace or table.
+These operations are logged whenever their category matches <code class="docutils literal notranslate"><span class="pre">audit_categories</span></code>, regardless of
+<code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code> or <code class="docutils literal notranslate"><span class="pre">audit_tables</span></code> filters. Their <code class="docutils literal notranslate"><span class="pre">keyspace_name</span></code> field is empty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code> and <code class="docutils literal notranslate"><span class="pre">BatchGetItem</span></code> may span multiple tables. Therefore, the audit log
+entries for these operations have the <code class="docutils literal notranslate"><span class="pre">keyspace_name</span></code> field empty. These operations still
+match each table in the batch against <code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code>, <code class="docutils literal notranslate"><span class="pre">audit_tables</span></code>, and table-qualified
+<code class="docutils literal notranslate"><span class="pre">audit_rules</span></code> filters. The <code class="docutils literal notranslate"><span class="pre">table_name</span></code> field in the audit entry contains only the audited
+tables, listed in pipe-separated (<code class="docutils literal notranslate"><span class="pre">|</span></code>) format. The JSON request in the audit entry’s
+<code class="docutils literal notranslate"><span class="pre">operation</span></code> field is also stripped of entries belonging to non-audited tables, so that data
+from these tables is not leaked into audit records. If none of the tables in a batch match the
+audit filter, no audit entry is produced for that batch operation. When different tables in a
+batch match different audit sinks, each sink receives at most one audit entry with the tables
+matching that sink.</p></li>
 </ul>
-<p>These operations are logged whenever their category matches <code class="docutils literal notranslate"><span class="pre">audit_categories</span></code>, regardless of
-<code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code> or <code class="docutils literal notranslate"><span class="pre">audit_tables</span></code> filters. Their <code class="docutils literal notranslate"><span class="pre">keyspace_name</span></code> field is empty, and for
-batch operations the <code class="docutils literal notranslate"><span class="pre">table_name</span></code> field contains a pipe-separated (<code class="docutils literal notranslate"><span class="pre">|</span></code>) list of all involved table names.</p>
+<p>For example, given <code class="docutils literal notranslate"><span class="pre">audit_tables:</span> <span class="pre">&quot;alternator.my_table&quot;</span></code> or an <code class="docutils literal notranslate"><span class="pre">audit_rules</span></code> entry whose
+<code class="docutils literal notranslate"><span class="pre">qualified_table_names</span></code> match only <code class="docutils literal notranslate"><span class="pre">alternator_my_table.*</span></code>, and a single <code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code> that
+targets both <code class="docutils literal notranslate"><span class="pre">my_table</span></code> and <code class="docutils literal notranslate"><span class="pre">other_table</span></code>, the resulting audit entry will list only
+<code class="docutils literal notranslate"><span class="pre">my_table</span></code> in its <code class="docutils literal notranslate"><span class="pre">table_name</span></code> field – <code class="docutils literal notranslate"><span class="pre">other_table</span></code> is filtered out. Also, the contents of
+the JSON request body for <code class="docutils literal notranslate"><span class="pre">other_table</span></code> will not be present in the audit entry. If the same
+<code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code> targeted only <code class="docutils literal notranslate"><span class="pre">other_table</span></code>, no audit entry would be produced at all.</p>
 <p><strong>DynamoDB Streams operations</strong>: For streams-related operations (<code class="docutils literal notranslate"><span class="pre">DescribeStream</span></code>, <code class="docutils literal notranslate"><span class="pre">GetShardIterator</span></code>,
 <code class="docutils literal notranslate"><span class="pre">GetRecords</span></code>), the <code class="docutils literal notranslate"><span class="pre">table_name</span></code> field contains the base table name and the CDC log table name
 separated by a pipe (e.g., <code class="docutils literal notranslate"><span class="pre">my_table|my_table_scylla_cdc_log</span></code>).</p>
@@ -1388,7 +1403,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 Jun 2026.
+                        Last updated on 15 Jun 2026.
                     
                 </div>
             
