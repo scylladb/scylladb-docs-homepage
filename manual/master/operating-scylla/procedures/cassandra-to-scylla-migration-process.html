@@ -536,16 +536,7 @@ sstableloader does <strong>not</strong> support loading from encrypted files.</p
 <section id="notes-limitations-and-known-issues">
 <h2>Notes, Limitations and Known Issues<a class="headerlink" href="#notes-limitations-and-known-issues" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">Duration</span></code> data type is only supported in ScyllaDB 2.1 and later (<a class="reference external" href="https://github.com/scylladb/scylla/issues/2240">issue-2240</a>). This is relevant only when migrating from Apache Cassandra 3.X.</p></li>
-<li><p>Changes in table schema from Apache Cassandra 3.0 that requires adjustments for ScyllaDB 2.x, 1.x table schema:</p>
-<ul class="simple">
-<li><p>Changes in create table (<a class="reference external" href="https://issues.apache.org/jira/browse/CASSANDRA-8384">issue-8384</a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">crc_check_chance</span></code> out of compression options (<a class="reference external" href="https://issues.apache.org/jira/browse/CASSANDRA-9839">issue-9839</a>)</p></li>
-</ul>
-</li>
-<li><p>ScyllaDB 2.x CQL client <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code> does not display the millisecond values of a <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> data type. (<a class="reference external" href="https://github.com/scylladb/scylla-tools-java/issues/36">scylla-tools-java/issues #36</a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Nodetool</span> <span class="pre">tablestats</span></code> partition keys (estimated) number in ScyllaDB, post migration from Apache Cassandra, differs by 20% less up to 120% more than the original amount in Cassandra (<a class="reference external" href="https://github.com/scylladb/scylla/issues/2545">issue-2545</a>)</p></li>
-<li><p>ScyllaDB 2.x is using Apache Cassandra 2.x file format. This means that migrating from Apache Cassandra 3.x to ScyllaDB 2.x will result in a different storage space of the same data on the ScyllaDB cluster. ScyllaDB 3.x uses the same format as Cassandra 3.x</p></li>
+<li><p>In older ScyllaDB releases, the estimated partition count reported by <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tablestats</span></code> could differ significantly from Apache Cassandra because the value is derived from estimation algorithms rather than exact counts. This discrepancy did not indicate data loss. (<a class="reference external" href="https://github.com/scylladb/scylla/issues/2545">issue-2545</a>)</p></li>
 </ol>
 <section id="counters">
 <h3>Counters<a class="headerlink" href="#counters" title="Link to this heading">¶</a></h3>
@@ -1346,7 +1337,7 @@ sstableloader does <strong>not</strong> support loading from encrypted files.</p
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Jun 2026.
+                        Last updated on 23 Jun 2026.
                     
                 </div>
             
