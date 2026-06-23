@@ -50,6 +50,7 @@ versions.
     * - `C# Driver <https://csharp-driver.docs.scylladb.com/>`_
       - * 3.22
     * - `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_
+      - * 1.0
       - * 1.1
     * - `C++ Driver <https://cpp-driver.docs.scylladb.com/>`_
       - Deprecated. Migrate to `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_.
