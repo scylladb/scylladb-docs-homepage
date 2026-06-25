@@ -66,22 +66,52 @@
 
 .. raw:: html
 
+  <div class="grid-x grid-margin-x hs">
+
+.. topic-box::
+  :title: ScyllaDB Drivers
+  :icon: icon-link
+  :link: https://docs.scylladb.com/stable/drivers/index.html
+  :link_target: _self
+  :class: large-4 drivers-card
+  :anchor: Drivers
+
+  Connect your application to ScyllaDB with shard-aware CQL and DynamoDB-compatible drivers.
+
+.. topic-box::
+  :title: Versioning and Support Policy
+  :icon: icon-support
+  :link: https://docs.scylladb.com/stable/versioning/index.html
+  :link_target: _self
+  :class: large-4 versioning-card
+  :anchor: Versioning and Support Policy
+
+  Learn which ScyllaDB versions, drivers, and operating systems are supported and for how long.
+
+.. topic-box::
+  :title: Tutorials and Example Projects
+  :icon: icon-docs-training
+  :link: https://docs.scylladb.com/stable/get-started/develop-with-scylladb/tutorials-example-projects.html
+  :link_target: _self
+  :class: large-4 tutorials-card
+  :anchor: Tutorials and Example Projects
+
+  Build real applications with step-by-step tutorials and ready-to-run sample projects.
+
+
+.. raw:: html
+
+  </div></div>
+
+.. raw:: html
+
   <div class="topics-grid topics-grid--products">
 
-      <h2 class="topics-grid__title">Other Products</h2>
-      <p class="topics-grid__text"></p>
+      <h2 class="topics-grid__title">Manage, Monitor, and Migrate</h2>
+      <p class="topics-grid__text">Tools to manage and monitor your ScyllaDB clusters, and help you migrate to ScyllaDB.</p>
 
       <div class="grid-container full">
           <div class="grid-x grid-margin-x">
-
-.. topic-box::
-  :title: ScyllaDB Alternator
-  :link: https://docs.scylladb.com/manual/stable/alternator/alternator.html
-  :link_target: _self
-  :image: /_static/img/mascots-2/alternator.svg
-  :class: topic-box--product,large-4,small-6
-
-  Amazon DynamoDB-compatible API.
 
 .. topic-box::
   :title: ScyllaDB Monitoring Stack
@@ -102,13 +132,36 @@
   Hassle-free ScyllaDB NoSQL database management for scale-out clusters.
 
 .. topic-box::
-  :title: ScyllaDB Drivers
-  :link: https://docs.scylladb.com/manual/stable/using-scylla/drivers/
+  :title: ScyllaDB Migrator
+  :link: https://migrator.docs.scylladb.com
   :link_target: _self
-  :image: /_static/img/mascots-2/driver.svg
+  :image: /_static/img/mascots/scylla-migrator.svg
   :class: topic-box--product,large-4,small-6
 
-  Shard-aware drivers for superior performance. 
+  Migrate data to ScyllaDB using Spark.
+
+.. raw:: html
+
+  </div></div></div>
+
+.. raw:: html
+
+  <div class="topics-grid topics-grid--products">
+
+      <h2 class="topics-grid__title">DynamoDB API &amp; Kubernetes</h2>
+      <p class="topics-grid__text">Use ScyllaDB through the DynamoDB-compatible API or run it on Kubernetes.</p>
+
+      <div class="grid-container full">
+          <div class="grid-x grid-margin-x">
+
+.. topic-box::
+  :title: ScyllaDB Alternator
+  :link: https://docs.scylladb.com/manual/stable/alternator/alternator.html
+  :link_target: _self
+  :image: /_static/img/mascots-2/alternator.svg
+  :class: topic-box--product,large-4,small-6
+
+  Use the Amazon DynamoDB-compatible API.
 
 .. topic-box::
   :title: ScyllaDB Operator
@@ -117,17 +170,7 @@
   :image: /_static/img/mascots-2/operator.svg
   :class: topic-box--product,large-4,small-6
 
-  Easily run and manage your ScyllaDB cluster on Kubernetes.
-
-
-.. topic-box::
-  :title: ScyllaDB Migrator
-  :link: https://migrator.docs.scylladb.com
-  :link_target: _self
-  :image: /_static/img/mascots/scylla-migrator.svg
-  :class: topic-box--product,large-4,small-6
-
-  Migrate data extract using Spark to ScyllaDB.
+  Run and manage ScyllaDB on Kubernetes.
 
 .. raw:: html
 
