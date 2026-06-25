@@ -588,6 +588,32 @@ keyspace cannot be switched back to vnodes.</p>
 </pre></div>
 </div>
 </li>
+<li><p>Optionally, wait for tablet layout normalization to complete:</p>
+<p>After finalization, a tablet normalization process takes place in the
+background which transforms the tablets of all migrated tables into a
+power-of-two layout. Until power-of-two convergence is complete, the
+tablet layout of all these tables will be suboptimal, causing degraded
+performance. Run the following command repeatedly to monitor the per-table
+status of this background work:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt; --with-tablet-status</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks<span class="w"> </span>--with-tablet-status
+<span class="go">Keyspace: ks</span>
+<span class="go">Status: tablets</span>
+
+<span class="go">Tablet info:</span>
+<span class="go">  Pow2 tablet layout convergence: in progress</span>
+<span class="go">  Tables converging: 2/3</span>
+
+<span class="go">Table   Status       Tablets   Target</span>
+<span class="go">t1      converging   2301      2048</span>
+<span class="go">t2      converging   2176      2048</span>
+<span class="go">t3      converged    2048      -</span>
+</pre></div>
+</div>
+</li>
 </ol>
 </li>
 </ol>
@@ -1380,7 +1406,7 @@ migration in one pass.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Jun 2026.
+                        Last updated on 25 Jun 2026.
                     
                 </div>
             
