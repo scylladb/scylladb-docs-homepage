@@ -27,7 +27,7 @@
 
 .. raw:: html
 
-  <div class="grid-x grid-margin-x hs">
+  <div class="grid-x grid-margin-x">
 
 .. topic-box::
   :title: Getting started
@@ -59,15 +59,6 @@
 
   Deploy and manage your database in your environment.
 
-
-.. raw:: html
-
-  </div></div>
-
-.. raw:: html
-
-  <div class="grid-x grid-margin-x hs">
-
 .. topic-box::
   :title: ScyllaDB Drivers
   :icon: icon-link
@@ -76,7 +67,7 @@
   :class: large-4 drivers-card
   :anchor: Drivers
 
-  Connect your application to ScyllaDB with shard-aware CQL and DynamoDB-compatible drivers.
+  Connect your application with shard-aware CQL and DynamoDB-compatible drivers.
 
 .. topic-box::
   :title: Versioning and Support Policy
@@ -84,9 +75,9 @@
   :link: https://docs.scylladb.com/stable/versioning/index.html
   :link_target: _self
   :class: large-4 versioning-card
-  :anchor: Versioning and Support Policy
+  :anchor: Versioning Policy
 
-  Learn which ScyllaDB versions, drivers, and operating systems are supported and for how long.
+  See which versions, drivers, and operating systems are supported.
 
 .. topic-box::
   :title: Tutorials and Example Projects
@@ -94,9 +85,9 @@
   :link: https://docs.scylladb.com/stable/get-started/develop-with-scylladb/tutorials-example-projects.html
   :link_target: _self
   :class: large-4 tutorials-card
-  :anchor: Tutorials and Example Projects
+  :anchor: Tutorials
 
-  Build real applications with step-by-step tutorials and ready-to-run sample projects.
+  Build real applications with step-by-step tutorials and sample projects.
 
 
 .. raw:: html
