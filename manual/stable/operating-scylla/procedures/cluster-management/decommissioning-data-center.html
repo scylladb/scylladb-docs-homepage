@@ -431,6 +431,45 @@ cqlsh&gt;<span class="w"> </span>ALTER<span class="w"> </span>KEYSPACE<span clas
 </div>
 <p>Consider <a class="reference internal" href="../../../architecture/tablets.html#keyspace-rf-rack-valid-to-enforce-rack-list"><span class="std std-ref">upgrading rf_rack_valid_keyspaces option to enforce_rack_list option</span></a> to ensure all tablet keyspaces use rack lists.</p>
 </div>
+<dl class="simple">
+<dt>If the keyspace uses rack list replication, update the replication factor in one <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> statement, under the following rules:</dt><dd><ul class="simple">
+<li><p>Existing datacenters must keep their current replication factor.</p></li>
+<li><p>An existing datacenter can be removed (<strong>N to 0</strong>).</p></li>
+<li><p>A new datacenter can be assigned a replication factor (<strong>0 to N</strong>).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>While removing a datacenter and altering keyspaces, do <strong>not</strong> perform any reads or writes that involve the datacenter being removed.
+In particular, avoid using global consistency levels (such as <code class="docutils literal notranslate"><span class="pre">ALL</span></code>, <code class="docutils literal notranslate"><span class="pre">EACH_QUORUM</span></code>) that would include the decommissioned datacenter in the operation.
+Use <code class="docutils literal notranslate"><span class="pre">LOCAL_*</span></code> consistency levels (e.g., <code class="docutils literal notranslate"><span class="pre">LOCAL_QUORUM</span></code>, <code class="docutils literal notranslate"><span class="pre">LOCAL_ONE</span></code>) until the datacenter is fully decommissioned.</p>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh&gt;<span class="w"> </span>DESCRIBE<span class="w"> </span>nba4
+cqlsh&gt;<span class="w"> </span>CREATE<span class="w"> </span>KEYSPACE<span class="w"> </span>nba4<span class="w"> </span>WITH<span class="w"> </span><span class="nv">REPLICATION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s1">&#39;class&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span>,<span class="w"> </span><span class="s1">&#39;US-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC3&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;ASIA-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC4&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC5&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;EUROPE-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC6&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC7&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC8&#39;</span><span class="o">]}</span><span class="w"> </span>AND<span class="w"> </span><span class="nv">tablets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s1">&#39;enabled&#39;</span>:<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The following is <strong>not</strong> allowed because it changes the replication factor of <code class="docutils literal notranslate"><span class="pre">EUROPE-DC</span></code> (adds <code class="docutils literal notranslate"><span class="pre">RAC9</span></code>) and removes <code class="docutils literal notranslate"><span class="pre">ASIA-DC</span></code> in the same statement:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh&gt;<span class="w"> </span>ALTER<span class="w"> </span>KEYSPACE<span class="w"> </span>nba4<span class="w"> </span>WITH<span class="w"> </span><span class="nv">REPLICATION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s1">&#39;class&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span>,<span class="w"> </span><span class="s1">&#39;US-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC3&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;ASIA-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[]</span>,<span class="w"> </span><span class="s1">&#39;EUROPE-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC6&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC7&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC8&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC9&#39;</span><span class="o">]}</span><span class="w"> </span>AND<span class="w"> </span><span class="nv">tablets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s1">&#39;enabled&#39;</span>:<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Remove all replicas from the decommissioned datacenter:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh&gt;<span class="w"> </span>ALTER<span class="w"> </span>KEYSPACE<span class="w"> </span>nba4<span class="w"> </span>WITH<span class="w"> </span><span class="nv">REPLICATION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s1">&#39;class&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span>,<span class="w"> </span><span class="s1">&#39;US-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC1&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC2&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC3&#39;</span><span class="o">]</span>,<span class="w"> </span><span class="s1">&#39;ASIA-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[]</span>,<span class="w"> </span><span class="s1">&#39;EUROPE-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;RAC6&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC7&#39;</span>,<span class="w"> </span><span class="s1">&#39;RAC8&#39;</span><span class="o">]}</span><span class="w"> </span>AND<span class="w"> </span><span class="nv">tablets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s1">&#39;enabled&#39;</span>:<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If table audit is enabled, the <code class="docutils literal notranslate"><span class="pre">audit</span></code> keyspace is automatically created with <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code>.
+You must also alter the <code class="docutils literal notranslate"><span class="pre">audit</span></code> keyspace to remove replicas from the decommissioned data-center. For example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh&gt;<span class="w"> </span>ALTER<span class="w"> </span>KEYSPACE<span class="w"> </span>audit<span class="w"> </span>WITH<span class="w"> </span><span class="nv">REPLICATION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s1">&#39;class&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span>,<span class="w"> </span><span class="s1">&#39;US-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="s1">&#39;ASIA-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s1">&#39;EUROPE-DC&#39;</span><span class="w"> </span>:<span class="w"> </span><span class="m">3</span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Failure to do so will result in decommission errors such as “zero replica after the removal”.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Removal of replicas from a datacenter cannot be aborted. To get back to the previous replication, wait until the ALTER KEYSPACE finishes and then add the replicas back by running another ALTER KEYSPACE statement.</p>
+</div>
 </li>
 <li><p>Run <a class="reference internal" href="../../nodetool-commands/decommission.html"><span class="doc">nodetool decommission</span></a> on every node in the data center that is to be removed.
 Refer to <a class="reference internal" href="remove-node.html"><span class="doc">Remove a Node from a ScyllaDB Cluster - Down Scale</span></a> for further information.</p>
@@ -493,7 +532,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Remove a Data-Center from a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/procedures/cluster-management/decommissioning-data-center%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Remove a Data-Center from a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/cluster-management/decommissioning-data-center%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -562,7 +601,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Remove a Data-Center from a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/procedures/cluster-management/decommissioning-data-center%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Remove a Data-Center from a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/cluster-management/decommissioning-data-center%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -632,7 +671,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.1
+                2026.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -646,13 +685,13 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
             
                 
                     <li>
-                        <a href="../../../../branch-2026.2/operating-scylla/procedures/cluster-management/decommissioning-data-center.html">2026.2</a>
+                        <a href="decommissioning-data-center.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="decommissioning-data-center.html">2026.1</a>
+                        <a href="../../../../branch-2026.1/operating-scylla/procedures/cluster-management/decommissioning-data-center.html">2026.1</a>
                     </li>
                 
             
@@ -687,12 +726,12 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -704,7 +743,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
 <li class="toctree-l2"><a class="reference internal" href="../../../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/os-support.html">OS Support</a></li>
+<li class="toctree-l3"><a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -752,7 +791,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
 <li class="toctree-l3"><a class="reference internal" href="../../security/security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/enable-authorization.html">Enable Authorization</a></li>
@@ -793,7 +832,6 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../upgrade/about-upgrade.html">About Upgrade</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
@@ -835,6 +873,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/secondary-indexes.html">Global Secondary Indexes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cql/guardrails.html">CQL Guardrails</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/mv.html">Materialized Views</a></li>
@@ -848,6 +887,7 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../alternator/vector-search.html">Alternator Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -907,7 +947,6 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/startup/index.html">ScyllaDB Startup</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/change-ownership.html">Ownership Problems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/scylla-wont-start.html">ScyllaDB will not Start</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -968,7 +1007,6 @@ UN<span class="w">  </span><span class="m">172</span>.91.202.33<span class="w"> 
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>

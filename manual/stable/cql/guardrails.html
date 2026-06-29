@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Increase Permission Cache to Avoid Non-paged Queries | ScyllaDB Docs 
+             CQL Guardrails | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../_static/img/favicon.ico" type="image/x-icon" />
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/kb/increase-permission-cache.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/cql/guardrails.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -313,11 +313,11 @@
     
         <span class="bread__item">
             <a href="index.html" class="bread__highlight">
-                Knowledge Base
+                CQL Reference
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Increase Permission Cache to Avoid Non-paged Queries</span>
+    <span class="bread__item bread__item--last">CQL Guardrails</span>
 </div>
                     </div>
                 
@@ -328,40 +328,209 @@
 
                 <div class="content-body"
                      
-                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/kb/increase-permission-cache.rst"
+                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/guardrails.rst"
                      >
                     
                         
                     
 
-                    <section id="increase-permission-cache-to-avoid-non-paged-queries">
-<h1>Increase Permission Cache to Avoid Non-paged Queries<a class="headerlink" href="#increase-permission-cache-to-avoid-non-paged-queries" title="Link to this heading">¶</a></h1>
-<p><strong>Topic: Mitigate non-paged queries coming from connection authentications</strong></p>
-<p><strong>Audience: ScyllaDB administrators</strong></p>
-<section id="issue">
-<h2>Issue<a class="headerlink" href="#issue" title="Link to this heading">¶</a></h2>
-<p>If you create lots of roles and give them lots of permissions your nodes might spike with non-paged queries.</p>
+                    <section id="cql-guardrails">
+<span id="id1"></span><h1>CQL Guardrails<a class="headerlink" href="#cql-guardrails" title="Link to this heading">¶</a></h1>
+<p>ScyllaDB provides a set of configurable guardrail parameters that help operators
+enforce best practices and prevent misconfigurations that could degrade cluster
+health, availability, or performance. Guardrails operate at two severity levels:</p>
+<ul class="simple">
+<li><p><strong>Warn</strong>: The request succeeds, but the server includes a warning in the CQL
+response. Depending on the specific guardrail, the warning may also be logged on the server side.</p></li>
+<li><p><strong>Fail</strong>: The request is rejected with an error/exception (the specific type
+depends on the guardrail). The user must correct the request or adjust the
+guardrail configuration to proceed.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Guardrails are checked only when a statement is
+executed. They do not retroactively validate existing keyspaces, tables, or
+previously completed writes.</p>
+</div>
+<p>For the full list of configuration properties, including types, defaults, and
+liveness information, see <a class="reference internal" href="../reference/configuration-parameters.html"><span class="doc">Configuration Parameters</span></a>.</p>
+<section id="replication-factor-guardrails">
+<span id="guardrails-replication-factor"></span><h2>Replication Factor Guardrails<a class="headerlink" href="#replication-factor-guardrails" title="Link to this heading">¶</a></h2>
+<p>These four parameters control the minimum and maximum allowed replication factor
+(RF) values. They are evaluated whenever a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> statement is executed. Each data center’s RF is checked
+individually.</p>
+<p>An RF of <code class="docutils literal notranslate"><span class="pre">0</span></code> — which means “do not replicate to this data center” — is
+always allowed and never triggers a guardrail.</p>
+<p>A threshold value of <code class="docutils literal notranslate"><span class="pre">-1</span></code> disables the corresponding check.</p>
+<section id="minimum-replication-factor-warn-threshold">
+<h3><code class="docutils literal notranslate"><span class="pre">minimum_replication_factor_warn_threshold</span></code><a class="headerlink" href="#minimum-replication-factor-warn-threshold" title="Link to this heading">¶</a></h3>
+<p>If any data center’s RF is set to a value greater than <code class="docutils literal notranslate"><span class="pre">0</span></code> and lower than
+this threshold, the server attaches a warning to the CQL response identifying
+the offending data center and RF value.</p>
+<p><strong>When to use.</strong> The default of <code class="docutils literal notranslate"><span class="pre">3</span></code> is the standard recommendation for
+production clusters. An RF below <code class="docutils literal notranslate"><span class="pre">3</span></code> means that the cluster cannot tolerate
+even a single node failure without data loss or read unavailability (assuming
+<code class="docutils literal notranslate"><span class="pre">QUORUM</span></code> consistency). Keep this at <code class="docutils literal notranslate"><span class="pre">3</span></code> unless your deployment has specific
+constraints (e.g., a development or test cluster with fewer than 3 nodes).</p>
 </section>
-<section id="root-cause">
-<h2>Root Cause<a class="headerlink" href="#root-cause" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">permissions_cache_max_entries</span></code> is set to 1000 by default. This setting may not be high enough for bigger deployments with lots of tables, users, and roles with permissions.</p>
+<section id="minimum-replication-factor-fail-threshold">
+<h3><code class="docutils literal notranslate"><span class="pre">minimum_replication_factor_fail_threshold</span></code><a class="headerlink" href="#minimum-replication-factor-fail-threshold" title="Link to this heading">¶</a></h3>
+<p>If any data center’s RF is set to a value greater than <code class="docutils literal notranslate"><span class="pre">0</span></code> and lower than
+this threshold, the request is rejected with a <code class="docutils literal notranslate"><span class="pre">ConfigurationException</span></code>
+identifying the offending data center and RF value.</p>
+<p><strong>When to use.</strong> Enable this parameter (e.g., set to <code class="docutils literal notranslate"><span class="pre">3</span></code>) in production
+environments where allowing a low RF would be operationally dangerous. Unlike
+the warn threshold, this provides a hard guarantee that no keyspace can be
+created or altered to have an RF below the limit.</p>
 </section>
-<section id="solution">
-<h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">¶</a></h2>
-<p>Open the scylla.yaml configuration for editing and adjust the following parameters:
-<code class="docutils literal notranslate"><span class="pre">permissions_cache_max_entries</span></code> - increase this value to suit your needs. See the example below.
-<code class="docutils literal notranslate"><span class="pre">permissions_update_interval_in_ms</span></code>
-<code class="docutils literal notranslate"><span class="pre">permissions_validity_in_ms</span></code></p>
-<p>Note:: <code class="docutils literal notranslate"><span class="pre">permissions_update_interval_in_ms</span></code> and  <code class="docutils literal notranslate"><span class="pre">permissions_validity_in_ms</span></code> can be set to also make the authentication records come from cache instead of lookups, which generate non-paged queries</p>
+<section id="maximum-replication-factor-warn-threshold">
+<h3><code class="docutils literal notranslate"><span class="pre">maximum_replication_factor_warn_threshold</span></code><a class="headerlink" href="#maximum-replication-factor-warn-threshold" title="Link to this heading">¶</a></h3>
+<p>If any data center’s RF exceeds this threshold, the server attaches a warning to the CQL response identifying
+the offending data center and RF value.</p>
+<p><strong>When to use.</strong> An excessively high RF increases write amplification and
+storage costs proportionally. For example, an RF of <code class="docutils literal notranslate"><span class="pre">5</span></code> means every write
+is replicated to five nodes. Set this threshold to alert operators who
+may unintentionally set an RF that is too high.</p>
 </section>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
-<p>Considering with <code class="docutils literal notranslate"><span class="pre">permissions_cache_max_entries</span></code> there is no maximum value, it’s just limited by your memory.
-The cache consumes memory as it caches all records from the list of users and their associated roles (similar to a cartesian product).</p>
-<p>Every user, role, and permissions(7 types) on a per table basis are cached.</p>
-<p>If for example, you have 1 user with 1 role and 1 table, the table will have 7 permission types and 7 entries  1 * 1 * 1 * 7 = 7.
-When expanded to 5 users, 5 roles, and 10 tables this will be 5 * 5 * 10 * 7 = 1750 entries, which is above the default cache value of 1000. The entries that go over the max value (750 entries) will be non-paged queries for every new connection from the client (and clients tend to reconnect often).
-In cases like this, you may want to consider trading your memory for not stressing the entire cluster with <code class="docutils literal notranslate"><span class="pre">auth</span></code> queries.</p>
+<section id="maximum-replication-factor-fail-threshold">
+<h3><code class="docutils literal notranslate"><span class="pre">maximum_replication_factor_fail_threshold</span></code><a class="headerlink" href="#maximum-replication-factor-fail-threshold" title="Link to this heading">¶</a></h3>
+<p>If any data center’s RF exceeds this threshold, the request is rejected with a <code class="docutils literal notranslate"><span class="pre">ConfigurationException</span></code>
+identifying the offending data center and RF value.</p>
+<p><strong>When to use.</strong> Enable this parameter to prevent accidental creation of
+keyspaces with an unreasonably high RF. An extremely high RF wastes storage and
+network bandwidth and can lead to write latency spikes. This is a hard limit —
+the keyspace creation or alteration will not proceed until the RF is lowered.</p>
+<p><strong>Metrics.</strong> ScyllaDB exposes per-shard metrics that track the number of
+times each replication factor guardrail has been triggered:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_minimum_replication_factor_warn_violations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_minimum_replication_factor_fail_violations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_maximum_replication_factor_warn_violations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_maximum_replication_factor_fail_violations</span></code></p></li>
+</ul>
+<p>A sustained increase in any of these metrics indicates that
+<code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> requests are hitting the configured
+thresholds.</p>
+</section>
+</section>
+<section id="replication-strategy-guardrails">
+<span id="guardrails-replication-strategy"></span><h2>Replication Strategy Guardrails<a class="headerlink" href="#replication-strategy-guardrails" title="Link to this heading">¶</a></h2>
+<p>These two parameters control which replication strategies trigger warnings or
+are rejected when a keyspace is created or altered.</p>
+<section id="replication-strategy-warn-list">
+<h3><code class="docutils literal notranslate"><span class="pre">replication_strategy_warn_list</span></code><a class="headerlink" href="#replication-strategy-warn-list" title="Link to this heading">¶</a></h3>
+<p>If the replication strategy used in a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code>
+statement is on this list, the server attaches a warning to the CQL response
+identifying the discouraged strategy and the affected keyspace.</p>
+<p><strong>When to use.</strong> <code class="docutils literal notranslate"><span class="pre">SimpleStrategy</span></code> is not recommended for production use.
+It places replicas without awareness of data center or rack topology, which
+can undermine fault tolerance in multi-DC deployments. Even in single-DC
+deployments, <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code> is recommended because it keeps the
+schema ready for future topology changes.</p>
+<p>The default configuration warns on <code class="docutils literal notranslate"><span class="pre">SimpleStrategy</span></code>, which is appropriate
+for most deployments. If you have existing keyspaces that use
+<code class="docutils literal notranslate"><span class="pre">SimpleStrategy</span></code>, see <a class="reference internal" href="../operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.html"><span class="doc">Update Topology Strategy From Simple to Network</span></a>
+for the migration procedure.</p>
+</section>
+<section id="replication-strategy-fail-list">
+<h3><code class="docutils literal notranslate"><span class="pre">replication_strategy_fail_list</span></code><a class="headerlink" href="#replication-strategy-fail-list" title="Link to this heading">¶</a></h3>
+<p>If the replication strategy used in a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code>
+statement is on this list, the request is rejected with a
+<code class="docutils literal notranslate"><span class="pre">ConfigurationException</span></code> identifying the forbidden strategy and the affected
+keyspace.</p>
+<p><strong>When to use.</strong> In production environments, add <code class="docutils literal notranslate"><span class="pre">SimpleStrategy</span></code> to this
+list to enforce <code class="docutils literal notranslate"><span class="pre">NetworkTopologyStrategy</span></code> across all keyspaces. This helps
+prevent new production keyspaces from being created with a topology-unaware
+strategy.</p>
+<p><strong>Metrics.</strong> The following per-shard metrics track replication strategy
+guardrail violations:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_replication_strategy_warn_list_violations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_replication_strategy_fail_list_violations</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="write-consistency-level-guardrails">
+<span id="guardrails-write-consistency-level"></span><h2>Write Consistency Level Guardrails<a class="headerlink" href="#write-consistency-level-guardrails" title="Link to this heading">¶</a></h2>
+<p>These two parameters control which consistency levels (CL) are allowed for
+write operations (<code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>, and <code class="docutils literal notranslate"><span class="pre">BATCH</span></code>
+statements).</p>
+<p>Be aware that adding warnings to CQL responses can significantly increase
+network traffic and reduce overall throughput.</p>
+<section id="write-consistency-levels-warned">
+<h3><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_warned</span></code><a class="headerlink" href="#write-consistency-levels-warned" title="Link to this heading">¶</a></h3>
+<p>If a write operation uses a consistency level on this list, the server attaches
+a warning to the CQL response identifying the discouraged consistency level.</p>
+<p><strong>When to use.</strong> Use this parameter to alert application developers when they
+use a consistency level that, while technically functional, is not recommended
+for the workload. Common examples:</p>
+<ul class="simple">
+<li><p><strong>Warn on</strong> <code class="docutils literal notranslate"><span class="pre">ANY</span></code>: writes at <code class="docutils literal notranslate"><span class="pre">ANY</span></code> are acknowledged as soon as at least
+one node (including a coordinator acting as a hinted handoff store) receives
+the mutation. This means data may not be persisted on any replica node at
+the time of acknowledgement, risking data loss if the coordinator fails
+before hinted handoff completes.</p></li>
+<li><p><strong>Warn on</strong> <code class="docutils literal notranslate"><span class="pre">ALL</span></code>: writes at <code class="docutils literal notranslate"><span class="pre">ALL</span></code> require every replica to acknowledge
+the write. If any single replica is down, the write fails. This significantly
+reduces write availability.</p></li>
+</ul>
+</section>
+<section id="write-consistency-levels-disallowed">
+<h3><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_disallowed</span></code><a class="headerlink" href="#write-consistency-levels-disallowed" title="Link to this heading">¶</a></h3>
+<p>If a write operation uses a consistency level on this list, the request is
+rejected with an <code class="docutils literal notranslate"><span class="pre">InvalidRequestException</span></code> identifying the forbidden
+consistency level.</p>
+<p><strong>When to use.</strong> Use this parameter to hard-block consistency levels that are
+considered unsafe for your deployment:</p>
+<ul class="simple">
+<li><p><strong>Disallow</strong> <code class="docutils literal notranslate"><span class="pre">ANY</span></code>: in production environments, <code class="docutils literal notranslate"><span class="pre">ANY</span></code> is almost never
+appropriate. It provides the weakest durability guarantee and is a common
+source of data-loss incidents when operators or application developers use it
+unintentionally.</p></li>
+<li><p><strong>Disallow</strong> <code class="docutils literal notranslate"><span class="pre">ALL</span></code>: in clusters where high write availability is critical,
+blocking <code class="docutils literal notranslate"><span class="pre">ALL</span></code> prevents a single node failure from causing write
+unavailability.</p></li>
+</ul>
+<p><strong>Metrics.</strong> The following per-shard metrics track write consistency level
+guardrail violations:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_write_consistency_levels_warned_violations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_cql_write_consistency_levels_disallowed_violations</span></code></p></li>
+</ul>
+<p>Additionally, ScyllaDB exposes the
+<code class="docutils literal notranslate"><span class="pre">scylla_cql_writes_per_consistency_level</span></code> metric, labeled by consistency
+level, which tracks the total number of write requests per CL. This metric is
+useful for understanding the current write-CL distribution across the cluster
+<em>before</em> deciding which levels to warn on or disallow. For example, querying
+this metric can reveal whether any application is inadvertently using <code class="docutils literal notranslate"><span class="pre">ANY</span></code>
+or <code class="docutils literal notranslate"><span class="pre">ALL</span></code> for writes.</p>
+</section>
+</section>
+<section id="compact-storage-guardrail">
+<span id="guardrails-compact-storage"></span><h2>Compact Storage Guardrail<a class="headerlink" href="#compact-storage-guardrail" title="Link to this heading">¶</a></h2>
+<section id="enable-create-table-with-compact-storage">
+<h3><code class="docutils literal notranslate"><span class="pre">enable_create_table_with_compact_storage</span></code><a class="headerlink" href="#enable-create-table-with-compact-storage" title="Link to this heading">¶</a></h3>
+<p>This boolean parameter controls whether <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> statements with the
+deprecated <code class="docutils literal notranslate"><span class="pre">COMPACT</span> <span class="pre">STORAGE</span></code> option are allowed. Unlike the other guardrails,
+it acts as a simple on/off switch rather than using separate warn and fail
+thresholds.</p>
+<p><strong>When to use.</strong> Leave this at the default (<code class="docutils literal notranslate"><span class="pre">false</span></code>) for all new
+deployments. <code class="docutils literal notranslate"><span class="pre">COMPACT</span> <span class="pre">STORAGE</span></code> is a legacy feature that will be permanently
+removed in a future version of ScyllaDB. Set to <code class="docutils literal notranslate"><span class="pre">true</span></code> only if you have a specific,
+temporary need to create compact storage tables (e.g., compatibility with legacy
+applications during a migration). For details on the <code class="docutils literal notranslate"><span class="pre">COMPACT</span> <span class="pre">STORAGE</span></code> option, see
+<a class="reference internal" href="ddl.html#compact-tables"><span class="std std-ref">Compact Tables</span></a> in the Data Definition documentation.</p>
+</section>
+</section>
+<section id="additional-references">
+<h2>Additional References<a class="headerlink" href="#additional-references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="consistency.html"><span class="doc">Consistency Level</span></a></p></li>
+<li><p><a class="reference internal" href="ddl.html"><span class="doc">Data Definition (CREATE/ALTER KEYSPACE)</span></a></p></li>
+<li><p><a class="reference internal" href="../kb/rf-increase.html"><span class="doc">How to Safely Increase the Replication Factor</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/metrics.html"><span class="doc">Metrics Reference</span></a></p></li>
+</ul>
 </section>
 </section>
 
@@ -397,7 +566,7 @@ In cases like this, you may want to consider trading your memory for not stressi
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Increase Permission Cache to Avoid Non-paged Queries&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/kb/increase-permission-cache%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CQL Guardrails&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/guardrails%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -432,21 +601,21 @@ In cases like this, you may want to consider trading your memory for not stressi
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="gossip.html">
+            <a class="navigation__link" href="functions.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Gossip in ScyllaDB
+                    <span class="colored">PREVIOUS</span> <br />Functions
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="lwt-differences.html">
+            <a class="navigation__link" href="wasm.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />How does ScyllaDB LWT Differ from Apache Cassandra ?
+                    <span class="colored">NEXT</span> <br />Wasm support for user-defined functions
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -466,14 +635,14 @@ In cases like this, you may want to consider trading your memory for not stressi
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Increase Permission Cache to Avoid Non-paged Queries&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/kb/increase-permission-cache%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CQL Guardrails&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/guardrails%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/kb/increase-permission-cache.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/cql/guardrails.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -485,11 +654,29 @@ In cases like this, you may want to consider trading your memory for not stressi
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Increase Permission Cache to Avoid Non-paged Queries</a><ul>
-<li><a class="reference internal" href="#issue">Issue</a></li>
-<li><a class="reference internal" href="#root-cause">Root Cause</a></li>
-<li><a class="reference internal" href="#solution">Solution</a></li>
-<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#">CQL Guardrails</a><ul>
+<li><a class="reference internal" href="#replication-factor-guardrails">Replication Factor Guardrails</a><ul>
+<li><a class="reference internal" href="#minimum-replication-factor-warn-threshold"><code class="docutils literal notranslate"><span class="pre">minimum_replication_factor_warn_threshold</span></code></a></li>
+<li><a class="reference internal" href="#minimum-replication-factor-fail-threshold"><code class="docutils literal notranslate"><span class="pre">minimum_replication_factor_fail_threshold</span></code></a></li>
+<li><a class="reference internal" href="#maximum-replication-factor-warn-threshold"><code class="docutils literal notranslate"><span class="pre">maximum_replication_factor_warn_threshold</span></code></a></li>
+<li><a class="reference internal" href="#maximum-replication-factor-fail-threshold"><code class="docutils literal notranslate"><span class="pre">maximum_replication_factor_fail_threshold</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#replication-strategy-guardrails">Replication Strategy Guardrails</a><ul>
+<li><a class="reference internal" href="#replication-strategy-warn-list"><code class="docutils literal notranslate"><span class="pre">replication_strategy_warn_list</span></code></a></li>
+<li><a class="reference internal" href="#replication-strategy-fail-list"><code class="docutils literal notranslate"><span class="pre">replication_strategy_fail_list</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#write-consistency-level-guardrails">Write Consistency Level Guardrails</a><ul>
+<li><a class="reference internal" href="#write-consistency-levels-warned"><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_warned</span></code></a></li>
+<li><a class="reference internal" href="#write-consistency-levels-disallowed"><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_disallowed</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compact-storage-guardrail">Compact Storage Guardrail</a><ul>
+<li><a class="reference internal" href="#enable-create-table-with-compact-storage"><code class="docutils literal notranslate"><span class="pre">enable_create_table_with_compact_storage</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#additional-references">Additional References</a></li>
 </ul>
 </li>
 </ul>
@@ -538,7 +725,7 @@ In cases like this, you may want to consider trading your memory for not stressi
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.1
+                2026.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -546,43 +733,43 @@ In cases like this, you may want to consider trading your memory for not stressi
             
                 
                     <li>
-                        <a href="../../master/index.html">master</a>
+                        <a href="../../master/cql/guardrails.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2026.2/index.html">2026.2</a>
+                        <a href="guardrails.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="increase-permission-cache.html">2026.1</a>
+                        <a href="../../branch-2026.1/index.html">2026.1</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.4/kb/increase-permission-cache.html">2025.4</a>
+                        <a href="../../branch-2025.4/index.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.3/kb/increase-permission-cache.html">2025.3</a>
+                        <a href="../../branch-2025.3/index.html">2025.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.2/kb/increase-permission-cache.html">2025.2</a>
+                        <a href="../../branch-2025.2/index.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.1/kb/increase-permission-cache.html">2025.1</a>
+                        <a href="../../branch-2025.1/index.html">2025.1</a>
                     </li>
                 
             
@@ -593,12 +780,12 @@ In cases like this, you may want to consider trading your memory for not stressi
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -610,7 +797,7 @@ In cases like this, you may want to consider trading your memory for not stressi
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
+<li class="toctree-l3"><a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -658,7 +845,7 @@ In cases like this, you may want to consider trading your memory for not stressi
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
@@ -678,7 +865,7 @@ In cases like this, you may want to consider trading your memory for not stressi
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/admin-tools/index.html">Admin Tools</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/nodetool.html">Nodetool Reference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cql/cqlsh.html">CQLSh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cqlsh.html">CQLSh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/rest.html">Admin REST API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../using-scylla/tracing.html">Tracing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/scylla-sstable.html">ScyllaDB SStable</a></li>
@@ -699,7 +886,6 @@ In cases like this, you may want to consider trading your memory for not stressi
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
@@ -721,32 +907,33 @@ In cases like this, you may want to consider trading your memory for not stressi
 <li class="toctree-l2"><a class="reference external" href="https://docs.scylladb.com/stable/drivers/index.html">ScyllaDB Drivers</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../cql/index.html">CQL Reference</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label for="toctree-checkbox-13"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2"><a class="reference internal" href="../cql/cqlsh.html">CQLSh: the CQL shell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/appendices.html">Reserved CQL Keywords and Types (Appendices)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/compaction.html">Compaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/consistency.html">Consistency Levels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/consistency-calculator.html">Consistency Level Calculator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/ddl.html">Data Definition</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../cql/dml/select.html">SELECT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cql/dml/insert.html">INSERT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cql/dml/update.html">UPDATE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cql/dml/delete.html">DELETE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cql/dml/batch.html">BATCH</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">CQL Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label for="toctree-checkbox-13"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cqlsh.html">CQLSh: the CQL shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appendices.html">Reserved CQL Keywords and Types (Appendices)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compaction.html">Compaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html">Consistency Levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency-calculator.html">Consistency Level Calculator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ddl.html">Data Definition</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml/insert.html">INSERT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml/update.html">UPDATE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml/delete.html">DELETE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml/batch.html">BATCH</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/types.html">Data Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/definitions.html">Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/secondary-indexes.html">Global Secondary Indexes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/functions.html">Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/wasm.html">Wasm support for user-defined functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="types.html">Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secondary-indexes.html">Global Secondary Indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">CQL Guardrails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wasm.html">Wasm support for user-defined functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json.html">JSON Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="service-levels.html">Service Levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../alternator/alternator.html">Alternator: DynamoDB API in ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -754,6 +941,7 @@ In cases like this, you may want to consider trading your memory for not stressi
 <li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -813,7 +1001,6 @@ In cases like this, you may want to consider trading your memory for not stressi
 <li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/startup/index.html">ScyllaDB Startup</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/change-ownership.html">Ownership Problems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/scylla-wont-start.html">ScyllaDB will not Start</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -858,45 +1045,44 @@ In cases like this, you may want to consider trading your memory for not stressi
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Knowledge Base</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="cdc-experimental-upgrade.html">Upgrading from experimental CDC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compaction.html">Compaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="consistency.html">Consistency in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="count-all-rows.html">Counting all rows in a table is slow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cqlsh-more.html">CQL Query Does Not Display Entire Result Set</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cqlsh-results.html">When CQLSh query returns partial results with followed by “More”</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom-user.html">Run ScyllaDB and supporting services as a custom user:group</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customizing-cpuset.html">Customizing CPUSET</a></li>
-<li class="toctree-l2"><a class="reference internal" href="decode-stack-trace.html">Decoding Stack Traces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="disk-utilization.html">Snapshots and Disk Utilization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpdk-hardware.html">DPDK mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flamegraph.html">Debug your database with Flame Graphs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Increase Permission Cache to Avoid Non-paged Queries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memory-usage.html">ScyllaDB Memory Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ntp.html">NTP Configuration for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="posix.html">POSIX networking for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="raid-device.html">Recreate RAID devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rf-increase.html">How to Safely Increase the Replication Factor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scylla-and-spark-integration.html">ScyllaDB and Spark integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scylla-limits-systemd.html">Increase ScyllaDB resource limits over systemd</a></li>
-<li class="toctree-l2"><a class="reference internal" href="seed-nodes.html">ScyllaDB Seed Nodes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="set-up-swap.html">How to Set up a Swap Space</a></li>
-<li class="toctree-l2"><a class="reference internal" href="snapshots.html">ScyllaDB Snapshots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="static-columns.html">ScyllaDB payload sent duplicated static columns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="stop-local-repair.html">Stopping a local repair</a></li>
-<li class="toctree-l2"><a class="reference internal" href="system-limits.html">System Limits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tombstones-flush.html">How to flush old tombstones from a table</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ttl-facts.html">Time to Live (TTL) and Compaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unresponsive-nodes.html">ScyllaDB Nodes are Unresponsive</a></li>
-<li class="toctree-l2"><a class="reference internal" href="update-pk.html">Update a Primary Key</a></li>
-<li class="toctree-l2"><a class="reference internal" href="use-perf.html">Using the perf utility with ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yaml-address.html">Configure ScyllaDB Networking with Multiple NIC/IP Combinations</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="../kb/cdc-experimental-upgrade.html">Upgrading from experimental CDC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/compaction.html">Compaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/consistency.html">Consistency in ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/count-all-rows.html">Counting all rows in a table is slow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/cqlsh-more.html">CQL Query Does Not Display Entire Result Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/cqlsh-results.html">When CQLSh query returns partial results with followed by “More”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/custom-user.html">Run ScyllaDB and supporting services as a custom user:group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/customizing-cpuset.html">Customizing CPUSET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/decode-stack-trace.html">Decoding Stack Traces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/dpdk-hardware.html">DPDK mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/ntp.html">NTP Configuration for ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/posix.html">POSIX networking for ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/raid-device.html">Recreate RAID devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/rf-increase.html">How to Safely Increase the Replication Factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/scylla-and-spark-integration.html">ScyllaDB and Spark integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/scylla-limits-systemd.html">Increase ScyllaDB resource limits over systemd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/seed-nodes.html">ScyllaDB Seed Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/set-up-swap.html">How to Set up a Swap Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/snapshots.html">ScyllaDB Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/static-columns.html">ScyllaDB payload sent duplicated static columns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/stop-local-repair.html">Stopping a local repair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/system-limits.html">System Limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/tombstones-flush.html">How to flush old tombstones from a table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/ttl-facts.html">Time to Live (TTL) and Compaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/unresponsive-nodes.html">ScyllaDB Nodes are Unresponsive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/update-pk.html">Update a Primary Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/use-perf.html">Using the perf utility with ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kb/yaml-address.html">Configure ScyllaDB Networking with Multiple NIC/IP Combinations</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>

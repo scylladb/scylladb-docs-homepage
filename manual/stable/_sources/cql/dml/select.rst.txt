@@ -25,6 +25,8 @@ Querying data from data is done using a ``SELECT`` statement:
            : | CAST '(' `selector` AS `cql_type` ')'
            : | `function_name` '(' [ `selector` ( ',' `selector` )* ] ')'
            : | COUNT '(' '*' ')'
+           : | literal
+           : | bind_marker
            : )
            : ( '.' `field_name` | '[' `term` ']' )*
    where_clause: `relation` ( AND `relation` )*
@@ -35,6 +37,8 @@ Querying data from data is done using a ``SELECT`` statement:
    operator: '=' | '<' | '>' | '<=' | '>=' | IN | NOT IN | CONTAINS | CONTAINS KEY
    ordering_clause: `column_name` [ ASC | DESC ] ( ',' `column_name` [ ASC | DESC ] )*
    timeout: `duration`
+   literal: number | 'string' | boolean | NULL | tuple_literal | list_literal | map_literal
+   bind_marker: '?' | ':' `identifier`
 
 For instance::
 
@@ -81,6 +85,13 @@ A :token:`selector` can be one of the following:
 - A casting, which allows you to convert a nested selector to a (compatible) type.
 - A function call, where the arguments are selector themselves.
 - A call to the :ref:`COUNT function <count-function>`, which counts all non-null results.
+- A literal value (constant).
+- A bind variable (`?` or `:name`).
+
+Note that due to a quirk of the type system, literals and bind markers cannot be
+used as top-level selectors, as the parser cannot infer their type. However, they can be used
+when nested inside functions, as the function formal parameter types provide the
+necessary context.
 
 Aliases
 ```````
@@ -106,11 +117,15 @@ set will be that of the alias. For instance::
    clause, not in the ``ORDER BY`` clause, ...). You must use the original column name instead.
 
 
+.. _select-writetime-ttl:
+
 ``WRITETIME`` and ``TTL`` function
 ```````````````````````````````````
 
 Selection supports two special functions (which aren't allowed anywhere else): ``WRITETIME`` and ``TTL``. Both functions
-take only one argument, and that argument *must* be a column name (so, for instance, ``TTL(3)`` is invalid).
+take only one argument, which must be either a column name, a subscript expression of the form ``collection_column[element]``
+for an individual element of a non-frozen map or set collection, or a field selection of the form ``udt_column.field``
+for an individual field of a non-frozen user-defined type column (so, for instance, ``TTL(3)`` is invalid).
 
 Those functions let you retrieve meta-information that is stored internally for each column, namely:
 
@@ -120,7 +135,60 @@ You can read more about the ``TIMESTAMP`` retrieved by ``WRITETIME`` in the :ref
 
 - ``TTL`` retrieves the remaining time to live (in *seconds*) for the value of the column, if it set to expire, or ``null`` otherwise.
 
-You can read more about TTL in the :doc:`documentation </cql/time-to-live>` and also in `this ScyllaDB University lesson <https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/>`_. 
+You can read more about TTL in the :doc:`documentation </cql/time-to-live>` and also in `this ScyllaDB University lesson <https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/>`_.
+
+**Using** ``WRITETIME`` **and** ``TTL`` **on map and set collection elements**
+
+For a non-frozen map or set column, each element is stored as an independent cell and may have its own write timestamp and TTL.
+You can retrieve the per-element timestamp or TTL by subscripting the column with the element::
+
+    -- Create a table with a map column and a set column
+    CREATE TABLE t (pk int PRIMARY KEY, m map<int, int>, s set<int>);
+
+    -- Insert elements with an explicit timestamp
+    INSERT INTO t (pk, m, s) VALUES (1, {1: 10, 2: 20}, {1, 2}) USING TIMESTAMP 1000000;
+
+    -- Update one element with a newer timestamp
+    UPDATE t USING TIMESTAMP 2000000 SET m = m + {2: 30}, s = s + {3} WHERE pk = 1;
+
+    -- WRITETIME(m[key]) returns the write timestamp of that specific map element
+    SELECT WRITETIME(m[1]), WRITETIME(m[2]) FROM t WHERE pk = 1;
+    -- Returns: 1000000 | 2000000
+
+    -- WRITETIME(s[element]) returns the write timestamp of that specific set element
+    SELECT WRITETIME(s[1]), WRITETIME(s[3]) FROM t WHERE pk = 1;
+    -- Returns: 1000000 | 2000000
+
+    -- TTL(m[key]) returns the remaining TTL of that specific map element
+    INSERT INTO t (pk, m) VALUES (1, {1: 10}) USING TTL 3600;
+    SELECT TTL(m[1]) FROM t WHERE pk = 1;
+    -- Returns the remaining TTL in seconds for element m[1]
+
+Note that ``WRITETIME(m)`` and ``TTL(m)`` on an entire non-frozen map or set column are **not** supported —
+since each element may have a different timestamp or TTL, there is no single meaningful value to return.
+Only ``WRITETIME(m[key])`` and ``TTL(m[key])`` (for a specific map key) or ``WRITETIME(s[element])``
+and ``TTL(s[element])`` (for a specific set element) are allowed.
+
+**Using** ``WRITETIME`` **and** ``TTL`` **on user-defined type fields**
+
+For a non-frozen user-defined type (UDT) column, each field is stored as an independent cell and may have its own
+write timestamp and TTL. You can retrieve the per-field timestamp or TTL using dot notation::
+
+    CREATE TYPE address (street text, city text);
+    CREATE TABLE person (pk int PRIMARY KEY, addr address);
+
+    -- Write two fields at different timestamps
+    UPDATE person USING TIMESTAMP 1000000 SET addr.street = '123 Main St' WHERE pk = 1;
+    UPDATE person USING TIMESTAMP 2000000 SET addr.city = 'Springfield' WHERE pk = 1;
+
+    -- WRITETIME(udt_column.field) returns the write timestamp of that specific UDT field
+    SELECT WRITETIME(addr.street), WRITETIME(addr.city) FROM person WHERE pk = 1;
+    -- Returns: 1000000 | 2000000
+
+    -- TTL(udt_column.field) returns the remaining TTL of that specific UDT field
+    UPDATE person USING TTL 3600 SET addr.street = 'Oak Ave' WHERE pk = 1;
+    SELECT TTL(addr.street) FROM person WHERE pk = 1;
+    -- Returns the remaining TTL in seconds for addr.street
 
 .. _where-clause:
 
@@ -128,7 +196,7 @@ The ``WHERE`` clause
 ~~~~~~~~~~~~~~~~~~~~
 
 The ``WHERE`` clause specifies which rows must be queried. It is composed of relations on the columns that are part of
-the ``PRIMARY KEY``.
+the ``PRIMARY KEY``, and relations can be joined only with ``AND`` (``OR`` and other logical operators are not supported).
 
 Not all relations are allowed in a query. For instance, non-equal relations (where ``IN`` is considered as an equal
 relation) on a partition key are not supported (see the use of the ``TOKEN`` method below to do non-equal queries on
@@ -188,6 +256,23 @@ The tuple notation may also be used for ``IN`` clauses on clustering columns::
     SELECT * FROM posts
      WHERE userid = 'john doe'
        AND (blog_title, posted_at) IN (('John''s Blog', '2012-01-01'), ('Extreme Chess', '2014-06-01'))
+
+This tuple notation is different from boolean grouping. For example, the following query is not supported::
+
+    SELECT * FROM users
+     WHERE (country = 'BR' AND state = 'SP')
+
+because parentheses are only allowed around a single relation, so this works: ``(country = 'BR') AND (state = 'SP')``, but this does not: ``(country = 'BR' AND state = 'SP')``.
+Similarly, an extended query of the form of::
+
+    SELECT * FROM users
+     WHERE (country = 'BR' AND state = 'SP')
+       OR (country = 'BR' AND state = 'RJ')
+
+won't work due to both: grouping boolean expressions and not supporting ``OR``, so when possible,
+rewrite such queries with ``IN`` on the varying column, for example
+``country = 'BR' AND state IN ('SP', 'RJ')``, or run multiple queries and merge
+the results client-side.
 
 The ``CONTAINS`` operator may only be used on collection columns (lists, sets, and maps). In the case of maps,
 ``CONTAINS`` applies to the map values. The ``CONTAINS KEY`` operator may only be used on map columns and applies to the

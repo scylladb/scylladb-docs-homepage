@@ -353,18 +353,11 @@
 </div>
 <p>may fail with the <strong>ReadTimeout</strong> error.</p>
 <p>COUNT() runs a full-scan query on all nodes, which might take a long time to finish. As a result, the count time may be greater than the ScyllaDB query timeout.
-One way to prevent that issue in ScyllaDB 4.4 or later is to increase the timeout for the query using the <a class="reference internal" href="../cql/dml/select.html#using-timeout"><span class="std std-ref">USING TIMEOUT</span></a> directive, for example:</p>
+One way to prevent that issue is to increase the timeout for the query using the <a class="reference internal" href="../cql/dml/select.html#using-timeout"><span class="std std-ref">USING TIMEOUT</span></a> directive, for example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="k">table</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="mf">120</span><span class="n">s</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>You can also get an <em>estimation</em> of the number <strong>of partitions</strong> (not rows) with <a class="reference internal" href="../operating-scylla/nodetool-commands/tablestats.html"><span class="doc">nodetool tablestats</span></a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<blockquote>
-<div><p>ScyllaDB 5.1 includes improvements to speed up the execution of SELECT COUNT(*) queries.
-To increase the count speed, we recommend upgrading to ScyllaDB 5.1 or later.</p>
-</div></blockquote>
-</div>
 </section>
 
                 </div>
@@ -540,13 +533,13 @@ To increase the count speed, we recommend upgrading to ScyllaDB 5.1 or later.</p
             
                 
                     <li>
-                        <a href="../../branch-2026.2/kb/count-all-rows.html">2026.2</a>
+                        <a href="../../stable/kb/count-all-rows.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../stable/kb/count-all-rows.html">2026.1</a>
+                        <a href="../../branch-2026.1/kb/count-all-rows.html">2026.1</a>
                     </li>
                 
             
@@ -581,12 +574,12 @@ To increase the count speed, we recommend upgrading to ScyllaDB 5.1 or later.</p
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>

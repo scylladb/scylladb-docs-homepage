@@ -17,6 +17,7 @@ CQL Reference
    secondary-indexes
    time-to-live
    functions
+   guardrails
    wasm
    json
    mv
@@ -46,6 +47,7 @@ It allows you to create keyspaces and tables, insert and query tables, and more.
   * :doc:`Data Types </cql/types>`
   * :doc:`Definitions </cql/definitions>`
   * :doc:`Global Secondary Indexes </cql/secondary-indexes>`
+  * :doc:`CQL Guardrails </cql/guardrails>`
   * :doc:`Expiring Data with Time to Live (TTL) </cql/time-to-live>`
   * :doc:`Functions </cql/functions>`
   * :doc:`JSON Support </cql/json>`

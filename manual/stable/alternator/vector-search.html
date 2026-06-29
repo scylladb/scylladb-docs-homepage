@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             A change in EPEL broke ScyllaDB Python Script | ScyllaDB Docs 
+             Alternator Vector Search | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../_static/img/favicon.ico" type="image/x-icon" />
@@ -26,7 +26,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/troubleshooting/python-error-no-module-named-yaml.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/alternator/vector-search.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -312,18 +312,12 @@
     </span>
     
         <span class="bread__item">
-            <a href="index.html" class="bread__highlight">
-                Troubleshooting ScyllaDB
+            <a href="alternator.html" class="bread__highlight">
+                Alternator: DynamoDB API in ScyllaDB
             </a>
         </span>
     
-        <span class="bread__item">
-            <a href="startup/index.html" class="bread__highlight">
-                ScyllaDB Startup
-            </a>
-        </span>
-    
-    <span class="bread__item bread__item--last">A change in EPEL broke ScyllaDB Python Script</span>
+    <span class="bread__item bread__item--last">Alternator Vector Search</span>
 </div>
                     </div>
                 
@@ -334,40 +328,410 @@
 
                 <div class="content-body"
                      
-                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/troubleshooting/python-error-no-module-named-yaml.rst"
+                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/alternator/vector-search.md"
                      >
                     
                         
                     
 
-                    <section id="a-change-in-epel-broke-scylladb-python-script">
-<h1>A change in EPEL broke ScyllaDB Python Script<a class="headerlink" href="#a-change-in-epel-broke-scylladb-python-script" title="Link to this heading">¶</a></h1>
-<section id="phenomena">
-<h2>Phenomena<a class="headerlink" href="#phenomena" title="Link to this heading">¶</a></h2>
-<p>When upgrading CentOS on a ScyllaDB node, ScyllaDB setup script, like scylla_prepare or scylla_setup fails with the following error:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-  <span class="n">File</span> <span class="s2">&quot;/sbin/scylla_setup&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">29</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">scylla_util</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-  <span class="n">File</span> <span class="s2">&quot;/usr/lib/scylla/scylla_util.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">31</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
- <span class="ne">ModuleNotFoundError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="s1">&#39;yaml&#39;</span>
+                    <section id="alternator-vector-search">
+<h1>Alternator Vector Search<a class="headerlink" href="#alternator-vector-search" title="Link to this heading">¶</a></h1>
+<div class="important admonition">
+<p class="admonition-title">Availability</p>
+<p>The Vector Search feature is only available in <a class="reference external" href="https://cloud.docs.scylladb.com/">ScyllaDB Cloud</a> - a fully managed DBaaS running ScyllaDB.</p>
+</div>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>Alternator vector search is a ScyllaDB extension to the DynamoDB-compatible
+API that enables <em>approximate nearest neighbor</em> (ANN) search on numeric
+vectors stored as item attributes.</p>
+<p>In a typical use case, each item in a table contains a high-dimensional
+embedding vector (e.g., produced by a machine-learning model), and a query
+asks for the <em>k</em> items whose stored vectors are closest to a given query
+vector. This kind of similarity search is a building block for
+recommendation engines, semantic text search, image retrieval, and other
+AI/ML workloads.</p>
+<p>Because this feature does not exist in Amazon DynamoDB, all applications
+that use it must be written specifically for Alternator.</p>
+<p>For a broader introduction to Vector Search concepts and terminology, see the
+<a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/vector-search-concepts.html">Vector Search Concepts</a>
+and
+<a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/vector-search-glossary.html">Vector Search Glossary</a>
+sections of the ScyllaDB Cloud documentation.</p>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The workflow has three steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Create</strong> a table (or update an existing one) with one or more
+<em>vector indexes</em>.</p></li>
+<li><p><strong>Write</strong> items that include the indexed vector attribute, just like any
+other list attribute.</p></li>
+<li><p><strong>Query</strong> using the <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter to retrieve the <em>k</em> nearest
+neighbors.</p></li>
+</ol>
+</section>
+<section id="api-extensions">
+<h2>API extensions<a class="headerlink" href="#api-extensions" title="Link to this heading">¶</a></h2>
+<section id="createtable-vectorindexes-parameter">
+<h3>CreateTable — VectorIndexes parameter<a class="headerlink" href="#createtable-vectorindexes-parameter" title="Link to this heading">¶</a></h3>
+<p>A new optional parameter <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> can be passed to <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>.
+It is a list of vector index definitions, each specifying:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexName</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Unique name for this vector index. Follows the same naming rules as table names: 3–192 characters, matching the regex <code class="docutils literal notranslate"><span class="pre">[a-zA-Z0-9._-]+</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code></p></td>
+<td><p>Structure</p></td>
+<td><p>Describes the attribute to index (see below).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Projection</span></code></p></td>
+<td><p>Structure</p></td>
+<td><p>Optional. Specifies which attributes are projected into the vector index (see below).</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>VectorAttribute fields:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AttributeName</span></code></p></td>
+<td><p>String</p></td>
+<td><p>The item attribute that holds the vector. It must not be a key column.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code></p></td>
+<td><p>Integer</p></td>
+<td><p>The fixed size of the vector (number of elements).</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projection fields:</strong></p>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">Projection</span></code> parameter is identical to the one used for DynamoDB
+GSI and LSI, and specifies which attributes are stored in the vector index and
+returned when <code class="docutils literal notranslate"><span class="pre">Select=ALL_PROJECTED_ATTRIBUTES</span></code> is used in a vector search query:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code></p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KEYS_ONLY</span></code></p></td>
+<td><p>Only the primary key attributes of the base table (hash key and range key if present) are projected into the index. This is the default when <code class="docutils literal notranslate"><span class="pre">Projection</span></code> is omitted.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ALL</span></code></p></td>
+<td><p>All table attributes are projected into the index. <em>(Not yet supported.)</em></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">INCLUDE</span></code></p></td>
+<td><p>The primary key attributes plus the additional non-key attributes listed in <code class="docutils literal notranslate"><span class="pre">NonKeyAttributes</span></code> are projected. <em>(Not yet supported.)</em></p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p><strong>Note:</strong> Currently only <code class="docutils literal notranslate"><span class="pre">ProjectionType=KEYS_ONLY</span></code> is implemented. Specifying
+<code class="docutils literal notranslate"><span class="pre">ProjectionType=ALL</span></code> or <code class="docutils literal notranslate"><span class="pre">ProjectionType=INCLUDE</span></code> returns a <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>.
+Since <code class="docutils literal notranslate"><span class="pre">KEYS_ONLY</span></code> is also the default, omitting <code class="docutils literal notranslate"><span class="pre">Projection</span></code> entirely is
+equivalent to specifying <code class="docutils literal notranslate"><span class="pre">{'ProjectionType':</span> <span class="pre">'KEYS_ONLY'}</span></code>.</p>
+</div></blockquote>
+<p>Example (using boto3):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
+    <span class="n">KeySchema</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;KeyType&#39;</span><span class="p">:</span> <span class="s1">&#39;HASH&#39;</span><span class="p">}],</span>
+    <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;AttributeType&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span><span class="p">}],</span>
+    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">&#39;PAY_PER_REQUEST&#39;</span><span class="p">,</span>
+    <span class="n">VectorIndexes</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;IndexName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;VectorAttribute&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="s1">&#39;Dimensions&#39;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+<span class="p">)</span>
 </pre></div>
 </div>
+<p><strong>Constraints:</strong></p>
+<ul class="simple">
+<li><p>A vector index may not share a name with another vector index, a GSI, or an LSI on the same table.</p></li>
+<li><p>The target attribute must not be a key column or an index key column.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> must be a positive integer up to the implementation maximum.</p></li>
+<li><p>Vector indexes require ScyllaDB to operate with tablets (not vnodes).</p></li>
+<li><p>Multiple vector indexes can be created on the same table in a single <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> call.</p></li>
+</ul>
 </section>
-<section id="problem">
-<h2>Problem<a class="headerlink" href="#problem" title="Link to this heading">¶</a></h2>
-<p>The source cause is a change in EPEL repository upgrade, breaking backward compatibility by moving from Python34 to Python36, and dropping PyYAML library in the process. ScyllaDB uses PyYAML in a few of its Python scripts.</p>
-</section>
-<section id="bypass">
-<h2>Bypass<a class="headerlink" href="#bypass" title="Link to this heading">¶</a></h2>
-<p>Install the python36 version of PyYAML</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>python36-PyYAML<span class="w"> </span>-y
+<hr class="docutils" />
+<section id="updatetable-vectorindexupdates-parameter">
+<h3>UpdateTable — VectorIndexUpdates parameter<a class="headerlink" href="#updatetable-vectorindexupdates-parameter" title="Link to this heading">¶</a></h3>
+<p>A new optional parameter <code class="docutils literal notranslate"><span class="pre">VectorIndexUpdates</span></code> can be passed to <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code>
+to add or remove a vector index after the table is created. At most one
+index operation (Create or Delete) may be requested per call.</p>
+<p>Each element of the list is an object with exactly one of the following keys:</p>
+<p><strong>Create:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;Create&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;VectorAttribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;AttributeName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Projection</span></code> field in the <code class="docutils literal notranslate"><span class="pre">Create</span></code> action is optional and accepts the same
+values as the <code class="docutils literal notranslate"><span class="pre">Projection</span></code> field in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> (see above).
+Currently only <code class="docutils literal notranslate"><span class="pre">ProjectionType=KEYS_ONLY</span></code> is supported; it is also the default
+when <code class="docutils literal notranslate"><span class="pre">Projection</span></code> is omitted.</p>
+<p><strong>Delete:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;Delete&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The same constraints as <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> apply.</p>
 </section>
-<section id="solution">
-<h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">¶</a></h2>
-<p>In future releases, we will provide a more robust solution by encapsulating Python as part of ScyllaDB Installation. More on this in the blog post <a class="reference external" href="https://www.scylladb.com/2019/02/14/the-complex-path-for-a-simple-portable-python-interpreter-or-snakes-on-a-data-plane/">The Complex Path for a Simple Portable Python Interpreter, or Snakes on a Data Plane</a>.</p>
+<hr class="docutils" />
+<section id="describetable-vectorindexes-in-the-response">
+<h3>DescribeTable — VectorIndexes in the response<a class="headerlink" href="#describetable-vectorindexes-in-the-response" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> (and <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s response) returns a <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code>
+field in the <code class="docutils literal notranslate"><span class="pre">TableDescription</span></code> object when the table has at least one
+vector index. The structure mirrors the <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> input: a list of
+objects each containing <code class="docutils literal notranslate"><span class="pre">IndexName</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code>
+(<code class="docutils literal notranslate"><span class="pre">AttributeName</span></code> + <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code>), and <code class="docutils literal notranslate"><span class="pre">Projection</span></code> (<code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code>).
+Currently <code class="docutils literal notranslate"><span class="pre">Projection</span></code> always contains <code class="docutils literal notranslate"><span class="pre">{&quot;ProjectionType&quot;:</span> <span class="pre">&quot;KEYS_ONLY&quot;}</span></code>
+because that is the only supported projection type.</p>
+<p>Each vector index entry also includes status fields that mirror the standard
+behavior of <code class="docutils literal notranslate"><span class="pre">GlobalSecondaryIndexes</span></code> in DynamoDB:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code></p></td>
+<td><p>String</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code> when the vector store has finished building the index and it is fully operational. <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> while the index is still being built (the vector store service is still initializing or has not yet been discovered).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Backfilling</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p>Present and <code class="docutils literal notranslate"><span class="pre">true</span></code> only when <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> and the vector store is actively performing the initial scan of the base table (bootstrapping). When the initial scan is not yet started, or has already completed, this field is absent.</p></td>
+</tr>
+</tbody>
+</table>
+<p>When creating a vector index on a non-empty table (via <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code>), data
+already in the table is picked up by the vector store through a full-table
+scan (backfill). During this period <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> will be <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Backfilling</span></code> will be <code class="docutils literal notranslate"><span class="pre">true</span></code>. Once the scan completes the vector store
+transitions to monitoring CDC for ongoing changes, and <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code>.</p>
+<p><strong>Type enforcement before and after index creation differs:</strong></p>
+<ul class="simple">
+<li><p><strong>Pre-existing items:</strong> when the backfill scan encounters an item whose
+indexed attribute is not a list of exactly the right number of numbers
+(e.g., it is a string, a list of the wrong length, or contains
+non-numeric elements), that item is silently skipped and not indexed.
+The item remains in the base table unchanged.</p></li>
+<li><p><strong>New writes once the index exists:</strong> any attempt to write a value to the
+indexed attribute that is not a list of exactly <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> numbers —
+where each number is representable as a 32-bit float — is rejected with a
+<code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>. This applies to <code class="docutils literal notranslate"><span class="pre">PutItem</span></code>, <code class="docutils literal notranslate"><span class="pre">UpdateItem</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code>. A missing value for the indexed attribute is always
+allowed; such items simply are not indexed.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Important:</strong> Applications must wait until <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code> before
+issuing <code class="docutils literal notranslate"><span class="pre">Query</span></code> requests against a vector index. Queries on a vector index
+whose <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is still <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> may fail. This applies both when
+adding a vector index to an existing table via <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> <strong>and</strong> when
+creating a new table with a <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> — even
+though the new table starts empty, the vector store still needs a short
+initialization period before it can serve queries.</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="query-vectorsearch-parameter">
+<h3>Query — VectorSearch parameter<a class="headerlink" href="#query-vectorsearch-parameter" title="Link to this heading">¶</a></h3>
+<p>To perform a nearest-neighbor search, pass the <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter
+to <code class="docutils literal notranslate"><span class="pre">Query</span></code>. When this parameter is present the request is interpreted as a
+vector search rather than a standard key-condition query.</p>
+<p><strong>VectorSearch fields:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QueryVector</span></code></p></td>
+<td><p>AttributeValue (list <code class="docutils literal notranslate"><span class="pre">L</span></code>)</p></td>
+<td><p>The query vector as a DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code> of type <code class="docutils literal notranslate"><span class="pre">L</span></code>. Every element must be of type <code class="docutils literal notranslate"><span class="pre">N</span></code> (number).</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.1&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;-0.3&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.7&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">]},</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Requirements:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexName</span></code></p></td>
+<td><p>Required. Must name a vector index on this table (not a GSI or LSI).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VectorSearch.QueryVector</span></code></p></td>
+<td><p>Required. A DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code> of type <code class="docutils literal notranslate"><span class="pre">L</span></code>; all elements must be of type <code class="docutils literal notranslate"><span class="pre">N</span></code> (number).</p></td>
+</tr>
+<tr class="row-even"><td><p>QueryVector length</p></td>
+<td><p>Must match the <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> configured for the named vector index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Limit</span></code></p></td>
+<td><p>Required. Defines <em>k</em> — how many nearest neighbors to return. Must be a positive integer.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Differences from standard Query:</strong></p>
+<p>Vector search reinterprets several standard <code class="docutils literal notranslate"><span class="pre">Query</span></code> parameters in a fundamentally
+different way, and explicitly rejects others that have no meaningful interpretation:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Limit</span></code> means top-k, not page size.</strong> In a standard Query, <code class="docutils literal notranslate"><span class="pre">Limit</span></code> caps
+the number of items examined per page, and you page through results with
+<code class="docutils literal notranslate"><span class="pre">ExclusiveStartKey</span></code>. In vector search, <code class="docutils literal notranslate"><span class="pre">Limit</span></code> defines <em>k</em>: the ANN
+algorithm runs once and returns exactly the <em>k</em> nearest neighbors. There
+is no natural “next page” — each page would require a full re-run of the
+search — so <strong><code class="docutils literal notranslate"><span class="pre">ExclusiveStartKey</span></code> is rejected</strong>.</p></li>
+<li><p><strong>Results are ordered by vector distance, not by sort key.</strong> A standard
+Query returns rows in sort-key order; <code class="docutils literal notranslate"><span class="pre">ScanIndexForward=false</span></code> reverses
+that order. Vector search always returns results ordered by their distance
+to <code class="docutils literal notranslate"><span class="pre">QueryVector</span></code> (nearest first). Having <code class="docutils literal notranslate"><span class="pre">ScanIndexForward</span></code> specify sort-key
+direction has no meaning here, so <strong><code class="docutils literal notranslate"><span class="pre">ScanIndexForward</span></code> is rejected</strong>.</p></li>
+<li><p><strong>Eventual consistency only.</strong> The vector store is an external service fed
+asynchronously from ScyllaDB via CDC. Like GSIs, vector indexes can never
+reflect writes instantly, so strongly-consistent reads are impossible.
+<strong><code class="docutils literal notranslate"><span class="pre">ConsistentRead=true</span></code> is rejected.</strong></p></li>
+<li><p><strong>No key condition.</strong> A standard Query requires a <code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code>
+to select which partition to read. Vector search queries the vector store
+globally across all partitions of the table. <code class="docutils literal notranslate"><span class="pre">KeyConditions</span></code> and
+<code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code> are therefore not applicable and are silently
+ignored. (Local vector indexes, which would scope the search to a single
+partition and use <code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code>, are not yet supported.)</p></li>
+</ul>
+<p><strong>Select parameter:</strong></p>
+<p>The standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Select</span></code> parameter is supported for vector search queries
+and controls which attributes are returned for each matching item:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">Select</span></code> value</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code> (default)</p></td>
+<td><p>Return only the attributes projected to the vector index. Currently, only the primary key attributes (hash key, and range key if present) are projected; support for configuring additional projected attributes is not yet implemented. Note that the vector attribute itself is <strong>not</strong> included: the vector store may not retain the original floating-point values (e.g., it may quantize them), so the authoritative copy lives only in the base table. This is the most efficient option because Scylla can return the results directly from the vector store without an additional fetch from the base table.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ALL_ATTRIBUTES</span></code></p></td>
+<td><p>Return all attributes of each matching item, fetched from the base table.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code></p></td>
+<td><p>Return only the attributes named in <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> or <code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">COUNT</span></code></p></td>
+<td><p>Return only the count of matching items; no <code class="docutils literal notranslate"><span class="pre">Items</span></code> list is included in the response.</p></td>
+</tr>
+</tbody>
+</table>
+<p>When neither <code class="docutils literal notranslate"><span class="pre">Select</span></code> nor <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code>/<code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code> is specified,
+<code class="docutils literal notranslate"><span class="pre">Select</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code>.  When <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> or
+<code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code> is present without an explicit <code class="docutils literal notranslate"><span class="pre">Select</span></code>, it implies
+<code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code>.  Using <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> or <code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code>
+together with an explicit <code class="docutils literal notranslate"><span class="pre">Select</span></code> other than <code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> is an error.</p>
+<p><strong>Note on performance:</strong> Unlike a DynamoDB LSI, a vector index allows you to
+read non-projected attributes (e.g., with <code class="docutils literal notranslate"><span class="pre">ALL_ATTRIBUTES</span></code> or
+<code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> requesting a non-key column).  However, doing so requires
+an additional read from the base table for each result — similar to reading
+through a secondary index (rather than a materialized view) in CQL — and is
+therefore significantly slower than returning only projected attributes with
+<code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code>.  For latency-sensitive applications, prefer
+<code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code> or limiting <code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> to key columns.</p>
+<p><strong>FilterExpression:</strong></p>
+<p>Vector search supports <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> for post-filtering results. This
+works the same way as <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> on a standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Query</span></code>: after
+the ANN search, the filter is applied to each candidate item and only matching
+items are returned.</p>
+<p><strong>Important:</strong> filtering happens <em>after</em> the <code class="docutils literal notranslate"><span class="pre">Limit</span></code> nearest neighbors have
+already been selected by the vector index. If the filter discards some of
+those candidates, the response may contain <strong>fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items</strong>. The
+server does not automatically fetch additional neighbors to replace filtered-out
+items. This is identical to how <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> interacts with <code class="docutils literal notranslate"><span class="pre">Limit</span></code> in a
+standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Query</span></code>.</p>
+<p>The response always includes two count fields:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code></p></td>
+<td><p>The number of candidates returned by the vector index (always equal to <code class="docutils literal notranslate"><span class="pre">Limit</span></code>, unless the table contains fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Count</span></code></p></td>
+<td><p>The number of items that passed the <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> (or equal to <code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code> when no filter is present).</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interaction with <code class="docutils literal notranslate"><span class="pre">Select</span></code>:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Select=ALL_ATTRIBUTES</span></code>: Each candidate item is fetched from the
+base table, the filter is evaluated against all its attributes, and only
+matching items are returned. <code class="docutils literal notranslate"><span class="pre">Count</span></code> reflects the number of items that passed
+the filter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Select=SPECIFIC_ATTRIBUTES</span></code>: Each candidate item is fetched from the base
+table — including any attributes needed by the filter expression, even if
+those attributes are not listed in <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> — and the filter is
+applied. Only the projected attributes are returned in the response; filter
+attributes that were not requested are not included in the returned items.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code>: The candidate items are still fetched from the base table and
+the filter is evaluated for each one, but no <code class="docutils literal notranslate"><span class="pre">Items</span></code> list is returned. <code class="docutils literal notranslate"><span class="pre">Count</span></code>
+reflects the number of items that passed the filter; <code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code> is the
+total number of candidates examined. This is useful for counting matches
+without transferring item data to the client.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Select=ALL_PROJECTED_ATTRIBUTES</span></code> (default): When no filter is present this is the most
+efficient mode — results are returned directly from the vector store without
+any base-table reads. When a <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> is present, however, the full
+item must be fetched from the base table to evaluate the filter, and only the
+projected (key) attributes are returned for items that pass.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Note:</strong> <code class="docutils literal notranslate"><span class="pre">QueryFilter</span></code> (the legacy non-expression filter API) is <strong>not</strong>
+supported for vector search queries and will be rejected with a
+<code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>. Use <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> instead.</p>
+</div></blockquote>
+</section>
 </section>
 </section>
 
@@ -403,7 +767,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page A change in EPEL broke ScyllaDB Python Script&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/troubleshooting/python-error-no-module-named-yaml%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator Vector Search&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/alternator/vector-search%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -438,21 +802,21 @@
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="scylla-wont-start.html">
+            <a class="navigation__link" href="network.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />ScyllaDB will not Start
+                    <span class="colored">PREVIOUS</span> <br />Reducing network costs in Alternator
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="cluster/index.html">
+            <a class="navigation__link" href="../features/index.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Cluster and Node
+                    <span class="colored">NEXT</span> <br />Features
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -472,14 +836,14 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page A change in EPEL broke ScyllaDB Python Script&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/troubleshooting/python-error-no-module-named-yaml%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator Vector Search&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/alternator/vector-search%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/troubleshooting/python-error-no-module-named-yaml.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/alternator/vector-search.md"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -491,11 +855,16 @@
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">A change in EPEL broke ScyllaDB Python Script</a><ul>
-<li><a class="reference internal" href="#phenomena">Phenomena</a></li>
-<li><a class="reference internal" href="#problem">Problem</a></li>
-<li><a class="reference internal" href="#bypass">Bypass</a></li>
-<li><a class="reference internal" href="#solution">Solution</a></li>
+<li><a class="reference internal" href="#">Alternator Vector Search</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#api-extensions">API extensions</a><ul>
+<li><a class="reference internal" href="#createtable-vectorindexes-parameter">CreateTable — VectorIndexes parameter</a></li>
+<li><a class="reference internal" href="#updatetable-vectorindexupdates-parameter">UpdateTable — VectorIndexUpdates parameter</a></li>
+<li><a class="reference internal" href="#describetable-vectorindexes-in-the-response">DescribeTable — VectorIndexes in the response</a></li>
+<li><a class="reference internal" href="#query-vectorsearch-parameter">Query — VectorSearch parameter</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -544,7 +913,7 @@
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.1
+                2026.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -552,43 +921,43 @@
             
                 
                     <li>
-                        <a href="../../master/index.html">master</a>
+                        <a href="../../master/alternator/vector-search.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2026.2/index.html">2026.2</a>
+                        <a href="vector-search.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="python-error-no-module-named-yaml.html">2026.1</a>
+                        <a href="../../branch-2026.1/index.html">2026.1</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.4/troubleshooting/python-error-no-module-named-yaml.html">2025.4</a>
+                        <a href="../../branch-2025.4/index.html">2025.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.3/troubleshooting/python-error-no-module-named-yaml.html">2025.3</a>
+                        <a href="../../branch-2025.3/index.html">2025.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.2/troubleshooting/python-error-no-module-named-yaml.html">2025.2</a>
+                        <a href="../../branch-2025.2/index.html">2025.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../branch-2025.1/troubleshooting/python-error-no-module-named-yaml.html">2025.1</a>
+                        <a href="../../branch-2025.1/index.html">2025.1</a>
                     </li>
                 
             
@@ -599,12 +968,12 @@
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -616,7 +985,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
+<li class="toctree-l3"><a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -664,9 +1033,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
-<li class="toctree-l3"><a class="reference internal" href="password-reset.html">Reset Authenticator Password</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
@@ -705,7 +1074,6 @@
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
@@ -747,6 +1115,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cql/secondary-indexes.html">Global Secondary Indexes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/guardrails.html">CQL Guardrails</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
@@ -755,11 +1124,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../alternator/alternator.html">Alternator: DynamoDB API in ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2"><a class="reference internal" href="../alternator/getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="alternator.html">Alternator: DynamoDB API in ScyllaDB</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting Started With ScyllaDB Alternator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new-apis.html">Alternator-specific APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Alternator Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -809,57 +1179,56 @@
 <li class="toctree-l2"><a class="reference internal" href="../architecture/zero-token-nodes.html">Zero-token Nodes</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Troubleshooting ScyllaDB</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l2 has-children"><a class="reference internal" href="support/index.html">Errors and Support</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="report-scylla-problem.html">Report a ScyllaDB problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="error-messages/index.html">Error Messages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="log-level.html">Change Log Level</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting ScyllaDB</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/support/index.html">Errors and Support</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/report-scylla-problem.html">Report a ScyllaDB problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/error-messages/index.html">Error Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/log-level.html">Change Log Level</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="startup/index.html">ScyllaDB Startup</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="change-ownership.html">Ownership Problems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scylla-wont-start.html">ScyllaDB will not Start</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">ScyllaDB Python Script broken</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/startup/index.html">ScyllaDB Startup</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/change-ownership.html">Ownership Problems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/scylla-wont-start.html">ScyllaDB will not Start</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="handling-node-failures.html">Handling Node Failures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="failed-add-remove-replace.html">Failure to Add, Remove, or Replace a Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="failed-decommission.html">Failed Decommission Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="timeouts.html">Cluster Timeouts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="node-joined-without-any-data.html">Node Joined With No Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nodetool-nullpointerexception.html">NullPointerException</a></li>
-<li class="toctree-l3"><a class="reference internal" href="failed-schema-sync.html">Failed Schema Sync</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/handling-node-failures.html">Handling Node Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/failed-add-remove-replace.html">Failure to Add, Remove, or Replace a Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/failed-decommission.html">Failed Decommission Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/timeouts.html">Cluster Timeouts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/node-joined-without-any-data.html">Node Joined With No Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/nodetool-nullpointerexception.html">NullPointerException</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/failed-schema-sync.html">Failed Schema Sync</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="large-partition-table.html">ScyllaDB Large Partitions Table</a></li>
-<li class="toctree-l3"><a class="reference internal" href="large-rows-large-cells-tables.html">ScyllaDB Large Rows and Cells Table</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debugging-large-partition.html">Large Partitions Hunting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="failed-update-schema.html">Failure to Update the Schema</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/modeling/index.html">Data Modeling</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/large-partition-table.html">ScyllaDB Large Partitions Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/large-rows-large-cells-tables.html">ScyllaDB Large Rows and Cells Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/debugging-large-partition.html">Large Partitions Hunting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/failed-update-schema.html">Failure to Update the Schema</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="space-up.html">Space Utilization Increasing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="drop-table-space-up.html">Disk Space is not Reclaimed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sstable-corruption.html">SSTable Corruption Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pointless-compactions.html">Pointless Compactions</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/storage/index.html">Data Storage and SSTables</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/space-up.html">Space Utilization Increasing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/drop-table-space-up.html">Disk Space is not Reclaimed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/sstable-corruption.html">SSTable Corruption Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/pointless-compactions.html">Pointless Compactions</a></li>
 <li class="toctree-l3"><a class="reference external" href="https://monitoring.docs.scylladb.com/stable/use-monitoring/advisor/heavyCompaction.html">Limiting Compaction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="time-zone.html">Time Range Query Fails</a></li>
-<li class="toctree-l3"><a class="reference internal" href="copy-from-failed.html">COPY FROM Fails</a></li>
-<li class="toctree-l3"><a class="reference internal" href="clients-table.html">CQL Connection Table</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/CQL/index.html">CQL</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/time-zone.html">Time Range Query Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/copy-from-failed.html">COPY FROM Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/clients-table.html">CQL Connection Table</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="manager-monitoring-integration.html">Manager and Monitoring integration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reverse-dns-sshd.html">Manager lists healthy nodes as down</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/monitor/index.html">ScyllaDB Monitor and Manager</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/manager-monitoring-integration.html">Manager and Monitoring integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/reverse-dns-sshd.html">Manager lists healthy nodes as down</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoremove-ubuntu.html">Removing ScyllaDB on Ubuntu breaks system packages</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/install-remove/index.html">Installation and Removal</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/autoremove-ubuntu.html">Removing ScyllaDB on Ubuntu breaks system packages</a></li>
 </ul>
 </li>
 </ul>
@@ -880,7 +1249,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>

@@ -170,4 +170,12 @@ Expiring Data
 ^^^^^^^^^^^^^
 In order to prevent stale data from appearing, all rows in the ``system.large_rows`` and ``system.large_cells`` tables are inserted with Time To Live (TTL) equal to 30 days.
 
+Virtual Tables
+^^^^^^^^^^^^^^
+
+Starting with ScyllaDB 2026.2, ``system.large_rows`` and ``system.large_cells``
+are implemented as virtual tables that read from SSTable metadata. See
+:ref:`large-data-virtual-tables` for details on the
+``LARGE_DATA_VIRTUAL_TABLES`` feature and upgrade considerations.
+
 .. include:: /troubleshooting/_common/ts-return.rst

@@ -146,6 +146,52 @@ AWS Security Token Service (STS) or the EC2 Instance Metadata Service.
    - When set, these values are used by the S3 client to sign requests.
    - If not set, requests are sent unsigned, which may not be accepted by all servers.
 
+.. _admin-oci-object-storage:
+
+Using Oracle OCI Object Storage
+=================================
+
+Oracle Cloud Infrastructure (OCI) Object Storage is compatible with the Amazon
+S3 API, so ScyllaDB can use it without any special configuration beyond
+specifying the OCI S3-compatible endpoint.
+
+**Endpoint URL format**
+
+OCI S3-compatible endpoint URLs follow this pattern:
+
+.. code-block:: none
+
+   https://<namespace>.compat.objectstorage.<region>.oci.customer-oci.com:443
+
+Where:
+
+* ``<namespace>`` is your OCI Object Storage namespace.
+* ``<region>`` is the OCI region identifier, e.g. ``us-ashburn-1``.
+
+**Credentials**
+
+OCI does not expose an instance metadata endpoint compatible with AWS STS/EC2,
+so credentials **must** be supplied explicitly via environment variables. You
+need to create a Customer Secret Key in the OCI Console and set:
+
+.. code-block:: bash
+
+   export AWS_ACCESS_KEY_ID=<customer_secret_key_access_key>
+   export AWS_SECRET_ACCESS_KEY=<customer_secret_key_secret>
+
+.. note::
+
+   The ``iam_role_arn`` field is specific to AWS IAM and should be omitted
+   when configuring an OCI endpoint.
+
+**Configuration example**
+
+.. code:: yaml
+
+   object_storage_endpoints:
+     - name: https://idedxcgnkfkt.compat.objectstorage.us-ashburn-1.oci.customer-oci.com:443
+       aws_region: us-ashburn-1
+
 .. _admin-compression:
 
 Compression
@@ -181,6 +227,7 @@ internode_compression controls whether traffic between nodes is compressed.
 
 * all  - all traffic is compressed.
 * dc   - traffic between different datacenters is compressed.
+* rack - traffic between different racks is compressed.
 * none - nothing is compressed (default).
 
 Configuring TLS/SSL in scylla.yaml

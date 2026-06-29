@@ -209,6 +209,39 @@
                "parameters":[]
             }
          ]
+      },
+      {
+         "path":"/system/chosen_sstable_version",
+         "operations":[
+            {
+               "method":"GET",
+               "summary":"Get sstable version currently chosen for use in new sstables",
+               "type":"string",
+               "nickname":"get_chosen_sstable_version",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[]
+            }
+         ]
+      },
+      {
+         "path":"/system/shard_to_numa_node_mapping",
+         "operations":[
+            {
+               "method":"GET",
+               "summary":"Get the shard-to-NUMA-node mapping. The nth element is the NUMA node ID of the nth shard.",
+               "type":"array",
+               "items":{
+                  "type":"long"
+               },
+               "nickname":"get_shard_to_numa_node_mapping",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[]
+            }
+         ]
       }
    ]
 }

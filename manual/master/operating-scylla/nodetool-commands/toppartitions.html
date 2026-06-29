@@ -378,26 +378,13 @@
 <td><p>The table name</p></td>
 </tr>
 <tr class="row-even"><td><p>duration</p></td>
-<td><p>The duration in milliseconds</p></td>
+<td><p>The duration in milliseconds (requires a <code class="docutils literal notranslate"><span class="pre">-d</span></code> prefix)</p></td>
 </tr>
-</tbody>
-</table>
-<p>Additional parameters from ScyllaDB 4.6</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Parameter</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>ks-filters</p></td>
+<tr class="row-odd"><td><p>ks-filters</p></td>
 <td><p>List of keyspaces</p></td>
 </tr>
-<tr class="row-odd"><td><p>cf-filters</p></td>
+<tr class="row-even"><td><p>cf-filters</p></td>
 <td><p>List of Tables (Column Families)</p></td>
-</tr>
-<tr class="row-even"><td><p>duration</p></td>
-<td><p>The duration in milliseconds</p></td>
 </tr>
 <tr class="row-odd"><td><p>capacity</p></td>
 <td><p>The capacity of the sampler; higher values increase accuracy at the cost of memory (default 256 keys).</p></td>
@@ -411,7 +398,7 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>toppartitions<span class="w"> </span>nba<span class="w"> </span>team_roster<span class="w"> </span><span class="m">5000</span>
 </pre></div>
 </div>
-<p>For Example (Starting from ScyllaDB 4.6):</p>
+<p>Additional examples:</p>
 <ul class="simple">
 <li><p>listing the top partitions from <em>all</em> tables in <em>all</em> keyspaces <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">toppartitions</span></code></p></li>
 <li><p>listing the top partitions for the last 1000 ms <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">toppartitions</span> <span class="pre">-d</span> <span class="pre">1000</span></code></p></li>
@@ -419,10 +406,6 @@
 <li><p>listing the top partitions from all tables from a list of keyspaces <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">toppartitions</span> <span class="pre">--ks-filters</span> <span class="pre">ks,system</span></code></p></li>
 <li><p>combining lists of keyspaces and tables <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">toppartitions</span> <span class="pre">--ks-filters</span> <span class="pre">ks</span> <span class="pre">--cf-filters</span> <span class="pre">system:local</span></code></p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In ScyllaDB 4.6, <strong>duration</strong> parameter requires a <em>-d</em> prefix</p>
-</div>
 <p>Example output:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>WRITES<span class="w"> </span>Sampler:
 <span class="w">  </span>Cardinality:<span class="w"> </span>~5<span class="w"> </span><span class="o">(</span><span class="m">256</span><span class="w"> </span>capacity<span class="o">)</span>
@@ -461,7 +444,7 @@ READS<span class="w"> </span>Sampler:
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Partition</p></td>
-<td><p>The Partition Key, prefixed by the Keyspace and table (ks:cf) for ScyllaDB 4.6 and later</p></td>
+<td><p>The Partition Key, prefixed by the Keyspace and table (ks:cf)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Count</p></td>
 <td><p>The number of operations of the specified type that occurred during the specified time period</p></td>
@@ -683,13 +666,13 @@ the <code class="docutils literal notranslate"><span class="pre">--capacity</spa
             
                 
                     <li>
-                        <a href="../../../branch-2026.2/operating-scylla/nodetool-commands/toppartitions.html">2026.2</a>
+                        <a href="../../../stable/operating-scylla/nodetool-commands/toppartitions.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../stable/operating-scylla/nodetool-commands/toppartitions.html">2026.1</a>
+                        <a href="../../../branch-2026.1/operating-scylla/nodetool-commands/toppartitions.html">2026.1</a>
                     </li>
                 
             
@@ -724,12 +707,12 @@ the <code class="docutils literal notranslate"><span class="pre">--capacity</spa
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>

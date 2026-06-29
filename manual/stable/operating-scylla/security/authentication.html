@@ -361,7 +361,7 @@
 </pre></div>
 </div>
 </li>
-<li><p>Restart  ScyllaDB.</p>
+<li><p>Restart ScyllaDB.</p>
 <blockquote>
 <div><div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-0-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-0-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-0-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>scylla-server
@@ -374,18 +374,12 @@
 </div></div>
 </div></blockquote>
 </li>
-<li><p>Start cqlsh with the default superuser username and password.</p>
+<li><p>Start cqlsh over the maintenance socket and create a new superuser. See <a class="reference internal" href="create-superuser.html#create-superuser-using-maintenance-socket"><span class="std std-ref">Setting Up a Superuser Using the Maintenance Socket</span></a> for instructions.</p>
 <blockquote>
-<div><div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">-</span><span class="n">u</span> <span class="n">cassandra</span> <span class="o">-</span><span class="n">p</span> <span class="n">cassandra</span>
+<div><div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span> <span class="o">&lt;</span><span class="n">maintenance_socket_path</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div></blockquote>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Before proceeding  to the next step, we recommend creating a custom superuser
-to improve security.
-See <a class="reference internal" href="create-superuser.html"><span class="doc">Creating a Custom Superuser</span></a> for instructions.</p>
-</div>
 </li>
 <li><p>If you want to create users and roles, continue to <a class="reference internal" href="enable-authorization.html"><span class="doc">Enable Authorization</span></a>.</p></li>
 </ol>
@@ -432,7 +426,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Enable Authentication&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/security/authentication%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Enable Authentication&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/security/authentication%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -501,7 +495,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Enable Authentication&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/operating-scylla/security/authentication%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Enable Authentication&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/security/authentication%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -571,7 +565,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.1
+                2026.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -585,13 +579,13 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
             
                 
                     <li>
-                        <a href="../../../branch-2026.2/operating-scylla/security/authentication.html">2026.2</a>
+                        <a href="authentication.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="authentication.html">2026.1</a>
+                        <a href="../../../branch-2026.1/operating-scylla/security/authentication.html">2026.1</a>
                     </li>
                 
             
@@ -626,12 +620,12 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -643,7 +637,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l2"><a class="reference internal" href="../../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/os-support.html">OS Support</a></li>
+<li class="toctree-l3"><a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -691,7 +685,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l3"><a class="reference internal" href="security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enable-authorization.html">Enable Authorization</a></li>
@@ -732,7 +726,6 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../upgrade/about-upgrade.html">About Upgrade</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
@@ -774,6 +767,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l2"><a class="reference internal" href="../../cql/secondary-indexes.html">Global Secondary Indexes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/guardrails.html">CQL Guardrails</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
@@ -787,6 +781,7 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/vector-search.html">Alternator Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -846,7 +841,6 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/startup/index.html">ScyllaDB Startup</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/change-ownership.html">Ownership Problems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/scylla-wont-start.html">ScyllaDB will not Start</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -907,7 +901,6 @@ See <a class="reference internal" href="create-superuser.html"><span class="doc"
 <li class="toctree-l2"><a class="reference internal" href="../../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>

@@ -231,6 +231,46 @@ Add New DC
 
          Consider :ref:`upgrading rf_rack_valid_keyspaces option to enforce_rack_list option <keyspace-rf-rack-valid-to-enforce-rack-list>` to ensure all tablet keyspaces use rack lists.
 
+   If the keyspace uses rack list replication, update the replication factor in one ``ALTER KEYSPACE`` statement, under the following rules:
+      * Existing datacenters must keep their current replication factor.
+      * A new datacenter can be assigned a replication factor (**0 to N**).
+      * An existing datacenter can be removed (**N to 0**).
+
+   .. warning::
+
+      While adding a new datacenter and altering keyspaces, do **not** perform any reads or writes that involve the new datacenter.
+      In particular, avoid using global consistency levels (such as ``ALL``, ``EACH_QUORUM``) that would include the new datacenter in the operation.
+      Use ``LOCAL_*`` consistency levels (e.g., ``LOCAL_QUORUM``, ``LOCAL_ONE``) until the new datacenter is fully operational.
+
+   Before
+
+   .. code-block:: cql
+
+      DESCRIBE KEYSPACE mykeyspace4;
+
+      CREATE KEYSPACE mykeyspace4 WITH replication = { 'class' : 'NetworkTopologyStrategy', '<existing_dc>' : ['<existing_rack1>', '<existing_rack2>', '<existing_rack3>']} AND tablets = { 'enabled': true };
+
+   The following is **not** allowed because it changes the replication factor of ``<existing_dc>`` (adds ``<existing_rack4>``) and adds ``<new_dc>`` in the same statement:
+
+   .. code-block:: cql
+
+      ALTER KEYSPACE mykeyspace4 WITH replication = { 'class' : 'NetworkTopologyStrategy', '<existing_dc>' : ['<existing_rack1>', '<existing_rack2>', '<existing_rack3>', '<existing_rack4>'], '<new_dc>' : ['<new_rack1>', '<new_rack2>', '<new_rack3>']} AND tablets = { 'enabled': true };
+
+   Add all the nodes to the new datacenter and then:
+
+   .. code-block:: cql
+
+      ALTER KEYSPACE mykeyspace4 WITH replication = { 'class' : 'NetworkTopologyStrategy', '<existing_dc>' : ['<existing_rack1>', '<existing_rack2>', '<existing_rack3>'], '<new_dc>' : ['<new_rack1>', '<new_rack2>', '<new_rack3>']} AND tablets = { 'enabled': true };
+
+   After
+
+   .. code-block:: cql
+
+      DESCRIBE KEYSPACE mykeyspace4;
+      CREATE KEYSPACE mykeyspace4 WITH REPLICATION = {'class': 'NetworkTopologyStrategy', '<existing_dc>' : ['<existing_rack1>', '<existing_rack2>', '<existing_rack3>'], '<new_dc>' : ['<new_rack1>', '<new_rack2>', '<new_rack3>']} AND tablets = { 'enabled': true };
+
+   You can abort the keyspace alteration using :doc:`Task manager </operating-scylla/admin-tools/task-manager>`.
+
 #. If any vnode keyspace was altered, run ``nodetool rebuild`` on each node in the new datacenter, specifying the existing datacenter name in the rebuild command.
 
    For example:

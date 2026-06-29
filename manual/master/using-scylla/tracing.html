@@ -478,8 +478,8 @@ session_id                            | event_id                             | a
 <li><p><code class="docutils literal notranslate"><span class="pre">duration</span></code>:  the total duration of this tracing session in microseconds</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: this map contains string pairs that describe the query. This may include <em>query string</em> or <em>consistency level</em>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">request</span></code>: a short string describing the current query, like “Execute CQL3 query”.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">request_size</span></code>: size of the request (available from ScyllaDB 3.0).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">response_size</span></code>: size of the response (available from ScyllaDB 3.0).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">request_size</span></code>: size of the request.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">response_size</span></code>: size of the response.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">started_at</span></code>: a timestamp taken when the tracing session has begun.</p></li>
 </ul>
 </section>
@@ -624,7 +624,7 @@ All requests are going to have a long latency because their latency will consist
 Therefore all of them are likely going to hit the Slow Query threshold and get logged.</p>
 <p>If queueing is caused by some particularly heavy request, we would like to be able to filter this request from those that got logged due to a long queueing.
 We have recently added tools that would help us do that:</p>
-<p>New columns were added to <a class="reference external" href="#sessions-table-column-descriptions">system_traces.sessions</a> (available from ScyllaDB 3.0)</p>
+<p>New columns were added to <a class="reference external" href="#sessions-table-column-descriptions">system_traces.sessions</a></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">request_size</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">response_size</span></code></p></li>
@@ -904,13 +904,13 @@ COPY system_traces.events TO &#39;/tmp/tracing/events.out&#39; WITH HEADER = TRU
             
                 
                     <li>
-                        <a href="../../branch-2026.2/using-scylla/tracing.html">2026.2</a>
+                        <a href="../../stable/using-scylla/tracing.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../stable/using-scylla/tracing.html">2026.1</a>
+                        <a href="../../branch-2026.1/using-scylla/tracing.html">2026.1</a>
                     </li>
                 
             
@@ -945,12 +945,12 @@ COPY system_traces.events TO &#39;/tmp/tracing/events.out&#39; WITH HEADER = TRU
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>

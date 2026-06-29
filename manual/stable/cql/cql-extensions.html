@@ -694,6 +694,76 @@ it also describes authentication/authorization and service levels. Additionally,
 statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span> <span class="pre">AND</span> <span class="pre">PASSWORDS</span></code>, which also includes the information about hashed passwords of the roles.</p>
 <p>For more details, see <a class="reference internal" href="describe-schema.html"><span class="std std-doc">the article on DESCRIBE SCHEMA</span></a>.</p>
 </section>
+<section id="per-row-ttl">
+<h2>Per-row TTL<a class="headerlink" href="#per-row-ttl" title="Link to this heading">¶</a></h2>
+<p>CQL’s traditional time-to-live (TTL) feature attaches an expiration time to
+each cell - i.e., each value in each column. For example, the statement:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UPDATE</span> <span class="n">tbl</span> <span class="n">USING</span> <span class="n">TTL</span> <span class="mi">60</span> <span class="n">SET</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>Sets a new value for the column <code class="docutils literal notranslate"><span class="pre">x</span></code> in row <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">2</span></code>, and asks for this value to
+expire in 60 seconds. When a row is updated incrementally, with different
+columns set at different times, this can result in different pieces of the
+row expiring at different times. Applications rarely want partially-expired
+rows, so they often need to re-write an entire row each time the row needs
+updating. In particular, it is not possible to change the expiration time of
+an existing row without re-writing it.</p>
+<p>Per-row time-to-live (TTL) is a new CQL feature that is an alternative to
+the traditional per-cell TTL. One column is designated as the “expiration
+time” column, and the value of this column determines when the entire row
+will expire. It becomes possible to update pieces of a row without changing
+its expiration time, and vice versa - to change a row’s expiration time
+without rewriting its data.</p>
+<p>The expiration-time column of a table can be chosen when it is created by
+adding the keyword “TTL” to one of the columns:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">tab</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">int</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">t</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="n">expiration</span> <span class="nb">timestamp</span> <span class="k">TTL</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>The TTL column’s name, in this example <code class="docutils literal notranslate"><span class="pre">expiration</span></code>, can be anything.</p>
+<p>Per-row TTL can also be enabled on an existing table by adding the “TTL”
+designation to one of the existing columns, with:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">tab</span> <span class="k">TTL</span> <span class="n">colname</span>
+</pre></div>
+</div>
+<p>Or per-row TTL can be disabled (rows will never expire), with:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">tab</span> <span class="k">TTL</span> <span class="k">NULL</span>
+</pre></div>
+</div>
+<p>It is not possible to enable per-row TTL if it’s already enabled, or disable
+it when already disabled. If you have TTL enabled on one column and want to
+enable it instead on a second column, you must do it in two steps: First
+disable TTL and then re-enable it on the second column.</p>
+<p>The designated TTL column must have the type <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> or <code class="docutils literal notranslate"><span class="pre">bigint</span></code>,
+and specifies the absolute time when the row should expire (the <code class="docutils literal notranslate"><span class="pre">bigint</span></code>
+type is interpreted as seconds since the UNIX epoch). It must be a regular
+column (not a primary key column or a static column), and there can only be
+one such column.</p>
+<p>The 32-bit type <code class="docutils literal notranslate"><span class="pre">int</span></code> (specifying number of seconds since the UNIX epoch)
+is also supported, but not recommended because it will wrap around in 2038.
+Unless you must use the <code class="docutils literal notranslate"><span class="pre">int</span></code> type because of pre-existing expiration data
+with that type, please prefer <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> or <code class="docutils literal notranslate"><span class="pre">bigint</span></code>.</p>
+<p>Another important feature of per-row TTL is that if CDC is enabled, when a
+row expires a deletion event appears in the CDC log - something that doesn’t
+happen in per-cell TTL. This deletion event can be distinguished from user-
+initiated deletes: Whereas user-initiated deletes have <code class="docutils literal notranslate"><span class="pre">cdc_operation</span></code> set to
+3 (<code class="docutils literal notranslate"><span class="pre">row_delete</span></code>) or 4 (<code class="docutils literal notranslate"><span class="pre">partition_delete</span></code>), those generated by expiration have
+<code class="docutils literal notranslate"><span class="pre">cdc_operation</span></code> -3 (<code class="docutils literal notranslate"><span class="pre">service_row_delete</span></code>) or -4 (<code class="docutils literal notranslate"><span class="pre">service_partition_delete</span></code>).</p>
+<p>Unlike per-cell TTL where a value becomes unreadable at the precise specified
+second, the per-row TTL’s expiration is <em>eventual</em> - the row will expire
+some time <em>after</em> its requested expiration time, where this “some time” can
+be controlled by the configuration <code class="docutils literal notranslate"><span class="pre">alternator_ttl_period_in_seconds</span></code>. Until
+the row is actually deleted, it can still be read, and even written.
+Importantly, the CDC event will appear immediately after the row is finally
+deleted.</p>
+<p>It’s important to re-iterate that the per-cell TTL and per-row TTL features
+are separate and distinct, use a different CQL syntax, have a different
+implementation and provide different guarantees. It is possible to use
+both features in the same table, or even the same row.</p>
+</section>
 </section>
 
                 </div>
@@ -728,7 +798,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -797,7 +867,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -839,6 +909,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li><a class="reference internal" href="#per-partition-rate-limit">Per-partition rate limit</a></li>
 <li><a class="reference internal" href="#effective-service-level">Effective service level</a></li>
 <li><a class="reference internal" href="#describe-schema-with-internals-and-passwords">DESCRIBE SCHEMA WITH INTERNALS [AND PASSWORDS]</a></li>
+<li><a class="reference internal" href="#per-row-ttl">Per-row TTL</a></li>
 </ul>
 </li>
 </ul>
@@ -887,7 +958,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.1
+                2026.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -901,13 +972,13 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
             
                 
                     <li>
-                        <a href="../../branch-2026.2/cql/cql-extensions.html">2026.2</a>
+                        <a href="cql-extensions.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="cql-extensions.html">2026.1</a>
+                        <a href="../../branch-2026.1/cql/cql-extensions.html">2026.1</a>
                     </li>
                 
             
@@ -942,12 +1013,12 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -959,7 +1030,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
+<li class="toctree-l3"><a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -1007,7 +1078,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
@@ -1048,7 +1119,6 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
@@ -1090,6 +1160,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l2"><a class="reference internal" href="secondary-indexes.html">Global Secondary Indexes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guardrails.html">CQL Guardrails</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
@@ -1103,6 +1174,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l2"><a class="reference internal" href="../alternator/compatibility.html">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1162,7 +1234,6 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/startup/index.html">ScyllaDB Startup</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/change-ownership.html">Ownership Problems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/scylla-wont-start.html">ScyllaDB will not Start</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1223,7 +1294,6 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>

@@ -595,32 +595,11 @@ The <code class="docutils literal notranslate"><span class="pre">alternator_desc
 users to change this timeout - the default value in seconds is set to 21600 (6 hours).</p></li>
 </ul>
 </section>
-<section id="experimental-api-features">
-<h2>Experimental API features<a class="headerlink" href="#experimental-api-features" title="Link to this heading">¶</a></h2>
-<p>Some DynamoDB API features are supported by Alternator, but considered
-<strong>experimental</strong> in this release. An experimental feature in ScyllaDB is a
-feature whose functionality is complete, or mostly complete, but it is not
-as thoroughly tested or optimized as regular features. Also, an experimental
-feature’s implementation is still subject to change and upgrades may not be
-possible if such a feature is used. For these reasons, experimental features
-are not recommended for mission-critical uses, and they need to be
-individually enabled with the “–experimental-features” configuration option.
-See <a class="reference internal" href="../operating-scylla/admin.html#enabling-experimental-features"><span class="std std-ref">Enabling Experimental Features</span></a> for details.</p>
-<p>In this release, the following DynamoDB API features are considered
-experimental:</p>
+<section id="alternator-streams">
+<h2>Alternator Streams<a class="headerlink" href="#alternator-streams" title="Link to this heading">¶</a></h2>
+<p>The DynamoDB Streams API for change data capture is supported by Alternator, however
+Alternator Streams differ in some respects from DynamoDB Streams:</p>
 <ul>
-<li><p>The DynamoDB Streams API for capturing change is supported, but still
-considered experimental so needs to be enabled explicitly with the
-<code class="docutils literal notranslate"><span class="pre">--experimental-features=alternator-streams</span></code> configuration option.</p>
-<p>In this version, Alternator Streams is only supported if the base table
-uses vnodes instead of tablets. However, by default new tables use tablets
-so to create a table that can be used with Streams, you must set the tag
-<code class="docutils literal notranslate"><span class="pre">system:initial_tablets</span></code> set to <code class="docutils literal notranslate"><span class="pre">none</span></code> during CreateTable - so that the
-new table will use vnodes. Streams cannot be enabled on an already-existing
-table that uses tablets.
-See <a class="reference external" href="https://github.com/scylladb/scylla/issues/23838">https://github.com/scylladb/scylla/issues/23838</a>.</p>
-<p>Alternator streams also differ in some respects from DynamoDB Streams:</p>
-<ul class="simple">
 <li><p>The number of separate “shards” in Alternator’s streams is significantly
 larger than is typical on DynamoDB.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/13080">https://github.com/scylladb/scylla/issues/13080</a></p></li>
@@ -628,20 +607,31 @@ larger than is typical on DynamoDB.
 after it was written, in Alternator Streams there is currently a 10
 second delay by default.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/6929">https://github.com/scylladb/scylla/issues/6929</a></p></li>
-<li><p>Some events are represented differently in Alternator Streams. For
-example, a single PutItem is represented by a REMOVE + MODIFY event,
-instead of just a single MODIFY or INSERT.
-<a class="reference external" href="https://github.com/scylladb/scylla/issues/6930">https://github.com/scylladb/scylla/issues/6930</a>
-<a class="reference external" href="https://github.com/scylladb/scylla/issues/6918">https://github.com/scylladb/scylla/issues/6918</a></p></li>
 <li><p>In GetRecords responses, Alternator sets <code class="docutils literal notranslate"><span class="pre">eventSource</span></code> to
 <code class="docutils literal notranslate"><span class="pre">scylladb:alternator</span></code>, rather than <code class="docutils literal notranslate"><span class="pre">aws:dynamodb</span></code>, and doesn’t set the
 <code class="docutils literal notranslate"><span class="pre">SizeBytes</span></code> subfield inside the <code class="docutils literal notranslate"><span class="pre">dynamodb</span></code> field.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/6931">https://github.com/scylladb/scylla/issues/6931</a></p></li>
-<li><p>The optional ShardFilter parameter to DescribeStream, added to DynamoDB
-in July 2025 to optimize shard discovery, is not yet implemented in
-Alternator.
-<a class="reference external" href="https://github.com/scylladb/scylla/issues/25160">https://github.com/scylladb/scylla/issues/25160</a></p></li>
-</ul>
+<li><p>By default (with <code class="docutils literal notranslate"><span class="pre">alternator_streams_increased_compatibility</span></code> off)
+Alternator Streams are optimized for performance: write operations
+do not read the previous state of the item, which has two
+consequences:</p>
+<ol class="arabic simple">
+<li><p>Operations that did not really modify the data (e.g., deleting
+a non-existent item, removing a non-existent attribute, or
+re-inserting an identical item) may still produce spurious
+stream events.</p></li>
+<li><p>Alternator cannot distinguish between an INSERT (new item) and
+a MODIFY (overwrite of an existing item), so event types may
+be inaccurate — for example, a PutItem that overwrites an
+existing item will be reported as INSERT instead of MODIFY.</p></li>
+</ol>
+<p>Enabling <code class="docutils literal notranslate"><span class="pre">alternator_streams_increased_compatibility</span></code> forces every
+write to read the pre-image of the item, which fixes both issues
+but at a performance cost — it effectively forces all writes
+through the slower LWT (lightweight transaction) path. Enable this
+option only if your application relies on the distinction between
+INSERT and MODIFY events, or needs no-op writes to be silent.
+<a class="reference external" href="https://github.com/scylladb/scylladb/issues/28368">https://github.com/scylladb/scylladb/issues/28368</a></p>
 </li>
 </ul>
 </section>
@@ -783,7 +773,7 @@ This feature was added to DynamoDB in November 2025.
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -852,7 +842,7 @@ This feature was added to DynamoDB in November 2025.
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.1/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Alternator for DynamoDB users&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/alternator/compatibility%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -882,7 +872,7 @@ This feature was added to DynamoDB in November 2025.
 <li><a class="reference internal" href="#time-to-live-ttl">Time To Live (TTL)</a></li>
 <li><a class="reference internal" href="#scan-ordering">Scan ordering</a></li>
 <li><a class="reference internal" href="#configurable-or-different-limits">Configurable or different limits</a></li>
-<li><a class="reference internal" href="#experimental-api-features">Experimental API features</a></li>
+<li><a class="reference internal" href="#alternator-streams">Alternator Streams</a></li>
 <li><a class="reference internal" href="#unimplemented-api-features">Unimplemented API features</a></li>
 </ul>
 </li>
@@ -932,7 +922,7 @@ This feature was added to DynamoDB in November 2025.
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.1
+                2026.2
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -946,13 +936,13 @@ This feature was added to DynamoDB in November 2025.
             
                 
                     <li>
-                        <a href="../../branch-2026.2/alternator/compatibility.html">2026.2</a>
+                        <a href="compatibility.html">2026.2</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="compatibility.html">2026.1</a>
+                        <a href="../../branch-2026.1/alternator/compatibility.html">2026.1</a>
                     </li>
                 
             
@@ -987,12 +977,12 @@ This feature was added to DynamoDB in November 2025.
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.1</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.1 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.1 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.1 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.1 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1004,7 +994,7 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l2"><a class="reference internal" href="../getting-started/config-commands.html">ScyllaDB Configuration Reference</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/requirements.html">ScyllaDB Requirements</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-requirements.html">System Requirements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/os-support.html">OS Support</a></li>
+<li class="toctree-l3"><a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/cloud-instance-recommendations.html">Cloud Instance Recommendations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/scylla-in-a-shared-environment.html">ScyllaDB in a Shared Environment</a></li>
 </ul>
@@ -1052,7 +1042,7 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/security-checklist.html">ScyllaDB Security Checklist</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authentication.html">Enable Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/runtime-authentication.html">Enable and Disable Authentication Without Downtime</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Custom Superuser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/create-superuser.html">Creating a Superuser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/gen-cqlsh-file.html">Generate a cqlshrc File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/password-reset.html">Reset Authenticator Password</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
@@ -1093,7 +1083,6 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l2"><a class="reference external" href="https://operator.docs.scylladb.com/">ScyllaDB Operator</a></li>
 <li class="toctree-l2"><a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../upgrade/index.html">Upgrade Procedures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../upgrade/about-upgrade.html">About Upgrade</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../upgrade/upgrade-guides/index.html">Upgrade Guides</a></li>
 </ul>
 </li>
@@ -1135,6 +1124,7 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l2"><a class="reference internal" href="../cql/secondary-indexes.html">Global Secondary Indexes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/time-to-live.html">Expiring Data with Time to Live (TTL)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/guardrails.html">CQL Guardrails</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/wasm.html">Wasm support for user-defined functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
@@ -1148,6 +1138,7 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ScyllaDB Alternator for DynamoDB users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="network.html">Reducing network costs in Alternator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector-search.html">Alternator Vector Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1207,7 +1198,6 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/startup/index.html">ScyllaDB Startup</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/change-ownership.html">Ownership Problems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../troubleshooting/scylla-wont-start.html">ScyllaDB will not Start</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../troubleshooting/python-error-no-module-named-yaml.html">ScyllaDB Python Script broken</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../troubleshooting/cluster/index.html">Cluster and Node</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1268,7 +1258,6 @@ This feature was added to DynamoDB in November 2025.
 <li class="toctree-l2"><a class="reference internal" href="../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/gossip.html">Gossip in ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../kb/increase-permission-cache.html">Increase Permission Cache to Avoid Non-paged Queries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/lwt-differences.html">How does ScyllaDB LWT Differ from Apache Cassandra ?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
