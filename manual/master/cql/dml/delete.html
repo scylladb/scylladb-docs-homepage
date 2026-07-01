@@ -358,6 +358,7 @@
                 <span class="p">:</span> <span class="p">[</span> <span class="k">USING</span> <span class="o">`</span><span class="n">update_parameter</span><span class="o">`</span> <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">update_parameter</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="k">WHERE</span> <span class="o">`</span><span class="n">where_clause</span><span class="o">`</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">IF</span> <span class="p">(</span> <span class="k">EXISTS</span> <span class="o">|</span> <span class="o">`</span><span class="n">condition</span><span class="o">`</span> <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">condition</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="p">)</span> <span class="p">]</span>
+                <span class="p">:</span> <span class="p">[</span> <span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span> <span class="p">]</span>
 </pre></div>
 </div>
 <p>For instance:</p>
@@ -384,6 +385,11 @@ If <code class="docutils literal notranslate"><span class="pre">DELETE</span></c
 statements. Each such <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> gets a globally unique timestamp.
 However, as with <code class="docutils literal notranslate"><span class="pre">INSERT</span></code> and <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code> statements, this will incur a non-negligible performance cost
 (internally, Paxos will be used) and so should be used sparingly.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">LARGE_DATA_GUARDRAILS</span></code> clause is a ScyllaDB CQL extension for
+deleting data from tables with <a class="reference internal" href="../guardrails.html#guardrails-large-data"><span class="std std-ref">large data guardrails</span></a>
+enabled. It skips large data guardrail checks for this standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> so
+that oversized data can be removed even when writes to the same partition, row,
+or collection would otherwise be rejected.</p>
 <p>Please refer to the <a class="reference internal" href="../dml.html#update-parameters"><span class="std std-ref">update parameters</span></a> section for more information on the <code class="xref std std-token docutils literal notranslate"><span class="pre">update_parameter</span></code>.</p>
 <section id="range-deletions">
 <h2>Range deletions<a class="headerlink" href="#range-deletions" title="Link to this heading">¶</a></h2>
@@ -1064,7 +1070,7 @@ SELECT * from events;
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Jun 2026.
+                        Last updated on 01 Jul 2026.
                     
                 </div>
             

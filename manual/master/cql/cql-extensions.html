@@ -366,6 +366,27 @@ BYPASS CACHE
 </pre></div>
 </div>
 </section>
+<section id="bypass-large-data-guardrails-clause">
+<h2>BYPASS LARGE_DATA_GUARDRAILS clause<a class="headerlink" href="#bypass-large-data-guardrails-clause" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">LARGE_DATA_GUARDRAILS</span></code> clause on standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statements
+skips large data guardrail checks for that delete. This is useful when a table
+has large data guardrails enabled and an oversized partition, row, or collection
+must be deleted, but ordinary writes to the same data are rejected by the hard
+limit.</p>
+<p>The clause is placed after the optional <code class="docutils literal notranslate"><span class="pre">IF</span></code> condition:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">tbl</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">tbl</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="k">IF</span> <span class="k">EXISTS</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The clause is supported only for standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statements. It is not
+supported for <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, or <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> statements.</p>
+</section>
 <section id="paxos-grace-seconds-per-table-option">
 <h2>“Paxos grace seconds” per-table option<a class="headerlink" href="#paxos-grace-seconds-per-table-option" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> option is used to set the amount of seconds which
@@ -898,6 +919,7 @@ both features in the same table, or even the same row.</p>
             <ul>
 <li><a class="reference internal" href="#">ScyllaDB CQL Extensions</a><ul>
 <li><a class="reference internal" href="#bypass-cache-clause">BYPASS CACHE clause</a></li>
+<li><a class="reference internal" href="#bypass-large-data-guardrails-clause">BYPASS LARGE_DATA_GUARDRAILS clause</a></li>
 <li><a class="reference internal" href="#paxos-grace-seconds-per-table-option">“Paxos grace seconds” per-table option</a></li>
 <li><a class="reference internal" href="#using-timeout">USING TIMEOUT</a></li>
 <li><a class="reference internal" href="#prune-materialized-view-statements">PRUNE MATERIALIZED VIEW statements</a></li>
@@ -1420,7 +1442,7 @@ both features in the same table, or even the same row.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Jun 2026.
+                        Last updated on 01 Jul 2026.
                     
                 </div>
             

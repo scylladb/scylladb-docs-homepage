@@ -517,6 +517,200 @@ this metric can reveal whether any application is inadvertently using <code clas
 or <code class="docutils literal notranslate"><span class="pre">ALL</span></code> for writes.</p>
 </section>
 </section>
+<section id="large-data-guardrails">
+<span id="guardrails-large-data"></span><h2>Large Data Guardrails<a class="headerlink" href="#large-data-guardrails" title="Link to this heading">¶</a></h2>
+<p>Large data guardrails help detect and block writes that create or continue to
+write into data shapes that are known to hurt performance: oversized
+partitions, rows, cells, and collections with too many elements.</p>
+<p>Unlike schema-only guardrails, large data guardrails are enabled per table:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span> <span class="p">(</span>
+    <span class="n">pk</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">payload</span> <span class="nb">blob</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">)</span>
+<span class="p">)</span> <span class="k">WITH</span> <span class="n">large_data_guardrails_enabled</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span> <span class="k">WITH</span> <span class="n">large_data_guardrails_enabled</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">large_data_guardrails_enabled</span></code> is <code class="docutils literal notranslate"><span class="pre">false</span></code> or omitted, writes to that
+table are not checked by the large data guardrails. The option can be used only
+after all nodes in the cluster support the <code class="docutils literal notranslate"><span class="pre">LARGE_DATA_GUARDRAILS</span></code> feature.</p>
+<p>The global thresholds are live-updateable configuration parameters. A value of
+<code class="docutils literal notranslate"><span class="pre">0</span></code> disables a hard-limit threshold. Soft-limit thresholds use the existing
+<code class="docutils literal notranslate"><span class="pre">compaction_*_warning_threshold</span></code> parameters and are also used to decide which
+large-data records are stored in SSTable metadata. The table below lists both
+the defaults generated in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> for new clusters and the built-in
+defaults used when a parameter is absent, for example on upgraded clusters.</p>
+<p>Large data guardrails use two kinds of checks:</p>
+<ul class="simple">
+<li><p><strong>Coordinator-side checks</strong> inspect the mutation being written before it is
+sent to replicas. These checks catch an individual write that is already too
+large, such as a single oversized cell, row, or collection update.</p></li>
+<li><p><strong>Replica-side checks</strong> inspect large-data metadata recorded for existing
+SSTables and, for rows and collections, recently merged memtable data. These
+checks catch writes to a partition, row, or collection that became too large
+cumulatively across previous writes.</p></li>
+</ul>
+<p>Enabling large data guardrails adds work to the write path. ScyllaDB examines
+mutations on the coordinator and performs replica-side metadata and cache lookups
+for affected writes. Enable this guardrail selectively on tables where the
+protection from large data shapes is worth the additional write-path overhead.</p>
+<p>Hard-limit violations reject the write. Hard-limit failures are
+returned to the client as an <code class="docutils literal notranslate"><span class="pre">InvalidRequestException</span></code>.</p>
+<p>Soft-limit violations are logged by the <code class="docutils literal notranslate"><span class="pre">large_data</span></code> logger. If
+<code class="docutils literal notranslate"><span class="pre">large_data_cql_warnings</span></code> is enabled, ScyllaDB also returns a CQL protocol
+warning to the client. The warning identifies the violated category, for
+example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Large data guardrail: Soft limit violation for partition, row
+</pre></div>
+</div>
+<p>Be aware that CQL warnings are attached to write responses and can increase
+network traffic for workloads that frequently hit soft limits.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Large data guardrail configuration parameters</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 28.0%" />
+<col style="width: 11.0%" />
+<col style="width: 13.0%" />
+<col style="width: 13.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>New-cluster default</p></th>
+<th class="head"><p>Built-in default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_partition_warning_threshold_mb</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code> MB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code> MB</p></td>
+<td><p>If a partition’s on-disk size exceeds this threshold, a write to that
+partition triggers a soft-limit violation. This is replica-side because
+it depends on accumulated on-disk partition size. SSTable large-data
+metadata is recorded during flush and compaction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_partition_fail_threshold_mb</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2000</span></code> MB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>If a partition’s on-disk size already exceeds this threshold, writes
+targeting that partition are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_rows_count_warning_threshold</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100000</span></code> rows</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100000</span></code> rows</p></td>
+<td><p>If a partition’s on-disk row count exceeds this threshold, a write to
+that partition triggers a soft-limit violation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rows_count_fail_threshold</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">200000</span></code> rows</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>If a partition’s on-disk row count already exceeds this threshold,
+writes targeting that partition are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_row_warning_threshold_mb</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code> MB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code> MB</p></td>
+<td><p>If a row exceeds this threshold, a write to that row triggers a
+soft-limit violation. Coordinator-side checks can detect an oversized
+row in the current mutation. Replica-side checks can detect a row that
+became oversized across previous writes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_row_fail_threshold_mb</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">20</span></code> MB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>If a row exceeds this threshold, writes targeting that row are rejected.
+Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_cell_warning_threshold_mb</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> MB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> MB</p></td>
+<td><p>If a cell value exceeds this threshold, the write triggers a soft-limit
+violation. This check is coordinator-side and applies to individual
+atomic cell values in the mutation being written.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_cell_fail_threshold_mb</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code> MB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>If a cell value exceeds this threshold, the write is rejected. Set to
+<code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_collection_elements_count_warning_threshold</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10000</span></code> elements</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10000</span></code> elements</p></td>
+<td><p>If a collection contains more elements than this threshold, a write to
+that collection triggers a soft-limit violation. Coordinator-side checks
+can detect an oversized collection mutation. Replica-side checks can
+detect a collection that became oversized across previous writes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_collection_elements_fail_threshold</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">20000</span></code> elements</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>If a collection contains more elements than this threshold, writes
+targeting that collection are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">large_data_cql_warnings</span></code></p></td>
+<td><p>Warning output</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>When set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, soft-limit violations are returned to CQL clients
+as protocol warnings in addition to being logged. When set to <code class="docutils literal notranslate"><span class="pre">false</span></code>,
+soft-limit violations are logged only. This setting does not affect
+hard-limit enforcement.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_data_records_per_sstable</span></code></p></td>
+<td><p>Metadata</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+<td><p>Controls how many large-data metadata records of each type ScyllaDB
+stores in each SSTable. Replica-side checks use these records to detect
+writes to already large partitions, rows, and collections.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="bypassing-guardrails-for-deletes">
+<h3>Bypassing Guardrails for Deletes<a class="headerlink" href="#bypassing-guardrails-for-deletes" title="Link to this heading">¶</a></h3>
+<p>Deletes are sometimes needed to remove data from a partition, row, or collection
+that already exceeds a hard limit. A standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statement can bypass
+large data guardrail checks by adding <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">LARGE_DATA_GUARDRAILS</span></code> after the
+optional <code class="docutils literal notranslate"><span class="pre">IF</span></code> clause:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="k">IF</span> <span class="k">EXISTS</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The bypass clause is supported only for standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statements. It is
+not supported for <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, or <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> statements.</p>
+<p><strong>Metrics.</strong> ScyllaDB exposes per-shard metrics for large-data soft-threshold
+detection:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_partition_exceeding_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_rows_exceeding_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_cell_exceeding_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_collection_exceeding_threshold</span></code></p></li>
+</ul>
+<p>These metrics count data items that exceed the corresponding warning threshold
+while large-data metadata is recorded.</p>
+</section>
+</section>
 <section id="compact-storage-guardrail">
 <span id="guardrails-compact-storage"></span><h2>Compact Storage Guardrail<a class="headerlink" href="#compact-storage-guardrail" title="Link to this heading">¶</a></h2>
 <section id="enable-create-table-with-compact-storage">
@@ -680,6 +874,10 @@ applications during a migration). For details on the <code class="docutils liter
 <li><a class="reference internal" href="#write-consistency-level-guardrails">Write Consistency Level Guardrails</a><ul>
 <li><a class="reference internal" href="#write-consistency-levels-warned"><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_warned</span></code></a></li>
 <li><a class="reference internal" href="#write-consistency-levels-disallowed"><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_disallowed</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#large-data-guardrails">Large Data Guardrails</a><ul>
+<li><a class="reference internal" href="#bypassing-guardrails-for-deletes">Bypassing Guardrails for Deletes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#compact-storage-guardrail">Compact Storage Guardrail</a><ul>
@@ -1187,7 +1385,7 @@ applications during a migration). For details on the <code class="docutils liter
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Jun 2026.
+                        Last updated on 01 Jul 2026.
                     
                 </div>
             
