@@ -554,6 +554,113 @@ ScyllaDB’s monitoring stack, based on Grafana and Prometheus, is described in
 This monitoring stack is different from DynamoDB’s offering - but ScyllaDB’s
 is significantly more powerful and gives the user better insights on
 the internals of the database and its performance.</p>
+<p>If you are looking for familiar DynamoDB metrics, the table below lists each
+DynamoDB CloudWatch metric (see the full AWS documentation at
+<a class="reference external" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html">https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html</a>)
+and the closest ScyllaDB metric, if one exists. ScyllaDB metrics follow the
+Prometheus naming convention and are accessible via ScyllaDB’s monitoring stack.</p>
+<p>Per-table variants of most metrics are available under the <code class="docutils literal notranslate"><span class="pre">scylla_alternator_table_*</span></code>
+prefix, with an added <code class="docutils literal notranslate"><span class="pre">{cf=&quot;table_name&quot;}</span></code> label (and also a <code class="docutils literal notranslate"><span class="pre">ks=&quot;keyspace_name&quot;}</span></code> label, where the keyspace name for a table named <code class="docutils literal notranslate"><span class="pre">T</span></code> is <code class="docutils literal notranslate"><span class="pre">alternator_T</span></code>).</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>DynamoDB metric</p></th>
+<th class="head"><p>ScyllaDB equivalent</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ConditionalCheckFailedRequests</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_conditional_check_failed</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ConsumedReadCapacityUnits</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_rcu_total</span></code></p></td>
+<td><p>One RCU represents reading up to 4 KB.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ConsumedWriteCapacityUnits</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_wcu_total{op=&quot;X&quot;}</span></code></p></td>
+<td><p>Available for <code class="docutils literal notranslate"><span class="pre">PutItem</span></code>, <code class="docutils literal notranslate"><span class="pre">DeleteItem</span></code>, <code class="docutils literal notranslate"><span class="pre">UpdateItem</span></code> and <code class="docutils literal notranslate"><span class="pre">Index</span></code>. Sum all <code class="docutils literal notranslate"><span class="pre">op</span></code> label values for a total. The <code class="docutils literal notranslate"><span class="pre">Index</span></code> op accounts for WCUs consumed by writes to GSIs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OnlineIndexPercentageProgress</span></code></p></td>
+<td><p>Not yet available</p></td>
+<td><p>GSI backfill metrics are not yet exposed.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ReturnedBytes</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_operation_size_kb{op=&quot;GetRecords&quot;}</span></code> (histogram)</p></td>
+<td><p>Approximate <code class="docutils literal notranslate"><span class="pre">GetRecords</span></code> response size in KB, derived from record attribute name/value sizes rather than exact serialized response/body bytes; do not treat as exact CloudWatch <code class="docutils literal notranslate"><span class="pre">ReturnedBytes</span></code> parity.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ReturnedItemCount</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_returned_items</span></code></p></td>
+<td><p>Counts items returned by <code class="docutils literal notranslate"><span class="pre">Query</span></code> and <code class="docutils literal notranslate"><span class="pre">Scan</span></code> after filter evaluation. Also available as <code class="docutils literal notranslate"><span class="pre">scylla_alternator_returned_items_histogram</span></code> (histogram of per-operation item counts).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ReturnedRecordsCount</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_returned_records</span></code></p></td>
+<td><p>Counts stream records returned by <code class="docutils literal notranslate"><span class="pre">GetRecords</span></code> operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SuccessfulRequestLatency</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_op_latency{op=&quot;X&quot;}</span></code> (histogram)</p></td>
+<td><p>Available for <code class="docutils literal notranslate"><span class="pre">PutItem</span></code>, <code class="docutils literal notranslate"><span class="pre">GetItem</span></code>, <code class="docutils literal notranslate"><span class="pre">DeleteItem</span></code>, <code class="docutils literal notranslate"><span class="pre">UpdateItem</span></code>, <code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code>, <code class="docutils literal notranslate"><span class="pre">BatchGetItem</span></code>, <code class="docutils literal notranslate"><span class="pre">GetRecords</span></code>, <code class="docutils literal notranslate"><span class="pre">Query</span></code>, and <code class="docutils literal notranslate"><span class="pre">Scan</span></code>. Also available as <code class="docutils literal notranslate"><span class="pre">scylla_alternator_op_latency_summary{op=&quot;X&quot;}</span></code> (global only; pre-computed quantiles, not aggregatable across shards).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SystemErrors</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_system_errors</span></code></p></td>
+<td><p>Global only. Counts HTTP 500 (internal server error) responses.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">UserErrors</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_alternator_user_errors</span></code></p></td>
+<td><p>Global only. Counts HTTP 400 (client error) responses, excluding <code class="docutils literal notranslate"><span class="pre">ConditionalCheckFailedException</span></code> (which DynamoDB also excludes). Authentication and authorization failures also have dedicated counters; see the Authentication and Authorization section above.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TableCount</span></code></p></td>
+<td><p>Not yet available</p></td>
+<td><p>The number of active DynamoDB tables in the account.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TimeToLiveDeletedItemCount</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scylla_expiration_items_deleted</span></code></p></td>
+<td><p>See also <code class="docutils literal notranslate"><span class="pre">scylla_expiration_scan_passes</span></code> and <code class="docutils literal notranslate"><span class="pre">scylla_expiration_scan_table</span></code> for additional metrics on TTL scan activity.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TransactionConflict</span></code></p></td>
+<td><p>Not yet available</p></td>
+<td><p>Alternator does not yet support <code class="docutils literal notranslate"><span class="pre">TransactWriteItems</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Several groups of DynamoDB metrics have no equivalent in Alternator because
+the underlying feature does not exist:</p>
+<ul class="simple">
+<li><p><strong>Provisioned throughput limits</strong> are not enforced in Alternator (see
+the Provisioning section above), so the following metrics are not
+applicable: <code class="docutils literal notranslate"><span class="pre">AccountMaxReads</span></code>, <code class="docutils literal notranslate"><span class="pre">AccountMaxTableLevelReads</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AccountMaxTableLevelWrites</span></code>, <code class="docutils literal notranslate"><span class="pre">AccountMaxWrites</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AccountProvisionedReadCapacityUtilization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AccountProvisionedWriteCapacityUtilization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MaxProvisionedTableReadCapacityUtilization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MaxProvisionedTableWriteCapacityUtilization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">OnDemandMaxReadRequestUnits</span></code>, <code class="docutils literal notranslate"><span class="pre">OnDemandMaxWriteRequestUnits</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ProvisionedReadCapacityUnits</span></code>, <code class="docutils literal notranslate"><span class="pre">ProvisionedWriteCapacityUnits</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AccountProvisionedReadCapacityUnits</span></code>, <code class="docutils literal notranslate"><span class="pre">AccountProvisionedWriteCapacityUnits</span></code>.</p></li>
+<li><p><strong>Throttle events</strong> do not occur in Alternator because per-table throughput
+limits are not enforced. The metric <code class="docutils literal notranslate"><span class="pre">scylla_alternator_requests_shed</span></code> counts
+requests rejected due to memory pressure or general overload, which is the
+closest analogue. The following DynamoDB metrics are therefore not
+applicable: <code class="docutils literal notranslate"><span class="pre">ReadThrottleEvents</span></code>, <code class="docutils literal notranslate"><span class="pre">WriteThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ThrottledRequests</span></code>, <code class="docutils literal notranslate"><span class="pre">ReadAccountLimitThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ReadKeyRangeThroughputThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ReadMaxOnDemandThroughputThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ReadProvisionedThroughputThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WriteAccountLimitThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WriteKeyRangeThroughputThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WriteMaxOnDemandThroughputThrottleEvents</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WriteProvisionedThroughputThrottleEvents</span></code>.</p></li>
+<li><p><strong>Kinesis Data Streams</strong> integration is not supported by Alternator, so the
+following metrics are not applicable: <code class="docutils literal notranslate"><span class="pre">AgeOfOldestUnreplicatedRecord</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ConsumedChangeDataCaptureUnits</span></code>, <code class="docutils literal notranslate"><span class="pre">FailedToReplicateRecordCount</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ThrottledPutRecordCount</span></code>.</p></li>
+<li><p><strong>AWS Fault Injection Service (FIS)</strong> experiments are not supported by
+Alternator, so the metric <code class="docutils literal notranslate"><span class="pre">FaultInjectionServiceInducedErrors</span></code> (simulated
+HTTP 500 errors induced by an AWS FIS experiment) is not applicable.</p></li>
+<li><p><strong>DynamoDB Global Tables</strong> For global (cross-region) tables, Alternator
+relies on ScyllaDB’s native multi-DC replication. The following metrics
+are not applicable: <code class="docutils literal notranslate"><span class="pre">PendingReplicationCount</span></code>, <code class="docutils literal notranslate"><span class="pre">ReplicationLatency</span></code>.</p></li>
+</ul>
 </section>
 <section id="time-to-live-ttl">
 <h2>Time To Live (TTL)<a class="headerlink" href="#time-to-live-ttl" title="Link to this heading">¶</a></h2>
@@ -1391,7 +1498,7 @@ This feature was added to DynamoDB in November 2025.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Jul 2026.
+                        Last updated on 04 Jul 2026.
                     
                 </div>
             
