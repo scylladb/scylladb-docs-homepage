@@ -359,6 +359,7 @@
                 <span class="p">:</span> <span class="p">[</span> <span class="n">GROUP</span> <span class="k">BY</span> <span class="o">`</span><span class="n">group_by_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">ordering_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
+                <span class="p">:</span> <span class="p">[</span> <span class="k">WHERE</span> <span class="n">BM25</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span> <span class="s1">&#39;&gt;&#39;</span> <span class="mf">0</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">PER</span> <span class="k">PARTITION</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span> <span class="p">]</span>
@@ -683,6 +684,66 @@ Vector indexes do not support all ScyllaDB features (e.g., tracing, TTL, paging,
 about Vector Search is available in the
 <a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/">ScyllaDB Cloud documentation</a>.</p>
 </div>
+</section>
+<section id="full-text-search-queries-bm25-scylladb-cloud">
+<span id="fulltext-queries"></span><h2>Full-Text Search queries (BM25) <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#full-text-search-queries-bm25-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Full-Text Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For more information, see the <a class="reference internal" href="../../features/fulltext-search.html"><span class="doc">Full-Text Search documentation</span></a>.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> function enables full-text search queries over text columns that
+have a <a class="reference internal" href="../secondary-indexes.html#create-fulltext-index-statement"><span class="std std-ref">full-text index</span></a> created with
+<code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">'fulltext_index'</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> takes a column name and a query string
+and scores rows using the BM25 ranking algorithm.</p>
+<p>A full-text search query must contain <strong>both</strong> of the following clauses,
+referencing the <strong>same</strong> column:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> filter of the exact form <code class="docutils literal notranslate"><span class="pre">BM25(column,</span> <span class="pre">'term')</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25(column,</span> <span class="pre">'term')</span></code> clause that ranks the matching rows.</p></li>
+</ul>
+<p>Neither clause is accepted on its own. A query that has only <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25()</span></code> or
+only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected, and the two clauses must reference the same
+column.</p>
+<p><strong>Syntax:</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">fts_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
+         <span class="p">:</span>   <span class="k">WHERE</span> <span class="n">BM25</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span> <span class="s1">&#39;&gt;&#39;</span> <span class="mf">0</span>
+         <span class="p">:</span>   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+         <span class="p">:</span>   <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
+</pre></div>
+</div>
+<p>In the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> is the only supported comparison operator, and the right-hand side must be
+the literal <code class="docutils literal notranslate"><span class="pre">0</span></code>. The column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>
+and have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>; it may be a regular or clustering-key column, but
+not a partition-key column.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> must be the only ordering in the query - it cannot be combined
+with another <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> column, a second <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> ordering, or an <code class="docutils literal notranslate"><span class="pre">ANN</span></code>
+ordering.</p>
+<p><strong>Examples:</strong></p>
+<p>Filter and rank by relevance:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Use bind markers for the query term:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="o">?</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="o">?</span><span class="p">)</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> operator is not a reserved word. If a user-defined function named
+<code class="docutils literal notranslate"><span class="pre">bm25</span></code> exists in a keyspace, unqualified <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> becomes ambiguous; qualify
+the built-in operator as <code class="docutils literal notranslate"><span class="pre">system.bm25(...)</span></code> to disambiguate it.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> is only valid in the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses.
+It cannot be used as a selector in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause.</p>
+</div>
+<p>For the full list of query constraints and requirements, see
+<a class="reference internal" href="../../features/fulltext-search.html"><span class="doc">Full-Text Search</span></a>.</p>
 </section>
 <section id="limiting-results">
 <span id="limit-clause"></span><h2>Limiting results<a class="headerlink" href="#limiting-results" title="Link to this heading">¶</a></h2>
@@ -1101,6 +1162,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li><a class="reference internal" href="#grouping-results">Grouping results</a></li>
 <li><a class="reference internal" href="#ordering-results">Ordering results</a></li>
 <li><a class="reference internal" href="#vector-queries-scylladb-cloud">Vector queries <span class="label label--note">ScyllaDB Cloud</span></a></li>
+<li><a class="reference internal" href="#full-text-search-queries-bm25-scylladb-cloud">Full-Text Search queries (BM25) <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#limiting-results">Limiting results</a></li>
 <li><a class="reference internal" href="#allowing-filtering">Allowing filtering</a></li>
 <li><a class="reference internal" href="#evaluation-order-of-select-statement-clauses">Evaluation order of SELECT statement clauses</a></li>
@@ -1399,6 +1461,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l2"><a class="reference internal" href="../../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1607,7 +1670,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jul 2026.
+                        Last updated on 06 Jul 2026.
                     
                 </div>
             

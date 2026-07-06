@@ -629,6 +629,57 @@ result in an error. General SAI indexing is not supported by ScyllaDB; use a
 </div>
 </section>
 </section>
+<section id="full-text-index-scylladb-cloud">
+<span id="create-fulltext-index-statement"></span><h2>Full-text Index <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#full-text-index-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Full-text indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For the full list of unsupported ScyllaDB features, see the
+<a class="reference internal" href="../features/fulltext-search.html"><span class="doc">Full-Text Search documentation</span></a>.</p>
+</div>
+<p>ScyllaDB supports creating full-text indexes on text columns, enabling full-text search queries that rank results
+by relevance using the BM25 scoring algorithm. A full-text index is a custom index created using the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code>
+keyword and specifying the index type as <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>.</p>
+<p>CDC is enabled automatically on the base table when a full-text index is created.</p>
+<p><strong>Column restrictions:</strong></p>
+<ul class="simple">
+<li><p>The indexed column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>. Other types are rejected.</p></li>
+<li><p>The indexed column must be a regular or clustering-key column. Partition-key columns cannot be indexed.</p></li>
+<li><p>The table must use tablets (not vnodes).</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">&#39;fulltext_index&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>You can specify an analyzer to control how text is tokenized:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">&#39;fulltext_index&#39;</span>
+    <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;analyzer&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>The following options are supported for full-text indexes:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">analyzer</span></code></p></td>
+<td><p>Text analyzer for tokenization. Determines how text is split into terms.
+Supported values (case-insensitive): <code class="docutils literal notranslate"><span class="pre">standard</span></code>, <code class="docutils literal notranslate"><span class="pre">english</span></code>, <code class="docutils literal notranslate"><span class="pre">german</span></code>,
+<code class="docutils literal notranslate"><span class="pre">french</span></code>, <code class="docutils literal notranslate"><span class="pre">spanish</span></code>, <code class="docutils literal notranslate"><span class="pre">italian</span></code>, <code class="docutils literal notranslate"><span class="pre">portuguese</span></code>, <code class="docutils literal notranslate"><span class="pre">russian</span></code>, <code class="docutils literal notranslate"><span class="pre">simple</span></code>,
+<code class="docutils literal notranslate"><span class="pre">whitespace</span></code>. CJK analyzers (<code class="docutils literal notranslate"><span class="pre">chinese</span></code>, <code class="docutils literal notranslate"><span class="pre">japanese</span></code>, <code class="docutils literal notranslate"><span class="pre">korean</span></code>) are not supported.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">standard</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">positions</span></code></p></td>
+<td><p>Whether token positions are stored. Required for phrase queries.
+Supported values: <code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code> (case-insensitive).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="drop-index">
 <span id="drop-index-statement"></span><h2>DROP INDEX<a class="headerlink" href="#drop-index" title="Link to this heading">¶</a></h2>
 <p>Dropping a secondary index uses the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> statement:</p>
@@ -785,6 +836,7 @@ the system stops the build process and cleans up any partially built data associ
 <li><a class="reference internal" href="#cassandra-sai-compatibility-for-vector-search">Cassandra SAI Compatibility for Vector Search</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#full-text-index-scylladb-cloud">Full-text Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#drop-index">DROP INDEX</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
 </ul>
@@ -1079,6 +1131,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1287,7 +1340,7 @@ the system stops the build process and cleans up any partially built data associ
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jul 2026.
+                        Last updated on 06 Jul 2026.
                     
                 </div>
             
