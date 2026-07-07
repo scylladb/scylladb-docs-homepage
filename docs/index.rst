@@ -48,7 +48,7 @@
   Documentation for ScyllaDB Cloud, the fully managed database-as-a-service (DBaaS).
 
 .. topic-box::
-  :title: ScyllaDB Docs
+  :title: ScyllaDB
   :icon: icon-instance
   :link: https://docs.scylladb.com/manual/stable/
   :link_target: _self
@@ -65,38 +65,11 @@
 
   <div class="topics-grid topics-grid--products">
 
-      <h2 class="topics-grid__title">Other Products</h2>
+      <h2 class="topics-grid__title">Explore More</h2>
       <p class="topics-grid__text"></p>
 
       <div class="grid-container full">
           <div class="grid-x grid-margin-x">
-
-.. topic-box::
-  :title: ScyllaDB Alternator
-  :link: https://docs.scylladb.com/manual/stable/alternator/alternator.html
-  :link_target: _self
-  :image: /_static/img/mascots-2/alternator.svg
-  :class: topic-box--product,large-4,small-6
-
-  Amazon DynamoDB-compatible API.
-
-.. topic-box::
-  :title: ScyllaDB Monitoring Stack
-  :link: https://monitoring.docs.scylladb.com
-  :link_target: _self
-  :image: /_static/img/mascots-2/monitor.svg
-  :class: topic-box--product,large-4,small-6
-
-  Complete open source monitoring solution for your ScyllaDB clusters.
-
-.. topic-box::
-  :title: ScyllaDB Manager
-  :link: https://manager.docs.scylladb.com
-  :link_target: _self
-  :image: /_static/img/mascots-2/manager.svg
-  :class: topic-box--product,large-4,small-6
-
-  Hassle-free ScyllaDB NoSQL database management for scale-out clusters.
 
 .. topic-box::
   :title: ScyllaDB Drivers
@@ -105,7 +78,16 @@
   :image: /_static/img/mascots-2/driver.svg
   :class: topic-box--product,large-4,small-6
 
-  Shard-aware drivers for superior performance. 
+  Connect your applications to ScyllaDB using language-specific drivers. 
+
+.. topic-box::
+  :title: ScyllaDB Alternator
+  :link: https://docs.scylladb.com/manual/stable/alternator/alternator.html
+  :link_target: _self
+  :image: /_static/img/mascots-2/alternator.svg
+  :class: topic-box--product,large-4,small-6
+
+  Use ScyllaDB with the DynamoDB-compatible API.
 
 .. topic-box::
   :title: ScyllaDB Operator
@@ -114,8 +96,25 @@
   :image: /_static/img/mascots-2/operator.svg
   :class: topic-box--product,large-4,small-6
 
-  Easily run and manage your ScyllaDB cluster on Kubernetes.
+  Deploy and manage ScyllaDB clusters on Kubernetes.
 
+.. topic-box::
+  :title: Versioning
+  :link: https://docs.scylladb.com/stable/versioning/index.html
+  :link_target: _self
+  :image: /_static/img/mascots-2/manager.svg
+  :class: topic-box--product,large-4,small-6
+
+  Learn about ScyllaDB versioning, release types, and upgrade paths.
+
+.. topic-box::
+  :title: Monitoring Stack
+  :link: https://monitoring.docs.scylladb.com
+  :link_target: _self
+  :image: /_static/img/mascots-2/monitor.svg
+  :class: topic-box--product,large-4,small-6
+
+  Monitor the health and performance of your ScyllaDB clusters.
 
 .. topic-box::
   :title: ScyllaDB Migrator
@@ -124,7 +123,7 @@
   :image: /_static/img/mascots/scylla-migrator.svg
   :class: topic-box--product,large-4,small-6
 
-  Migrate data extract using Spark to ScyllaDB.
+  Move existing data into ScyllaDB.
 
 .. raw:: html
 
