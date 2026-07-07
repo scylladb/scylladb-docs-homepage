@@ -30,14 +30,13 @@
   <div class="grid-x grid-margin-x hs">
 
 .. topic-box::
-  :title: Getting started
+  :title: Getting Started
   :icon: icon-rocket
   :link: https://docs.scylladb.com/stable/get-started/
   :link_target: _self
   :class: large-4 getting-started-card
-  :anchor: First Steps
 
-  Start developing with ScyllaDB here, with sample models, connection instructions and more.
+  Learn the basics of ScyllaDB, from first deployment to building applications.
 
 .. topic-box::
   :title: ScyllaDB Cloud
@@ -45,19 +44,17 @@
   :link: https://cloud.docs.scylladb.com
   :link_target: _self
   :class: large-4 cloud-card
-  :anchor: ScyllaDB Cloud Docs
 
-  Deploy and manage ScyllaDB's most stable enterprise-grade database with premium features and 24/7 support.
+  Documentation for ScyllaDB Cloud, the fully managed database-as-a-service (DBaaS).
 
 .. topic-box::
-  :title: ScyllaDB
+  :title: ScyllaDB Docs
   :icon: icon-instance
   :link: https://docs.scylladb.com/manual/stable/
   :link_target: _self
   :class: large-4 self-hosted-card
-  :anchor: ScyllaDB Docs
 
-  Deploy and manage your database in your environment.
+  Documentation for deploying, configuring, and managing ScyllaDB in your own environment.
 
 
 .. raw:: html
