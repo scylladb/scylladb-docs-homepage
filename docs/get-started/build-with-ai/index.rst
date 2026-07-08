@@ -9,12 +9,9 @@ effectively with your database.
    :titlesonly:
 
    agent-skills
-   mcp-toolbox
-   langgraph
+   integrations/index
 
 * :doc:`ScyllaDB Agent Skills <agent-skills>` — domain-specific skills for AI
   coding agents (GitHub Copilot, Cursor, Claude Code, and others).
-* :doc:`MCP Toolbox <mcp-toolbox>` — connect AI agents to ScyllaDB via the
-  MCP Toolbox for Databases open source MCP server.
-* :doc:`LangGraph <langgraph>` — persist LangGraph agent state in ScyllaDB
-  using the ``langgraph-checkpoint-scylladb`` checkpointer.
+* :doc:`AI Integrations <integrations/index>` — integrate ScyllaDB with AI
+  frameworks such as MCP Toolbox and LangGraph.
