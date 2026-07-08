@@ -5,6 +5,12 @@ Build with AI
 Use ScyllaDB Agent Skills to give your LLM or AI coding agent the 
 context it needs to work effectively with ScyllaDB.
 
+.. toctree::
+   :titlesonly:
+
+   mcp-toolbox
+   langgraph
+
 ScyllaDB Agent Skills
 ---------------------------
 
@@ -21,3 +27,9 @@ Install with:
    npx skills add scylladb/agent-skills
 
 See the `agent-skills repository <https://github.com/scylladb/agent-skills>`_ for available skills and more information.
+
+Integrations
+---------------------------
+
+* :doc:`MCP Toolbox <mcp-toolbox>`
+* :doc:`LangGraph <langgraph>`
