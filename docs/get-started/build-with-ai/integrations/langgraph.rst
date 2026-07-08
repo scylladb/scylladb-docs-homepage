@@ -1,5 +1,5 @@
 ======================================
-LangGraph Integration
+LangGraph
 ======================================
 
 `LangGraph <https://github.com/langchain-ai/langgraph>`_ is a framework for
