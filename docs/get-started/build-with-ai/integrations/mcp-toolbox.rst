@@ -2,6 +2,13 @@
 MCP Toolbox for Databases
 ====================================
 
+<<<<<<< Updated upstream
+=======
+.. image:: images/mcp-toolbox-logo.png
+   :alt: MCP Toolbox for Databases logo
+   :width: 400px
+
+>>>>>>> Stashed changes
 `MCP Toolbox for Databases <https://github.com/googleapis/mcp-toolbox>`_ is an
 open source MCP server that exposes database operations as tools consumable by
 AI agents and LLMs. The ScyllaDB integration lets agents execute pre-defined CQL
