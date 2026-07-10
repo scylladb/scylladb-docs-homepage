@@ -454,7 +454,10 @@ escape single-quote characters in function body (as they are more likely to occu
 <li><p>A literal for either <a class="reference internal" href="types.html#collections"><span class="std std-ref">a collection</span></a> (including usage of list_or_vector_literal
 for <a class="reference internal" href="types.html#vectors"><span class="std std-ref">a vector</span></a>), a user-defined type or a tuple (see the linked sections for details).</p></li>
 <li><p>An arithmetic operation between terms.</p></li>
-<li><p>A <em>type hint</em></p></li>
+<li><p>A <em>type hint</em> <code class="docutils literal notranslate"><span class="pre">(T)x</span></code>, which represents <code class="docutils literal notranslate"><span class="pre">x</span></code> as type <code class="docutils literal notranslate"><span class="pre">T</span></code> when that is lossless — a
+reinterpret between byte-compatible types (e.g. <code class="docutils literal notranslate"><span class="pre">(blob)int_value</span></code>) or a numeric widening
+(e.g. <code class="docutils literal notranslate"><span class="pre">(bigint)int_value</span></code>). A lossy (narrowing), cross-family, or unrelated conversion is
+rejected; use <code class="docutils literal notranslate"><span class="pre">CAST(x</span> <span class="pre">AS</span> <span class="pre">T)</span></code> for those.</p></li>
 <li><p>A bind marker, which denotes a variable to be bound at execution time. See the section on <a class="reference internal" href="#prepared-statements"><span class="std std-ref">Prepared Statements</span></a>
 for details. A bind marker can be either anonymous (<code class="docutils literal notranslate"><span class="pre">?</span></code>) or named (<code class="docutils literal notranslate"><span class="pre">:some_name</span></code>). The latter form provides a more
 convenient way to refer to the variable for binding it and should generally be preferred.</p></li>
@@ -1149,7 +1152,7 @@ and then executed depends on the CQL driver used, and you should refer to your d
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jul 2026.
+                        Last updated on 10 Jul 2026.
                     
                 </div>
             

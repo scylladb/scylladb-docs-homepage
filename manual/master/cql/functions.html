@@ -672,9 +672,16 @@ the whole set of rows).</p>
 <h3>Native aggregates<a class="headerlink" href="#native-aggregates" title="Link to this heading">¶</a></h3>
 <section id="count">
 <span id="count-function"></span><h4>Count<a class="headerlink" href="#count" title="Link to this heading">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">count</span></code> function can be used to count the rows returned by a query. Example:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">count</span></code> function counts all non-null values of its argument.
+The argument can be a column, a literal, or any expression (including function calls).</p>
+<p><code class="docutils literal notranslate"><span class="pre">count(*)</span></code> is a special form that counts all rows, regardless of null values:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">COUNT</span> <span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">plays</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span> <span class="p">(</span><span class="mf">1</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">plays</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Since a literal is never null, <code class="docutils literal notranslate"><span class="pre">count</span></code> with a literal argument is equivalent to
+<code class="docutils literal notranslate"><span class="pre">count(*)</span></code>:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">COUNT</span> <span class="p">(</span><span class="mf">1</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">plays</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="k">COUNT</span> <span class="p">(</span><span class="s1">&#39;any&#39;</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">plays</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>It also can be used to count the non-null value of a given column:</p>
@@ -1421,7 +1428,7 @@ instance:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jul 2026.
+                        Last updated on 10 Jul 2026.
                     
                 </div>
             

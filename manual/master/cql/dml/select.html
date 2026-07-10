@@ -423,13 +423,45 @@ alternatively, of the wildcard character (<code class="docutils literal notransl
 <li><p>A casting, which allows you to convert a nested selector to a (compatible) type.</p></li>
 <li><p>A function call, where the arguments are selector themselves.</p></li>
 <li><p>A call to the <a class="reference internal" href="../functions.html#count-function"><span class="std std-ref">COUNT function</span></a>, which counts all non-null results.</p></li>
-<li><p>A literal value (constant).</p></li>
+<li><p>A literal value: a constant, or a collection or tuple literal.</p></li>
 <li><p>A bind variable (<cite>?</cite> or <cite>:name</cite>).</p></li>
 </ul>
-<p>Note that due to a quirk of the type system, literals and bind markers cannot be
-used as top-level selectors, as the parser cannot infer their type. However, they can be used
-when nested inside functions, as the function formal parameter types provide the
-necessary context.</p>
+<p>Literals can be used as top-level selectors. Their type is inferred automatically.
+The default inferred type depends on the literal kind:</p>
+<ul class="simple">
+<li><p>Whole numbers: the smallest of <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">bigint</span></code>, or <code class="docutils literal notranslate"><span class="pre">varint</span></code> that fits the
+value. For example, <code class="docutils literal notranslate"><span class="pre">1</span></code> is inferred as <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">10000000000</span></code> as <code class="docutils literal notranslate"><span class="pre">bigint</span></code>,
+and very large integers as <code class="docutils literal notranslate"><span class="pre">varint</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">tinyint</span></code> and <code class="docutils literal notranslate"><span class="pre">smallint</span></code> are
+never inferred — use a cast (<code class="docutils literal notranslate"><span class="pre">CAST(1</span> <span class="pre">AS</span> <span class="pre">tinyint)</span></code> or the <code class="docutils literal notranslate"><span class="pre">(tinyint)1</span></code> type hint)
+to obtain them.</p></li>
+<li><p>Decimal or scientific-notation numbers (e.g. <code class="docutils literal notranslate"><span class="pre">3.14</span></code>, <code class="docutils literal notranslate"><span class="pre">1e6</span></code>): always <code class="docutils literal notranslate"><span class="pre">double</span></code>.
+<code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">decimal</span></code> are never inferred.</p></li>
+<li><p>Strings: <code class="docutils literal notranslate"><span class="pre">text</span></code>.</p></li>
+<li><p>Booleans: <code class="docutils literal notranslate"><span class="pre">boolean</span></code>.</p></li>
+<li><p>UUIDs: <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
+<li><p>Hex literals (e.g. <code class="docutils literal notranslate"><span class="pre">0xCAFE</span></code>): <code class="docutils literal notranslate"><span class="pre">blob</span></code>.</p></li>
+<li><p>Durations: <code class="docutils literal notranslate"><span class="pre">duration</span></code>.</p></li>
+</ul>
+<p>Collection and tuple literals are supported, with element types inferred recursively.
+When collection elements have different sizes within the same numeric family, they are
+widened to the largest type within two lossless chains:</p>
+<ul class="simple">
+<li><p>Integer: <code class="docutils literal notranslate"><span class="pre">tinyint</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">smallint</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">int</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">bigint</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">varint</span></code></p></li>
+<li><p>Floating-point: <code class="docutils literal notranslate"><span class="pre">float</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+</ul>
+<p>Cross-family widening (e.g. <code class="docutils literal notranslate"><span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">double</span></code>) is not supported and requires an
+explicit <code class="docutils literal notranslate"><span class="pre">CAST</span></code>.</p>
+<p>Bind markers (<code class="docutils literal notranslate"><span class="pre">?</span></code> and <code class="docutils literal notranslate"><span class="pre">:name</span></code>) cannot be used as <em>top-level</em> selectors, since their
+type cannot be inferred without context; they can be used nested inside a function
+call, where the parameter type provides it.</p>
+<p>Examples:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="mf">1</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="n">true</span> <span class="k">FROM</span> <span class="n">t</span><span class="p">;</span>            <span class="c1">-- int, text, boolean</span>
+<span class="k">SELECT</span> <span class="p">[</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">,</span> <span class="mf">3</span><span class="p">]</span> <span class="k">FROM</span> <span class="n">t</span><span class="p">;</span>                   <span class="c1">-- frozen&lt;list&lt;int&gt;&gt;</span>
+<span class="k">SELECT</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">2</span><span class="p">}</span> <span class="k">FROM</span> <span class="n">t</span><span class="p">;</span>            <span class="c1">-- frozen&lt;map&lt;text, int&gt;&gt;</span>
+<span class="k">SELECT</span> <span class="p">[</span><span class="mf">1</span><span class="p">,</span> <span class="mf">10000000000</span><span class="p">]</span> <span class="k">FROM</span> <span class="n">t</span><span class="p">;</span>            <span class="c1">-- frozen&lt;list&lt;bigint&gt;&gt;, widened from int + bigint</span>
+<span class="k">SELECT</span> <span class="k">CAST</span><span class="p">(</span><span class="mf">1</span> <span class="k">AS</span> <span class="nb">bigint</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">t</span><span class="p">;</span>           <span class="c1">-- bigint via explicit cast</span>
+</pre></div>
+</div>
 </section>
 <section id="aliases">
 <h3>Aliases<a class="headerlink" href="#aliases" title="Link to this heading">¶</a></h3>
@@ -1670,7 +1702,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Jul 2026.
+                        Last updated on 10 Jul 2026.
                     
                 </div>
             
