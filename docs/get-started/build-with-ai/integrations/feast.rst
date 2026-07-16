@@ -2,6 +2,10 @@
 Feast
 =======
 
+.. image:: /_static/img/integrations/feast-logo.png
+   :alt: Feast logo
+   :width: 400px
+
 `Feast <https://feast.dev/>`_ is an open source feature store framework that 
 manages and serves machine learning features for training and inference. 
 The ScyllaDB integration provides a Feast online store for low-latency, 
