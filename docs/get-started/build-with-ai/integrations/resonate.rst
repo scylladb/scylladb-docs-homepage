@@ -2,6 +2,10 @@
 Resonate
 ========
 
+.. image:: /_static/img/integrations/resonate-logo.png
+   :alt: Resonate logo
+   :width: 400px
+
 `Resonate <https://resonatehq.io/>`_ is a durable agent execution engine that
 makes long-running, failure-prone workflows reliable by persisting their
 state as *durable promises*. Every function call resolves to a promise
