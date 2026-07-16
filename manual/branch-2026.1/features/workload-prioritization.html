@@ -490,13 +490,8 @@ By assigning each service level to the different roles within your organization,
 <li><p><code class="docutils literal notranslate"><span class="pre">service_level_name</span></code>  - Specifies the name of the service level you created. See <a class="reference internal" href="#create-a-service-level">Create a Service Level</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shares_number</span></code> - The number of shares in the CPU that you’re granting to the service level name.   You can use any number within the range from 1 to 1000. <strong>Default : 1000</strong></p></li>
 </ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Altering the SERVICE LEVEL does not affect active sessions (see <a class="reference external" href="https://github.com/scylladb/scylladb/issues/12923">#12923</a>).</p>
-<p>To apply a new timeout to existing clients, execute a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a> after the ALTER command.</p>
-</div>
-<section id="id2">
-<h4>Example<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
+<section id="id1">
+<h4>Example<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
 <p>Analysts are complaining that they don’t have enough resources. To increase the resources, you change the service level attributes for the OLAP service level.</p>
 <p><strong>Procedure</strong></p>
 <ol class="arabic simple">
@@ -535,8 +530,8 @@ By assigning each service level to the different roles within your organization,
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">service_level_name</span></code> - Specifies the name of the service level you created. See <a class="reference internal" href="#create-a-service-level">Create a Service Level</a>.</p></li>
 </ul>
-<section id="id3">
-<h4>Example<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
+<section id="id2">
+<h4>Example<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
 <p>In this example you list the service level parameters for OLTP.</p>
 <p><strong>Procedure</strong></p>
 <p>Run the following:</p>
@@ -557,8 +552,8 @@ By assigning each service level to the different roles within your organization,
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>LIST ALL SERVICE_LEVELS;
 </pre></div>
 </div>
-<section id="id4">
-<h4>Example<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
+<section id="id3">
+<h4>Example<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
 <p>In this example, you list all service levels and their parameters.</p>
 <p><strong>Procedure</strong></p>
 <p>Run the following:</p>
@@ -586,8 +581,8 @@ By assigning each service level to the different roles within your organization,
 <li><p><code class="docutils literal notranslate"><span class="pre">service_level_name</span></code> - Specifies the name of the service level you created. See <a class="reference internal" href="#create-a-service-level">Create a Service Level</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">EXISTS</span></code> - If the service level does not exist and IF EXISTS is not used an error is returned.</p></li>
 </ul>
-<section id="id5">
-<h4>Example<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
+<section id="id4">
+<h4>Example<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
 <p>In this example you drop the OLTP service level.</p>
 <p><strong>Procedure</strong></p>
 <p>Run the following:</p>
@@ -620,8 +615,8 @@ By assigning each service level to the different roles within your organization,
 <p class="admonition-title">Note</p>
 <p>Any role which does not have an SLA attached to it, receives the default SLA.</p>
 </div>
-<section id="id6">
-<h4>Example<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
+<section id="id5">
+<h4>Example<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
 <p>Continuing from the example in <a class="reference internal" href="#create-a-service-level">Create a Service Level</a>, you can attach the service levels that you created to different roles in your organization as follows:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -657,8 +652,8 @@ By assigning each service level to the different roles within your organization,
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>LIST ALL ATTACHED SERVICE_LEVELS;
 </pre></div>
 </div>
-<section id="id7">
-<h4>Example<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
+<section id="id6">
+<h4>Example<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
 <p>In this example you list all service levels attached to any role.</p>
 <p><strong>Procedure</strong></p>
 <p>Run the following:</p>
@@ -686,8 +681,8 @@ By assigning each service level to the different roles within your organization,
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">role_name</span></code> - Specifies the role that you want to use the service level on. This is the role you created with <a class="reference internal" href="../operating-scylla/security/authorization.html#create-role-statement"><span class="std std-ref">create role</span></a>.</p></li>
 </ul>
-<section id="id8">
-<h4>Example<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
+<section id="id7">
+<h4>Example<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
 <p>In this example, you list all of Roles which are assigned to the OLAP Service Level.</p>
 <p><strong>Procedure</strong></p>
 <p>Run the following:</p>
@@ -713,8 +708,8 @@ By assigning each service level to the different roles within your organization,
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">role_name</span></code> - Specifies the role that you want to use the service level on. This is the role you created with <a class="reference internal" href="../operating-scylla/security/authorization.html#create-role-statement"><span class="std std-ref">create role</span></a>.</p></li>
 </ul>
-<section id="id9">
-<h4>Example<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
+<section id="id8">
+<h4>Example<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
 <p>In this example, you re-assign the Spark to a different level of service by detaching it from one level of service and attaching it to another.</p>
 <p><strong>Procedure</strong></p>
 <p>Run the following:</p>
@@ -878,38 +873,38 @@ By assigning each service level to the different roles within your organization,
 </ul>
 </li>
 <li><a class="reference internal" href="#change-resource-allocation-for-a-service-level">Change Resource Allocation for a Service Level</a><ul>
-<li><a class="reference internal" href="#id2">Example</a></li>
+<li><a class="reference internal" href="#id1">Example</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#display-specified-service-level-parameters">Display Specified Service Level Parameters</a><ul>
-<li><a class="reference internal" href="#id3">Example</a></li>
+<li><a class="reference internal" href="#id2">Example</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#display-all-service-levels-and-parameters">Display All Service Levels and Parameters</a><ul>
-<li><a class="reference internal" href="#id4">Example</a></li>
+<li><a class="reference internal" href="#id3">Example</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#delete-a-service-level">Delete a Service Level</a><ul>
-<li><a class="reference internal" href="#id5">Example</a></li>
+<li><a class="reference internal" href="#id4">Example</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#manage-roles-with-service-levels">Manage Roles with Service Levels</a><ul>
 <li><a class="reference internal" href="#assign-a-service-level-to-a-role">Assign a Service Level to a Role</a><ul>
-<li><a class="reference internal" href="#id6">Example</a></li>
+<li><a class="reference internal" href="#id5">Example</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#list-all-attached-service-levels-for-all-roles">List All Attached Service Levels for All Roles</a><ul>
-<li><a class="reference internal" href="#id7">Example</a></li>
+<li><a class="reference internal" href="#id6">Example</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#list-the-roles-assigned-to-a-specific-service-level">List the Roles Assigned to a Specific Service Level</a><ul>
-<li><a class="reference internal" href="#id8">Example</a></li>
+<li><a class="reference internal" href="#id7">Example</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#remove-a-service-level-from-a-role">Remove a Service Level from a Role</a><ul>
-<li><a class="reference internal" href="#id9">Example</a></li>
+<li><a class="reference internal" href="#id8">Example</a></li>
 </ul>
 </li>
 </ul>
@@ -1417,7 +1412,7 @@ By assigning each service level to the different roles within your organization,
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Jul 2026.
+                        Last updated on 16 Jul 2026.
                     
                 </div>
             

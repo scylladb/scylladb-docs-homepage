@@ -515,9 +515,9 @@
 </pre></div>
 </div>
 <p>The preimage of <code class="docutils literal notranslate"><span class="pre">v</span></code> for the second update is <code class="docutils literal notranslate"><span class="pre">{a252bb60-3f95-11eb-9a61-000000000001:</span> <span class="pre">1,</span> <span class="pre">a252bb61-3f95-11eb-9a61-000000000001:</span> <span class="pre">2}</span></code>. Performing a standard read before the second update would return the list <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>. Observe that this list can also be obtained from the preimage by listing the (key, value) pairs in the order shown in the preimage map and removing the keys.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Unfortunately, CDC is currently not suited for working with large collections. The reason is that freezing a collection may cause a large allocation - while non-frozen collections are stored as sequences of (small) cells, freezing a collection requires all cells to be fitted in a continuous memory buffer. This issue is currently being worked on; you can track it here: <a class="reference external" href="https://github.com/scylladb/scylla/issues/7506">https://github.com/scylladb/scylla/issues/7506</a>. But even after this issue is resolved, remember that generating a preimage requires reading (and storing) the entire value, which may be costly with large collections.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using CDC with large collections, note that generating a preimage requires reading (and storing) the entire value, which may be costly.</p>
 </div>
 </section>
 <section id="preimages-vs-concurrent-writes">
@@ -1308,7 +1308,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Jul 2026.
+                        Last updated on 16 Jul 2026.
                     
                 </div>
             
