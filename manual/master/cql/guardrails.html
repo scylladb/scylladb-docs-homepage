@@ -539,9 +539,7 @@ after all nodes in the cluster support the <code class="docutils literal notrans
 <p>The global thresholds are live-updateable configuration parameters. A value of
 <code class="docutils literal notranslate"><span class="pre">0</span></code> disables a hard-limit threshold. Soft-limit thresholds use the existing
 <code class="docutils literal notranslate"><span class="pre">compaction_*_warning_threshold</span></code> parameters and are also used to decide which
-large-data records are stored in SSTable metadata. The table below lists both
-the defaults generated in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> for new clusters and the built-in
-defaults used when a parameter is absent, for example on upgraded clusters.</p>
+large-data records are stored in SSTable metadata.</p>
 <p>Large data guardrails use two kinds of checks:</p>
 <ul class="simple">
 <li><p><strong>Coordinator-side checks</strong> inspect the mutation being written before it is
@@ -572,22 +570,19 @@ network traffic for workloads that frequently hit soft limits.</p>
 <colgroup>
 <col style="width: 28.0%" />
 <col style="width: 11.0%" />
-<col style="width: 13.0%" />
-<col style="width: 13.0%" />
-<col style="width: 35.0%" />
+<col style="width: 16.0%" />
+<col style="width: 45.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Parameter</p></th>
 <th class="head"><p>Type</p></th>
-<th class="head"><p>New-cluster default</p></th>
-<th class="head"><p>Built-in default</p></th>
+<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_partition_warning_threshold_mb</span></code></p></td>
 <td><p>Soft limit</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code> MB</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code> MB</p></td>
 <td><p>If a partition’s on-disk size exceeds this threshold, a write to that
 partition triggers a soft-limit violation. This is replica-side because
@@ -597,13 +592,11 @@ metadata is recorded during flush and compaction.</p></td>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_partition_fail_threshold_mb</span></code></p></td>
 <td><p>Hard limit</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">2000</span></code> MB</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
 <td><p>If a partition’s on-disk size already exceeds this threshold, writes
 targeting that partition are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_rows_count_warning_threshold</span></code></p></td>
 <td><p>Soft limit</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">100000</span></code> rows</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">100000</span></code> rows</p></td>
 <td><p>If a partition’s on-disk row count exceeds this threshold, a write to
 that partition triggers a soft-limit violation.</p></td>
@@ -611,13 +604,11 @@ that partition triggers a soft-limit violation.</p></td>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rows_count_fail_threshold</span></code></p></td>
 <td><p>Hard limit</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">200000</span></code> rows</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
 <td><p>If a partition’s on-disk row count already exceeds this threshold,
 writes targeting that partition are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_row_warning_threshold_mb</span></code></p></td>
 <td><p>Soft limit</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code> MB</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">10</span></code> MB</p></td>
 <td><p>If a row exceeds this threshold, a write to that row triggers a
 soft-limit violation. Coordinator-side checks can detect an oversized
@@ -627,13 +618,11 @@ became oversized across previous writes.</p></td>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_row_fail_threshold_mb</span></code></p></td>
 <td><p>Hard limit</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">20</span></code> MB</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
 <td><p>If a row exceeds this threshold, writes targeting that row are rejected.
 Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_cell_warning_threshold_mb</span></code></p></td>
 <td><p>Soft limit</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> MB</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> MB</p></td>
 <td><p>If a cell value exceeds this threshold, the write triggers a soft-limit
 violation. This check is coordinator-side and applies to individual
@@ -642,13 +631,11 @@ atomic cell values in the mutation being written.</p></td>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_cell_fail_threshold_mb</span></code></p></td>
 <td><p>Hard limit</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">2</span></code> MB</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
 <td><p>If a cell value exceeds this threshold, the write is rejected. Set to
 <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_collection_elements_count_warning_threshold</span></code></p></td>
 <td><p>Soft limit</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">10000</span></code> elements</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">10000</span></code> elements</p></td>
 <td><p>If a collection contains more elements than this threshold, a write to
 that collection triggers a soft-limit violation. Coordinator-side checks
@@ -658,14 +645,12 @@ detect a collection that became oversized across previous writes.</p></td>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_collection_elements_fail_threshold</span></code></p></td>
 <td><p>Hard limit</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">20000</span></code> elements</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
 <td><p>If a collection contains more elements than this threshold, writes
 targeting that collection are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">large_data_cql_warnings</span></code></p></td>
 <td><p>Warning output</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 <td><p>When set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, soft-limit violations are returned to CQL clients
 as protocol warnings in addition to being logged. When set to <code class="docutils literal notranslate"><span class="pre">false</span></code>,
 soft-limit violations are logged only. This setting does not affect
@@ -673,7 +658,6 @@ hard-limit enforcement.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_data_records_per_sstable</span></code></p></td>
 <td><p>Metadata</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
 <td><p>Controls how many large-data metadata records of each type ScyllaDB
 stores in each SSTable. Replica-side checks use these records to detect
@@ -1386,7 +1370,7 @@ applications during a migration). For details on the <code class="docutils liter
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Jul 2026.
+                        Last updated on 17 Jul 2026.
                     
                 </div>
             
