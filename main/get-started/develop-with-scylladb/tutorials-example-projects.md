@@ -1,0 +1,42 @@
+# Tutorials and Example Projects
+
+The tutorials and example project will help you learn how to use ScyllaDB
+as a data source for an application.
+
+## Getting Started with ScyllaDB Cloud
+
+[Getting Started with ScyllaDB Cloud](https://cloud-getting-started.scylladb.com/)
+is a step-by-step guide to building a Media Player project connected to
+ScyllaDB Cloud.
+
+It includes examples for NodeJS, Java, Python, Rust, Ruby, Elixir, C#, and
+Go.
+
+## Vector Search
+
+With the [Vector Search sample application tutorial](https://vector-search.scylladb.com/),
+you’ll learn how you can use ScyllaDB Vector Search to build RAG applications,
+semantic caching layers, and how it works together with popular LLM libraries
+like LlamaIndex and LangChain.
+
+## Video Streaming
+
+The [Video Streaming sample application](https://video-streaming.scylladb.com)
+will guide you through the process of creating a video streaming
+application using ScyllaDB Cloud and NextJS.
+
+## Care Pet Project
+
+[Care Pet](https://iot.scylladb.com/) is a step-by-step guide to building
+an IoT project connected to ScyllaDB Cloud.
+
+## ML Feature Store
+
+Our [Feature Store sample application and tutorial](https://feature-store.scylladb.com/)
+help you build a real-time feature store with ScyllaDB in Python.
+
+## Shopping Cart
+
+The [Shopping Cart sample application](https://shopping-cart.scylladb.com/stable/)
+will guide you through the process of creating a new ScyllaDB cluster and running
+the shopping cart API server.
