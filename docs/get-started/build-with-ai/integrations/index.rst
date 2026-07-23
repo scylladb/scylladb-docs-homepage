@@ -9,3 +9,4 @@ Use ScyllaDB with popular AI frameworks and tools.
 
    mcp-toolbox
    langgraph
+   feast
