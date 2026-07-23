@@ -185,6 +185,6 @@ Additional Resources
 
 * `Feast ScyllaDB online store reference <https://docs.feast.dev/master/reference/online-stores/scylladb>`_
 * `Feast website <https://feast.dev/>`_
-* `ScyllaDB Vector Search documentation <https://cloud.docs.scylladb.com/stable/vector-search/>`_
-* `ScyllaDB Cloud <https://cloud.scylladb.com/>`_
-* `ScyllaDB documentation <https://docs.scylladb.com/>`_
+* `Examples on GitHub <https://feature-store.scylladb.com/>`_
+* `Turbocharge your
+Feature Store with ScyllaDB <https://www.scylladb.com/solution/feature-store/>`_
