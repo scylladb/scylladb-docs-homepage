@@ -1,0 +1,41 @@
+# Enable Authentication
+
+Authentication is the process where login accounts and their passwords are verified, and the user is allowed access to the database. Authentication is done internally within ScyllaDB and is not done with a third party. Users and passwords are created with roles using a `CREATE ROLE` statement. Refer to [Grant Authorization CQL Reference](https://docs.scylladb.com/manual/master/operating-scylla/security/authorization.md) for details.
+
+The procedure described below enables Authentication on the ScyllaDB servers. It is intended to be used when you do **not** have applications running with ScyllaDB/Cassandra drivers.
+
+#### WARNING
+Once you enable authentication, all clients (such as applications using ScyllaDB/Apache Cassandra drivers) will **stop working** until they are updated or reconfigured to work with authentication.
+
+If this downtime is not an option, you can follow the instructions in [Enable and Disable Authentication Without Downtime](https://docs.scylladb.com/manual/master/operating-scylla/security/runtime-authentication.md), which using a transient state, allows clients to work with or without Authentication at the same time. In this state, you can update the clients (application using ScyllaDB/Apache Cassandra drivers) one at the time. Once all the clients are using Authentication, you can enforce Authentication on all ScyllaDB nodes as well.
+
+## Procedure
+
+1. For each ScyllaDB node in the cluster, edit the `/etc/scylla/scylla.yaml` file to change the `authenticator` parameter from `AllowAllAuthenticator` to `PasswordAuthenticator`.
+   ```yaml
+   authenticator: PasswordAuthenticator
+   ```
+2. Restart ScyllaDB.
+   > Supported OS
+   > ```shell
+   > sudo systemctl restart scylla-server
+   > ```
+
+   > Docker
+   > ```shell
+   > docker exec -it some-scylla supervisorctl restart scylla
+   > ```
+
+   > (without restarting *some-scylla* container)
+3. Start cqlsh over the maintenance socket and create a new superuser. See [Setting Up a Superuser Using the Maintenance Socket](https://docs.scylladb.com/manual/master/operating-scylla/security/create-superuser.md#create-superuser-using-maintenance-socket) for instructions.
+   > ```cql
+   > cqlsh <maintenance_socket_path>
+   > ```
+4. If you want to create users and roles, continue to [Enable Authorization](https://docs.scylladb.com/manual/master/operating-scylla/security/enable-authorization.md).
+
+## Additional Resources
+
+* [Enable and Disable Authentication Without Downtime](https://docs.scylladb.com/manual/master/operating-scylla/security/runtime-authentication.md)
+* [Enable Authorization](https://docs.scylladb.com/manual/master/operating-scylla/security/enable-authorization.md)
+* [Authorization](https://docs.scylladb.com/manual/master/operating-scylla/security/authorization.md)
+* [LDAP Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/ldap-authentication.md)
