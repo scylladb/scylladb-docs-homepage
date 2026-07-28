@@ -835,6 +835,15 @@ discard, or trim, any blocks no longer in use by the filesystem.</p>
 <p>In recent ScyllaDB versions, these features are controlled by the <code class="docutils literal notranslate"><span class="pre">experimental_features</span></code> list in scylla.yaml, allowing one to choose which experimental to enable.
 Use <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">--help</span></code> to get the list of experimental features.</p>
 </section>
+<section id="keyspace-storage-options">
+<span id="admin-keyspace-storage-options"></span><h2>Keyspace storage options<a class="headerlink" href="#keyspace-storage-options" title="Link to this heading">¶</a></h2>
+<p>By default, SStables of a keyspace are stored in a local directory.
+As an alternative, you can configure your keyspace to be stored
+on Amazon S3 or another S3-compatible object store.</p>
+<p>Before creating keyspaces with object storage, you need to
+<a class="reference internal" href="#object-storage-configuration"><span class="std std-ref">configure</span></a> the object storage
+credentials and endpoint.</p>
+</section>
 <section id="views-with-tablets">
 <span id="admin-views-with-tablets"></span><h2>Views with Tablets<a class="headerlink" href="#views-with-tablets" title="Link to this heading">¶</a></h2>
 <p>Materialized Views (MV) and Secondary Indexes (SI) are supported in keyspaces that use tablets
@@ -1114,6 +1123,7 @@ with the ScyllaDB REST API.</p>
 <li><a class="reference internal" href="#core-dumps">Core dumps</a></li>
 <li><a class="reference internal" href="#schedule-fstrim">Schedule fstrim</a></li>
 <li><a class="reference internal" href="#experimental-features">Experimental Features</a></li>
+<li><a class="reference internal" href="#keyspace-storage-options">Keyspace storage options</a></li>
 <li><a class="reference internal" href="#views-with-tablets">Views with Tablets</a></li>
 <li><a class="reference internal" href="#monitoring">Monitoring</a><ul>
 <li><a class="reference internal" href="#monitoring-interfaces">Monitoring Interfaces</a></li>
@@ -1640,7 +1650,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 27 Jul 2026.
+                        Last updated on 28 Jul 2026.
                     
                 </div>
             
