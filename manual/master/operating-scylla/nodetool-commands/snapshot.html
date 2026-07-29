@@ -396,7 +396,7 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span><span class="o">[(</span>-h<span class="w"> </span>&lt;host&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--host<span class="w"> </span>&lt;host&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[(</span>-p<span class="w"> </span>&lt;port&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--port<span class="w"> </span>&lt;port&gt;<span class="o">)]</span>
 <span class="w">     </span><span class="o">[(</span>-pp<span class="w"> </span><span class="p">|</span><span class="w"> </span>--print-port<span class="o">)]</span><span class="w"> </span><span class="o">[(</span>-pw<span class="w"> </span>&lt;password&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--password<span class="w"> </span>&lt;password&gt;<span class="o">)]</span>
 <span class="w">     </span><span class="o">[(</span>-pwf<span class="w"> </span>&lt;passwordFilePath&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--password-file<span class="w"> </span>&lt;passwordFilePath&gt;<span class="o">)]</span>
-<span class="w">     </span><span class="o">[(</span>-u<span class="w"> </span>&lt;username&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--username<span class="w"> </span>&lt;username&gt;<span class="o">)]</span><span class="w"> </span>snapshot
+<span class="w">     </span><span class="o">[(</span>-u<span class="w"> </span>&lt;username&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--username<span class="w"> </span>&lt;username&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[</span>cluster<span class="o">]</span><span class="w"> </span>snapshot
 <span class="w">     </span><span class="o">[(</span>-cf<span class="w"> </span>&lt;table&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--column-family<span class="w"> </span>&lt;table&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--table<span class="w"> </span>&lt;table&gt;<span class="o">)]</span>
 <span class="w">     </span><span class="o">[(</span>-kc<span class="w"> </span>&lt;kclist&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--kc.list<span class="w"> </span>&lt;kclist&gt;<span class="o">)]</span>
 <span class="w">     </span><span class="o">[(</span>-sf<span class="w"> </span><span class="p">|</span><span class="w"> </span>--skip-flush<span class="o">)]</span><span class="w"> </span><span class="o">[(</span>-t<span class="w"> </span>&lt;tag&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--tag<span class="w"> </span>&lt;tag&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[</span>--ttl<span class="w"> </span>&lt;ttl&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--<span class="o">]</span><span class="w"> </span><span class="o">[</span>&lt;keyspaces...&gt;<span class="o">]</span>
@@ -441,6 +441,8 @@ Missing TTL, or 0, means no TTL</p></td>
 </table>
 <p><code class="docutils literal notranslate"><span class="pre">--</span></code> This option can be used to separate command-line options from the list of argument, (useful when arguments might be mistaken for command-line options.</p>
 <p><code class="docutils literal notranslate"><span class="pre">[&lt;keyspaces...&gt;]</span></code> List of keyspaces. By default, all keyspaces.</p>
+<p>The ‘cluster snapshot’ version of this command will issue the snapshot on all nodes in the cluster, whereas
+the non-cluster version only operates on the destination node.</p>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
@@ -1139,7 +1141,7 @@ manifest.json
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Jul 2026.
+                        Last updated on 29 Jul 2026.
                     
                 </div>
             

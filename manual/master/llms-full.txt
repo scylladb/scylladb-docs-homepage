@@ -4191,6 +4191,44 @@ nodetool backup --endpoint s3.us-east-2.amazonaws.com  --bucket bucket-foo --pre
 * `--nowait` - Don’t wait on the backup process
 * `--move-files` - Move files instead of copying them. This will delete the files from the local disk after they are uploaded to the object storage.
 
+# Nodetool cluster backup
+
+**cluster backup** - Copy SSTables from a specified snapshot to a designated bucket in object storage
+
+Note that status of backup can be checked for `user_task_ttl` seconds after the operation is done.
+You can set the ttl using [nodetool tasks user-ttl](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/user-ttl.md).
+If `--nowait` flag is not set, the command relies on `user_task_ttl` internally.
+
+## Syntax
+
+```console
+nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)] cluster backup
+            [--keyspace <keyspace>] --table <table>
+            [--snapshot <snapshot>]
+            --location <dc>,<endpoint>,<bucket>(,<prefix>)
+            [--location <dc2>,<endpoint2>,<bucket2>(,<prefix2>)]...
+            [--nowait]
+            [--move-files]
+            [... keyspaces ...]
+```
+
+## Example
+
+```console
+nodetool cluster backup --locations mydc,s3.us-east-2.amazonaws.com,bucket-foo,foo/bar/baz --keyspace ks --table table --snapshot ss --move-files
+```
+
+## Options
+
+* `-h <host>` or `--host <host>` - Node hostname or IP address.
+* `--keyspace` - Name of a keyspace to copy SSTables from
+* `--table` - Name of a table to copy SSTables from
+* `--snapshot` - Name of a snapshot to copy sstables from
+* `--locations` - Tuple of <dc>,<endpoint>,<bucket> and optional <prefix> which to write the backup. This is set per DC
+  Endpoints should be configured as per [the object storage configuration instructions](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#object-storage-configuration).
+* `--nowait` - Don’t wait on the backup process
+* `--move-files` - Move files instead of copying them. This will delete the files from the local disk after they are uploaded to the object storage.
+
 See also
 
 [Nodetool restore](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/restore.md)
@@ -11672,7 +11710,7 @@ having the highest priority:
 > Total size in megabytes allocated for logstor storage on disk.
 
 > * **Type:** `uint32_t`
-> * **Default value:** `2048`
+> * **Default value:** `0`
 > * Liveness: `False`
 
 <a id="confprop-logstor-file-size-in-mb"></a>
@@ -11683,6 +11721,16 @@ having the highest priority:
 
 > * **Type:** `uint32_t`
 > * **Default value:** `32`
+> * Liveness: `False`
+
+<a id="confprop-logstor-format-on-startup"></a>
+
+### logstor_format_on_startup
+
+> Controls when logstor data files are formatted. When enabled, all logstor files are formatted during node startup, which increases startup time but ensures optimal write performance immediately after startup.     When disabled, logstor files are formatted lazily on first write, which reduces startup time but may cause slightly degraded write performance on first access to each file.
+
+> * **Type:** `bool`
+> * **Default value:** `true`
 > * Liveness: `False`
 
 <a id="confprop-logstor-separator-delay-limit-ms"></a>
@@ -38821,7 +38869,7 @@ The following documents will get you started with the Kafka Connector:
 nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)]
      [(-pp | --print-port)] [(-pw <password> | --password <password>)]
      [(-pwf <passwordFilePath> | --password-file <passwordFilePath>)]
-     [(-u <username> | --username <username>)] snapshot
+     [(-u <username> | --username <username>)] [cluster] snapshot
      [(-cf <table> | --column-family <table> | --table <table>)]
      [(-kc <kclist> | --kc.list <kclist>)]
      [(-sf | --skip-flush)] [(-t <tag> | --tag <tag>)] [--ttl <ttl>] [--] [<keyspaces...>]
@@ -38842,6 +38890,9 @@ nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)]
 `--` This option can be used to separate command-line options from the list of argument, (useful when arguments might be mistaken for command-line options.
 
 `[<keyspaces...>]` List of keyspaces. By default, all keyspaces.
+
+The ‘cluster snapshot’ version of this command will issue the snapshot on all nodes in the cluster, whereas
+the non-cluster version only operates on the destination node.
 
 ## Examples
 

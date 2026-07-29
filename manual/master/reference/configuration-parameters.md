@@ -532,7 +532,7 @@ having the highest priority:
 > Total size in megabytes allocated for logstor storage on disk.
 
 > * **Type:** `uint32_t`
-> * **Default value:** `2048`
+> * **Default value:** `0`
 > * Liveness: `False`
 
 <a id="confprop-logstor-file-size-in-mb"></a>
@@ -543,6 +543,16 @@ having the highest priority:
 
 > * **Type:** `uint32_t`
 > * **Default value:** `32`
+> * Liveness: `False`
+
+<a id="confprop-logstor-format-on-startup"></a>
+
+### logstor_format_on_startup
+
+> Controls when logstor data files are formatted. When enabled, all logstor files are formatted during node startup, which increases startup time but ensures optimal write performance immediately after startup.     When disabled, logstor files are formatted lazily on first write, which reduces startup time but may cause slightly degraded write performance on first access to each file.
+
+> * **Type:** `bool`
+> * **Default value:** `true`
 > * Liveness: `False`
 
 <a id="confprop-logstor-separator-delay-limit-ms"></a>
