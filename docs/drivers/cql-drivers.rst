@@ -146,6 +146,51 @@ and since which version.
      - N/A. This driver is no longer actively maintained.
 
 
+.. _cql-drivers-client-routes-support:
+
+Support for Client Routes
+-------------------------
+
+The `Client Routes <https://docs.scylladb.com/manual/stable/features/client-routes.html>`_
+feature allows drivers to use the proxy endpoints provided by AWS PrivateLink
+and Google Cloud Private Service Connect (PSC). The following table specifies
+which ScyllaDB drivers support Client Routes and since which version.
+
+.. list-table::
+   :widths: 30 35 35
+   :header-rows: 1
+
+   * - ScyllaDB Driver
+     - Support for Client Routes
+     - Since Version
+   * - `Python <https://python-driver.docs.scylladb.com/>`_
+     - |v|
+     - 3.29.9
+   * - `Java <https://java-driver.docs.scylladb.com/>`_
+     - |v|
+     - Java Driver 4.x: 4.19.0.7
+
+       Java Driver 3.x: not supported
+   * - `Go <https://github.com/scylladb/gocql>`_
+     - |v|
+     - 1.17.1 (recommended 1.18.1 or later)
+   * - `Rust <https://rust-driver.docs.scylladb.com/>`_
+     - |v|
+     - 1.6.0 with the ``unstable-client-routes`` Cargo feature enabled
+   * - `C# <https://csharp-driver.docs.scylladb.com/>`_
+     - |x|
+     - Not supported
+   * - `CPP RS <https://cpp-rs-driver.docs.scylladb.com/>`_
+     - |x|
+     - Not supported
+   * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
+     - |x|
+     - Not supported
+   * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
+     - |x|
+     - N/A. This driver is no longer actively maintained.
+
+
 .. _cql-drivers-vector-support:
 
 Support for Vector Search
@@ -190,7 +235,7 @@ and since which version.
      - |v|
      - All versions
    * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
-     - |x| 
+     - |x|
      - N/A. This driver is no longer actively maintained.
 
 CDC Integration with ScyllaDB Drivers
@@ -222,4 +267,4 @@ The following table specifies which ScyllaDB drivers include a library for
    * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
      - |x|
    * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
-     - |x| 
+     - |x|
