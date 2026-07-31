@@ -880,6 +880,31 @@ $LARGE_DATA_RECORD := {
 </pre></div>
 </div>
 </section>
+<section id="dump">
+<span id="scylla-sstable-dump-operation"></span><h3>dump<a class="headerlink" href="#dump" title="Link to this heading">¶</a></h3>
+<p>Dumps one or more components of the SSTable(s) into a single JSON object per
+SSTable. Useful when you need to inspect multiple components together without
+running separate commands.</p>
+<p>The components to dump are selected via <code class="docutils literal notranslate"><span class="pre">--components</span></code> (a comma-separated
+list of component names) or <code class="docutils literal notranslate"><span class="pre">--all-components</span></code> (to dump all supported
+components). If neither is provided, the command exits with an error.</p>
+<p>Supported component names: <code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">index</span></code>, <code class="docutils literal notranslate"><span class="pre">compression-info</span></code>,
+<code class="docutils literal notranslate"><span class="pre">summary</span></code>, <code class="docutils literal notranslate"><span class="pre">statistics</span></code>, <code class="docutils literal notranslate"><span class="pre">scylla-metadata</span></code>.</p>
+<p>The content is dumped in JSON, using the following schema:</p>
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $SSTABLE, ... }
+
+$SSTABLE := {
+    &quot;data&quot;:             &lt;same as dump-data $SSTABLE&gt;,             // optional
+    &quot;index&quot;:            &lt;same as dump-index $SSTABLE&gt;,            // optional
+    &quot;compression-info&quot;: &lt;same as dump-compression-info $SSTABLE&gt;, // optional
+    &quot;summary&quot;:          &lt;same as dump-summary $SSTABLE&gt;,          // optional
+    &quot;statistics&quot;:       &lt;same as dump-statistics $SSTABLE&gt;,       // optional
+    &quot;scylla-metadata&quot;:  &lt;same as dump-scylla-metadata $SSTABLE&gt;   // optional
+}
+</pre></div>
+</div>
+<p>Only the requested components appear as keys in the <code class="docutils literal notranslate"><span class="pre">$SSTABLE</span></code> object.</p>
+</section>
 <section id="dump-schema">
 <h3>dump-schema<a class="headerlink" href="#dump-schema" title="Link to this heading">¶</a></h3>
 <p>Dump the schema of the table or sstable in CQL describe table format.</p>
@@ -1362,6 +1387,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li><a class="reference internal" href="#dump-summary">dump-summary</a></li>
 <li><a class="reference internal" href="#dump-statistics">dump-statistics</a></li>
 <li><a class="reference internal" href="#dump-scylla-metadata">dump-scylla-metadata</a></li>
+<li><a class="reference internal" href="#dump">dump</a></li>
 <li><a class="reference internal" href="#dump-schema">dump-schema</a></li>
 <li><a class="reference internal" href="#validate">validate</a></li>
 <li><a class="reference internal" href="#scrub">scrub</a></li>
@@ -1895,7 +1921,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Jul 2026.
+                        Last updated on 31 Jul 2026.
                     
                 </div>
             
