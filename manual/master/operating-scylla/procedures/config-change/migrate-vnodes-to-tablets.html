@@ -464,7 +464,11 @@ For guidance, see <a class="reference internal" href="../../../cql/ddl.html#ddl-
 <h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
 <p>The current migration procedure has the following limitations:</p>
 <ul class="simple">
-<li><p>Only <strong>single-DC clusters</strong> are supported.</p></li>
+<li><p><strong>Multi-DC clusters</strong> are supported, but every datacenter in the migrating
+keyspace’s replication strategy must have a replication factor of at least one.
+Datacenters with a replication factor of zero (RF=0) are not yet supported.</p></li>
+<li><p>Clusters with <a class="reference internal" href="../../../architecture/zero-token-nodes.html"><span class="doc">zero-token nodes</span></a> are
+not yet supported.</p></li>
 <li><p><strong>No schema changes</strong> during the migration. Do not create, alter, or drop
 tables in the migrating keyspace until the migration is finished.</p></li>
 <li><p><strong>No topology changes</strong> during the migration. Do not add, remove, decommission,
@@ -1236,6 +1240,7 @@ migration in one pass.</p></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1471,7 +1476,7 @@ migration in one pass.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Aug 2026.
+                        Last updated on 05 Aug 2026.
                     
                 </div>
             
