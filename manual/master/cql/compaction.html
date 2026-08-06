@@ -445,6 +445,7 @@
   <span class="s1">&#39;bucket_high&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
   <span class="s1">&#39;bucket_low&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
   <span class="s1">&#39;min_sstable_size&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">&#39;min_sstable_age&#39;</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
   <span class="s1">&#39;min_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
   <span class="s1">&#39;max_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">}</span>
 </pre></div>
@@ -466,7 +467,14 @@
 </dl>
 <hr class="docutils" />
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> (default: 52,428,800)</dt><dd><p>All SSTables smaller than this number of bytes are put into the same bucket.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> (default: 52,428,800)</dt><dd><p>All SSTables smaller than this number of bytes are eligible to be put into the same bucket, provided they are at least <code class="docutils literal notranslate"><span class="pre">min_sstable_age</span></code> old.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_age</span></code> (default: 3600)</dt><dd><p>The minimum age, in seconds, an SSTable must have before it is eligible to be put into the same bucket as other SSTables smaller than <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code>.
+SSTables smaller than <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> that were written more recently than this are kept in their own size tier, so that similarly sized SSTables
+are compacted together while they are still being actively written, avoiding excessive write amplification.</p>
 </dd>
 </dl>
 <hr class="docutils" />
@@ -526,6 +534,7 @@ configuration option is set in the scylla.yaml configuration file.</p>
   <span class="s1">&#39;bucket_high&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
   <span class="s1">&#39;bucket_low&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
   <span class="s1">&#39;min_sstable_size&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">&#39;min_sstable_age&#39;</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
   <span class="s1">&#39;min_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
   <span class="s1">&#39;max_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
   <span class="s1">&#39;sstable_size_in_mb&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -552,9 +561,16 @@ So, the SSTable will not be added to the bucket.</p>
 </dl>
 <hr class="docutils" />
 <dl>
-<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> (default: 50)</dt><dd><p>All SSTables smaller than this number of megabytes are put into the same bucket.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> (default: 50)</dt><dd><p>All SSTables smaller than this number of megabytes are eligible to be put into the same bucket, provided they are at least <code class="docutils literal notranslate"><span class="pre">min_sstable_age</span></code> old.</p>
 <p>Unlike Apache Cassandra, scylla uses <strong>uncompressed</strong> size when bucketing similar-sized tiers together.
 Since compaction works on uncompressed data, SSTables containing similar amounts of data should be compacted together, even when they have different compression ratios.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_age</span></code> (default: 3600)</dt><dd><p>The minimum age, in seconds, an SSTable must have before it is eligible to be put into the same bucket as other SSTables smaller than <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code>.
+SSTables smaller than <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> that were written more recently than this are kept in their own size tier, so that similarly sized SSTables
+are compacted together while they are still being actively written, avoiding excessive write amplification.</p>
 </dd>
 </dl>
 <hr class="docutils" />
@@ -986,6 +1002,7 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -1314,7 +1331,7 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Aug 2026.
+                        Last updated on 06 Aug 2026.
                     
                 </div>
             

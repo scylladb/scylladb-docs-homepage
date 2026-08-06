@@ -20,6 +20,7 @@
 * [Grant Authorization CQL Reference](https://docs.scylladb.com/manual/master/operating-scylla/security/authorization.md)
 * [Reset Authenticator Password](https://docs.scylladb.com/manual/master/troubleshooting/password-reset.md)
 * [Certificate Based Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/certificate-authentication.md)
+* [Certificate or Password Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/certificate-or-password-authentication.md)
 
 </div></div>
             <div class="cell my-panel">

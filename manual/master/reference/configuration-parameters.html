@@ -2234,6 +2234,7 @@ The change will take effect without a node restart, changing the value in the co
 <li><p>org.apache.cassandra.auth.AllowAllAuthenticator: Disables authentication; no checks are performed.</p></li>
 <li><p>org.apache.cassandra.auth.PasswordAuthenticator: Authenticates users with user names and hashed passwords stored in the system_auth.credentials table. If you use the default, 1, and the node with the lone replica goes down, you will not be able to log into the cluster because the system_auth keyspace was not replicated.</p></li>
 <li><p>com.scylladb.auth.CertificateAuthenticator: Authenticates users based on TLS certificate authentication subject. Roles and permissions still need to be defined as normal. Super user can be set using the ‘auth_superuser_name’ configuration value. Query to extract role name from subject string is set using ‘auth_certificate_role_queries’.</p></li>
+<li><p>com.scylladb.auth.CertificateOrPasswordAuthenticator: Accepts either a TLS client certificate (role name derived via ‘auth_certificate_role_queries’, no SASL exchange) or a username/password pair (SASL). Designed for use with a truststore and require_client_auth=optional (REQUEST mode), enabling a single CQL port to serve both certificate-bearing and password-authenticated clients.</p></li>
 <li><p>com.scylladb.auth.TransitionalAuthenticator: Wraps around the PasswordAuthenticator, logging them in if username/password pair provided is correct and treating them as anonymous users otherwise.</p></li>
 <li><p>com.scylladb.auth.SaslauthdAuthenticator : Use saslauthd for authentication.</p></li>
 </ul>
@@ -2346,7 +2347,7 @@ The change will take effect without a node restart, changing the value in the co
 <p>The advanced settings are:</p>
 <ul class="simple">
 <li><p>priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
-<li><p>require_client_auth: (Default: false ) Enables or disables certificate authentication.</p></li>
+<li><p>require_client_auth: (Default: false) Controls peer certificate verification. Valid values: true (require a peer certificate), false (no peer certificate), optional (request but do not require a peer certificate).</p></li>
 </ul>
 <p>Related information: Node-to-node encryption</p>
 </dd>
@@ -2375,7 +2376,7 @@ The change will take effect without a node restart, changing the value in the co
 <p>The advanced settings are:</p>
 <ul class="simple">
 <li><p>priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
-<li><p>require_client_auth: (Default: false) Enables or disables certificate authentication.</p></li>
+<li><p>require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to other mechanisms, e.g., password for CQL CertificateOrPasswordAuthenticator).</p></li>
 <li><p>enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.</p></li>
 </ul>
 <p>Related information: Client-to-node encryption</p>
@@ -2398,10 +2399,12 @@ The change will take effect without a node restart, changing the value in the co
 <dt>When Alternator via HTTPS is enabled with alternator_https_port, where to take the key and certificate. The available options are:</dt><dd><ul class="simple">
 <li><p>certificate: (Default: conf/scylla.crt) The location of a PEM-encoded x509 certificate used to identify and encrypt the client/server communication.</p></li>
 <li><p>keyfile: (Default: conf/scylla.key) PEM Key file associated with certificate.</p></li>
+<li><p>truststore: (Default: &lt;not set, use system truststore&gt;) Location of the truststore containing the trusted certificate for authenticating client certificates.</p></li>
 </ul>
 <p>The advanced settings are:</p>
 <ul class="simple">
 <li><p>priority_string: GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
+<li><p>require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to SigV4 signatures in requests).</p></li>
 <li><p>enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.</p></li>
 </ul>
 </dd>
@@ -3766,6 +3769,20 @@ The change will take effect without a node restart, changing the value in the co
 <span class="sig-name descname"><span class="pre">cql_duplicate_bind_variable_names_refer_to_same_variable</span></span><a class="headerlink" href="#confval-cql_duplicate_bind_variable_names_refer_to_same_variable" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>A bind variable that appears twice in a CQL query refers to a single variable (if false, no name matching is performed).</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-cql-in-bind-variable-name-uses-uppercase-operator">
+<dt class="sig sig-object std" id="confval-cql_in_bind_variable_name_uses_uppercase_operator">
+<span class="sig-name descname"><span class="pre">cql_in_bind_variable_name_uses_uppercase_operator</span></span><a class="headerlink" href="#confval-cql_in_bind_variable_name_uses_uppercase_operator" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Name the bind variable of an IN restriction IN(column)(if false, the operator is spelled in lowercase, in(column)</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -5597,6 +5614,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -5925,7 +5943,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Aug 2026.
+                        Last updated on 06 Aug 2026.
                     
                 </div>
             

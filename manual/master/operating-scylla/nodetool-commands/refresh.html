@@ -394,6 +394,13 @@
 <p class="admonition-title">Note</p>
 <p>ScyllaDB node will ignore the partitions in the sstables which are not assigned to this node. For example, if sstable are copied from a different node.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code> (with or without <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code>) runs in the same I/O scheduling
+group as backup and restore, and is therefore throttled by the
+<a class="reference internal" href="../../reference/configuration-parameters.html#confprop-backup-io-throughput-mb-per-sec"><span class="std std-ref">backup_io_throughput_mb_per_sec</span></a> setting rather than
+<a class="reference internal" href="../../reference/configuration-parameters.html#confprop-stream-io-throughput-mb-per-sec"><span class="std std-ref">stream_io_throughput_mb_per_sec</span></a>.</p>
+</div>
 <p>Execute the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code> command</p>
 <p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span> <span class="pre">&lt;my_keyspace&gt;</span> <span class="pre">&lt;my_table&gt;</span></code></p>
 <p>For example:</p>
@@ -754,6 +761,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l3"><a class="reference internal" href="../security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -1082,7 +1090,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Aug 2026.
+                        Last updated on 06 Aug 2026.
                     
                 </div>
             

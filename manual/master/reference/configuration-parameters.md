@@ -1346,6 +1346,7 @@ having the highest priority:
 > : * org.apache.cassandra.auth.AllowAllAuthenticator: Disables authentication; no checks are performed.
 >   * org.apache.cassandra.auth.PasswordAuthenticator: Authenticates users with user names and hashed passwords stored in the system_auth.credentials table. If you use the default, 1, and the node with the lone replica goes down, you will not be able to log into the cluster because the system_auth keyspace was not replicated.
 >   * com.scylladb.auth.CertificateAuthenticator: Authenticates users based on TLS certificate authentication subject. Roles and permissions still need to be defined as normal. Super user can be set using the ‘auth_superuser_name’ configuration value. Query to extract role name from subject string is set using ‘auth_certificate_role_queries’.
+>   * com.scylladb.auth.CertificateOrPasswordAuthenticator: Accepts either a TLS client certificate (role name derived via ‘auth_certificate_role_queries’, no SASL exchange) or a username/password pair (SASL). Designed for use with a truststore and require_client_auth=optional (REQUEST mode), enabling a single CQL port to serve both certificate-bearing and password-authenticated clients.
 >   * com.scylladb.auth.TransitionalAuthenticator: Wraps around the PasswordAuthenticator, logging them in if username/password pair provided is correct and treating them as anonymous users otherwise.
 >   * com.scylladb.auth.SaslauthdAuthenticator : Use saslauthd for authentication.
 >   <br/>
@@ -1421,7 +1422,7 @@ having the highest priority:
 >   The advanced settings are:
 >   <br/>
 >   * priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.
->   * require_client_auth: (Default: false ) Enables or disables certificate authentication.
+>   * require_client_auth: (Default: false) Controls peer certificate verification. Valid values: true (require a peer certificate), false (no peer certificate), optional (request but do not require a peer certificate).
 >   <br/>
 >   Related information: Node-to-node encryption
 
@@ -1443,7 +1444,7 @@ having the highest priority:
 >   The advanced settings are:
 >   <br/>
 >   * priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.
->   * require_client_auth: (Default: false) Enables or disables certificate authentication.
+>   * require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to other mechanisms, e.g., password for CQL CertificateOrPasswordAuthenticator).
 >   * enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.
 >   <br/>
 >   Related information: Client-to-node encryption
@@ -1459,10 +1460,12 @@ having the highest priority:
 > When Alternator via HTTPS is enabled with alternator_https_port, where to take the key and certificate. The available options are:
 > : * certificate: (Default: conf/scylla.crt) The location of a PEM-encoded x509 certificate used to identify and encrypt the client/server communication.
 >   * keyfile: (Default: conf/scylla.key) PEM Key file associated with certificate.
+>   * truststore: (Default: <not set, use system truststore>) Location of the truststore containing the trusted certificate for authenticating client certificates.
 >   <br/>
 >   The advanced settings are:
 >   <br/>
 >   * priority_string: GnuTLS priority string controlling TLS algorithms used/allowed.
+>   * require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to SigV4 signatures in requests).
 >   * enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.
 
 > * **Type:** `string_map`
@@ -2430,6 +2433,16 @@ having the highest priority:
 ### cql_duplicate_bind_variable_names_refer_to_same_variable
 
 > A bind variable that appears twice in a CQL query refers to a single variable (if false, no name matching is performed).
+
+> * **Type:** `bool`
+> * **Default value:** `true`
+> * Liveness: `True`
+
+<a id="confprop-cql-in-bind-variable-name-uses-uppercase-operator"></a>
+
+### cql_in_bind_variable_name_uses_uppercase_operator
+
+> Name the bind variable of an IN restriction IN(column)(if false, the operator is spelled in lowercase, in(column)
 
 > * **Type:** `bool`
 > * **Default value:** `true`

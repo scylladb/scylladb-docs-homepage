@@ -420,9 +420,13 @@ for more details on how to configure the upload method.</p>
 <li><p><strong>Native Configuration</strong>:</p>
 <ul class="simple">
 <li><p>For <cite>native</cite> backup to work without interference to users’ workload, it is
-best to limit io-scheduling. See <a class="reference internal" href="../reference/configuration-parameters.html#confprop-stream-io-throughput-mb-per-sec"><span class="std std-ref">stream_io_throughput_mb_per_sec</span></a> for details.</p></li>
+best to limit io-scheduling. See <a class="reference internal" href="../reference/configuration-parameters.html#confprop-backup-io-throughput-mb-per-sec"><span class="std std-ref">backup_io_throughput_mb_per_sec</span></a> for details.</p></li>
 <li><p>For <cite>native</cite> backup to work, ScyllaDB node must have access to the S3 bucket.
 See <a class="reference internal" href="../operating-scylla/admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a> for details.</p></li>
+<li><p>The restore process, as well as <a class="reference internal" href="../operating-scylla/nodetool-commands/refresh.html"><span class="doc">nodetool refresh</span></a>
+(with or without <a class="reference internal" href="../operating-scylla/nodetool-commands/refresh.html#nodetool-refresh-load-and-stream"><span class="std std-ref">–load-and-stream</span></a>), run in the same I/O
+scheduling group as backup and are throttled by the same
+<a class="reference internal" href="../reference/configuration-parameters.html#confprop-backup-io-throughput-mb-per-sec"><span class="std std-ref">backup_io_throughput_mb_per_sec</span></a> setting.</p></li>
 </ul>
 </li>
 </ol>
@@ -740,6 +744,7 @@ See <a class="reference external" href="https://manager.docs.scylladb.com/stable
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -1068,7 +1073,7 @@ See <a class="reference external" href="https://manager.docs.scylladb.com/stable
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Aug 2026.
+                        Last updated on 06 Aug 2026.
                     
                 </div>
             

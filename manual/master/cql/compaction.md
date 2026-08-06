@@ -84,6 +84,7 @@ compaction = {
   'bucket_high' : factor,
   'bucket_low' : factor,
   'min_sstable_size' : int,
+  'min_sstable_age' : sec,
   'min_threshold' : num_sstables,
   'max_threshold' : num_sstables}
 ```
@@ -111,7 +112,14 @@ compaction = {
 ---
 
 `min_sstable_size` (default: 52,428,800)
-: All SSTables smaller than this number of bytes are put into the same bucket.
+: All SSTables smaller than this number of bytes are eligible to be put into the same bucket, provided they are at least `min_sstable_age` old.
+
+---
+
+`min_sstable_age` (default: 3600)
+: The minimum age, in seconds, an SSTable must have before it is eligible to be put into the same bucket as other SSTables smaller than `min_sstable_size`.
+  SSTables smaller than `min_sstable_size` that were written more recently than this are kept in their own size tier, so that similarly sized SSTables
+  are compacted together while they are still being actively written, avoiding excessive write amplification.
 
 ---
 
@@ -180,6 +188,7 @@ compaction = {
   'bucket_high' : factor,
   'bucket_low' : factor,
   'min_sstable_size' : int,
+  'min_sstable_age' : sec,
   'min_threshold' : num_sstables,
   'max_threshold' : num_sstables,
   'sstable_size_in_mb' : int,
@@ -207,10 +216,17 @@ compaction = {
 ---
 
 `min_sstable_size` (default: 50)
-: All SSTables smaller than this number of megabytes are put into the same bucket.
+: All SSTables smaller than this number of megabytes are eligible to be put into the same bucket, provided they are at least `min_sstable_age` old.
   <br/>
   Unlike Apache Cassandra, scylla uses **uncompressed** size when bucketing similar-sized tiers together.
   Since compaction works on uncompressed data, SSTables containing similar amounts of data should be compacted together, even when they have different compression ratios.
+
+---
+
+`min_sstable_age` (default: 3600)
+: The minimum age, in seconds, an SSTable must have before it is eligible to be put into the same bucket as other SSTables smaller than `min_sstable_size`.
+  SSTables smaller than `min_sstable_size` that were written more recently than this are kept in their own size tier, so that similarly sized SSTables
+  are compacted together while they are still being actively written, avoiding excessive write amplification.
 
 ---
 

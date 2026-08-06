@@ -31,9 +31,13 @@ Restoring to a live cluster is not yet supported.
      > for more details on how to configure the upload method.
 3. **Native Configuration**:
    * For native backup to work without interference to users’ workload, it is
-     best to limit io-scheduling. See [stream_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md#confprop-stream-io-throughput-mb-per-sec) for details.
+     best to limit io-scheduling. See [backup_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md#confprop-backup-io-throughput-mb-per-sec) for details.
    * For native backup to work, ScyllaDB node must have access to the S3 bucket.
      See [Configuring Object Storage](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#object-storage-configuration) for details.
+   * The restore process, as well as [nodetool refresh](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/refresh.md)
+     (with or without [–load-and-stream](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/refresh.md#nodetool-refresh-load-and-stream)), run in the same I/O
+     scheduling group as backup and are throttled by the same
+     [backup_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md#confprop-backup-io-throughput-mb-per-sec) setting.
 
 ## Restore Process
 
