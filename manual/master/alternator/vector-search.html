@@ -709,7 +709,7 @@ vector search rather than a standard key-condition query.</p>
 <td><p>Must match the <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> configured for the named vector index.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Limit</span></code></p></td>
-<td><p>Required. Defines <em>k</em> — how many nearest neighbors to return. Must be a positive integer.</p></td>
+<td><p>Required. Defines <em>k</em> — how many nearest neighbors to return. Must be a positive integer no greater than 1000.</p></td>
 </tr>
 </tbody>
 </table>
@@ -722,7 +722,9 @@ the number of items examined per page, and you page through results with
 <code class="docutils literal notranslate"><span class="pre">ExclusiveStartKey</span></code>. In vector search, <code class="docutils literal notranslate"><span class="pre">Limit</span></code> defines <em>k</em>: the ANN
 algorithm runs once and returns exactly the <em>k</em> nearest neighbors. There
 is no natural “next page” — each page would require a full re-run of the
-search — so <strong><code class="docutils literal notranslate"><span class="pre">ExclusiveStartKey</span></code> is rejected</strong>.</p></li>
+search — so <strong><code class="docutils literal notranslate"><span class="pre">ExclusiveStartKey</span></code> is rejected</strong>. Because vector search does
+not support pagination, <code class="docutils literal notranslate"><span class="pre">Limit</span></code> is capped at 1000; if you need more results
+you must issue separate queries with different query vectors.</p></li>
 <li><p><strong>Results are ordered by vector distance, not by sort key.</strong> A standard
 Query returns rows in sort-key order; <code class="docutils literal notranslate"><span class="pre">ScanIndexForward=false</span></code> reverses
 that order. Vector search always returns results ordered by their distance
@@ -732,12 +734,6 @@ direction has no meaning here, so <strong><code class="docutils literal notransl
 asynchronously from ScyllaDB via CDC. Like GSIs, vector indexes can never
 reflect writes instantly, so strongly-consistent reads are impossible.
 <strong><code class="docutils literal notranslate"><span class="pre">ConsistentRead=true</span></code> is rejected.</strong></p></li>
-<li><p><strong>No key condition.</strong> A standard Query requires a <code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code>
-to select which partition to read. Vector search queries the vector store
-globally across all partitions of the table. <code class="docutils literal notranslate"><span class="pre">KeyConditions</span></code> and
-<code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code> are therefore not applicable and are silently
-ignored. (Local vector indexes, which would scope the search to a single
-partition and use <code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code>, are not yet supported.)</p></li>
 </ul>
 <p><strong>Select parameter:</strong></p>
 <p>The standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Select</span></code> parameter is supported for vector search queries
@@ -776,17 +772,36 @@ through a secondary index (rather than a materialized view) in CQL — and is
 therefore significantly slower than returning only projected attributes with
 <code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code>.  For latency-sensitive applications, prefer
 <code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code> or limiting <code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> to key columns.</p>
-<p><strong>FilterExpression:</strong></p>
-<p>Vector search supports <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> for post-filtering results. This
-works the same way as <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> on a standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Query</span></code>: after
-the ANN search, the filter is applied to each candidate item and only matching
-items are returned.</p>
-<p><strong>Important:</strong> filtering happens <em>after</em> the <code class="docutils literal notranslate"><span class="pre">Limit</span></code> nearest neighbors have
-already been selected by the vector index. If the filter discards some of
-those candidates, the response may contain <strong>fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items</strong>. The
-server does not automatically fetch additional neighbors to replace filtered-out
-items. This is identical to how <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> interacts with <code class="docutils literal notranslate"><span class="pre">Limit</span></code> in a
-standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Query</span></code>.</p>
+<p><strong>Filtering: pre-filter and post-filter:</strong></p>
+<p>Vector search supports two complementary filtering mechanisms:</p>
+<p><strong>Pre-filtering (<code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code>):</strong> conditions are sent to the vector
+store before the ANN search, so the search is performed only over matching
+items. Because pre-filtering is evaluated inside the vector store, only
+attributes that are projected into the vector index can be referenced — today
+that means the base table’s key columns (hash key and range key if present).
+Supported operators are <code class="docutils literal notranslate"><span class="pre">=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">IN</span></code>, and <code class="docutils literal notranslate"><span class="pre">BETWEEN</span></code>;
+conditions are combined with <code class="docutils literal notranslate"><span class="pre">AND</span></code>. <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> are rejected because the
+vector store’s pre-filter API only accepts a flat list of conditions implicitly
+ANDed together. The <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> (not-equal) operator is also rejected. In cases where
+<code class="docutils literal notranslate"><span class="pre">OR</span></code> would otherwise test a single attribute against multiple values, <code class="docutils literal notranslate"><span class="pre">IN</span></code> can
+often serve as a replacement: instead of <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">:v1</span> <span class="pre">OR</span> <span class="pre">p</span> <span class="pre">=</span> <span class="pre">:v2</span></code>, write
+<code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">IN</span> <span class="pre">(:v1,</span> <span class="pre">:v2)</span></code>. <code class="docutils literal notranslate"><span class="pre">KeyConditions</span></code> (the legacy non-expression API) is <strong>not</strong>
+supported and will be rejected with a <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>.</p>
+<p>Pre-filtering searches only within the matching subset and returns the items
+most similar to the query vector, but the result count is <strong>not</strong> guaranteed
+to reach <code class="docutils literal notranslate"><span class="pre">Limit</span></code>: the underlying ANN algorithm explores a bounded neighborhood
+of the graph and may return fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items even when enough matching
+items exist in the index. There is no automatic retry to fill missing slots.</p>
+<p><strong>Post-filtering (<code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code>):</strong> after the ANN search returns its <code class="docutils literal notranslate"><span class="pre">Limit</span></code>
+nearest-neighbor candidates, the filter is applied to each candidate and only
+matching items are returned. Because filtering happens <em>after</em> the <code class="docutils literal notranslate"><span class="pre">Limit</span></code>
+candidates have already been selected, some may be discarded, and the response
+may contain <strong>fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items</strong>. The server does not automatically
+fetch additional neighbors to replace filtered-out items. Any attribute may be
+referenced in a <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code>, not only projected columns. This is
+identical to how <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> interacts with <code class="docutils literal notranslate"><span class="pre">Limit</span></code> in a standard
+DynamoDB <code class="docutils literal notranslate"><span class="pre">Query</span></code>. <code class="docutils literal notranslate"><span class="pre">QueryFilter</span></code> (the legacy non-expression filter API) is <strong>not</strong>
+supported and will be rejected with a <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>.</p>
 <p>The response always includes two count fields:</p>
 <table class="docutils align-default">
 <thead>
@@ -796,7 +811,7 @@ standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Q
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code></p></td>
-<td><p>The number of candidates returned by the vector index (always equal to <code class="docutils literal notranslate"><span class="pre">Limit</span></code>, unless the table contains fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items).</p></td>
+<td><p>The number of candidates returned by the vector index. Normally equal to <code class="docutils literal notranslate"><span class="pre">Limit</span></code>, but may be less if there are fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items in the table (or matching the pre-filtering condition), or if the approximate ANN search did not find enough candidates.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Count</span></code></p></td>
 <td><p>The number of items that passed the <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> (or equal to <code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code> when no filter is present).</p></td>
@@ -825,11 +840,6 @@ any base-table reads. When a <code class="docutils literal notranslate"><span cl
 item must be fetched from the base table to evaluate the filter, and only the
 projected (key) attributes are returned for items that pass.</p></li>
 </ul>
-<blockquote>
-<div><p><strong>Note:</strong> <code class="docutils literal notranslate"><span class="pre">QueryFilter</span></code> (the legacy non-expression filter API) is <strong>not</strong>
-supported for vector search queries and will be rejected with a
-<code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>. Use <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> instead.</p>
-</div></blockquote>
 <p><strong>ReturnScores field:</strong></p>
 <p>By default, a vector search <code class="docutils literal notranslate"><span class="pre">Query</span></code> response contains only the matched items
 (or a count) — it does not include how similar each result is to the query
@@ -1562,7 +1572,7 @@ monitoring vector search activity:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 06 Aug 2026.
+                        Last updated on 07 Aug 2026.
                     
                 </div>
             
