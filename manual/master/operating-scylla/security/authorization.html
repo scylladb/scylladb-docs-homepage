@@ -658,6 +658,7 @@ following permissions changes.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">AUTHORIZE</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code></p></li>
 </ul>
 <p>Attempting to <code class="docutils literal notranslate"><span class="pre">GRANT</span></code> permission on a resource to which it cannot be applied results in an error response. The following illustrates which
 permissions can be granted on which types of resources, and which statements are enabled by that permission.</p>
@@ -748,17 +749,31 @@ permissions can be granted on which types of resources, and which statements are
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">KEYSPACES</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with vector search indexes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with vector search indexes, and on some <a class="reference internal" href="#external-index-system-tables"><span class="std std-ref">system tables</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">KEYSPACES</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with full-text search indexes, and on some <a class="reference internal" href="#external-index-system-tables"><span class="std std-ref">system tables</span></a></p></td>
 </tr>
 </tbody>
 </table>
+<p id="external-index-system-tables">Both the <code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code> and <code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code> permissions also grant <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on the following
+system tables, which the external Vector Store engine reads to track schema changes, tablet placement, and CDC
+streams for the tables it indexes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">system.group0_history</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.versions</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.cdc_streams</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.cdc_timestamps</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.tablets</span></code></p></li>
+</ul>
 </section>
 <section id="grant-permission">
 <span id="grant-permission-statement"></span><h3>GRANT PERMISSION<a class="headerlink" href="#grant-permission" title="Link to this heading">¶</a></h3>
 <p>Granting permission uses the <code class="docutils literal notranslate"><span class="pre">GRANT</span> <span class="pre">PERMISSION</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">grant_permission_statement</span><span class="p">:</span> <span class="k">GRANT</span> <span class="o">`</span><span class="k">permissions</span><span class="o">`</span> <span class="k">ON</span> <span class="o">`</span><span class="n">resource</span><span class="o">`</span> <span class="k">TO</span> <span class="o">`</span><span class="n">user_name</span><span class="o">`</span>
 <span class="k">permissions</span><span class="p">:</span> <span class="k">ALL</span> <span class="p">[</span> <span class="k">PERMISSIONS</span> <span class="p">]</span> <span class="o">|</span> <span class="o">`</span><span class="k">permission</span><span class="o">`</span> <span class="p">[</span> <span class="k">PERMISSION</span> <span class="p">]</span>
-<span class="k">permission</span><span class="p">:</span> <span class="k">CREATE</span> <span class="o">|</span> <span class="k">ALTER</span> <span class="o">|</span> <span class="k">DROP</span> <span class="o">|</span> <span class="k">SELECT</span> <span class="o">|</span> <span class="k">MODIFY</span> <span class="o">|</span> <span class="k">AUTHORIZE</span> <span class="o">|</span> <span class="k">DESCRIBE</span>
+<span class="k">permission</span><span class="p">:</span> <span class="k">CREATE</span> <span class="o">|</span> <span class="k">ALTER</span> <span class="o">|</span> <span class="k">DROP</span> <span class="o">|</span> <span class="k">SELECT</span> <span class="o">|</span> <span class="k">MODIFY</span> <span class="o">|</span> <span class="k">AUTHORIZE</span> <span class="o">|</span> <span class="k">DESCRIBE</span> <span class="o">|</span> <span class="n">VECTOR_SEARCH_INDEXING</span> <span class="o">|</span> <span class="n">TEXT_SEARCH_INDEXING</span>
 <span class="n">resource</span><span class="p">:</span> <span class="k">ALL</span> <span class="k">KEYSPACES</span>
         <span class="p">:</span><span class="o">|</span> <span class="k">KEYSPACE</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span>
         <span class="p">:</span><span class="o">|</span> <span class="p">[</span> <span class="k">TABLE</span> <span class="p">]</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
@@ -1508,7 +1523,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Aug 2026.
+                        Last updated on 08 Aug 2026.
                     
                 </div>
             

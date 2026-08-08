@@ -714,6 +714,35 @@ must have the same type, and occupy one slot in the bind variable metadata.</p><
 <p>ScyllaDB can revert to the Cassandra treatment by setting the configuration item
 <code class="docutils literal notranslate"><span class="pre">cql_duplicate_bind_variable_names_refer_to_same_variable</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
 </section>
+<section id="name-of-the-bind-variable-of-an-in-restriction">
+<h3>Name of the bind variable of an IN restriction<a class="headerlink" href="#name-of-the-bind-variable-of-an-in-restriction" title="Link to this heading">¶</a></h3>
+<p>The right-hand side of an <code class="docutils literal notranslate"><span class="pre">IN</span></code> restriction (example: <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">c</span> <span class="pre">IN</span> <span class="pre">?</span></code>) is a synthetic bind
+variable whose name is reported to drivers in the prepared statement metadata. Cassandra
+names it <code class="docutils literal notranslate"><span class="pre">in(column)</span></code>, while ScyllaDB names it <code class="docutils literal notranslate"><span class="pre">IN(column)</span></code>.</p>
+<p>Applications that bind this variable by name, and want the Cassandra spelling, can get it
+by setting the configuration item <code class="docutils literal notranslate"><span class="pre">cql_in_bind_variable_name_uses_uppercase_operator</span></code> to
+<code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
+<p>The name is chosen when a statement is prepared, and the item is part of the prepared
+statement cache key. Statements prepared after a change on a running node therefore get
+fresh cache entries and report the new name. Executing a statement prepared under the
+previous setting makes the node report it as unknown, upon which drivers prepare it
+again transparently.</p>
+<p>To change the item on a live cluster, set it on every node and have applications pick up
+the new name from the refreshed prepared statement metadata. Until every node has been
+switched, different coordinators can report different names for the same query, so
+applications should be able to bind either spelling while the change is being rolled out.</p>
+<p>Leaving nodes with different values for longer than that is not supported. Most drivers
+resolve the name to a position when the values are bound, using the metadata of the node the
+statement was prepared against, and then send the values positionally; those are unaffected
+by a coordinator that would have spelled the name differently. A driver that instead sends
+the names together with the values leaves the matching to the coordinator, which compares
+them against its own copy of the prepared statement. A request reaching a node that prepared
+the statement under the other spelling then fails with
+<code class="docutils literal notranslate"><span class="pre">Missing</span> <span class="pre">value</span> <span class="pre">for</span> <span class="pre">bind</span> <span class="pre">marker</span> <span class="pre">with</span> <span class="pre">name:</span> <span class="pre">...</span></code> instead of falling back to the other spelling.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">IN</span></code> restriction is a ScyllaDB extension with no Cassandra counterpart, and its
+bind variable follows the same convention: <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">IN(column)</span></code>, or <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">in(column)</span></code> when the
+operator is spelled in lowercase.</p>
+</section>
 <section id="lists-elements-for-filtering">
 <h3>Lists elements for filtering<a class="headerlink" href="#lists-elements-for-filtering" title="Link to this heading">¶</a></h3>
 <p>Subscripting a list in a WHERE clause is supported as are maps.</p>
@@ -988,6 +1017,7 @@ both features in the same table, or even the same row.</p>
 <li><a class="reference internal" href="#null-is-valid-input-for-lwt-if-clause-like-patterns"><code class="docutils literal notranslate"><span class="pre">NULL</span></code> is valid input for LWT IF clause <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> patterns</a></li>
 <li><a class="reference internal" href="#reducefunc-for-uda">REDUCEFUNC for UDA</a><ul>
 <li><a class="reference internal" href="#behavior-of-bind-variables-references-with-the-same-name">Behavior of bind variables references with the same name</a></li>
+<li><a class="reference internal" href="#name-of-the-bind-variable-of-an-in-restriction">Name of the bind variable of an IN restriction</a></li>
 <li><a class="reference internal" href="#lists-elements-for-filtering">Lists elements for filtering</a></li>
 </ul>
 </li>
@@ -1502,7 +1532,7 @@ both features in the same table, or even the same row.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Aug 2026.
+                        Last updated on 08 Aug 2026.
                     
                 </div>
             

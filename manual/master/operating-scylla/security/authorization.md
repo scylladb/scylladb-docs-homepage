@@ -393,6 +393,7 @@ The full set of available permissions is:
 - `AUTHORIZE`
 - `DESCRIBE`
 - `VECTOR_SEARCH_INDEXING`
+- `TEXT_SEARCH_INDEXING`
 
 <!-- - ``EXECUTE`` -->
 <!-- Not all permissions are applicable to every type of resource. For instance, ``EXECUTE`` is only relevant in the context -->
@@ -401,27 +402,40 @@ The full set of available permissions is:
 Attempting to `GRANT` permission on a resource to which it cannot be applied results in an error response. The following illustrates which
 permissions can be granted on which types of resources, and which statements are enabled by that permission.
 
-| Permission               | Resource                 | Operations                                                                         |
-|--------------------------|--------------------------|------------------------------------------------------------------------------------|
-| `CREATE`                 | `ALL KEYSPACES`          | `CREATE KEYSPACE` and `CREATE TABLE` in any keyspace                               |
-| `CREATE`                 | `KEYSPACE keyspace_name` | `CREATE TABLE` in specified keyspace                                               |
-| `ALTER`                  | `ALL KEYSPACES`          | `ALTER KEYSPACE` and `ALTER TABLE` in any keyspace                                 |
-| `ALTER`                  | `KEYSPACE keyspace_name` | `ALTER KEYSPACE` and `ALTER TABLE` in specified keyspace                           |
-| `ALTER`                  | `TABLE table_name`       | `ALTER TABLE` on specified table                                                   |
-| `DROP`                   | `ALL KEYSPACES`          | `DROP KEYSPACE` and `DROP TABLE` in any keyspace                                   |
-| `DROP`                   | `KEYSPACE keyspace_name` | `DROP TABLE` and `DROP KEYSPACE` in specified keyspace                             |
-| `DROP`                   | `TABLE table_name`       | `DROP TABLE`                                                                       |
-| `SELECT`                 | `ALL KEYSPACES`          | `SELECT` on any table                                                              |
-| `SELECT`                 | `KEYSPACE keyspace_name` | `SELECT` on any table in specified keyspace                                        |
-| `SELECT`                 | `TABLE table_name`       | `SELECT` on specified table                                                        |
-| `MODIFY`                 | `ALL KEYSPACES`          | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table                           |
-| `MODIFY`                 | `KEYSPACE keyspace_name` | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table in the specified keyspace |
-| `MODIFY`                 | `TABLE table_name`       | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on specified table                     |
-| `AUTHORIZE`              | `ALL KEYSPACES`          | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table                            |
-| `AUTHORIZE`              | `KEYSPACE keyspace_name` | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table in the specified keyspace  |
-| `AUTHORIZE`              | `TABLE table_name`       | `GRANT PERMISSION` and `REVOKE PERMISSION` on specified table                      |
-| `DESCRIBE`               | `ALL ROLES`              | `LIST ROLES` on all roles or only roles granted to another specified role          |
-| `VECTOR_SEARCH_INDEXING` | `ALL KEYSPACES`          | `SELECT` on all tables with vector search indexes                                  |
+| Permission               | Resource                 | Operations                                                                                                       |
+|--------------------------|--------------------------|------------------------------------------------------------------------------------------------------------------|
+| `CREATE`                 | `ALL KEYSPACES`          | `CREATE KEYSPACE` and `CREATE TABLE` in any keyspace                                                             |
+| `CREATE`                 | `KEYSPACE keyspace_name` | `CREATE TABLE` in specified keyspace                                                                             |
+| `ALTER`                  | `ALL KEYSPACES`          | `ALTER KEYSPACE` and `ALTER TABLE` in any keyspace                                                               |
+| `ALTER`                  | `KEYSPACE keyspace_name` | `ALTER KEYSPACE` and `ALTER TABLE` in specified keyspace                                                         |
+| `ALTER`                  | `TABLE table_name`       | `ALTER TABLE` on specified table                                                                                 |
+| `DROP`                   | `ALL KEYSPACES`          | `DROP KEYSPACE` and `DROP TABLE` in any keyspace                                                                 |
+| `DROP`                   | `KEYSPACE keyspace_name` | `DROP TABLE` and `DROP KEYSPACE` in specified keyspace                                                           |
+| `DROP`                   | `TABLE table_name`       | `DROP TABLE`                                                                                                     |
+| `SELECT`                 | `ALL KEYSPACES`          | `SELECT` on any table                                                                                            |
+| `SELECT`                 | `KEYSPACE keyspace_name` | `SELECT` on any table in specified keyspace                                                                      |
+| `SELECT`                 | `TABLE table_name`       | `SELECT` on specified table                                                                                      |
+| `MODIFY`                 | `ALL KEYSPACES`          | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table                                                         |
+| `MODIFY`                 | `KEYSPACE keyspace_name` | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table in the specified keyspace                               |
+| `MODIFY`                 | `TABLE table_name`       | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on specified table                                                   |
+| `AUTHORIZE`              | `ALL KEYSPACES`          | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table                                                          |
+| `AUTHORIZE`              | `KEYSPACE keyspace_name` | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table in the specified keyspace                                |
+| `AUTHORIZE`              | `TABLE table_name`       | `GRANT PERMISSION` and `REVOKE PERMISSION` on specified table                                                    |
+| `DESCRIBE`               | `ALL ROLES`              | `LIST ROLES` on all roles or only roles granted to another specified role                                        |
+| `VECTOR_SEARCH_INDEXING` | `ALL KEYSPACES`          | `SELECT` on all tables with vector search indexes, and on some [system tables](#external-index-system-tables)    |
+| `TEXT_SEARCH_INDEXING`   | `ALL KEYSPACES`          | `SELECT` on all tables with full-text search indexes, and on some [system tables](#external-index-system-tables) |
+
+<a id="external-index-system-tables"></a>
+
+Both the `VECTOR_SEARCH_INDEXING` and `TEXT_SEARCH_INDEXING` permissions also grant `SELECT` on the following
+system tables, which the external Vector Store engine reads to track schema changes, tablet placement, and CDC
+streams for the tables it indexes:
+
+- `system.group0_history`
+- `system.versions`
+- `system.cdc_streams`
+- `system.cdc_timestamps`
+- `system.tablets`
 
 <a id="grant-permission-statement"></a>
 
@@ -432,7 +446,7 @@ Granting permission uses the `GRANT PERMISSION` statement:
 ```cql
 grant_permission_statement: GRANT `permissions` ON `resource` TO `user_name`
 permissions: ALL [ PERMISSIONS ] | `permission` [ PERMISSION ]
-permission: CREATE | ALTER | DROP | SELECT | MODIFY | AUTHORIZE | DESCRIBE
+permission: CREATE | ALTER | DROP | SELECT | MODIFY | AUTHORIZE | DESCRIBE | VECTOR_SEARCH_INDEXING | TEXT_SEARCH_INDEXING
 resource: ALL KEYSPACES
         :| KEYSPACE `keyspace_name`
         :| [ TABLE ] `table_name`
