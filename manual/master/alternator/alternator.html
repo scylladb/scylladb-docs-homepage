@@ -439,6 +439,91 @@ Alternator does not provide such a load-balancing setup, so you should
 either set one up, or set up the client library to do the load balancing
 itself. Instructions, code and examples for doing this can be found in the
 <a class="reference external" href="https://github.com/scylladb/alternator-load-balancing/">Alternator Load Balancing project</a>.</p>
+<section id="mutual-tls-mtls-for-alternator">
+<h3>Mutual TLS (mTLS) for Alternator<a class="headerlink" href="#mutual-tls-mtls-for-alternator" title="Link to this heading">¶</a></h3>
+<p>In addition to the usual SigV4 signature authentication, Alternator also
+supports mutual TLS (mTLS) authentication, where the client presents a
+certificate that the server validates. By default, the CN (Common Name) of
+the certificate’s Subject DN is used as the role name. This mapping is
+configurable via the <code class="docutils literal notranslate"><span class="pre">auth_certificate_role_queries</span></code> option (described
+below), which also supports matching Subject Alternative Names (SANs).</p>
+<p>To configure mTLS, use the <code class="docutils literal notranslate"><span class="pre">alternator-encryption-options</span></code> configuration.
+Two settings control the behavior:</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">truststore</span></code></strong>: Path to a CA certificate file. The server uses this to
+validate client certificates.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">require_client_auth</span></code></strong>: Controls how strictly client certificates are
+enforced. There are three modes:</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">require_client_auth=true</span></code></strong> — The server <em>requires</em> a valid client
+certificate. Clients without one (or with an untrusted certificate) are
+rejected at the TLS handshake level. The certificate is mapped to a role
+via <code class="docutils literal notranslate"><span class="pre">auth_certificate_role_queries</span></code>; if the mapping fails or the role
+does not exist with <code class="docutils literal notranslate"><span class="pre">LOGIN=true</span></code>, the request is rejected. SigV4
+authentication is not used. Example configuration:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--alternator-https-port 8043
+--alternator-encryption-options certificate=/path/to/server.crt
+--alternator-encryption-options keyfile=/path/to/server.key
+--alternator-encryption-options truststore=/path/to/ca.crt
+--alternator-encryption-options require_client_auth=true
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">require_client_auth=optional</span></code></strong> — The server <em>requests</em> a client
+certificate but does not require one. Clients that present no certificate
+fall back to SigV4 authentication. This allows both mTLS and SigV4 clients
+to connect to the same HTTPS port. Clients that present a valid (CA-signed)
+certificate must authenticate via mTLS: their certificate is mapped to a
+role, and if the mapping fails or the role does not exist with <code class="docutils literal notranslate"><span class="pre">LOGIN=true</span></code>,
+the request is rejected — there is no SigV4 fallback for certificate-bearing
+clients. Example configuration:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--alternator-https-port 8043
+--alternator-encryption-options certificate=/path/to/server.crt
+--alternator-encryption-options keyfile=/path/to/server.key
+--alternator-encryption-options truststore=/path/to/ca.crt
+--alternator-encryption-options require_client_auth=optional
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">require_client_auth=false</span></code></strong> (default) — The server does not request
+a client certificate at all. Only SigV4 authentication is used.</p></li>
+</ul>
+</li>
+</ul>
+<p>When a client certificate is presented on a connection, SigV4 authentication
+is not needed, and if a SigV4 signature appears on any request sent over this
+connection, it is silently ignored. This means that when a connection uses
+mTLS, the same role applies to all requests on that connection and cannot be
+overridden on a per-request basis.</p>
+<p><strong>Mapping a certificate to a role</strong> is controlled by the
+<code class="docutils literal notranslate"><span class="pre">auth_certificate_role_queries</span></code> configuration option (documented in detail in
+<a class="reference internal" href="../operating-scylla/security/certificate-authentication.html"><span class="std std-doc">Certificate-based Authentication</span></a>).
+Each entry in the list has a <code class="docutils literal notranslate"><span class="pre">source</span></code> and a <code class="docutils literal notranslate"><span class="pre">query</span></code> (a regular expression
+with exactly one capture group). The first matching entry determines the
+role name.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">source:</span> <span class="pre">SUBJECT</span></code></strong> — matches against the certificate’s Subject DN
+string (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;CN=alice,O=MyOrg&quot;</span></code>). The default configuration uses this
+source with the pattern <code class="docutils literal notranslate"><span class="pre">CN=([^,]+)</span></code> to extract the Common Name.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">source:</span> <span class="pre">ALTNAME</span></code></strong> — matches against the certificate’s Subject
+Alternative Names (SANs), formatted as a comma-separated list of
+<code class="docutils literal notranslate"><span class="pre">TYPE=value</span></code> entries (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;EMAIL=alice&#64;example.com,DNS=host.example.com&quot;</span></code>).
+EMAIL SANs are the standard way to carry user identity in enterprise PKI.</p></li>
+</ul>
+<p>Example: to authenticate using an email SAN of the form <code class="docutils literal notranslate"><span class="pre">user&#64;example.com</span></code>
+and map the local part to a role:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">auth_certificate_role_queries</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ALTNAME</span>
+<span class="w">    </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;EMAIL=([^@,]+)@&#39;</span>
+</pre></div>
+</div>
+<p>When using mTLS, set <code class="docutils literal notranslate"><span class="pre">alternator_enforce_authorization:</span> <span class="pre">true</span></code> and configure
+<code class="docutils literal notranslate"><span class="pre">authorizer:</span> <span class="pre">CassandraAuthorizer</span></code> so that the certificate-derived username is
+looked up and authorized against the role system (see the Authentication and
+Authorization section in compatibility.md). If SigV4 authentication is also
+used (i.e., <code class="docutils literal notranslate"><span class="pre">require_client_auth=optional</span></code>), additionally configure
+<code class="docutils literal notranslate"><span class="pre">authenticator:</span> <span class="pre">PasswordAuthenticator</span></code>.</p>
+</section>
 </section>
 <section id="alternator-design-and-implementation">
 <h2>Alternator design and implementation<a class="headerlink" href="#alternator-design-and-implementation" title="Link to this heading">¶</a></h2>
@@ -624,7 +709,10 @@ attribute a, modifying only a.b[3].c, and then writing back a.</p>
             <ul>
 <li><a class="reference internal" href="#">Alternator: DynamoDB API in ScyllaDB</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#running-alternator">Running Alternator</a></li>
+<li><a class="reference internal" href="#running-alternator">Running Alternator</a><ul>
+<li><a class="reference internal" href="#mutual-tls-mtls-for-alternator">Mutual TLS (mTLS) for Alternator</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#alternator-design-and-implementation">Alternator design and implementation</a></li>
 </ul>
 </li>
@@ -1135,7 +1223,7 @@ attribute a, modifying only a.b[3].c, and then writing back a.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Aug 2026.
+                        Last updated on 11 Aug 2026.
                     
                 </div>
             

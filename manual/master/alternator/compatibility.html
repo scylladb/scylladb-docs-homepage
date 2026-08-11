@@ -510,6 +510,16 @@ When a client signs a request, it uses the name of this role as the access
 key ID, and the <em>salted hash</em> of the role’s password is the secret key.
 This secret key for role XYZ can be retrieved by the CQL request
 <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">salted_hash</span> <span class="pre">from</span> <span class="pre">system.roles</span> <span class="pre">WHERE</span> <span class="pre">role</span> <span class="pre">=</span> <span class="pre">XYZ;</span></code>.</p>
+<p>Alternator also supports mutual TLS (mTLS) as an alternative authentication
+method. When the HTTPS port is configured with <code class="docutils literal notranslate"><span class="pre">require_client_auth=true</span></code> or
+<code class="docutils literal notranslate"><span class="pre">require_client_auth=optional</span></code> (via <code class="docutils literal notranslate"><span class="pre">--alternator-encryption-options</span></code>), clients
+that present a valid certificate are authenticated using the subject fields
+(DN or SAN) of that certificate as the username — no SigV4 signature is
+required or checked. With <code class="docutils literal notranslate"><span class="pre">require_client_auth=true</span></code> client certificates are
+mandatory; with <code class="docutils literal notranslate"><span class="pre">require_client_auth=optional</span></code> they are optional, allowing both
+mTLS and SigV4 clients to share the same port. See the
+<a class="reference internal" href="alternator.html#mutual-tls-mtls-for-alternator"><span class="std std-ref">Mutual TLS (mTLS) for Alternator</span></a>
+section for full configuration details.</p>
 <p>Alternator also implements authorization, or <em>access control</em> - defining
 which authenticated user is allowed to do which operation, such as reading
 or writing to a specific table. The way this is supported in Alternator is
@@ -1536,7 +1546,7 @@ This feature was added to DynamoDB in November 2025.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Aug 2026.
+                        Last updated on 11 Aug 2026.
                     
                 </div>
             

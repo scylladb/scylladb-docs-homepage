@@ -432,6 +432,14 @@ used, a failed batch might leave the batch only partly applied.</p>
 <h2><code class="docutils literal notranslate"><span class="pre">COUNTER</span></code> batches<a class="headerlink" href="#counter-batches" title="Link to this heading">¶</a></h2>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">COUNTER</span></code> option for batched counter updates. Unlike other
 updates in ScyllaDB, counter updates are not idempotent.</p>
+</section>
+<section id="strongly-consistent-batches">
+<h2>Strongly consistent batches<a class="headerlink" href="#strongly-consistent-batches" title="Link to this heading">¶</a></h2>
+<p>When a <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> targets a strongly consistent table, all statements in the batch must target the same partition.
+The mutations are merged into a single mutation and committed atomically through Raft.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">LOGGED</span></code> and <code class="docutils literal notranslate"><span class="pre">UNLOGGED</span></code> batches are accepted, but there is no difference between them in this context:
+atomicity is always guaranteed by the underlying Raft consensus protocol, not by the batch log.</p>
+<p><code class="docutils literal notranslate"><span class="pre">COUNTER</span></code> batches are not supported with strongly consistent tables.</p>
 <p><a class="reference internal" href="../index.html"><span class="doc">Apache Cassandra Query Language (CQL) Reference</span></a></p>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
@@ -562,6 +570,7 @@ updates in ScyllaDB, counter updates are not idempotent.</p>
 <li><a class="reference internal" href="#">BATCH</a><ul>
 <li><a class="reference internal" href="#unlogged-batches"><code class="docutils literal notranslate"><span class="pre">UNLOGGED</span></code> batches</a></li>
 <li><a class="reference internal" href="#counter-batches"><code class="docutils literal notranslate"><span class="pre">COUNTER</span></code> batches</a></li>
+<li><a class="reference internal" href="#strongly-consistent-batches">Strongly consistent batches</a></li>
 </ul>
 </li>
 </ul>
@@ -1071,7 +1080,7 @@ updates in ScyllaDB, counter updates are not idempotent.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Aug 2026.
+                        Last updated on 11 Aug 2026.
                     
                 </div>
             
