@@ -387,13 +387,9 @@
 
                     <section id="nodetool-refresh">
 <h1>Nodetool refresh<a class="headerlink" href="#nodetool-refresh" title="Link to this heading">¶</a></h1>
-<p><strong>refresh</strong> - Load newly placed SSTables to the system without a restart.</p>
-<p>Add the files to the upload directory, by default it is located under <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/upload</span></code></p>
-<p><a class="reference internal" href="../../cql/mv.html"><span class="doc">Materialized Views (MV)</span></a> and <a class="reference internal" href="../../cql/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a> of the upload table, and if they exist, they are automatically updated. Uploading MV or SI SSTables is not required and will fail.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>ScyllaDB node will ignore the partitions in the sstables which are not assigned to this node. For example, if sstable are copied from a different node.</p>
-</div>
+<p><strong>refresh</strong> - Load newly placed SSTables to the system without a restart. This is the only supported way to upload SSTables directly to a node. Placing them directly in the node’s data directory is not supported and will lead to failures.</p>
+<p>Copy the files to the table’s upload directory, by default it is located under <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/upload</span></code>.</p>
+<p>If the table has any <a class="reference internal" href="../../cql/mv.html"><span class="doc">Materialized Views (MV)</span></a> or <a class="reference internal" href="../../cql/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a>, content view updates will be generated from the uploaded SSTables. Uploading MV or SI SSTables is not required and will fail.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code> (with or without <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code>) runs in the same I/O scheduling
@@ -401,58 +397,78 @@ group as backup and restore, and is therefore throttled by the
 <a class="reference internal" href="../../reference/configuration-parameters.html#confprop-backup-io-throughput-mb-per-sec"><span class="std std-ref">backup_io_throughput_mb_per_sec</span></a> setting rather than
 <a class="reference internal" href="../../reference/configuration-parameters.html#confprop-stream-io-throughput-mb-per-sec"><span class="std std-ref">stream_io_throughput_mb_per_sec</span></a>.</p>
 </div>
-<p>Execute the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code> command</p>
-<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span> <span class="pre">&lt;my_keyspace&gt;</span> <span class="pre">&lt;my_table&gt;</span></code></p>
-<p>For example:</p>
-<p><code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/nba/player_stats-91cd2060f99d11e6a47/upload</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span> <span class="pre">nba</span> <span class="pre">player_stats</span></code></p>
+<section id="local-refresh">
+<span id="nodetool-refresh-local"></span><h2>Local refresh<a class="headerlink" href="#local-refresh" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This mode is not supported for <a class="reference internal" href="../../architecture/tablets.html"><span class="doc">tablets</span></a>.</p>
+</div>
+<p>SSTables are copied from the upload directory to the table’s data directory and added to the table’s SSTable registry.</p>
+<p>After the upload, ScyllaDB will run cleanup on the uploaded SSTables, to remove any partition which is not owned by the target node.
+Use <code class="docutils literal notranslate"><span class="pre">--skip-cleanup</span></code> to skip this step. Note that this can lead to increased disk utilization, use only if you are certain the SSTables contain only data owned by the target node.</p>
+<p>The uploaded SSTables may disrupt the SSTable layout maintained by the table’s compaction strategy. To remedy this, ScyllaDB runs an off-strategy compaction after the upload.
+Use <code class="docutils literal notranslate"><span class="pre">--skip-reshape</span></code> to skip this step. Note that this can lead to increased read amplification and increased latencies due to reads having to consult more SSTables than optimal.</p>
+<p>Although this is the default mode for <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code>, using this mode to restore backed up SSTables is not efficient. For restoring backup use <a class="reference internal" href="#nodetool-refresh-load-and-stream"><span class="std std-ref">–load-and-stream</span></a> instead.
+Use local upload if you are certain that uploaded SSTables contain data only for the target node.</p>
+<p>Syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">cleanup</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">reshape</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">sstables</span><span class="o">/*</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">scylla</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nba</span><span class="o">/</span><span class="n">player_stats</span><span class="o">-</span><span class="mi">91</span><span class="n">cd2060f99d11e6a47</span><span class="o">/</span><span class="n">upload</span>
+
+<span class="n">nodetool</span> <span class="n">refresh</span> <span class="n">nba</span> <span class="n">player_stats</span>
+</pre></div>
+</div>
+</section>
 <section id="load-and-stream">
 <span id="nodetool-refresh-load-and-stream"></span><h2>Load and Stream<a class="headerlink" href="#load-and-stream" title="Link to this heading">¶</a></h2>
+<p>SSTables are read and each partition is streamed to its respective replica(s). Allows efficient upload of SSTables to a cluster.
+Each SSTable has to be uploaded only once, as <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> will ensure that all partitions reach their respective replicas.
+The <code class="docutils literal notranslate"><span class="pre">--scope</span></code> and <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> options can be used to filter the set of target replicas for each partition.</p>
+<p>Syntax:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[(</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">)</span> <span class="p">[[(</span><span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="n">replica</span><span class="o">-</span><span class="n">only</span> <span class="o">|</span> <span class="o">-</span><span class="n">pro</span><span class="p">)]</span> <span class="o">|</span> <span class="p">[</span><span class="o">--</span><span class="n">scope</span> <span class="o">&lt;</span><span class="n">scope</span><span class="o">&gt;</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<p>The Load and Stream feature extends nodetool refresh.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option loads arbitrary sstables into the cluster by reading the sstable data and streaming each partition to the replica(s) that owns it. In addition, the <code class="docutils literal notranslate"><span class="pre">--scope</span></code> and <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> options are applied to filter the set of target replicas for each partition.  For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. One can copy the sstables from the old cluster to any of the new nodes and trigger refresh with load and stream.</p>
-<p>Load and Stream make restores and migrations much easier:</p>
+<section id="filter-target-replicas">
+<h3>Filter target replicas<a class="headerlink" href="#filter-target-replicas" title="Link to this heading">¶</a></h3>
+<p>By default, each partition is streamed to all nodes which are replicas for the partition.
+This can be inefficient in a large cluster, especially if there are multiple Datacenters.
+Constraining the subset of replicas where data will be streamed to allows orchestrating concurrent upload to multiple nodes without duplicate work – the same partition being streamed to a replica from multiple source nodes.</p>
+<p>There are two options available to manipulate the replica(s) to stream data to: <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> and <code class="docutils literal notranslate"><span class="pre">--scope</span></code>.
+The two are mutually exclusive.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> (or <code class="docutils literal notranslate"><span class="pre">-pro</span></code>) option makes ScyllaDB only stream each partition to its primary replica.
+After all SSTables are uploaded to the cluster, a repair is required to replicate data to all replicas.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--scope</span></code> parameter allows for more advanced constraining of the subset of nodes where data will be streamed:</p>
 <ul class="simple">
-<li><p>You can place sstable from every node to every node</p></li>
-<li><p>No need to run nodetool cleanup to remove unused data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">node</span></code> - the local node (roughly equivalent to <a class="reference internal" href="#nodetool-refresh-local"><span class="std std-ref">local refresh</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rack</span></code> - replicas in the local rack</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dc</span></code> - replicas in the local datacenter (DC)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> (default) - all replicas in the cluster</p></li>
 </ul>
-<p>With <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> (or <code class="docutils literal notranslate"><span class="pre">-pro</span></code>) option, only the primary replica of each partition in an sstable will be used as the target.
-<code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> must be applied together with <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code>.
-<code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> cannot be used with <code class="docutils literal notranslate"><span class="pre">--scope</span></code>, they are mutually exclusive.
-<code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> requires repair to be run after the load and stream operation is completed.</p>
 </section>
-<section id="scope">
-<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading">¶</a></h2>
-<p>The <cite>scope</cite> parameter describes the subset of cluster nodes where you want to load data:</p>
-<ul class="simple">
-<li><p><cite>node</cite> - On the local node.</p></li>
-<li><p><cite>rack</cite> - On the local rack.</p></li>
-<li><p><cite>dc</cite> - In the datacenter (DC) where the local node lives.</p></li>
-<li><p><cite>all</cite> (default) - Everywhere across the cluster.</p></li>
-</ul>
-<p>Scope supports a variety of options for filtering out the destination nodes.
-On one extreme, one node is given all SStables with the scope <code class="docutils literal notranslate"><span class="pre">all</span></code>; on the other extreme, all
-nodes are loading only their own SStables with the scope <code class="docutils literal notranslate"><span class="pre">node</span></code>. In between, you can choose
-a subset of nodes to load only SStables that belong to the rack or DC.</p>
-<p>This option is only valid when using the <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option.</p>
 </section>
-<section id="skip-cleanup">
-<h2>Skip cleanup<a class="headerlink" href="#skip-cleanup" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">cleanup</span><span class="p">]</span>
+<section id="compatibility-with-apache-cassandra-sstables">
+<h2>Compatibility with Apache Cassandra SSTables<a class="headerlink" href="#compatibility-with-apache-cassandra-sstables" title="Link to this heading">¶</a></h2>
+<p>Uploading SSTable from Apache Cassandra is supported. For the supported SSTable versions, see <a class="reference internal" href="../../architecture/sstable/index.html"><span class="doc">ScyllaDB SSTable Format</span></a>. Note that SSTables using Trie-Based Indexes are <em>not</em> supported.</p>
+<section id="known-problems">
+<h3>Known Problems<a class="headerlink" href="#known-problems" title="Link to this heading">¶</a></h3>
+<section id="digest-mismatch">
+<h4>Digest mismatch<a class="headerlink" href="#digest-mismatch" title="Link to this heading">¶</a></h4>
+<p>Apache Cassandra and ScyllaDB slightly diverged on how digests are calculated on SSTable Data components.
+For compressed SSTables, Apache Cassandra allows for a trailing zero-sized (pre-compression) chunk in the Data component.
+This chunk has no data but has non-zero size after compression.
+This trailing chunk is ignored by ScyllaDB and thus excluded from the Digest calculation, therefore the digest calculated by ScyllaDB will not match that in the Digest component.
+Consequently ScyllaDB will reject the SSTable file.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sstables</span><span class="p">::</span><span class="n">malformed_sstable_exception</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">read</span> <span class="n">partition</span> <span class="kn">from</span><span class="w"> </span><span class="nn">SSTable</span> <span class="o">.../</span><span class="n">me</span><span class="o">-</span><span class="mi">71</span><span class="o">-</span><span class="n">big</span><span class="o">-</span><span class="n">Data</span><span class="o">.</span><span class="n">db</span> <span class="n">due</span> <span class="n">to</span> <span class="n">Digest</span> <span class="n">mismatch</span><span class="p">:</span> <span class="n">expected</span><span class="o">=</span><span class="mi">1580246239</span><span class="p">,</span> <span class="n">actual</span><span class="o">=</span><span class="mi">3782253270</span>
 </pre></div>
 </div>
-<p>When loading an SSTable, Scylla will cleanup it from keys that the node is not responsible for. To skip this step, use the <code class="docutils literal notranslate"><span class="pre">--skip-cleanup</span></code> option.
-See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span class="std std-ref">nodetool cleanup</span></a>.</p>
-</section>
-<section id="skip-reshape">
-<h2>Skip reshape<a class="headerlink" href="#skip-reshape" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">reshape</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>When refreshing, the SSTables to load might be out of shape, Scylla will attempt to reshape them if that’s the case. To skip this step, use the <code class="docutils literal notranslate"><span class="pre">--skip-reshape</span></code> option.</p>
+<p>Workaround: delete the Digest component (<code class="docutils literal notranslate"><span class="pre">me-*-big-Digest.crc32</span></code>) and remove it from the TOC file (<code class="docutils literal notranslate"><span class="pre">me-*-big-TOC.txt</span></code>) too.
+Before doing so, it is important to confirm that the cause of the digest mismatch is indeed a trailing 0-sized chunk, not a genuine corruption.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
+</section>
+</section>
 </section>
 </section>
 
@@ -577,10 +593,18 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">Nodetool refresh</a><ul>
-<li><a class="reference internal" href="#load-and-stream">Load and Stream</a></li>
-<li><a class="reference internal" href="#scope">Scope</a></li>
-<li><a class="reference internal" href="#skip-cleanup">Skip cleanup</a></li>
-<li><a class="reference internal" href="#skip-reshape">Skip reshape</a></li>
+<li><a class="reference internal" href="#local-refresh">Local refresh</a></li>
+<li><a class="reference internal" href="#load-and-stream">Load and Stream</a><ul>
+<li><a class="reference internal" href="#filter-target-replicas">Filter target replicas</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compatibility-with-apache-cassandra-sstables">Compatibility with Apache Cassandra SSTables</a><ul>
+<li><a class="reference internal" href="#known-problems">Known Problems</a><ul>
+<li><a class="reference internal" href="#digest-mismatch">Digest mismatch</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1090,7 +1114,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Aug 2026.
+                        Last updated on 12 Aug 2026.
                     
                 </div>
             
