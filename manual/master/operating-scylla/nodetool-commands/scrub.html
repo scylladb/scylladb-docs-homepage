@@ -434,6 +434,9 @@ Supported<span class="w"> </span>quarantine<span class="w"> </span>modes:<span c
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--drop-unfixable-sstables</span></code></p></td>
 <td><p>Drop unfixable SSTables instead of aborting the entire scrub (only valid with <code class="docutils literal notranslate"><span class="pre">--mode=SEGREGATE</span></code>)</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--quarantine-invalid-sstables</span> <span class="pre">&lt;true|false&gt;</span></code></p></td>
+<td><p>Should corrupt sstables be quarantined (default true, only valid with <code class="docutils literal notranslate"><span class="pre">--mode=VALIDATE</span></code>)</p></td>
+</tr>
 </tbody>
 </table>
 <p><code class="docutils literal notranslate"><span class="pre">--</span></code> This option can be used to separate command-line options from the list of argument, (useful when arguments might be mistaken for command-line options.</p>
@@ -521,7 +524,17 @@ SSTables if severely corrupted (e.g., digest mismatch detected).</p></td>
 </pre></div>
 </div>
 <p>This will move corrupted SSTables to a <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory.
-The <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory is a sub-directory of the table’s respective data directory.</p>
+The <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory is a sub-directory of the table’s respective data directory.
+Quarantined SSTables are handled distinctly:</p>
+<ul class="simple">
+<li><p>They participate in reads.</p></li>
+<li><p>They participate in streaming and data migration.</p></li>
+<li><p>They participate in repairs.</p></li>
+<li><p>They do not participate in compaction, but participate in overlap checks for
+the purpose of tombstone-gc.</p></li>
+</ul>
+<p>The purpose of the quarantine is to keep corrupt SSTables out of compaction, which can spread the compaction or can get in a fail-retry loop. It also makes corrupt SSTables easy to find and retrieve for investigation.</p>
+<p>It is possible to opt-out from quarantining SSTables by passing <code class="docutils literal notranslate"><span class="pre">--quarantine-invalid-sstables=false</span></code> to nodetool.</p>
 <p><strong>Step 2</strong> (Optional): Preserve quarantined SSTables for analysis:</p>
 <p>Before permanently dropping the corrupted SSTables, consider copying some or all of them aside,
 somewhere outside of the ScyllaDB data directory, so they are preserved for later investigation by the ScyllaDB R&amp;D team,
@@ -1202,7 +1215,7 @@ to determine the root cause of the corruption.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 12 Aug 2026.
+                        Last updated on 13 Aug 2026.
                     
                 </div>
             
