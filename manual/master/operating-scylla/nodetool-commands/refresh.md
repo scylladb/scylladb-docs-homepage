@@ -6,12 +6,6 @@ Copy the files to the table’s upload directory, by default it is located under
 
 If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/master/cql/mv.md) or [Secondary Indexes (SI)](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md), content view updates will be generated from the uploaded SSTables. Uploading MV or SI SSTables is not required and will fail.
 
-#### NOTE
-`nodetool refresh` (with or without `--load-and-stream`) runs in the same I/O scheduling
-group as backup and restore, and is therefore throttled by the
-[backup_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md#confprop-backup-io-throughput-mb-per-sec) setting rather than
-[stream_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md#confprop-stream-io-throughput-mb-per-sec).
-
 <a id="nodetool-refresh-local"></a>
 
 ## Local refresh

@@ -390,13 +390,6 @@
 <p><strong>refresh</strong> - Load newly placed SSTables to the system without a restart. This is the only supported way to upload SSTables directly to a node. Placing them directly in the node’s data directory is not supported and will lead to failures.</p>
 <p>Copy the files to the table’s upload directory, by default it is located under <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/upload</span></code>.</p>
 <p>If the table has any <a class="reference internal" href="../../cql/mv.html"><span class="doc">Materialized Views (MV)</span></a> or <a class="reference internal" href="../../cql/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a>, content view updates will be generated from the uploaded SSTables. Uploading MV or SI SSTables is not required and will fail.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code> (with or without <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code>) runs in the same I/O scheduling
-group as backup and restore, and is therefore throttled by the
-<a class="reference internal" href="../../reference/configuration-parameters.html#confprop-backup-io-throughput-mb-per-sec"><span class="std std-ref">backup_io_throughput_mb_per_sec</span></a> setting rather than
-<a class="reference internal" href="../../reference/configuration-parameters.html#confprop-stream-io-throughput-mb-per-sec"><span class="std std-ref">stream_io_throughput_mb_per_sec</span></a>.</p>
-</div>
 <section id="local-refresh">
 <span id="nodetool-refresh-local"></span><h2>Local refresh<a class="headerlink" href="#local-refresh" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
@@ -1114,7 +1107,7 @@ Before doing so, it is important to confirm that the cause of the digest mismatc
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Aug 2026.
+                        Last updated on 17 Aug 2026.
                     
                 </div>
             
