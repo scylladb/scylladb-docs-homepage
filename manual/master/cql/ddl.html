@@ -1251,6 +1251,12 @@ the coordinator queries an additional replica.</p></td>
 <p>This setting does not affect reads with consistency level <code class="docutils literal notranslate"><span class="pre">ALL</span></code> because they already query all replicas.</p>
 <p>Note that frequently reading from additional replicas can hurt cluster performance.
 When in doubt, keep the default <code class="docutils literal notranslate"><span class="pre">99PERCENTILE</span></code>.</p>
+<p>The default value for newly created tables which do not specify <code class="docutils literal notranslate"><span class="pre">speculative_retry</span></code>
+(<code class="docutils literal notranslate"><span class="pre">99PERCENTILE</span></code>) can be changed with the <code class="docutils literal notranslate"><span class="pre">speculative_retry_user_table_default</span></code>
+configuration option in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>. The option applies at table creation time
+only; changing it does not affect already existing tables. The value used for a new
+table is taken from the node that coordinates its creation, so the option should be
+set identically on all nodes.</p>
 </section>
 <section id="compaction-options">
 <span id="cql-compaction-options"></span><h5>Compaction options<a class="headerlink" href="#compaction-options" title="Link to this heading">¶</a></h5>
@@ -2351,7 +2357,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Aug 2026.
+                        Last updated on 18 Aug 2026.
                     
                 </div>
             

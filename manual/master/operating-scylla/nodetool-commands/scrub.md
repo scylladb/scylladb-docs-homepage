@@ -41,12 +41,12 @@ Supported quarantine modes: INCLUDE, EXCLUDE, ONLY
 
 ## SCRUB MODES
 
-| Scrub mode   | Description                                                                                                                                                                                                                                           |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| VALIDATE     | Read-only mode: report any corruptions found while scrubbing but do not fix them.<br/>By default, corrupt SSTables are moved into a “quarantine” subdirectory so they will not be subject to compaction.<br/>(default).                               |
-| ABORT        | Abort scrubbing when the first validation error occurs.                                                                                                                                                                                               |
-| SKIP         | Skip corrupted rows or partitions. (equivalent to the legacy –skip-corrupted option).<br/>**Warning**: This mode can cause data loss by removing invalid data portions or entire<br/>SSTables if severely corrupted (e.g., digest mismatch detected). |
-| SEGREGATE    | Sort out-of-order rows or partitions by segregating them into additional SSTables.                                                                                                                                                                    |
+| Scrub mode   | Description                                                                                                                                                                                                                                                                                                          |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| VALIDATE     | Read-only mode: report any corruptions found while scrubbing but do not fix them.<br/>Additionally, validate component integrity by verifying the stored digests if available.<br/>By default, corrupt SSTables are moved into a “quarantine” subdirectory so they will not be subject to compaction.<br/>(default). |
+| ABORT        | Abort scrubbing when the first validation error occurs.                                                                                                                                                                                                                                                              |
+| SKIP         | Skip corrupted rows or partitions. (equivalent to the legacy –skip-corrupted option).<br/>**Warning**: This mode can cause data loss by removing invalid data portions or entire<br/>SSTables if severely corrupted (e.g., digest mismatch detected).                                                                |
+| SEGREGATE    | Sort out-of-order rows or partitions by segregating them into additional SSTables.                                                                                                                                                                                                                                   |
 
 ## QUARANTINE MODES
 

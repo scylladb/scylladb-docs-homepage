@@ -588,6 +588,7 @@ Validates the content of the sstable on the mutation-fragment level, see [sstabl
 
 <a id="scylla-sstable-sstable-content"></a>
  for more details.
+Component digests will be validated if present in the scylla-metadata component.
 Any parsing errors will also be detected, but after successful parsing the validation will happen on the fragment level.
 The following things are validated:
 
@@ -623,7 +624,7 @@ Scrub has several modes:
 * **abort** - Aborts the scrub as soon as any error is found (recognized or not). This mode is only included for the sake of completeness. We recommend using the **validate** mode so that all errors are reported.
 * **skip** - Skips over any corruptions found, thus omitting them from the output. Note that this mode can result in omitting more than is strictly necessary, but it guarantees that all detectable corruptions will be omitted.
 * **segregate** - Fixes partition/row/mutation-fragment out-of-order errors by segregating the output into as many SStables as required so that the content of each output SStable is properly ordered.
-* **validate** - Validates the content of the SStable, reporting any corruptions found. Writes no output SStables. In this mode, scrub has the same outcome as the [validate operation]()
+* **validate** - Validates the content of the SStable and component digests, reporting any corruptions found. Writes no output SStables. In this mode, scrub has the same outcome as the [validate operation]()
 
   <a id="scylla-sstable-validate-operation"></a>
    - and the validate operation is recommended over scrub.

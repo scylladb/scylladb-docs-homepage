@@ -3283,6 +3283,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-speculative-retry-user-table-default">
+<dt class="sig sig-object std" id="confval-speculative_retry_user_table_default">
+<span class="sig-name descname"><span class="pre">speculative_retry_user_table_default</span></span><a class="headerlink" href="#confval-speculative_retry_user_table_default" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Default value of the speculative_retry option for user tables, i.e., tables in non-internal keyspaces.     Applied when a table is created without specifying speculative_retry explicitly; existing tables are not affected.     Materialized views and secondary indexes created without an explicit value also use this default; they do not inherit the base table’s value.     The value used for a new table is taken from the configuration of the node coordinating the table creation, so the option should be set identically on all nodes.     The option can be updated at runtime; the updated value applies to tables created after the update.     Accepted values are the same as for the table option: ALWAYS, NONE, &lt;X&gt;PERCENTILE (e.g. 99.0PERCENTILE) and &lt;N&gt;ms (e.g. 200ms).</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;99.0PERCENTILE&quot;</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-table-digest-insensitive-to-expiry">
 <dt class="sig sig-object std" id="confval-table_digest_insensitive_to_expiry">
 <span class="sig-name descname"><span class="pre">table_digest_insensitive_to_expiry</span></span><a class="headerlink" href="#confval-table_digest_insensitive_to_expiry" title="Link to this definition">¶</a></dt>
@@ -5943,7 +5957,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Aug 2026.
+                        Last updated on 18 Aug 2026.
                     
                 </div>
             

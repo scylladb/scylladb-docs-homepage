@@ -2087,6 +2087,16 @@ having the highest priority:
 > * **Default value:** `0.95`
 > * Liveness: `True`
 
+<a id="confprop-speculative-retry-user-table-default"></a>
+
+### speculative_retry_user_table_default
+
+> Default value of the speculative_retry option for user tables, i.e., tables in non-internal keyspaces.     Applied when a table is created without specifying speculative_retry explicitly; existing tables are not affected.     Materialized views and secondary indexes created without an explicit value also use this default; they do not inherit the base table’s value.     The value used for a new table is taken from the configuration of the node coordinating the table creation, so the option should be set identically on all nodes.     The option can be updated at runtime; the updated value applies to tables created after the update.     Accepted values are the same as for the table option: ALWAYS, NONE, <X>PERCENTILE (e.g. 99.0PERCENTILE) and <N>ms (e.g. 200ms).
+
+> * **Type:** `sstring`
+> * **Default value:** `"99.0PERCENTILE"`
+> * Liveness: `True`
+
 <a id="confprop-table-digest-insensitive-to-expiry"></a>
 
 ### table_digest_insensitive_to_expiry
