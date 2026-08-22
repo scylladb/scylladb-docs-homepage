@@ -503,6 +503,8 @@ statement: `DESCRIBE SCHEMA WITH INTERNALS AND PASSWORDS`, which also includes t
 
 For more details, see [the article on DESCRIBE SCHEMA](https://docs.scylladb.com/manual/master/cql/describe-schema.md).
 
+<a id="cql-per-row-ttl"></a>
+
 ## Per-row TTL
 
 CQL’s traditional time-to-live (TTL) feature attaches an expiration time to

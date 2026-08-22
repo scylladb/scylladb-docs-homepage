@@ -23,7 +23,9 @@ target column:
 CREATE CUSTOM INDEX ON ks.t (v) USING 'fulltext_index';
 ```
 
-You can specify an analyzer to control how text is tokenized:
+You can specify an analyzer to control how text is tokenized. The default is
+`standard`; for a description of each supported analyzer, see
+[Full-text Index](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#create-fulltext-index-statement).
 
 ```default
 CREATE CUSTOM INDEX ON ks.t (v) USING 'fulltext_index'
@@ -42,13 +44,20 @@ CREATE CUSTOM INDEX ON ks.t (v) USING 'fulltext_index'
   CDC is enabled automatically when creating a fulltext index, so you do not
   need to configure it manually.
 
+Cell-level TTL, set with the standard `USING TTL` syntax on `INSERT` or
+`UPDATE`, makes the value unreadable at its expiration deadline but does
+not generate a CDC event, so the fulltext index is not updated and keeps a
+stale entry for that value. If the index must reflect expiration, use the
+[Per-row TTL](https://docs.scylladb.com/manual/master/cql/cql-extensions.md#cql-per-row-ttl) feature instead: it deletes expired rows
+explicitly and does generate a CDC event.
+
 ## Querying with BM25
 
 FTS queries use the `BM25()` function to score rows against a search term.
 `BM25()` takes two arguments: a column name and a query string.
 
 A full-text search query must use `BM25()` in **both** of these clauses, on
-the **same** column:
+the **same** column and with the **same** search term:
 
 * A `WHERE` clause of the exact form `BM25(column, 'term') > 0` to **filter**
   the rows that match the search term.
@@ -93,21 +102,15 @@ SELECT * FROM ks.t
     LIMIT 10;
 ```
 
+Both bind markers are checked at execution time and must be given the same
+value; binding different values for the `WHERE` and `ORDER BY` markers
+causes the query to be rejected.
+
 ### Disambiguating from a user-defined function
 
 `BM25` is not a reserved word. If a keyspace defines a user-defined function
 named `bm25`, an unqualified `BM25()` call becomes ambiguous; qualify the
 built-in operator as `system.bm25(...)` to select it explicitly.
-
-## Unsupported ScyllaDB Features
-
-Full-text indexes do not support all ScyllaDB features. The following features
-are not supported when using Full-Text Search:
-
-* Tracing
-* TTL (Time To Live)
-* Paging
-* Grouping (`GROUP BY`)
 
 ## Query Constraints
 
@@ -118,10 +121,11 @@ FTS queries enforce the following rules:
 | Both clauses required               | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own. |
 | `>` and literal `0` only            | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                         |
 | Filtering support                   | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.         |
-| `LIMIT` is required                 | Every FTS query must include a `LIMIT` clause. Queries without<br/>`LIMIT` are rejected.                                                                                                             |
+| `LIMIT` is required                 | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                   |
 | `PER PARTITION LIMIT` not supported | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                               |
 | Aggregation not supported           | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                      |
 | Fulltext index required             | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                    |
 | `BM25()` cannot appear in `SELECT`  | `BM25()` is only valid in `WHERE` and `ORDER BY` clauses, not<br/>as a selector.                                                                                                                     |
-| Partition key columns excluded      | A `fulltext_index` cannot be created on a partition key column, so<br/>`BM25()` cannot target one. Regular and clustering-key text columns<br/>are supported.                                        |
 | Single ordering only                | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                          |
+| Paging not supported                | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                |
+| Grouping not supported              | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                      |

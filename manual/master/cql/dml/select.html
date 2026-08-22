@@ -768,14 +768,13 @@ have a <a class="reference internal" href="../secondary-indexes.html#create-full
 <code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">'fulltext_index'</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> takes a column name and a query string
 and scores rows using the BM25 ranking algorithm.</p>
 <p>A full-text search query must contain <strong>both</strong> of the following clauses,
-referencing the <strong>same</strong> column:</p>
+referencing the <strong>same</strong> column and the <strong>same</strong> search term:</p>
 <ul class="simple">
 <li><p>A <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> filter of the exact form <code class="docutils literal notranslate"><span class="pre">BM25(column,</span> <span class="pre">'term')</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
 <li><p>An <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25(column,</span> <span class="pre">'term')</span></code> clause that ranks the matching rows.</p></li>
 </ul>
 <p>Neither clause is accepted on its own. A query that has only <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25()</span></code> or
-only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected, and the two clauses must reference the same
-column.</p>
+only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected.</p>
 <p><strong>Syntax:</strong></p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">fts_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
          <span class="p">:</span>   <span class="k">WHERE</span> <span class="n">BM25</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span> <span class="s1">&#39;&gt;&#39;</span> <span class="mf">0</span>
@@ -790,6 +789,8 @@ not a partition-key column.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> must be the only ordering in the query - it cannot be combined
 with another <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> column, a second <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> ordering, or an <code class="docutils literal notranslate"><span class="pre">ANN</span></code>
 ordering.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause is mandatory; queries without <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> are rejected. The
+specified value must not exceed 1000.</p>
 <p><strong>Examples:</strong></p>
 <p>Filter and rank by relevance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">articles</span>
@@ -1771,7 +1772,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Aug 2026.
+                        Last updated on 22 Aug 2026.
                     
                 </div>
             

@@ -396,7 +396,9 @@ target column:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CREATE</span> <span class="n">CUSTOM</span> <span class="n">INDEX</span> <span class="n">ON</span> <span class="n">ks</span><span class="o">.</span><span class="n">t</span> <span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="n">USING</span> <span class="s1">&#39;fulltext_index&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>You can specify an analyzer to control how text is tokenized:</p>
+<p>You can specify an analyzer to control how text is tokenized. The default is
+<code class="docutils literal notranslate"><span class="pre">standard</span></code>; for a description of each supported analyzer, see
+<a class="reference internal" href="../cql/secondary-indexes.html#create-fulltext-index-statement"><span class="std std-ref">Full-text Index</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CREATE</span> <span class="n">CUSTOM</span> <span class="n">INDEX</span> <span class="n">ON</span> <span class="n">ks</span><span class="o">.</span><span class="n">t</span> <span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="n">USING</span> <span class="s1">&#39;fulltext_index&#39;</span>
     <span class="n">WITH</span> <span class="n">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;analyzer&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">};</span>
 </pre></div>
@@ -413,13 +415,19 @@ columns cannot be indexed.</p></li>
 CDC is enabled automatically when creating a fulltext index, so you do not
 need to configure it manually.</p></li>
 </ul>
+<p>Cell-level TTL, set with the standard <code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">TTL</span></code> syntax on <code class="docutils literal notranslate"><span class="pre">INSERT</span></code> or
+<code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, makes the value unreadable at its expiration deadline but does
+not generate a CDC event, so the fulltext index is not updated and keeps a
+stale entry for that value. If the index must reflect expiration, use the
+<a class="reference internal" href="../cql/cql-extensions.html#cql-per-row-ttl"><span class="std std-ref">Per-row TTL</span></a> feature instead: it deletes expired rows
+explicitly and does generate a CDC event.</p>
 </section>
 <section id="querying-with-bm25">
 <h2>Querying with BM25<a class="headerlink" href="#querying-with-bm25" title="Link to this heading">¶</a></h2>
 <p>FTS queries use the <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> function to score rows against a search term.
 <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> takes two arguments: a column name and a query string.</p>
 <p>A full-text search query must use <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> in <strong>both</strong> of these clauses, on
-the <strong>same</strong> column:</p>
+the <strong>same</strong> column and with the <strong>same</strong> search term:</p>
 <ul class="simple">
 <li><p>A <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause of the exact form <code class="docutils literal notranslate"><span class="pre">BM25(column,</span> <span class="pre">'term')</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> to <strong>filter</strong>
 the rows that match the search term.</p></li>
@@ -458,6 +466,9 @@ combined filtering is planned for a future release.</p>
     LIMIT 10;
 </pre></div>
 </div>
+<p>Both bind markers are checked at execution time and must be given the same
+value; binding different values for the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> markers
+causes the query to be rejected.</p>
 </section>
 <section id="disambiguating-from-a-user-defined-function">
 <h3>Disambiguating from a user-defined function<a class="headerlink" href="#disambiguating-from-a-user-defined-function" title="Link to this heading">¶</a></h3>
@@ -465,17 +476,6 @@ combined filtering is planned for a future release.</p>
 named <code class="docutils literal notranslate"><span class="pre">bm25</span></code>, an unqualified <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> call becomes ambiguous; qualify the
 built-in operator as <code class="docutils literal notranslate"><span class="pre">system.bm25(...)</span></code> to select it explicitly.</p>
 </section>
-</section>
-<section id="unsupported-scylladb-features">
-<h2>Unsupported ScyllaDB Features<a class="headerlink" href="#unsupported-scylladb-features" title="Link to this heading">¶</a></h2>
-<p>Full-text indexes do not support all ScyllaDB features. The following features
-are not supported when using Full-Text Search:</p>
-<ul class="simple">
-<li><p>Tracing</p></li>
-<li><p>TTL (Time To Live)</p></li>
-<li><p>Paging</p></li>
-<li><p>Grouping (<code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code>)</p></li>
-</ul>
 </section>
 <section id="query-constraints">
 <h2>Query Constraints<a class="headerlink" href="#query-constraints" title="Link to this heading">¶</a></h2>
@@ -507,8 +507,9 @@ restriction (e.g., a partition key equality) is rejected. Combined filtering
 is planned for a future release.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> is required</p></td>
-<td><p>Every FTS query must include a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause. Queries without
-<code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> are rejected.</p></td>
+<td><p>Every FTS query must include a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause of at most 1000.
+Queries without <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>, or with a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> greater than 1000,
+are rejected.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span> <span class="pre">LIMIT</span></code> not supported</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span> <span class="pre">LIMIT</span></code> cannot be used with FTS queries.</p></td>
@@ -525,14 +526,16 @@ index does not satisfy this requirement.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> is only valid in <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses, not
 as a selector.</p></td>
 </tr>
-<tr class="row-even"><td><p>Partition key columns excluded</p></td>
-<td><p>A <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code> cannot be created on a partition key column, so
-<code class="docutils literal notranslate"><span class="pre">BM25()</span></code> cannot target one. Regular and clustering-key text columns
-are supported.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Single ordering only</p></td>
+<tr class="row-even"><td><p>Single ordering only</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> cannot be combined with other <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> columns,
 a second <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> ordering, or with <code class="docutils literal notranslate"><span class="pre">ANN</span></code> ordering.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Paging not supported</p></td>
+<td><p>FTS queries do not support paging; all matching rows up to <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>
+are returned in a single page.</p></td>
+</tr>
+<tr class="row-even"><td><p>Grouping not supported</p></td>
+<td><p>FTS queries cannot include a <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> clause.</p></td>
 </tr>
 </tbody>
 </table>
@@ -669,7 +672,6 @@ a second <code class="docutils literal notranslate"><span class="pre">BM25()</sp
 <li><a class="reference internal" href="#disambiguating-from-a-user-defined-function">Disambiguating from a user-defined function</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#unsupported-scylladb-features">Unsupported ScyllaDB Features</a></li>
 <li><a class="reference internal" href="#query-constraints">Query Constraints</a></li>
 </ul>
 </li>
@@ -1180,7 +1182,7 @@ a second <code class="docutils literal notranslate"><span class="pre">BM25()</sp
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Aug 2026.
+                        Last updated on 22 Aug 2026.
                     
                 </div>
             
