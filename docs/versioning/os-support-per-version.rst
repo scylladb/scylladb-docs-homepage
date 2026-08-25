@@ -16,8 +16,6 @@ for each ScyllaDB version.
 .. datatemplate:json:: /_static/data/os-support.json
   :template: platforms.tmpl
 
-``*`` 2024.1.9 and later
-
 All ScyllaDB releases are available as a Docker container, EC2 AMI, GCP, and Azure images.
 
 .. _os-support-definition:
