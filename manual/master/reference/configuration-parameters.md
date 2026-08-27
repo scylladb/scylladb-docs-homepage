@@ -555,25 +555,25 @@ having the highest priority:
 > * **Default value:** `true`
 > * Liveness: `False`
 
-<a id="confprop-logstor-separator-delay-limit-ms"></a>
+<a id="confprop-logstor-compaction-trigger-threshold"></a>
 
-### logstor_separator_delay_limit_ms
+### logstor_compaction_trigger_threshold
 
-> Maximum delay in milliseconds for logstor separator debt control.
+> Trigger automatic logstor compaction when the number of available segments drops below this fraction of the total number of logstor segments. A value of 0 disables the trigger threshold.
 
-> * **Type:** `uint32_t`
-> * **Default value:** `100`
-> * Liveness: `False`
+> * **Type:** `double`
+> * **Default value:** `0.05`
+> * Liveness: `True`
 
-<a id="confprop-logstor-separator-max-memory-in-mb"></a>
+<a id="confprop-logstor-compaction-max-shares"></a>
 
-### logstor_separator_max_memory_in_mb
+### logstor_compaction_max_shares
 
-> Maximum memory in megabytes for logstor separator memory buffers.
+> Maximum CPU shares the logstor compaction controller gives the logstor compaction scheduling group, reached at full space pressure.
 
-> * **Type:** `uint32_t`
-> * **Default value:** `256`
-> * Liveness: `False`
+> * **Type:** `float`
+> * **Default value:** `2000`
+> * Liveness: `True`
 
 <a id="confgroup-cache-and-index-settings"></a>
 
@@ -1305,7 +1305,7 @@ having the highest priority:
 
 ### vector_store_unreachable_node_detection_time_in_ms
 
-> Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, and TCP_USER_TIMEOUT.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.
+> Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, TCP_USER_TIMEOUT,     and the deadline of the health-check request used to detect that an unreachable node became available again.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `3000`

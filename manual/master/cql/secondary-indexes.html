@@ -743,6 +743,29 @@ name, which may optionally specify the keyspace of the index.</p>
 <p>If the index is currently being built, the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> can still be executed. Once the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> command is issued,
 the system stops the build process and cleans up any partially built data associated with the index.</p>
 </section>
+<section id="changing-indexes-during-a-paged-read">
+<h2>Changing Indexes During a Paged Read<a class="headerlink" href="#changing-indexes-during-a-paged-read" title="Link to this heading">¶</a></h2>
+<p>A paged read keeps using the query plan it started with. The paging state
+returned to the client records whether the read scans the base table or uses a
+particular secondary index, and every subsequent page is served by that same
+plan, so creating an index that could serve the query affects only new queries.
+Because a new index takes a moment to become known cluster-wide, a read that
+already uses one may be resumed by a node that does not know it yet, and then
+fails as described below.</p>
+<p>Dropping the index a paged read uses is different: the position saved in the
+paging state belongs to that index’s scan, and no other plan can interpret it.
+Requesting the next page fails with an <code class="docutils literal notranslate"><span class="pre">InvalidRequest</span></code> error stating that the
+index is no longer available, and the query has to be retried from the
+beginning. Creating another index under the same name does not help, because the
+read is tied to the specific index it started with. A prepared statement fails
+one step earlier: the <code class="docutils literal notranslate"><span class="pre">DROP</span></code> invalidates it, the driver re-prepares it before
+resuming, and a query that is not valid without the index - one lacking
+<code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>, for example - fails that re-preparation. A read scanning the
+base table, in contrast, is not tied to that table’s identity: dropping and
+re-creating the base table does not change the plan, and the next page is served
+from the new table - resuming where the old table’s scan stopped, so whatever
+the new table holds before that position is skipped without an error.</p>
+</section>
 <section id="additional-information">
 <h2>Additional Information<a class="headerlink" href="#additional-information" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -890,6 +913,7 @@ the system stops the build process and cleans up any partially built data associ
 </li>
 <li><a class="reference internal" href="#full-text-index-scylladb-cloud">Full-text Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#drop-index">DROP INDEX</a></li>
+<li><a class="reference internal" href="#changing-indexes-during-a-paged-read">Changing Indexes During a Paged Read</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
 </ul>
 </li>
@@ -1400,7 +1424,7 @@ the system stops the build process and cleans up any partially built data associ
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Aug 2026.
+                        Last updated on 27 Aug 2026.
                     
                 </div>
             
