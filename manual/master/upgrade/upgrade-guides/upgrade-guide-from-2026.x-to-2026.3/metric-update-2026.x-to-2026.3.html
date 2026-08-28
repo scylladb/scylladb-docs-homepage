@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2 | ScyllaDB Docs 
+             Metrics Update Between 2026.x and 2026.3 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -37,7 +37,7 @@
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.html"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.md" />
             
         
 
@@ -124,10 +124,6 @@
         
             
                 <script src="../../../_static/copybutton.js?v=f281be69"></script>
-            
-        
-            
-                <script src="../../../_static/tabs.js?v=3030b3cb"></script>
             
         
     
@@ -356,11 +352,11 @@
     
         <span class="bread__item">
             <a href="index.html" class="bread__highlight">
-                Upgrade - ScyllaDB 2026.1 to ScyllaDB 2026.2
+                Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2</span>
+    <span class="bread__item bread__item--last">Metrics Update Between 2026.x and 2026.3</span>
 </div>
                     </div>
                 
@@ -374,11 +370,11 @@
                          data-llms-txt-url="https://docs.scylladb.com/manual/master/llms.txt"
                      
                      
-                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.rst"
+                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/master/llms.txt">https://docs.scylladb.com/manual/master/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.md">https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/master/llms.txt">https://docs.scylladb.com/manual/master/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.md">https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.md</a>.
                         </div>
                     
                     
@@ -387,334 +383,243 @@
 
                     
 
-                    <section id="upgrade-from-scylla-name-src-version-to-scylla-name-new-version">
-<h1>Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2<a class="headerlink" href="#upgrade-from-scylla-name-src-version-to-scylla-name-new-version" title="Link to this heading">¶</a></h1>
-<p>This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.1
-to ScyllaDB 2026.2 and rollback to version 2026.1 if necessary.</p>
-<p>This guide covers upgrading ScyllaDB on Red Hat Enterprise Linux (RHEL), CentOS, Debian,
-and Ubuntu. See <a class="reference external" href="https://docs.scylladb.com/stable/versioning/os-support-per-version.html">OS Support by Platform and Version</a>
-for information about supported versions. It also applies when using the ScyllaDB official image on EC2, GCP, or Azure.</p>
-<p>See <a class="reference external" href="https://docs.scylladb.com/stable/versioning/upgrade-policy.html">Upgrade Policy</a> for the ScyllaDB upgrade policy.</p>
-<section id="before-you-upgrade-scylladb">
-<h2>Before You Upgrade ScyllaDB<a class="headerlink" href="#before-you-upgrade-scylladb" title="Link to this heading">¶</a></h2>
-<p><strong>Upgrade Your Driver</strong></p>
-<p>If you’re using a <a class="reference external" href="https://docs.scylladb.com/stable/drivers/index.html">ScyllaDB driver</a>,
-upgrade the driver before upgrading ScyllaDB. The latest two versions of each driver
-are supported. See <a class="reference external" href="https://docs.scylladb.com/stable/versioning/driver-support.html">Driver Support</a>.</p>
-<p><strong>Upgrade ScyllaDB Monitoring Stack</strong></p>
-<p>If you’re using the ScyllaDB Monitoring Stack, verify that your Monitoring Stack
-version supports the ScyllaDB version to which you want to upgrade. See
-<a class="reference external" href="https://monitoring.docs.scylladb.com/stable/reference/matrix.html">ScyllaDB Monitoring Stack Support Matrix</a>.</p>
-<p>We recommend upgrading the Monitoring Stack to the latest version.</p>
-<p><strong>Check Feature Updates</strong></p>
-<p>See the ScyllaDB Release Notes for the latest updates. The Release Notes are published
-at the <a class="reference external" href="https://forum.scylladb.com/c/scylladb-release-notes/">ScyllaDB Community Forum</a>.</p>
+                    <section id="metrics-update-between-src-version-and-new-version">
+<h1>Metrics Update Between 2026.x and 2026.3<a class="headerlink" href="#metrics-update-between-src-version-and-new-version" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>ScyllaDB 2026.3 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
+<section id="new-metrics-in-new-version">
+<h2>New Metrics in 2026.3<a class="headerlink" href="#new-metrics-in-new-version" title="Link to this heading">¶</a></h2>
+<p>The following metrics are new in ScyllaDB 2026.3 compared to 2026.2.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14.3%" />
+<col style="width: 85.7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>scylla_alternator_conditional_check_failed</p></td>
+<td><p>The number of conditional requests whose condition was false (ConditionalCheckFailedException).</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_returned_items</p></td>
+<td><p>The number of items returned by Query and Scan operations (not other operations).</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_returned_items_histogram</p></td>
+<td><p>A histogram of the number of items returned per Query or Scan operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_returned_records</p></td>
+<td><p>The number of stream records returned by GetRecords operations.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_system_errors</p></td>
+<td><p>The number of HTTP 500 internal server error responses.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_user_errors</p></td>
+<td><p>The number of HTTP 400 client error responses, excluding ConditionalCheckFailedException.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_vector_search_query</p></td>
+<td><p>The number of Query operations with VectorSearch.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_vector_search_query_items_from_base_table</p></td>
+<td><p>The total number of items read from the base table by Vector Search queries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_vector_search_query_items_from_vs</p></td>
+<td><p>The total number of nearest neighbors found by the vector store (some may be post-filtered and not returned).</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_vector_search_query_returned_items</p></td>
+<td><p>The total number of items returned by Query operations with Vector Search.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_database_large_cell_exceeding_threshold</p></td>
+<td><p>The number of large cells exceeding <code class="docutils literal notranslate"><span class="pre">compaction_large_cell_warning_threshold_mb</span></code>.
+Large cells have performance impact and should be avoided.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_database_large_collection_exceeding_threshold</p></td>
+<td><p>The number of large collections exceeding <code class="docutils literal notranslate"><span class="pre">compaction_collection_elements_count_warning_threshold</span></code>.
+Large collections have performance impact and should be avoided.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_database_large_rows_exceeding_threshold</p></td>
+<td><p>The number of large rows exceeding <code class="docutils literal notranslate"><span class="pre">compaction_large_row_warning_threshold_mb</span></code>.
+Large rows have performance impact and should be avoided.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_database_reads_memory_borrowed_from_shared_pool</p></td>
+<td><p>The current amount of memory borrowed from the shared pool.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_database_reads_shared_pool_available_memory</p></td>
+<td><p>The current amount of available memory in the shared reader concurrency semaphore pool.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_database_reads_shared_pool_total_memory</p></td>
+<td><p>The total memory of the shared reader concurrency semaphore pool.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_group_name_rebuilds_produced</p></td>
+<td><p>The number of rebuilds produced by the load balancer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_group_name_repairs_produced</p></td>
+<td><p>The number of repairs produced by the load balancer.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_separator_buffers_in_use</p></td>
+<td><p>The current number of separator buffers in use.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_memory_logstor_bytes</p></td>
+<td><p>The current size of memory used by logstor in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_integrated_request_queue_length</p></td>
+<td><p>The number of queued HTTP requests integrated over time (measured in request-seconds).</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_connect_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP CONNECT requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_connect_requests</p></td>
+<td><p>The total number of HTTP CONNECT requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_connect_retries</p></td>
+<td><p>The total number of HTTP CONNECT retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_delete_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP DELETE requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_delete_requests</p></td>
+<td><p>The total number of HTTP DELETE requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_delete_retries</p></td>
+<td><p>The total number of HTTP DELETE retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_get_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP GET requests</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_get_requests</p></td>
+<td><p>The total number of HTTP GET requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_get_retries</p></td>
+<td><p>The total number of HTTP GET retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_head_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP HEAD requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_head_requests</p></td>
+<td><p>The total number of HTTP HEAD requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_head_retries</p></td>
+<td><p>The total number of HTTP HEAD retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_options_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP OPTIONS requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_options_requests</p></td>
+<td><p>The total number of HTTP OPTIONS requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_options_retries</p></td>
+<td><p>The total number of HTTP OPTIONS retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_patch_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP PATCH requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_patch_requests</p></td>
+<td><p>The total number of HTTP PATCH requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_patch_retries</p></td>
+<td><p>The total number of HTTP PATCH retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_post_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP POST requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_post_requests</p></td>
+<td><p>The total number of HTTP POST requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_post_retries</p></td>
+<td><p>The total number of HTTP POST retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_put_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP PUT requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_put_requests</p></td>
+<td><p>The total number of HTTP PUT requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_put_retries</p></td>
+<td><p>The total number of HTTP PUT retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_trace_latency_sec</p></td>
+<td><p>The total time in seconds spent in HTTP TRACE requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_total_trace_requests</p></td>
+<td><p>The total number of HTTP TRACE requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_total_trace_retries</p></td>
+<td><p>The total number of HTTP TRACE retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_service_level_workload_type</p></td>
+<td><p>The  workload type configured for each service level. 0 - unspecified, 1 - batch, 2 - interactive.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_coordinator_read_errors</p></td>
+<td><p>The number of strong consistency read requests that failed.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_coordinator_read_latency</p></td>
+<td><p>A strong consistency read latency histogram.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_coordinator_read_latency_summary</p></td>
+<td><p>A strong consistency read latency summary.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_coordinator_read_node_bounces</p></td>
+<td><p>The number of strong consistency read requests bounced to another node.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_coordinator_read_shard_bounces</p></td>
+<td><p>The number of strong consistency read requests bounced to another shard.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_coordinator_write_errors</p></td>
+<td><p>The number of strong consistency write requests that failed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_coordinator_write_latency</p></td>
+<td><p>A strong consistency write latency histogram.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_coordinator_write_latency_summary</p></td>
+<td><p>A strong consistency write latency summary.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_coordinator_write_node_bounces</p></td>
+<td><p>The vnumber of strong consistency write requests bounced to another node.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_coordinator_write_shard_bounces</p></td>
+<td><p>The number of strong consistency write requests bounced to another shard.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_transport_cql_client_timestamp_drift_histogram</p></td>
+<td><p>A histogram of the drift in microseconds between the client-provided CQL
+timestamp and the server time at request arrival. Useful for detecting
+transport delays before requests reach the CQL server.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_transport_cql_request_latency_histogram</p></td>
+<td><p>A histogram of transport-level CQL request latencies (in microseconds),
+measuring from the start of request processing until the response is
+written to the socket.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="upgrade-procedure">
-<h2>Upgrade Procedure<a class="headerlink" href="#upgrade-procedure" title="Link to this heading">¶</a></h2>
-<p>A ScyllaDB upgrade is a rolling procedure that does <strong>not</strong> require full cluster shutdown.
-For each of the nodes in the cluster, serially (i.e., one node at a time), you will:</p>
+<section id="renamed-metrics-in-new-version">
+<h2>Renamed Metrics in 2026.3<a class="headerlink" href="#renamed-metrics-in-new-version" title="Link to this heading">¶</a></h2>
+<p>The following metrics are renamed in ScyllaDB 2026.3 compared to 2026.2.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14.3%" />
+<col style="width: 85.7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric Name in 2026.2</p></th>
+<th class="head"><p>Metric Name in 2026.3</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>scylla_s3_downloads_blocked_on_memory</p></td>
+<td><p>scylla_s3_downloads_starving_on_max_concurrency</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-and-updated-metrics-in-previous-2026-x-releases">
+<h2>New and Updated Metrics in Previous 2026.x Releases<a class="headerlink" href="#new-and-updated-metrics-in-previous-2026-x-releases" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Check that the cluster’s schema is synchronized</p></li>
-<li><p>Drain the node and backup the data</p></li>
-<li><p>Backup the configuration file</p></li>
-<li><p>Stop ScyllaDB</p></li>
-<li><p>Download and install new ScyllaDB packages</p></li>
-<li><p>Start ScyllaDB</p></li>
-<li><p>Validate that the upgrade was successful</p></li>
+<li><p><a class="reference external" href="https://docs.scylladb.com/manual/branch-2026.2/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/metric-update-2026.1-to-2026.2.html">Metrics Update Between 2026.1 and 2026.2</a></p></li>
 </ul>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Apply the procedure <strong>serially</strong> on each node. Do not move to the next node before
-validating that the node you upgraded is up and running the new version.</p>
-</div>
-<p><strong>During</strong> the rolling upgrade, it is highly recommended:</p>
-<ul class="simple">
-<li><p>Not to use the new 2026.2 features.</p></li>
-<li><p>Not to run administration functions, such as repairs, refresh, rebuild, or add
-or remove nodes. See <a class="reference external" href="https://manager.docs.scylladb.com/stable/sctool/">sctool</a> for suspending
-ScyllaDB Manager’s scheduled or running repairs.</p></li>
-<li><p>Not to apply schema changes.</p></li>
-</ul>
-</section>
-<section id="upgrade-steps">
-<h2>Upgrade Steps<a class="headerlink" href="#upgrade-steps" title="Link to this heading">¶</a></h2>
-<section id="check-the-cluster-schema">
-<h3>Check the cluster schema<a class="headerlink" href="#check-the-cluster-schema" title="Link to this heading">¶</a></h3>
-<p>Make sure that all nodes have the schema synchronized before the upgrade. The upgrade
-procedure will fail if there is a schema disagreement between nodes.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>describecluster
-</pre></div>
-</div>
-</section>
-<section id="backup-the-data">
-<h3>Backup the data<a class="headerlink" href="#backup-the-data" title="Link to this heading">¶</a></h3>
-<p>Before any major procedure, like an upgrade, it is recommended to backup all the data
-to an external device.
-We recommend using <a class="reference external" href="https://manager.docs.scylladb.com/stable/backup/index.html">ScyllaDB Manager</a>
-to create backups.</p>
-<p>Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">snapshot</span></code> command.
-For <strong>each</strong> node in the cluster, run the following:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>drain
-nodetool<span class="w"> </span>snapshot
-</pre></div>
-</div>
-<p>Take note of the directory name that nodetool gives you, and copy all the directories
-having that name under <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla</span></code> to an external backup device.</p>
-<p>When the upgrade is completed on all nodes, remove the snapshot with the
-<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">clearsnapshot</span> <span class="pre">-t</span> <span class="pre">&lt;snapshot&gt;</span></code> command to prevent running out of space.</p>
-</section>
-<section id="backup-the-configuration-file">
-<h3>Backup the configuration file<a class="headerlink" href="#backup-the-configuration-file" title="Link to this heading">¶</a></h3>
-<p>Back up the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> configuration file and the ScyllaDB packages
-in case you need to rollback the upgrade.</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-RGViaWFuL1VidW50dQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tab" tabindex="0">Debian/Ubuntu</button><button aria-controls="panel-0-UkhFTC9DZW50T1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tab" tabindex="-1">RHEL/CentOS</button></div><div aria-labelledby="tab-0-RGViaWFuL1VidW50dQ==" class="sphinx-tabs-panel group-tab" id="panel-0-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tabpanel" tabindex="0"><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>-a<span class="w"> </span>/etc/scylla/scylla.yaml<span class="w"> </span>/etc/scylla/scylla.yaml.backup
-sudo<span class="w"> </span>cp<span class="w"> </span>/etc/apt/sources.list.d/scylla.list<span class="w"> </span>~/scylla.list-backup
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-0-UkhFTC9DZW50T1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tabpanel" tabindex="0"><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>-a<span class="w"> </span>/etc/scylla/scylla.yaml<span class="w"> </span>/etc/scylla/scylla.yaml.backup
-sudo<span class="w"> </span>cp<span class="w"> </span>/etc/yum.repos.d/scylla.repo<span class="w"> </span>~/scylla.repo-backup
-</pre></div>
-</div>
-</div></div>
-</section>
-<section id="gracefully-stop-the-node">
-<h3>Gracefully stop the node<a class="headerlink" href="#gracefully-stop-the-node" title="Link to this heading">¶</a></h3>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>service<span class="w"> </span>scylla-server<span class="w"> </span>stop
-</pre></div>
-</div>
-</section>
-<section id="download-and-install-the-new-release">
-<h3>Download and install the new release<a class="headerlink" href="#download-and-install-the-new-release" title="Link to this heading">¶</a></h3>
-<p>Before upgrading, check what version you are running now using <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">--version</span></code>.
-You should take note of the current version in case you want to <a class="reference internal" href="#rollback-2026-1-to-2026-2"><span class="std std-ref">rollback</span></a> the upgrade.</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-RGViaWFuL1VidW50dQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tab" tabindex="0">Debian/Ubuntu</button><button aria-controls="panel-1-UkhFTC9DZW50T1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tab" tabindex="-1">RHEL/CentOS</button><button aria-controls="panel-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" name="RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" role="tab" tabindex="-1">EC2/GCP/Azure Ubuntu Image</button></div><div aria-labelledby="tab-1-RGViaWFuL1VidW50dQ==" class="sphinx-tabs-panel group-tab" id="panel-1-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Update the ScyllaDB deb repo to 2026.2.</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.2.list</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Install the new ScyllaDB version:</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt-get clean all</span>
-<span class="go">sudo apt-get update</span>
-<span class="go">sudo apt-get dist-upgrade scylla</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-<p>Answer ‘y’ to the first two questions.</p>
-</div><div aria-labelledby="tab-1-UkhFTC9DZW50T1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Update the ScyllaDB rpm repo to 2026.2.</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.2.repo</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Install the new ScyllaDB version:</p>
-<blockquote>
-<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>yum<span class="w"> </span>clean<span class="w"> </span>all
-sudo<span class="w"> </span>yum<span class="w"> </span>update<span class="w"> </span>scylla<span class="se">\*</span><span class="w"> </span>-y
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-</div><div aria-labelledby="tab-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" name="RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" role="tabpanel" tabindex="0"><p>If you’re using the ScyllaDB official image (recommended), see the <strong>Debian/Ubuntu</strong>
-tab for upgrade instructions.</p>
-<p>If you’re using your own image and installed ScyllaDB packages for Ubuntu or Debian,
-you need to apply an extended upgrade procedure:</p>
-<ol class="arabic">
-<li><p>Update the ScyllaDB deb repo (see the <strong>Debian/Ubuntu</strong> tab).</p></li>
-<li><p>Install the new ScyllaDB version with the additional <code class="docutils literal notranslate"><span class="pre">scylla-machine-image</span></code> package:</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt-get clean all</span>
-<span class="go">sudo apt-get update</span>
-<span class="go">sudo apt-get dist-upgrade scylla</span>
-<span class="go">sudo apt-get dist-upgrade scylla-machine-image</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">scylla_setup</span></code> without <code class="docutils literal notranslate"><span class="pre">running</span> <span class="pre">io_setup</span></code>.</p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">/opt/scylladb/scylla-machine-image/scylla_cloud_io_setup</span></code>.</p></li>
-</ol>
-</div></div>
-</section>
-<section id="start-the-node">
-<h3>Start the node<a class="headerlink" href="#start-the-node" title="Link to this heading">¶</a></h3>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>service<span class="w"> </span>scylla-server<span class="w"> </span>start
-</pre></div>
-</div>
-</section>
-<section id="validate">
-<h3>Validate<a class="headerlink" href="#validate" title="Link to this heading">¶</a></h3>
-<ol class="arabic simple">
-<li><p>Check cluster status with <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">status</span></code> and make sure <strong>all</strong> nodes, including
-the one you just upgraded, are in <code class="docutils literal notranslate"><span class="pre">UN</span></code> status.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-X</span> <span class="pre">GET</span> <span class="pre">&quot;http://localhost:10000/storage_service/scylla_release_version&quot;</span></code>
-to check the ScyllaDB version. Validate that the version matches the one you upgraded to.</p></li>
-<li><p>Check scylla-server log (by <code class="docutils literal notranslate"><span class="pre">journalctl</span> <span class="pre">_COMM=scylla</span></code>) and <code class="docutils literal notranslate"><span class="pre">/var/log/syslog</span></code> to
-validate there are no new errors in the log.</p></li>
-<li><p>Check again after two minutes to validate no new issues are introduced.</p></li>
-</ol>
-<p>Once you are sure the node upgrade was successful, move to the next node in the cluster.</p>
-</section>
-</section>
-<section id="rollback-procedure">
-<span id="rollback-2026-1-to-2026-2"></span><h2>Rollback Procedure<a class="headerlink" href="#rollback-procedure" title="Link to this heading">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The rollback procedure can be applied <strong>only</strong> if some nodes have not been
-upgraded to 2026.2 yet. As soon as the last node in the rolling upgrade
-procedure is started with 2026.2, rollback becomes impossible. At that
-point, the only way to restore a cluster to 2026.1 is by restoring it
-from backup.</p>
-</div>
-<p>The following procedure describes a rollback from ScyllaDB 2026.2 to
-2026.1. Apply this procedure if an upgrade from 2026.1 to
-2026.2 fails before completing on all nodes.</p>
-<ul class="simple">
-<li><p>Use this procedure only on the nodes you upgraded to 2026.2.</p></li>
-<li><p>Execute the following commands one node at a time, moving to the next node
-only after the rollback procedure is completed successfully.</p></li>
-</ul>
-<p>ScyllaDB rollback is a rolling procedure that does <strong>not</strong> require full cluster shutdown.
-For each of the nodes you rollback to 2026.1, serially (i.e., one node
-at a time), you will:</p>
-<ul class="simple">
-<li><p>Drain the node and stop ScyllaDB</p></li>
-<li><p>Retrieve the old ScyllaDB packages</p></li>
-<li><p>Restore the configuration file</p></li>
-<li><p>Reload systemd configuration</p></li>
-<li><p>Restart ScyllaDB</p></li>
-<li><p>Validate the rollback success</p></li>
-</ul>
-<p>Apply the procedure <strong>serially</strong> on each node. Do not move to the next node
-before validating that the rollback was successful and the node is up and
-running the old version.</p>
-</section>
-<section id="rollback-steps">
-<h2>Rollback Steps<a class="headerlink" href="#rollback-steps" title="Link to this heading">¶</a></h2>
-<section id="drain-and-gracefully-stop-the-node">
-<h3>Drain and gracefully stop the node<a class="headerlink" href="#drain-and-gracefully-stop-the-node" title="Link to this heading">¶</a></h3>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>drain
-sudo<span class="w"> </span>service<span class="w"> </span>scylla-server<span class="w"> </span>stop
-</pre></div>
-</div>
-</section>
-<section id="restore-and-install-the-old-release">
-<h3>Restore and install the old release<a class="headerlink" href="#restore-and-install-the-old-release" title="Link to this heading">¶</a></h3>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-RGViaWFuL1VidW50dQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-2-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tab" tabindex="0">Debian/Ubuntu</button><button aria-controls="panel-2-UkhFTC9DZW50T1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-2-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tab" tabindex="-1">RHEL/CentOS</button><button aria-controls="panel-2-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-2-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" name="RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" role="tab" tabindex="-1">EC2/GCP/Azure Ubuntu Image</button></div><div aria-labelledby="tab-2-RGViaWFuL1VidW50dQ==" class="sphinx-tabs-panel group-tab" id="panel-2-RGViaWFuL1VidW50dQ==" name="RGViaWFuL1VidW50dQ==" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Remove the old repo file.</p>
-<blockquote>
-<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/etc/apt/sources.list.d/scylla.list
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Restore the 2026.1 packages backed up during the upgrade.</p>
-<blockquote>
-<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>~/scylla.list-backup<span class="w"> </span>/etc/apt/sources.list.d/scylla.list
-sudo<span class="w"> </span>chown<span class="w"> </span>root.root<span class="w"> </span>/etc/apt/sources.list.d/scylla.list
-sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>/etc/apt/sources.list.d/scylla.list
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Install:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">remove</span> <span class="n">scylla</span>\<span class="o">*</span> <span class="o">-</span><span class="n">y</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">scylla</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-<p>Answer ‘y’ to the first two questions.</p>
-</div><div aria-labelledby="tab-2-UkhFTC9DZW50T1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-UkhFTC9DZW50T1M=" name="UkhFTC9DZW50T1M=" role="tabpanel" tabindex="0"><ol class="arabic">
-<li><p>Remove the old repo file.</p>
-<blockquote>
-<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/etc/yum.repos.d/scylla.repo
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Restore the 2026.1 packages backed up during the upgrade procedure.</p>
-<blockquote>
-<div><div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>~/scylla.repo-backup<span class="w"> </span>/etc/yum.repos.d/scylla.repo
-sudo<span class="w"> </span>chown<span class="w"> </span>root.root<span class="w"> </span>/etc/yum.repos.d/scylla.repo
-sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>/etc/yum.repos.d/scylla.repo
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Install:</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo yum clean all</span>
-<span class="go">sudo yum remove scylla\*</span>
-<span class="go">sudo yum install scylla</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-</div><div aria-labelledby="tab-2-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" name="RUMyL0dDUC9BenVyZSBVYnVudHUgSW1hZ2U=" role="tabpanel" tabindex="0"><p>If you’re using the ScyllaDB official image (recommended), see the <strong>Debian/Ubuntu</strong>
-tab for upgrade instructions.</p>
-<p>If you’re using your own image and installed ScyllaDB packages for Ubuntu or Debian,
-you need to additionally restore the <code class="docutils literal notranslate"><span class="pre">scylla-machine-image</span></code> package.</p>
-<ol class="arabic">
-<li><p>Restore the 2026.1 packages backed up during the upgrade
-(see the <strong>Debian/Ubuntu</strong> tab).</p></li>
-<li><p>Install:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">remove</span> <span class="n">scylla</span>\<span class="o">*</span> <span class="o">-</span><span class="n">y</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">scylla</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">scylla</span><span class="o">-</span><span class="n">machine</span><span class="o">-</span><span class="n">image</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-<blockquote>
-<div><p>Answer ‘y’ to the first two questions.</p>
-</div></blockquote>
-</div></div>
-</section>
-<section id="restore-the-configuration-file">
-<h3>Restore the configuration file<a class="headerlink" href="#restore-the-configuration-file" title="Link to this heading">¶</a></h3>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/etc/scylla/scylla.yaml
-sudo<span class="w"> </span>cp<span class="w"> </span>/etc/scylla/scylla.yaml-backup<span class="w"> </span>/etc/scylla/scylla.yaml
-</pre></div>
-</div>
-</section>
-<section id="reload-systemd-configuration">
-<h3>Reload systemd configuration<a class="headerlink" href="#reload-systemd-configuration" title="Link to this heading">¶</a></h3>
-<p>You must reload the unit file if the systemd unit file is changed.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
-</pre></div>
-</div>
-</section>
-<section id="id1">
-<h3>Start the node<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>service<span class="w"> </span>scylla-server<span class="w"> </span>start
-</pre></div>
-</div>
-</section>
-<section id="id2">
-<h3>Validate<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
-<p>Check the upgrade instructions above for validation. Once you are sure the node
-rollback is successful, move to the next node in the cluster.</p>
-</section>
 </section>
 </section>
 
@@ -750,7 +655,7 @@ rollback is successful, move to the next node in the cluster.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2026.x and 2026.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -785,21 +690,21 @@ rollback is successful, move to the next node in the cluster.</p>
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="index.html">
+            <a class="navigation__link" href="upgrade-guide-from-2026.x-to-2026.3.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Upgrade - ScyllaDB 2026.1 to ScyllaDB 2026.2
+                    <span class="colored">PREVIOUS</span> <br />Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="metric-update-2026.1-to-2026.2.html">
+            <a class="navigation__link" href="../upgrade-guide-from-2026.x.y-to-2026.x.z.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Metrics Update Between 2026.1 and 2026.2
+                    <span class="colored">NEXT</span> <br />Upgrade - ScyllaDB 2026.x.y to 2026.x.z (Patch Upgrades)
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -819,14 +724,14 @@ rollback is successful, move to the next node in the cluster.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2026.x and 2026.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -838,29 +743,10 @@ rollback is successful, move to the next node in the cluster.</p>
         <div class="secondary-side-nav__content">
             <p class="topic-title">On this page</p>
             <ul>
-<li><a class="reference internal" href="#">Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2</a><ul>
-<li><a class="reference internal" href="#before-you-upgrade-scylladb">Before You Upgrade ScyllaDB</a></li>
-<li><a class="reference internal" href="#upgrade-procedure">Upgrade Procedure</a></li>
-<li><a class="reference internal" href="#upgrade-steps">Upgrade Steps</a><ul>
-<li><a class="reference internal" href="#check-the-cluster-schema">Check the cluster schema</a></li>
-<li><a class="reference internal" href="#backup-the-data">Backup the data</a></li>
-<li><a class="reference internal" href="#backup-the-configuration-file">Backup the configuration file</a></li>
-<li><a class="reference internal" href="#gracefully-stop-the-node">Gracefully stop the node</a></li>
-<li><a class="reference internal" href="#download-and-install-the-new-release">Download and install the new release</a></li>
-<li><a class="reference internal" href="#start-the-node">Start the node</a></li>
-<li><a class="reference internal" href="#validate">Validate</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#rollback-procedure">Rollback Procedure</a></li>
-<li><a class="reference internal" href="#rollback-steps">Rollback Steps</a><ul>
-<li><a class="reference internal" href="#drain-and-gracefully-stop-the-node">Drain and gracefully stop the node</a></li>
-<li><a class="reference internal" href="#restore-and-install-the-old-release">Restore and install the old release</a></li>
-<li><a class="reference internal" href="#restore-the-configuration-file">Restore the configuration file</a></li>
-<li><a class="reference internal" href="#reload-systemd-configuration">Reload systemd configuration</a></li>
-<li><a class="reference internal" href="#id1">Start the node</a></li>
-<li><a class="reference internal" href="#id2">Validate</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Metrics Update Between 2026.x and 2026.3</a><ul>
+<li><a class="reference internal" href="#new-metrics-in-new-version">New Metrics in 2026.3</a></li>
+<li><a class="reference internal" href="#renamed-metrics-in-new-version">Renamed Metrics in 2026.3</a></li>
+<li><a class="reference internal" href="#new-and-updated-metrics-in-previous-2026-x-releases">New and Updated Metrics in Previous 2026.x Releases</a></li>
 </ul>
 </li>
 </ul>
@@ -917,19 +803,19 @@ rollback is successful, move to the next node in the cluster.</p>
             
                 
                     <li>
-                        <a href="upgrade-guide-from-2026.1-to-2026.2.html">master</a>
+                        <a href="metric-update-2026.x-to-2026.3.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../branch-2026.3/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.html">2026.3</a>
+                        <a href="../../../../branch-2026.3/index.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.html">2026.2</a>
+                        <a href="../../../../stable/index.html">2026.2</a>
                     </li>
                 
             
@@ -974,6 +860,7 @@ rollback is successful, move to the next node in the cluster.</p>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.2 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>

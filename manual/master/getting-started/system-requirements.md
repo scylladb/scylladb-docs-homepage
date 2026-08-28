@@ -9,7 +9,7 @@ ScyllaDB runs on 64-bit Linux. The x86_64 and AArch64 architectures are supporte
 See [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html) for information about
 supported operating systems, distros, and versions.
 
-See [Cloud Instance Recommendations for AWS, GCP, and Azure](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md) for information
+See [Cloud Instance Recommendations for AWS, GCP, Azure, and OCI](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md) for information
 about instance types recommended for cloud deployments.
 
 <a id="system-requirements-hardware"></a>

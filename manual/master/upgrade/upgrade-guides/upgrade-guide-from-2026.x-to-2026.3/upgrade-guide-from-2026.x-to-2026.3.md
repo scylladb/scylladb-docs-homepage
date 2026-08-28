@@ -1,7 +1,7 @@
-# Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2
+# Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3
 
-This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.1
-to ScyllaDB 2026.2 and rollback to version 2026.1 if necessary.
+This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.x
+to ScyllaDB 2026.3 and rollback to version 2026.x if necessary.
 
 This guide covers upgrading ScyllaDB on Red Hat Enterprise Linux (RHEL), CentOS, Debian,
 and Ubuntu. See [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html)
@@ -45,7 +45,7 @@ For each of the nodes in the cluster, serially (i.e., one node at a time), you w
 
 **During** the rolling upgrade, it is highly recommended:
 
-* Not to use the new 2026.2 features.
+* Not to use the new 2026.3 features.
 * Not to run administration functions, such as repairs, refresh, rebuild, or add
   or remove nodes. See [sctool](https://manager.docs.scylladb.com/stable/sctool/) for suspending
   ScyllaDB Manager’s scheduled or running repairs.
@@ -111,11 +111,11 @@ sudo service scylla-server stop
 ### Download and install the new release
 
 Before upgrading, check what version you are running now using `scylla --version`.
-You should take note of the current version in case you want to [rollback](#rollback-2026-1-to-2026-2) the upgrade.
+You should take note of the current version in case you want to [rollback](#rollback) the upgrade.
 
 Debian/Ubuntu
 
-1. Update the ScyllaDB deb repo to 2026.2.
+1. Update the ScyllaDB deb repo to 2026.3.
    > ```console
    > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.2.list
    > ```
@@ -130,7 +130,7 @@ Answer ‘y’ to the first two questions.
 
 RHEL/CentOS
 
-1. Update the ScyllaDB rpm repo to 2026.2.
+1. Update the ScyllaDB rpm repo to 2026.3.
    > ```console
    > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.2.repo
    > ```
@@ -177,27 +177,27 @@ sudo service scylla-server start
 
 Once you are sure the node upgrade was successful, move to the next node in the cluster.
 
-<a id="rollback-2026-1-to-2026-2"></a>
+<a id="rollback"></a>
 
 ## Rollback Procedure
 
 #### WARNING
 The rollback procedure can be applied **only** if some nodes have not been
-upgraded to 2026.2 yet. As soon as the last node in the rolling upgrade
-procedure is started with 2026.2, rollback becomes impossible. At that
-point, the only way to restore a cluster to 2026.1 is by restoring it
+upgraded to 2026.3 yet. As soon as the last node in the rolling upgrade
+procedure is started with 2026.3, rollback becomes impossible. At that
+point, the only way to restore a cluster to 2026.x is by restoring it
 from backup.
 
-The following procedure describes a rollback from ScyllaDB 2026.2 to
-2026.1. Apply this procedure if an upgrade from 2026.1 to
-2026.2 fails before completing on all nodes.
+The following procedure describes a rollback from ScyllaDB 2026.3 to
+2026.x. Apply this procedure if an upgrade from 2026.x to
+2026.3 fails before completing on all nodes.
 
-* Use this procedure only on the nodes you upgraded to 2026.2.
+* Use this procedure only on the nodes you upgraded to 2026.3.
 * Execute the following commands one node at a time, moving to the next node
   only after the rollback procedure is completed successfully.
 
 ScyllaDB rollback is a rolling procedure that does **not** require full cluster shutdown.
-For each of the nodes you rollback to 2026.1, serially (i.e., one node
+For each of the nodes you rollback to 2026.x, serially (i.e., one node
 at a time), you will:
 
 * Drain the node and stop ScyllaDB
@@ -228,7 +228,7 @@ Debian/Ubuntu
    > ```sh
    > sudo rm -rf /etc/apt/sources.list.d/scylla.list
    > ```
-2. Restore the 2026.1 packages backed up during the upgrade.
+2. Restore the 2026.x packages backed up during the upgrade.
    > ```sh
    > sudo cp ~/scylla.list-backup /etc/apt/sources.list.d/scylla.list
    > sudo chown root.root /etc/apt/sources.list.d/scylla.list
@@ -249,7 +249,7 @@ RHEL/CentOS
    > ```sh
    > sudo rm -rf /etc/yum.repos.d/scylla.repo
    > ```
-2. Restore the 2026.1 packages backed up during the upgrade procedure.
+2. Restore the 2026.x packages backed up during the upgrade procedure.
    > ```sh
    > sudo cp ~/scylla.repo-backup /etc/yum.repos.d/scylla.repo
    > sudo chown root.root /etc/yum.repos.d/scylla.repo
@@ -270,7 +270,7 @@ tab for upgrade instructions.
 If you’re using your own image and installed ScyllaDB packages for Ubuntu or Debian,
 you need to additionally restore the `scylla-machine-image` package.
 
-1. Restore the 2026.1 packages backed up during the upgrade
+1. Restore the 2026.x packages backed up during the upgrade
    (see the **Debian/Ubuntu** tab).
 2. Install:
    > ```default

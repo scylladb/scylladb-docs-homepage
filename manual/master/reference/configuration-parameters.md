@@ -555,6 +555,16 @@ having the highest priority:
 > * **Default value:** `true`
 > * Liveness: `False`
 
+<a id="confprop-logstor-sparse-files"></a>
+
+### logstor_sparse_files
+
+> Create logstor data files as sparse files. When disabled, each file is preallocated and fully written with zeros, guaranteeing space is available and avoiding fragmentation.     When enabled, the file is only extended to its nominal size, so unwritten regions consume no disk space. Useful for tests, where the disk space and I/O of formatting files is wasteful.
+
+> * **Type:** `bool`
+> * **Default value:** `false`
+> * Liveness: `False`
+
 <a id="confprop-logstor-compaction-trigger-threshold"></a>
 
 ### logstor_compaction_trigger_threshold

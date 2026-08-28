@@ -9,6 +9,7 @@ Keep your versions up-to-date. The two latest versions are supported. Also, alwa
             * [Launch ScyllaDB on AWS](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-aws.md)
 * [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-gcp.md)
 * [Launch ScyllaDB on Azure](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-azure.md)
+* [Launch ScyllaDB on OCI](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-oci.md)
 
 </div></div>
             <div class="cell my-panel">

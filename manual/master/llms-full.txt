@@ -373,7 +373,7 @@ This document highlights ScyllaDB’s key data modeling features.
 # Upgrade ScyllaDB
 
 * [Upgrade Guides](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/index.md)
-  * [ScyllaDB 2026.1 to ScyllaDB 2026.2](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/index.md)
+  * [ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md)
   * [ScyllaDB 2026.x Patch Upgrades](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md)
   * [ScyllaDB Image](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/ami-upgrade.md)
 
@@ -741,6 +741,7 @@ Keep your versions up-to-date. The two latest versions are supported. Also, alwa
             * [Launch ScyllaDB on AWS](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-aws.md)
 * [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-gcp.md)
 * [Launch ScyllaDB on Azure](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-azure.md)
+* [Launch ScyllaDB on OCI](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-oci.md)
 
 </div></div>
             <div class="cell my-panel">
@@ -1215,7 +1216,7 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 
 # Upgrade ScyllaDB
 
-* [ScyllaDB 2026.1 to ScyllaDB 2026.2](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/index.md)
+* [ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md)
 * [ScyllaDB 2026.x Patch Upgrades](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md)
   * [Upgrade Procedure](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md#upgrade-procedure)
   * [Upgrade Steps](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md#upgrade-steps)
@@ -1237,10 +1238,10 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 
 # index.md
 
-# Upgrade - ScyllaDB 2026.1 to ScyllaDB 2026.2
+# Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3
 
-* [Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/upgrade-guide-from-2026.1-to-2026.2.md)
-* [Metrics Update Between 2026.1 and 2026.2](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/metric-update-2026.1-to-2026.2.md)
+* [Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/upgrade-guide-from-2026.x-to-2026.3.md)
+* [Metrics Update Between 2026.x and 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.md)
 
 
 # abort.md
@@ -9652,6 +9653,8 @@ The [Lsv3-series](https://learn.microsoft.com/en-us/azure/virtual-machines/lsv3-
 
 More on Azure Lsv3 instances [here](https://learn.microsoft.com/en-us/azure/virtual-machines/lsv3-series/)
 
+<a id="system-requirements-oci"></a>
+
 ## Oracle Cloud Infrastructure (OCI)
 
 An OCPU is defined as the CPU capacity equivalent of one physical core of an Intel Xeon processor with hyperthreading enabled.
@@ -12059,6 +12062,16 @@ having the highest priority:
 
 > * **Type:** `bool`
 > * **Default value:** `true`
+> * Liveness: `False`
+
+<a id="confprop-logstor-sparse-files"></a>
+
+### logstor_sparse_files
+
+> Create logstor data files as sparse files. When disabled, each file is preallocated and fully written with zeros, guaranteeing space is available and avoiding fragmentation.     When enabled, the file is only extended to its nominal size, so unwritten regions consume no disk space. Useful for tests, where the disk space and I/O of formatting files is wasteful.
+
+> * **Type:** `bool`
+> * **Default value:** `false`
 > * Liveness: `False`
 
 <a id="confprop-logstor-compaction-trigger-threshold"></a>
@@ -27637,6 +27650,326 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
 * Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/master/operating-scylla/nodetool.md).
 
 
+# launch-on-oci.md
+
+# Launch ScyllaDB 2026.2 on Oracle Cloud Infrastructure (OCI)
+
+This article will guide you through self-managed ScyllaDB deployment on Oracle Cloud Infrastructure (OCI)
+from the ScyllaDB image published in [Oracle Cloud Marketplace](https://docs.oracle.com/en-us/iaas/Content/Marketplace/Concepts/marketoverview.htm).
+For a fully-managed deployment of ScyllaDB as-a-service, see
+[ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/).
+
+The ScyllaDB Marketplace listing is a *Bring Your Own License* (BYOL) image listing: OCI charges you for
+the compute, storage, and network resources you use, and the ScyllaDB software is covered by your ScyllaDB
+license or subscription.
+
+## Prerequisites
+
+* Active OCI account (tenancy) with permissions to launch compute instances, and to subscribe to
+  Marketplace images in the target compartment. See
+  [Managing Compartments](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm).
+* A [VCN](https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingVCNs.htm) with a subnet to
+  launch the instance into, and the [ScyllaDB ports](https://docs.scylladb.com/manual/master/operating-scylla/security/security-checklist.md#networking-ports) allowed by the
+  [security rules](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securityrules.htm) that
+  apply to the instance - either in a security list attached to the subnet, or in a
+  [network security group](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm)
+  (NSG) attached to the instance’s VNIC.
+
+  Open each port only to the peers that need it: the inter-node ports to the other nodes of the cluster,
+  the CQL ports to your clients, and keep the REST API port closed to anything outside the cluster. You
+  also need TCP port 22 open, from your administrators’ addresses only, for the SSH step below. See
+  [ScyllaDB Security Checklist](https://docs.scylladb.com/manual/master/operating-scylla/security/security-checklist.md) for the full set of
+  recommendations.
+* An SSH key pair. See
+  [Managing Key Pairs on Linux Instances](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/managingkeypairs.htm).
+* To use the CLI: the [OCI CLI](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm),
+  installed and configured with `oci setup config` (see
+  [Configuring the CLI](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliconfigure.htm)).
+* ScyllaDB Image requires at least 2 vCPU servers.
+* The image is an x86_64 image and supports the Dense I/O shapes, which provide the local NVMe storage that
+  ScyllaDB uses for its data directory. On the first boot, the image formats the local NVMe disks with XFS,
+  creating a RAID0 array over them if there is more than one.
+
+#### WARNING
+The ScyllaDB data directory lives on the instance’s local NVMe storage. OCI does not back up local NVMe
+storage, and its contents are lost when the instance is
+[terminated](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/terminatinginstance.htm) or
+migrated to another host. Keep data that must survive on a multi-node cluster with a replication factor
+greater than one, and back it up - for example with
+[ScyllaDB Manager](https://manager.docs.scylladb.com/).
+
+<a id="launch-on-oci-console"></a>
+
+## Launching ScyllaDB from the OCI Console
+
+1. Choose a shape. See [Cloud Instance Recommendations for OCI](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md#system-requirements-oci) for the list
+   of recommended shapes.
+
+   Other shapes will work, but with lesser performance. If you choose a shape other than the recommended
+   ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/master/getting-started/system-configuration.md#system-configuration-scripts) script.
+2. Sign in to the [OCI Console](https://cloud.oracle.com/) and select the region you want to deploy in.
+3. Open the navigation menu, select **Marketplace**, and then select **All Applications**.
+4. Search for *ScyllaDB* and select the ScyllaDB listing for the version you want to deploy. Listings are
+   named after the ScyllaDB release, for example *ScyllaDB 2026.2*.
+
+   Alternatively, open
+   [the ScyllaDB listings in Marketplace](https://cloud.oracle.com/marketplace/apps?searchQuery=ScyllaDB)
+   directly.
+5. On the listing page:
+   * **Version** – Select the package version to deploy. The latest version is selected by default.
+   * **Compartment** – Select the compartment to launch the instance in.
+   * Select the checkbox to accept the Oracle Terms of Use and the ScyllaDB (partner) terms and conditions.
+6. Select **Launch Instance**.
+
+   The **Create compute instance** page opens with the ScyllaDB Marketplace image already selected.
+7. Configure the instance:
+   * **Name** – A name for the instance.
+   * **Placement** – Select the availability domain.
+   * **Image and shape** – Keep the pre-selected ScyllaDB image, and select **Change shape** to pick
+     the shape you chose in the first step. For a flexible shape, set the number of OCPUs and the amount of memory.
+   * **Networking** – Select the VCN and subnet. If you keep your security rules in network security
+     groups, select **Use network security groups to control traffic** and choose the NSG that allows the
+     ScyllaDB ports.
+
+     Assign a public IPv4 address if you need to reach the node from outside the VCN. A public address can
+     only be assigned in a public subnet - in a private subnet, reach the node over its private address
+     from within the VCN, through a
+     [bastion](https://docs.oracle.com/en-us/iaas/Content/Bastion/Concepts/bastionoverview.htm),
+     or over a VPN.
+   * **Add SSH keys** – Select **Generate a key pair for me** and save the private key, or select
+     **Paste public keys** / **Upload public key files (.pub)** to provide your own public key. You need
+     this key to connect to the instance.
+   * **Advanced options > Management > Initialization script** – Optional. Provide the ScyllaDB
+     configuration as user data. See [Configuring ScyllaDB with user data](#launch-on-oci-user-data)
+     below.
+
+     The Console base64-encodes the script for you, so paste or upload it as plain text.
+8. Select **Create**.
+
+   The instance is listed as *Provisioning*, and switches to *Running* when it is up. Continue with
+   [Connecting to the instance](#launch-on-oci-connect).
+
+<a id="launch-on-oci-cli"></a>
+
+## Launching ScyllaDB with the OCI CLI
+
+Launching a Marketplace image with the CLI requires that you first accept the image terms of use, which
+creates an image subscription in your compartment. This is the CLI equivalent of the terms-of-use checkbox
+in the Console.
+
+The following steps use the `us-ashburn-1` region as an example. Replace it with your region, or omit
+`--region` to use the region from your CLI configuration.
+
+1. Choose a shape. See [Cloud Instance Recommendations for OCI](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md#system-requirements-oci) for the list
+   of recommended shapes.
+
+   Other shapes will work, but with lesser performance. If you choose a shape other than the recommended
+   ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/master/getting-started/system-configuration.md#system-configuration-scripts) script.
+2. Find the OCID of the ScyllaDB Marketplace listing:
+   ```console
+   oci marketplace listing list --region us-ashburn-1 --all \
+     --query 'data[?contains(name, `Scylla`)].{name:name, id:id}'
+   ```
+
+   Example output:
+   ```json
+   [
+     {
+       "id": "ocid1.mktpublisting.oc1.iad.amaaaaaa433yp7qakrqk5u3zu6ekylon4xrrflma3xcjug52xts4svplmjna",
+       "name": "ScyllaDB 2026.2"
+     }
+   ]
+   ```
+
+   You can also read the OCID from the `/marketplace/application/<listing OCID>` part of the listing URL
+   in the OCI Console.
+3. List the available package versions of that listing:
+   ```console
+   oci marketplace package list --region us-ashburn-1 \
+     --listing-id <listing OCID> \
+     --query 'data[].{version:"package-version", created:"time-created"}'
+   ```
+
+   Note the version you want to deploy - usually the most recently created one.
+4. Get the package details of that version. The output holds the image OCID and the App Catalog
+   identifiers you need in the next steps:
+   ```console
+   oci marketplace package get --region us-ashburn-1 \
+     --listing-id <listing OCID> \
+     --package-version <package version> \
+     --query 'data.{image:"image-id", catalogListing:"app-catalog-listing-id", catalogVersion:"app-catalog-listing-resource-version"}'
+   ```
+
+   Example output:
+   ```json
+   {
+     "catalogListing": "ocid1.appcataloglisting.oc1..aaaaaaaarw5vsfysh36clj4xasz5mhsemzs5wt4eea5tdywzbujopvjzsoxq",
+     "catalogVersion": "2026.2.5",
+     "image": "ocid1.image.oc1..aaaaaaaashyu5zg4s72zwanu73enkab4mitjkmifebglfvp4qwqdbalxmtgq"
+   }
+   ```
+5. Retrieve the terms of use for that version. The response contains the EULA link, the Oracle Terms of Use
+   link, a signature, and the time the terms were retrieved - all of which are required to subscribe:
+   ```console
+   oci compute pic agreements get --region us-ashburn-1 \
+     --listing-id <app catalog listing OCID> \
+     --resource-version <app catalog resource version>
+   ```
+
+   Review the documents at `eula-link` and `oracle-terms-of-use-link` before continuing.
+6. Subscribe to the image in your compartment, which accepts the terms retrieved in the previous step:
+   ```console
+   oci compute pic subscription create --region us-ashburn-1 \
+     --compartment-id <compartment OCID> \
+     --listing-id <app catalog listing OCID> \
+     --resource-version <app catalog resource version> \
+     --signature <signature> \
+     --time-retrieved <time-retrieved> \
+     --eula-link <eula-link> \
+     --oracle-tou-link <oracle-terms-of-use-link>
+   ```
+
+   The subscription takes some time to propagate. Verify that it is in place before launching:
+   ```console
+   oci compute pic subscription list --region us-ashburn-1 \
+     --compartment-id <compartment OCID>
+   ```
+
+   #### NOTE
+   Launching immediately after creating the subscription can fail, because the new subscription is not
+   visible to the Compute service yet. If the next step fails with a not-authorized or not-found error
+   on the image, wait a few minutes and retry it - do not re-create the subscription.
+7. Launch the instance, using the image OCID from the package details:
+   ```console
+   oci compute instance launch --region us-ashburn-1 \
+     --compartment-id <compartment OCID> \
+     --availability-domain <availability domain> \
+     --shape <shape> \
+     --shape-config '{"ocpus": <number of OCPUs>, "memoryInGBs": <memory in GB>}' \
+     --subnet-id <subnet OCID> \
+     --nsg-ids '["<NSG OCID>"]' \
+     --assign-public-ip true \
+     --image-id <image OCID> \
+     --display-name scylla-node1 \
+     --ssh-authorized-keys-file <path to your public SSH key> \
+     --user-data-file <path to your user data file> \
+     --wait-for-state RUNNING
+   ```
+
+   For example:
+   ```console
+   oci compute instance launch --region us-ashburn-1 \
+     --compartment-id ocid1.compartment.oc1..example \
+     --availability-domain ewbj:US-ASHBURN-AD-1 \
+     --shape VM.DenseIO.E5.Flex \
+     --shape-config '{"ocpus": 8, "memoryInGBs": 96}' \
+     --subnet-id ocid1.subnet.oc1.iad.example \
+     --nsg-ids '["ocid1.networksecuritygroup.oc1.iad.example"]' \
+     --assign-public-ip true \
+     --image-id ocid1.image.oc1..aaaaaaaashyu5zg4s72zwanu73enkab4mitjkmifebglfvp4qwqdbalxmtgq \
+     --display-name scylla-node1 \
+     --ssh-authorized-keys-file ~/.ssh/id_rsa.pub \
+     --user-data-file ./scylla-user-data.json \
+     --wait-for-state RUNNING
+   ```
+
+   `--shape-config` is required for flexible shapes only. `--nsg-ids` is needed only if your security
+   rules live in a network security group rather than in the subnet’s security list. `--user-data-file`
+   is optional; see [Configuring ScyllaDB with user data](#launch-on-oci-user-data). To list the
+   availability domains available to you, run `oci iam availability-domain list`.
+
+   `--assign-public-ip true` requires a public subnet, and fails in a subnet that prohibits public IP
+   addresses. Omit it to launch into a private subnet, and reach the node over its private address from
+   within the VCN, through a
+   [bastion](https://docs.oracle.com/en-us/iaas/Content/Bastion/Concepts/bastionoverview.htm),
+   or over a VPN.
+
+   #### NOTE
+   `--user-data-file` and `--ssh-authorized-keys-file` cannot be combined with `--metadata`
+   in the same command - they are convenience wrappers around the `user_data` and
+   `ssh_authorized_keys` fields of the instance metadata.
+8. Get the IP addresses of the instance:
+   ```console
+   oci compute instance list-vnics --region us-ashburn-1 \
+     --instance-id <instance OCID> \
+     --query 'data[].{public:"public-ip", private:"private-ip"}'
+   ```
+
+<a id="launch-on-oci-user-data"></a>
+
+## Configuring ScyllaDB with user data
+
+The ScyllaDB image reads its configuration from the instance user data (the initialization script in
+the Console, or `--user-data-file` in the CLI). The most popular options are:
+
+* `cluster_name` - The name of the cluster.
+* `seed_provider` - The IP of the first node. New nodes will use the IP of this seed node to connect to
+  the cluster and learn the cluster topology and state. See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/master/kb/seed-nodes.md).
+* `post_configuration_script` - A base64 encoded bash script that will be executed after the
+  configuration is completed.
+* `start_scylla_on_first_boot` - Starts ScyllaDB once the configuration is completed.
+* `device_wait_seconds` - How long to wait for the local NVMe devices to appear before setting up the
+  data directory. The default is `0`, which does not wait at all. Set it to `300` so that setup does
+  not fail with `No data disk found, abort setup` when the devices are not ready yet at first boot.
+
+Example:
+
+```json
+{
+    "scylla_yaml": {
+        "cluster_name": "test-cluster",
+        "seed_provider": [{"class_name": "org.apache.cassandra.locator.SimpleSeedProvider",
+                           "parameters": [{"seeds": "10.0.219.209"}]}]
+    },
+    "start_scylla_on_first_boot": true,
+    "device_wait_seconds": 300
+}
+```
+
+See [scylla.yaml](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#admin-scylla-yaml) for information about the supported `scylla_yaml` options, and
+the [ScyllaDB Image documentation](https://github.com/scylladb/scylla-machine-image) for the full
+documentation of ScyllaDB image user data.
+
+#### NOTE
+When launching more than one instance, make sure to correctly set the IP of the first instance with the
+`seeds` parameter - either in the user data or after launch.
+
+<a id="launch-on-oci-connect"></a>
+
+## Connecting to the instance
+
+Connect to the instance with the private key matching the public key you provided at launch, using the
+`scyllaadm` user:
+
+```console
+ssh -i ~/.ssh/id_rsa scyllaadm@<instance IP>
+```
+
+Use the instance’s public IP address if you assigned one. Otherwise, connect to its private IP address
+from within the VCN, through a
+[bastion](https://docs.oracle.com/en-us/iaas/Content/Bastion/Concepts/bastionoverview.htm), or over
+a VPN.
+
+The default file paths:
+
+* The `scylla.yaml` file: `/etc/scylla/scylla.yaml`
+* Data: `/var/lib/scylla/`
+
+To check that the ScyllaDB server is running, run:
+
+```console
+nodetool status
+```
+
+## Next Steps
+
+* [Configure ScyllaDB](https://docs.scylladb.com/manual/master/getting-started/system-configuration.md)
+* Manage your clusters with [ScyllaDB Manager](https://manager.docs.scylladb.com/)
+* Monitor your cluster and data with [ScyllaDB Monitoring](https://monitoring.docs.scylladb.com/)
+* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/master/operating-scylla/nodetool.md).
+* Learn about ScyllaDB at [ScyllaDB University](https://university.scylladb.com/)
+
+
 # ldap-authentication.md
 
 # LDAP Authentication
@@ -29239,59 +29572,91 @@ SCYLLA_ARGS="--log-to-syslog 1 --log-to-stdout 0 --default-log-level info --coll
 # Messaging Service
 
 
-# metric-update-2026.1-to-2026.2.md
+# metric-update-2026.x-to-2026.3.md
 
-# Metrics Update Between 2026.1 and 2026.2
+# Metrics Update Between 2026.x and 2026.3
 
-ScyllaDB 2026.2 Dashboards are available as part of the latest [Scylla Monitoring Stack](https://monitoring.docs.scylladb.com).
+ScyllaDB 2026.3 Dashboards are available as part of the latest [Scylla Monitoring Stack](https://monitoring.docs.scylladb.com).
 
-## New Metrics in 2026.2
+## New Metrics in 2026.3
 
-The following metrics are new in ScyllaDB 2026.2 compared to 2026.1.
+The following metrics are new in ScyllaDB 2026.3 compared to 2026.2.
 
-| Metric                                                    | Description                                                                                                                                                                                                                                                                                                                               |
-|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| scylla_auth_cache_permissions                             | Total number of permission sets currently cached across all roles.                                                                                                                                                                                                                                                                        |
-| scylla_auth_cache_roles                                   | Number of roles currently cached.                                                                                                                                                                                                                                                                                                         |
-| scylla_cql_forwarded_requests                             | Counts the total number of attempts to forward CQL requests to other nodes.<br/>One request may be forwarded multiple times, particularly when a write is<br/>handled by a non-replica node.                                                                                                                                              |
-| scylla_cql_write_consistency_levels_disallowed_violations | Counts the number of write_consistency_levels_disallowed guardrail violations,<br/>i.e. attempts to write with a forbidden consistency level.                                                                                                                                                                                             |
-| scylla_cql_write_consistency_levels_warned_violations     | Counts the number of write_consistency_levels_warned guardrail violations,<br/>i.e. attempts to write with a discouraged consistency level.                                                                                                                                                                                               |
-| scylla_cql_writes_per_consistency_level                   | Counts the number of writes for each consistency level.                                                                                                                                                                                                                                                                                   |
-| scylla_io_queue_integrated_disk_queue_length              | Length of the integrated disk queue.                                                                                                                                                                                                                                                                                                      |
-| scylla_io_queue_integrated_queue_length                   | Length of the integrated queue.                                                                                                                                                                                                                                                                                                           |
-| scylla_logstor_sm_bytes_freed                             | Counts the number of data bytes freed.                                                                                                                                                                                                                                                                                                    |
-| scylla_logstor_sm_bytes_read                              | Counts the number of bytes read from the disk.                                                                                                                                                                                                                                                                                            |
-| scylla_logstor_sm_bytes_written                           | Counts the number of bytes written to the disk.                                                                                                                                                                                                                                                                                           |
-| scylla_logstor_sm_compaction_bytes_written                | Counts the number of bytes written to the disk by compaction.                                                                                                                                                                                                                                                                             |
-| scylla_logstor_sm_compaction_data_bytes_written           | Counts the number of data bytes written to the disk by compaction.                                                                                                                                                                                                                                                                        |
-| scylla_logstor_sm_compaction_records_rewritten            | Counts the number of records rewritten during compaction.                                                                                                                                                                                                                                                                                 |
-| scylla_logstor_sm_compaction_records_skipped              | Counts the number of records skipped during compaction.                                                                                                                                                                                                                                                                                   |
-| scylla_logstor_sm_compaction_segments_freed               | Counts the number of data bytes written to the disk.                                                                                                                                                                                                                                                                                      |
-| scylla_logstor_sm_disk_usage                              | Total disk usage.                                                                                                                                                                                                                                                                                                                         |
-| scylla_logstor_sm_free_segments                           | Counts the number of free segments currently available.                                                                                                                                                                                                                                                                                   |
-| scylla_logstor_sm_segment_pool_compaction_segments_get    | Counts the number of segments taken from the segment pool for compaction.                                                                                                                                                                                                                                                                 |
-| scylla_logstor_sm_segment_pool_normal_segments_get        | Counts the number of segments taken from the segment pool for normal writes.                                                                                                                                                                                                                                                              |
-| scylla_logstor_sm_segment_pool_normal_segments_wait       | Counts the number of times normal writes had to wait for a segment to become<br/>available in the segment pool.                                                                                                                                                                                                                           |
-| scylla_logstor_sm_segment_pool_segments_put               | Counts the number of segments returned to the segment pool.                                                                                                                                                                                                                                                                               |
-| scylla_logstor_sm_segment_pool_separator_segments_get     | Counts the number of segments taken from the segment pool for separator writes.                                                                                                                                                                                                                                                           |
-| scylla_logstor_sm_segment_pool_size                       | Counts the number of segments in the segment pool.                                                                                                                                                                                                                                                                                        |
-| scylla_logstor_sm_segments_allocated                      | Counts the number of segments allocated.                                                                                                                                                                                                                                                                                                  |
-| scylla_logstor_sm_segments_compacted                      | Counts the number of segments compacted.                                                                                                                                                                                                                                                                                                  |
-| scylla_logstor_sm_segments_freed                          | Counts the number of segments freed.                                                                                                                                                                                                                                                                                                      |
-| scylla_logstor_sm_segments_in_use                         | Counts the number of segments currently in use.                                                                                                                                                                                                                                                                                           |
-| scylla_logstor_sm_separator_buffer_flushed                | Counts the number of times the separator buffer has been flushed.                                                                                                                                                                                                                                                                         |
-| scylla_logstor_sm_separator_bytes_written                 | Counts the number of bytes written to the separator.                                                                                                                                                                                                                                                                                      |
-| scylla_logstor_sm_separator_data_bytes_written            | Counts the number of data bytes written to the separator.                                                                                                                                                                                                                                                                                 |
-| scylla_logstor_sm_separator_flow_control_delay            | Current delay applied to writes to control separator debt in microseconds.                                                                                                                                                                                                                                                                |
-| scylla_logstor_sm_separator_segments_freed                | Counts the number of segments freed by the separator.                                                                                                                                                                                                                                                                                     |
-| scylla_transport_cql_pending_response_memory              | Holds the total memory in bytes consumed by responses waiting to be sent.                                                                                                                                                                                                                                                                 |
-| scylla_transport_cql_request_histogram_bytes              | A histogram of received bytes in CQL messages of a specific kind and<br/>specific scheduling group.                                                                                                                                                                                                                                       |
-| scylla_transport_cql_requests_serving                     | Holds the number of requests that are being processed right now.                                                                                                                                                                                                                                                                          |
-| scylla_transport_cql_response_histogram_bytes             | A histogram of received bytes in CQL messages of a specific kind and<br/>specific scheduling group.                                                                                                                                                                                                                                       |
-| scylla_transport_requests_forwarded_failed                | Counts the number of requests that were forwarded to another replica<br/>but failed to execute there.                                                                                                                                                                                                                                     |
-| scylla_transport_requests_forwarded_prepared_not_found    | Counts the number of requests that were forwarded to another replica<br/>but failed there because the statement was not prepared on the target.<br/>When this happens, the coordinator performs an additional remote call<br/>to prepare the statement on the replica and retries the EXECUTE request<br/>afterwards.                     |
-| scylla_transport_requests_forwarded_redirected            | Counts the number of requests that were forwarded to another replica<br/>but that replica responded with a redirect to another node. This can<br/>happen when replica has stale information about the cluster topology or<br/>when the request is handled by a node that is not a replica for the data<br/>being accessed by the request. |
-| scylla_transport_requests_forwarded_successfully          | Counts the number of requests that were forwarded to another replica<br/>and executed successfully there.                                                                                                                                                                                                                                 |
+| Metric                                                      | Description                                                                                                                                                                                                    |
+|-------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| scylla_alternator_conditional_check_failed                  | The number of conditional requests whose condition was false (ConditionalCheckFailedException).                                                                                                                |
+| scylla_alternator_returned_items                            | The number of items returned by Query and Scan operations (not other operations).                                                                                                                              |
+| scylla_alternator_returned_items_histogram                  | A histogram of the number of items returned per Query or Scan operation.                                                                                                                                       |
+| scylla_alternator_returned_records                          | The number of stream records returned by GetRecords operations.                                                                                                                                                |
+| scylla_alternator_system_errors                             | The number of HTTP 500 internal server error responses.                                                                                                                                                        |
+| scylla_alternator_user_errors                               | The number of HTTP 400 client error responses, excluding ConditionalCheckFailedException.                                                                                                                      |
+| scylla_alternator_vector_search_query                       | The number of Query operations with VectorSearch.                                                                                                                                                              |
+| scylla_alternator_vector_search_query_items_from_base_table | The total number of items read from the base table by Vector Search queries.                                                                                                                                   |
+| scylla_alternator_vector_search_query_items_from_vs         | The total number of nearest neighbors found by the vector store (some may be post-filtered and not returned).                                                                                                  |
+| scylla_alternator_vector_search_query_returned_items        | The total number of items returned by Query operations with Vector Search.                                                                                                                                     |
+| scylla_database_large_cell_exceeding_threshold              | The number of large cells exceeding `compaction_large_cell_warning_threshold_mb`.<br/>Large cells have performance impact and should be avoided.                                                               |
+| scylla_database_large_collection_exceeding_threshold        | The number of large collections exceeding `compaction_collection_elements_count_warning_threshold`.<br/>Large collections have performance impact and should be avoided.                                       |
+| scylla_database_large_rows_exceeding_threshold              | The number of large rows exceeding `compaction_large_row_warning_threshold_mb`.<br/>Large rows have performance impact and should be avoided.                                                                  |
+| scylla_database_reads_memory_borrowed_from_shared_pool      | The current amount of memory borrowed from the shared pool.                                                                                                                                                    |
+| scylla_database_reads_shared_pool_available_memory          | The current amount of available memory in the shared reader concurrency semaphore pool.                                                                                                                        |
+| scylla_database_reads_shared_pool_total_memory              | The total memory of the shared reader concurrency semaphore pool.                                                                                                                                              |
+| scylla_group_name_rebuilds_produced                         | The number of rebuilds produced by the load balancer.                                                                                                                                                          |
+| scylla_group_name_repairs_produced                          | The number of repairs produced by the load balancer.                                                                                                                                                           |
+| scylla_logstor_sm_separator_buffers_in_use                  | The current number of separator buffers in use.                                                                                                                                                                |
+| scylla_memory_logstor_bytes                                 | The current size of memory used by logstor in bytes.                                                                                                                                                           |
+| scylla_s3_integrated_request_queue_length                   | The number of queued HTTP requests integrated over time (measured in request-seconds).                                                                                                                         |
+| scylla_s3_total_connect_latency_sec                         | The total time in seconds spent in HTTP CONNECT requests.                                                                                                                                                      |
+| scylla_s3_total_connect_requests                            | The total number of HTTP CONNECT requests.                                                                                                                                                                     |
+| scylla_s3_total_connect_retries                             | The total number of HTTP CONNECT retries.                                                                                                                                                                      |
+| scylla_s3_total_delete_latency_sec                          | The total time in seconds spent in HTTP DELETE requests.                                                                                                                                                       |
+| scylla_s3_total_delete_requests                             | The total number of HTTP DELETE requests.                                                                                                                                                                      |
+| scylla_s3_total_delete_retries                              | The total number of HTTP DELETE retries.                                                                                                                                                                       |
+| scylla_s3_total_get_latency_sec                             | The total time in seconds spent in HTTP GET requests                                                                                                                                                           |
+| scylla_s3_total_get_requests                                | The total number of HTTP GET requests.                                                                                                                                                                         |
+| scylla_s3_total_get_retries                                 | The total number of HTTP GET retries.                                                                                                                                                                          |
+| scylla_s3_total_head_latency_sec                            | The total time in seconds spent in HTTP HEAD requests.                                                                                                                                                         |
+| scylla_s3_total_head_requests                               | The total number of HTTP HEAD requests.                                                                                                                                                                        |
+| scylla_s3_total_head_retries                                | The total number of HTTP HEAD retries.                                                                                                                                                                         |
+| scylla_s3_total_options_latency_sec                         | The total time in seconds spent in HTTP OPTIONS requests.                                                                                                                                                      |
+| scylla_s3_total_options_requests                            | The total number of HTTP OPTIONS requests.                                                                                                                                                                     |
+| scylla_s3_total_options_retries                             | The total number of HTTP OPTIONS retries.                                                                                                                                                                      |
+| scylla_s3_total_patch_latency_sec                           | The total time in seconds spent in HTTP PATCH requests.                                                                                                                                                        |
+| scylla_s3_total_patch_requests                              | The total number of HTTP PATCH requests.                                                                                                                                                                       |
+| scylla_s3_total_patch_retries                               | The total number of HTTP PATCH retries.                                                                                                                                                                        |
+| scylla_s3_total_post_latency_sec                            | The total time in seconds spent in HTTP POST requests.                                                                                                                                                         |
+| scylla_s3_total_post_requests                               | The total number of HTTP POST requests.                                                                                                                                                                        |
+| scylla_s3_total_post_retries                                | The total number of HTTP POST retries.                                                                                                                                                                         |
+| scylla_s3_total_put_latency_sec                             | The total time in seconds spent in HTTP PUT requests.                                                                                                                                                          |
+| scylla_s3_total_put_requests                                | The total number of HTTP PUT requests.                                                                                                                                                                         |
+| scylla_s3_total_put_retries                                 | The total number of HTTP PUT retries.                                                                                                                                                                          |
+| scylla_s3_total_trace_latency_sec                           | The total time in seconds spent in HTTP TRACE requests.                                                                                                                                                        |
+| scylla_s3_total_trace_requests                              | The total number of HTTP TRACE requests.                                                                                                                                                                       |
+| scylla_s3_total_trace_retries                               | The total number of HTTP TRACE retries.                                                                                                                                                                        |
+| scylla_service_level_workload_type                          | The  workload type configured for each service level. 0 - unspecified, 1 - batch, 2 - interactive.                                                                                                             |
+| scylla_strong_consistency_coordinator_read_errors           | The number of strong consistency read requests that failed.                                                                                                                                                    |
+| scylla_strong_consistency_coordinator_read_latency          | A strong consistency read latency histogram.                                                                                                                                                                   |
+| scylla_strong_consistency_coordinator_read_latency_summary  | A strong consistency read latency summary.                                                                                                                                                                     |
+| scylla_strong_consistency_coordinator_read_node_bounces     | The number of strong consistency read requests bounced to another node.                                                                                                                                        |
+| scylla_strong_consistency_coordinator_read_shard_bounces    | The number of strong consistency read requests bounced to another shard.                                                                                                                                       |
+| scylla_strong_consistency_coordinator_write_errors          | The number of strong consistency write requests that failed.                                                                                                                                                   |
+| scylla_strong_consistency_coordinator_write_latency         | A strong consistency write latency histogram.                                                                                                                                                                  |
+| scylla_strong_consistency_coordinator_write_latency_summary | A strong consistency write latency summary.                                                                                                                                                                    |
+| scylla_strong_consistency_coordinator_write_node_bounces    | The vnumber of strong consistency write requests bounced to another node.                                                                                                                                      |
+| scylla_strong_consistency_coordinator_write_shard_bounces   | The number of strong consistency write requests bounced to another shard.                                                                                                                                      |
+| scylla_transport_cql_client_timestamp_drift_histogram       | A histogram of the drift in microseconds between the client-provided CQL<br/>timestamp and the server time at request arrival. Useful for detecting<br/>transport delays before requests reach the CQL server. |
+| scylla_transport_cql_request_latency_histogram              | A histogram of transport-level CQL request latencies (in microseconds),<br/>measuring from the start of request processing until the response is<br/>written to the socket.                                    |
+
+## Renamed Metrics in 2026.3
+
+The following metrics are renamed in ScyllaDB 2026.3 compared to 2026.2.
+
+| Metric Name in 2026.2                 | Metric Name in 2026.3                           |
+|---------------------------------------|-------------------------------------------------|
+| scylla_s3_downloads_blocked_on_memory | scylla_s3_downloads_starving_on_max_concurrency |
+
+## New and Updated Metrics in Previous 2026.x Releases
+
+* [Metrics Update Between 2026.1 and 2026.2](https://docs.scylladb.com/manual/branch-2026.2/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/metric-update-2026.1-to-2026.2.html)
 
 
 # metrics.md
@@ -32957,7 +33322,7 @@ If you have not done so already, supply ScyllaDB support with the UUID. Keep in 
 
 * [System Requirements](https://docs.scylladb.com/manual/master/getting-started/system-requirements.md)
 * [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html)
-* [Cloud Instance Recommendations AWS, GCP, and Azure](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md)
+* [Cloud Instance Recommendations AWS, GCP, Azure, and OCI](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md)
 * [Running ScyllaDB in a Shared Environment](https://docs.scylladb.com/manual/master/getting-started/scylla-in-a-shared-environment.md)
 
 
@@ -42931,7 +43296,7 @@ ScyllaDB runs on 64-bit Linux. The x86_64 and AArch64 architectures are supporte
 See [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html) for information about
 supported operating systems, distros, and versions.
 
-See [Cloud Instance Recommendations for AWS, GCP, and Azure](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md) for information
+See [Cloud Instance Recommendations for AWS, GCP, Azure, and OCI](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md) for information
 about instance types recommended for cloud deployments.
 
 <a id="system-requirements-hardware"></a>
@@ -45532,12 +45897,12 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 <!-- limitations under the License. -->
 
 
-# upgrade-guide-from-2026.1-to-2026.2.md
+# upgrade-guide-from-2026.x-to-2026.3.md
 
-# Upgrade from ScyllaDB 2026.1 to ScyllaDB 2026.2
+# Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3
 
-This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.1
-to ScyllaDB 2026.2 and rollback to version 2026.1 if necessary.
+This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.x
+to ScyllaDB 2026.3 and rollback to version 2026.x if necessary.
 
 This guide covers upgrading ScyllaDB on Red Hat Enterprise Linux (RHEL), CentOS, Debian,
 and Ubuntu. See [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html)
@@ -45581,7 +45946,7 @@ For each of the nodes in the cluster, serially (i.e., one node at a time), you w
 
 **During** the rolling upgrade, it is highly recommended:
 
-* Not to use the new 2026.2 features.
+* Not to use the new 2026.3 features.
 * Not to run administration functions, such as repairs, refresh, rebuild, or add
   or remove nodes. See [sctool](https://manager.docs.scylladb.com/stable/sctool/) for suspending
   ScyllaDB Manager’s scheduled or running repairs.
@@ -45647,11 +46012,11 @@ sudo service scylla-server stop
 ### Download and install the new release
 
 Before upgrading, check what version you are running now using `scylla --version`.
-You should take note of the current version in case you want to [rollback](#rollback-2026-1-to-2026-2) the upgrade.
+You should take note of the current version in case you want to [rollback](#rollback) the upgrade.
 
 Debian/Ubuntu
 
-1. Update the ScyllaDB deb repo to 2026.2.
+1. Update the ScyllaDB deb repo to 2026.3.
    > ```console
    > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.2.list
    > ```
@@ -45666,7 +46031,7 @@ Answer ‘y’ to the first two questions.
 
 RHEL/CentOS
 
-1. Update the ScyllaDB rpm repo to 2026.2.
+1. Update the ScyllaDB rpm repo to 2026.3.
    > ```console
    > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.2.repo
    > ```
@@ -45713,27 +46078,27 @@ sudo service scylla-server start
 
 Once you are sure the node upgrade was successful, move to the next node in the cluster.
 
-<a id="rollback-2026-1-to-2026-2"></a>
+<a id="rollback"></a>
 
 ## Rollback Procedure
 
 #### WARNING
 The rollback procedure can be applied **only** if some nodes have not been
-upgraded to 2026.2 yet. As soon as the last node in the rolling upgrade
-procedure is started with 2026.2, rollback becomes impossible. At that
-point, the only way to restore a cluster to 2026.1 is by restoring it
+upgraded to 2026.3 yet. As soon as the last node in the rolling upgrade
+procedure is started with 2026.3, rollback becomes impossible. At that
+point, the only way to restore a cluster to 2026.x is by restoring it
 from backup.
 
-The following procedure describes a rollback from ScyllaDB 2026.2 to
-2026.1. Apply this procedure if an upgrade from 2026.1 to
-2026.2 fails before completing on all nodes.
+The following procedure describes a rollback from ScyllaDB 2026.3 to
+2026.x. Apply this procedure if an upgrade from 2026.x to
+2026.3 fails before completing on all nodes.
 
-* Use this procedure only on the nodes you upgraded to 2026.2.
+* Use this procedure only on the nodes you upgraded to 2026.3.
 * Execute the following commands one node at a time, moving to the next node
   only after the rollback procedure is completed successfully.
 
 ScyllaDB rollback is a rolling procedure that does **not** require full cluster shutdown.
-For each of the nodes you rollback to 2026.1, serially (i.e., one node
+For each of the nodes you rollback to 2026.x, serially (i.e., one node
 at a time), you will:
 
 * Drain the node and stop ScyllaDB
@@ -45764,7 +46129,7 @@ Debian/Ubuntu
    > ```sh
    > sudo rm -rf /etc/apt/sources.list.d/scylla.list
    > ```
-2. Restore the 2026.1 packages backed up during the upgrade.
+2. Restore the 2026.x packages backed up during the upgrade.
    > ```sh
    > sudo cp ~/scylla.list-backup /etc/apt/sources.list.d/scylla.list
    > sudo chown root.root /etc/apt/sources.list.d/scylla.list
@@ -45785,7 +46150,7 @@ RHEL/CentOS
    > ```sh
    > sudo rm -rf /etc/yum.repos.d/scylla.repo
    > ```
-2. Restore the 2026.1 packages backed up during the upgrade procedure.
+2. Restore the 2026.x packages backed up during the upgrade procedure.
    > ```sh
    > sudo cp ~/scylla.repo-backup /etc/yum.repos.d/scylla.repo
    > sudo chown root.root /etc/yum.repos.d/scylla.repo
@@ -45806,7 +46171,7 @@ tab for upgrade instructions.
 If you’re using your own image and installed ScyllaDB packages for Ubuntu or Debian,
 you need to additionally restore the `scylla-machine-image` package.
 
-1. Restore the 2026.1 packages backed up during the upgrade
+1. Restore the 2026.x packages backed up during the upgrade
    (see the **Debian/Ubuntu** tab).
 2. Install:
    > ```default

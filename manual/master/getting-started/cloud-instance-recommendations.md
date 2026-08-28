@@ -189,6 +189,8 @@ The [Lsv3-series](https://learn.microsoft.com/en-us/azure/virtual-machines/lsv3-
 
 More on Azure Lsv3 instances [here](https://learn.microsoft.com/en-us/azure/virtual-machines/lsv3-series/)
 
+<a id="system-requirements-oci"></a>
+
 ## Oracle Cloud Infrastructure (OCI)
 
 An OCPU is defined as the CPU capacity equivalent of one physical core of an Intel Xeon processor with hyperthreading enabled.
