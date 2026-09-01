@@ -3156,16 +3156,6 @@ having the highest priority:
 > * **Default value:** `"/dev/log"`
 > * Liveness: `False`
 
-<a id="confprop-audit-syslog-write-buffer-size"></a>
-
-### audit_syslog_write_buffer_size
-
-> The size (in bytes) of a write buffer used when writing to syslog socket.
-
-> * **Type:** `size_t`
-> * **Default value:** `1048576`
-> * Liveness: `False`
-
 <a id="confprop-audit-rules"></a>
 
 ### audit_rules
