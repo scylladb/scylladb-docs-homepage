@@ -463,12 +463,16 @@ Where <code class="docutils literal notranslate"><span class="pre">mutation_sour
 <li><p><code class="docutils literal notranslate"><span class="pre">memtable</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">row-cache</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sstable</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logstor-cache</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logstor-log</span></code></p></li>
 </ul>
 <p>And the <code class="docutils literal notranslate"><span class="pre">mutation_source_id</span></code> is used to distinguish individual mutation sources of the same kind, where applicable:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">memtable</span></code> - a numeric id, starting from <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">row-cache</span></code> - N/A, there is only a single cache per table</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sstable</span></code> - the path of the sstable</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logstor-cache</span></code> - N/A, there is only a single cache per table</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logstor-log</span></code> - the path of the log file, followed by the id of the segment holding the record</p></li>
 </ul>
 </section>
 <section id="partition-region">
@@ -1046,6 +1050,7 @@ Note that by default, drivers use round robin load balancing policies, and conse
 <li class="toctree-l3"><a class="reference internal" href="maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -1345,7 +1350,7 @@ Note that by default, drivers use round robin load balancing policies, and conse
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Sep 2026.
+                        Last updated on 02 Sep 2026.
                     
                 </div>
             

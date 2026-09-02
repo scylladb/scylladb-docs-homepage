@@ -615,7 +615,7 @@ the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</sp
 should follow this format:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http[s]://&lt;endpoint_address_or_domain_name&gt;[:&lt;port_number&gt;]</span>
-<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;region_name&gt;</span><span class="w"> </span><span class="c1"># optional, e.g. us-east-1</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;region_name&gt;</span><span class="w"> </span><span class="c1"># required unless AWS_DEFAULT_REGION is set, e.g. us-east-1</span>
 <span class="w">    </span><span class="nt">iam_role_arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;iam_role&gt;</span><span class="w"> </span><span class="c1"># optional</span>
 </pre></div>
 </div>
@@ -627,7 +627,9 @@ should follow this format:</p>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">aws_region</span></code> option can also be specified using
-the <code class="docutils literal notranslate"><span class="pre">AWS_DEFAULT_REGION</span></code> environment variable.</p>
+the <code class="docutils literal notranslate"><span class="pre">AWS_DEFAULT_REGION</span></code> environment variable. An S3 endpoint needs a region
+from one of the two. If neither supplies a non-empty value, ScyllaDB logs an
+error and ignores that endpoint.</p>
 <p>The AWS-related credentials options (<code class="docutils literal notranslate"><span class="pre">aws_access_key_id</span></code>,
 <code class="docutils literal notranslate"><span class="pre">aws_secret_access_key</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code>) can be configured using
 the following environment variables:</p>
@@ -1354,6 +1356,7 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l3"><a class="reference internal" href="admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -1653,7 +1656,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Sep 2026.
+                        Last updated on 02 Sep 2026.
                     
                 </div>
             

@@ -20,6 +20,7 @@
 * [Maintenance socket](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/maintenance-socket.md) - a Unix domain socket for full-permission CQL connection.
 * [Maintenance mode](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/maintenance-mode.md) - a mode for performing maintenance tasks on an offline ScyllaDB node.
 * [Task manager](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/task-manager.md) - a tool for tracking long-running background operations.
+* [Compression Advisor](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/compression-advisor.md) - analyzes a table’s compression configuration and recommends LZ4/ZSTD settings that reduce on-disk size.
 
 Run each tool with `-h`, `--help` for full options description.
 
