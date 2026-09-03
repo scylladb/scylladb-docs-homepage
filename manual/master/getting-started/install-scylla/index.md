@@ -1,4 +1,4 @@
-# Install ScyllaDB 2026.2
+# Install ScyllaDB 2026.3
 
 Keep your versions up-to-date. The two latest versions are supported. Also, always install the latest patches for your version.
 

@@ -36,7 +36,7 @@ option to specify the version you want to install.
 **Example**
 
 ```console
-curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 2026.2
+curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 2026.3
 ```
 
 ## Installing via Tarball

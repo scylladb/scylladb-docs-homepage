@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/getting-started/installation-common/scylla-web-installer.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/getting-started/installation-common/scylla-web-installer.md" />
             
         
 
@@ -340,7 +340,7 @@
     
         <span class="bread__item">
             <a href="../install-scylla/index.html" class="bread__highlight">
-                Install ScyllaDB 2026.2
+                Install ScyllaDB 2026.3
             </a>
         </span>
     
@@ -355,14 +355,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/getting-started/installation-common/scylla-web-installer.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/getting-started/installation-common/scylla-web-installer.md">https://docs.scylladb.com/manual/branch-2026.2/getting-started/installation-common/scylla-web-installer.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/getting-started/installation-common/scylla-web-installer.md">https://docs.scylladb.com/manual/branch-2026.3/getting-started/installation-common/scylla-web-installer.md</a>.
                         </div>
                     
                     
@@ -397,9 +397,48 @@ release versions, run:</p>
 <p>To install a non-default version, run the command with the <code class="docutils literal notranslate"><span class="pre">--scylla-version</span></code>
 option to specify the version you want to install.</p>
 <p><strong>Example</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 2026.2</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --scylla-version 2026.3</span>
 </pre></div>
 </div>
+</section>
+<section id="installing-via-tarball">
+<h2>Installing via Tarball<a class="headerlink" href="#installing-via-tarball" title="Link to this heading">¶</a></h2>
+<p>The Web Installer supports tarball installation as an alternative
+to the default package manager-based installation. This is useful for installing ScyllaDB
+on Linux distributions that are not officially supported via packages, or when you prefer
+not to use the system package manager or when you do not have superuser privileges.</p>
+<p>To install ScyllaDB using the tarball, run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --tarball</span>
+</pre></div>
+</div>
+<p>You can combine <code class="docutils literal notranslate"><span class="pre">--tarball</span></code> with <code class="docutils literal notranslate"><span class="pre">--scylla-version</span></code> to install a specific version:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/server | sudo bash -s -- --tarball --scylla-version |CURRENT_VERSION|</span>
+</pre></div>
+</div>
+<p>On Linux distributions not supported via native packages, the Web Installer
+automatically falls back to tarball installation.</p>
+<p>See <a class="reference internal" href="unified-installer.html"><span class="doc">Install ScyllaDB Without root Privileges</span></a> for more information on the tarball-based (unified) installer.</p>
+</section>
+<section id="install-scylladb-manager-with-web-installer">
+<h2>Install ScyllaDB Manager with Web Installer<a class="headerlink" href="#install-scylladb-manager-with-web-installer" title="Link to this heading">¶</a></h2>
+<p>You can use the Web Installer to install <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a>, which provides automated backup, repair, and cluster management capabilities.</p>
+<p>To install ScyllaDB Manager, run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/manager | sudo bash</span>
+</pre></div>
+</div>
+<p>By default, this installs the latest official version of ScyllaDB Manager, including both
+<code class="docutils literal notranslate"><span class="pre">scylla-manager-server</span></code> and <code class="docutils literal notranslate"><span class="pre">scylla-manager-client</span></code> packages.</p>
+<p>To install a specific version, use the <code class="docutils literal notranslate"><span class="pre">--manager-version</span></code> option:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -sSf get.scylladb.com/manager | sudo bash -s -- --manager-version 3.10</span>
+</pre></div>
+</div>
+<p>Supported platforms for ScyllaDB Manager installation via Web Installer:</p>
+<ul class="simple">
+<li><p>Debian / Ubuntu</p></li>
+<li><p>RHEL / CentOS / Rocky Linux / Amazon Linux</p></li>
+</ul>
+<p>For full ScyllaDB Manager documentation, configuration, and usage instructions,
+see <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager Docs</a>.</p>
 </section>
 <section id="configure-and-run-scylladb">
 <h2>Configure and Run ScyllaDB<a class="headerlink" href="#configure-and-run-scylladb" title="Link to this heading">¶</a></h2>
@@ -478,7 +517,7 @@ We recommend against enabling developer mode in production environments to ensur
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -518,7 +557,7 @@ We recommend against enabling developer mode in production environments to ensur
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Launch ScyllaDB 2026.2 on Azure
+                    <span class="colored">PREVIOUS</span> <br />Launch ScyllaDB 2026.3 on Azure
                 </div>
             </a>
         
@@ -527,7 +566,7 @@ We recommend against enabling developer mode in production environments to ensur
         
             <a class="navigation__link" href="../install-scylla/install-on-linux.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Install ScyllaDB 2026.2 Linux Packages
+                    <span class="colored">NEXT</span> <br />Install ScyllaDB 2026.3 Linux Packages
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -547,7 +586,7 @@ We recommend against enabling developer mode in production environments to ensur
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Web Installer for Linux&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/getting-started/installation-common/scylla-web-installer%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -570,6 +609,8 @@ We recommend against enabling developer mode in production environments to ensur
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#install-scylladb-with-web-installer">Install ScyllaDB with Web Installer</a></li>
 <li><a class="reference internal" href="#installing-a-non-default-version">Installing a Non-default Version</a></li>
+<li><a class="reference internal" href="#installing-via-tarball">Installing via Tarball</a></li>
+<li><a class="reference internal" href="#install-scylladb-manager-with-web-installer">Install ScyllaDB Manager with Web Installer</a></li>
 <li><a class="reference internal" href="#configure-and-run-scylladb">Configure and Run ScyllaDB</a></li>
 </ul>
 </li>
@@ -619,7 +660,7 @@ We recommend against enabling developer mode in production environments to ensur
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -633,13 +674,13 @@ We recommend against enabling developer mode in production environments to ensur
             
                 
                     <li>
-                        <a href="../../../branch-2026.3/getting-started/installation-common/scylla-web-installer.html">2026.3</a>
+                        <a href="scylla-web-installer.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="scylla-web-installer.html">2026.2</a>
+                        <a href="../../../branch-2026.2/getting-started/installation-common/scylla-web-installer.html">2026.2</a>
                     </li>
                 
             
@@ -680,12 +721,12 @@ We recommend against enabling developer mode in production environments to ensur
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Getting Started</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../install-scylla/index.html">Install ScyllaDB 2026.2</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../install-scylla/index.html">Install ScyllaDB 2026.3</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -793,6 +834,7 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l3"><a class="reference internal" href="../system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -868,6 +910,7 @@ We recommend against enabling developer mode in production environments to ensur
 <li class="toctree-l2"><a class="reference internal" href="../../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1076,7 +1119,7 @@ We recommend against enabling developer mode in production environments to ensur
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

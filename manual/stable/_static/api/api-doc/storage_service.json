@@ -975,6 +975,57 @@
           ]
       },
       {
+         "path":"/storage_service/tablets/restore",
+         "operations":[
+            {
+               "method":"POST",
+               "summary":"Starts copying SSTables from a designated bucket in object storage to a specified keyspace",
+               "type":"string",
+               "nickname":"tablet_aware_restore",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"keyspace",
+                     "description":"Name of a keyspace to copy SSTables to",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"table",
+                     "description":"Name of a table to copy SSTables to",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"snapshot",
+                     "description":"Name of the snapshot to restore from",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"backup_source_location",
+                     "description":"Array of backup location objects. Currently, the array must contain exactly one entry.",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"array",
+                     "items":{
+                        "$ref":"backup_location"
+                     },
+                     "paramType":"body"
+                  }
+               ]
+            }
+         ]
+      },
+      {
          "path":"/storage_service/keyspace_compaction/{keyspace}",
          "operations":[
             {
@@ -3199,6 +3250,14 @@
                      "allowMultiple":false,
                      "type":"string",
                      "paramType":"path"
+                 },
+                 {
+                     "name":"include",
+                     "description":"Optional status details to include in the response. Supported values: 'tablet_status' (include per-table pow2 convergence information when migration status is 'tablets')",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
                  }
              ]
          }]
@@ -3305,6 +3364,41 @@
                      "allowMultiple":false,
                      "type":"string",
                      "paramType":"path"
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "path":"/storage_service/object_storage/sstables",
+         "operations":[
+            {
+               "method":"GET",
+               "summary":"List object-storage SSTables and references in a bucket",
+               "type":"array",
+               "items":{
+                  "type":"object_storage_sstable"
+               },
+               "nickname":"object_storage_sstables",
+               "produces":[
+                  "application/json"
+               ],
+               "parameters":[
+                  {
+                     "name":"endpoint",
+                     "description":"ID of the configured object storage endpoint",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"bucket",
+                     "description":"Object storage bucket name",
+                     "required":true,
+                     "allowMultiple":false,
+                     "type":"string",
+                     "paramType":"query"
                   }
                ]
             }
@@ -3562,6 +3656,27 @@
             "value":{
                "type":"double",
                "description":"The value"
+            }
+         }
+      },
+      "object_storage_sstable":{
+         "id":"object_storage_sstable",
+         "description":"Object-storage SSTable namespace entry",
+         "properties":{
+            "sstable_id":{
+               "type":"string",
+               "description":"The SSTable ID path component"
+            },
+            "num_references":{
+               "type":"long",
+               "description":"Number of reference objects under this SSTable ID"
+            },
+            "references":{
+               "type":"array",
+               "items":{
+                  "type":"string"
+               },
+               "description":"Reference object paths relative to the refs prefix"
             }
          }
       },
@@ -3897,6 +4012,92 @@
                   "$ref":"vnode_tablet_migration_node_status"
                },
                "description":"Per-node storage mode information. Empty if the keyspace is not being migrated."
+            },
+            "tablets":{
+               "type":"tablet_status",
+               "description":"Tablet status. Only present when ?include=tablet_status and migration status is 'tablets'."
+            }
+         }
+      },
+      "tablet_status":{
+         "id":"tablet_status",
+         "description":"Tablet status for a keyspace",
+         "properties":{
+            "pow2_convergence":{
+               "type":"tablets_pow2_convergence_status",
+               "description":"Pow2 convergence status"
+            }
+         }
+      },
+      "tablets_pow2_convergence_status":{
+         "id":"tablets_pow2_convergence_status",
+         "description":"Pow2 convergence status for all tables in a keyspace",
+         "properties":{
+            "status":{
+               "type":"string",
+               "description":"Overall convergence status: `in_progress` or `complete`"
+            },
+            "tables_converging":{
+               "type":"long",
+               "description":"Number of tables still converging to pow2 tablet layout"
+            },
+            "tables_total":{
+               "type":"long",
+               "description":"Total number of tables in the keyspace"
+            },
+            "tables":{
+               "type":"array",
+               "items":{
+                  "$ref":"table_pow2_convergence_info"
+               },
+               "description":"Per-table convergence information"
+            }
+         }
+      },
+      "table_pow2_convergence_info":{
+         "id":"table_pow2_convergence_info",
+         "description":"Pow2 convergence info for a single table",
+         "properties":{
+            "table":{
+               "type":"string",
+               "description":"The table name"
+            },
+            "converging":{
+               "type":"boolean",
+               "description":"Whether the table is currently converging to a pow2 tablet layout"
+            },
+            "current_tablet_count":{
+               "type":"long",
+               "description":"The current number of tablets"
+            },
+            "target_pow2_tablet_count":{
+               "type":"long",
+               "description":"The target pow2 tablet count (0 if not converging)"
+            }
+         }
+      },
+      "backup_location":{
+         "id":"backup_location",
+         "description":"A backup location entry describing where to find SSTables",
+         "properties":{
+            "datacenter":{
+               "type":"string",
+               "description":"The datacenter name"
+            },
+            "endpoint":{
+               "type":"string",
+               "description":"The object store endpoint URL"
+            },
+            "bucket":{
+               "type":"string",
+               "description":"The object store bucket name"
+            },
+            "manifests":{
+               "type":"array",
+               "items":{
+                  "type":"string"
+               },
+               "description":"List of manifest file paths"
             }
          }
       }

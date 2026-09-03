@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/cql/definitions.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/definitions.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/definitions.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/cql/definitions.md">https://docs.scylladb.com/manual/branch-2026.2/cql/definitions.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/definitions.md">https://docs.scylladb.com/manual/branch-2026.3/cql/definitions.md</a>.
                         </div>
                     
                     
@@ -473,7 +473,10 @@ escape single-quote characters in function body (as they are more likely to occu
 <li><p>A literal for either <a class="reference internal" href="types.html#collections"><span class="std std-ref">a collection</span></a> (including usage of list_or_vector_literal
 for <a class="reference internal" href="types.html#vectors"><span class="std std-ref">a vector</span></a>), a user-defined type or a tuple (see the linked sections for details).</p></li>
 <li><p>An arithmetic operation between terms.</p></li>
-<li><p>A <em>type hint</em></p></li>
+<li><p>A <em>type hint</em> <code class="docutils literal notranslate"><span class="pre">(T)x</span></code>, which represents <code class="docutils literal notranslate"><span class="pre">x</span></code> as type <code class="docutils literal notranslate"><span class="pre">T</span></code> when that is lossless — a
+reinterpret between byte-compatible types (e.g. <code class="docutils literal notranslate"><span class="pre">(blob)int_value</span></code>) or a numeric widening
+(e.g. <code class="docutils literal notranslate"><span class="pre">(bigint)int_value</span></code>). A lossy (narrowing), cross-family, or unrelated conversion is
+rejected; use <code class="docutils literal notranslate"><span class="pre">CAST(x</span> <span class="pre">AS</span> <span class="pre">T)</span></code> for those.</p></li>
 <li><p>A bind marker, which denotes a variable to be bound at execution time. See the section on <a class="reference internal" href="#prepared-statements"><span class="std std-ref">Prepared Statements</span></a>
 for details. A bind marker can be either anonymous (<code class="docutils literal notranslate"><span class="pre">?</span></code>) or named (<code class="docutils literal notranslate"><span class="pre">:some_name</span></code>). The latter form provides a more
 convenient way to refer to the variable for binding it and should generally be preferred.</p></li>
@@ -571,7 +574,7 @@ and then executed depends on the CQL driver used, and you should refer to your d
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Definitions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/definitions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Definitions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/definitions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -640,7 +643,7 @@ and then executed depends on the CQL driver used, and you should refer to your d
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Definitions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/definitions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Definitions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/definitions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -715,7 +718,7 @@ and then executed depends on the CQL driver used, and you should refer to your d
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -729,13 +732,13 @@ and then executed depends on the CQL driver used, and you should refer to your d
             
                 
                     <li>
-                        <a href="../../branch-2026.3/cql/definitions.html">2026.3</a>
+                        <a href="definitions.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="definitions.html">2026.2</a>
+                        <a href="../../branch-2026.2/cql/definitions.html">2026.2</a>
                     </li>
                 
             
@@ -776,12 +779,12 @@ and then executed depends on the CQL driver used, and you should refer to your d
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -889,6 +892,7 @@ and then executed depends on the CQL driver used, and you should refer to your d
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -964,6 +968,7 @@ and then executed depends on the CQL driver used, and you should refer to your d
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1172,7 +1177,7 @@ and then executed depends on the CQL driver used, and you should refer to your d
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

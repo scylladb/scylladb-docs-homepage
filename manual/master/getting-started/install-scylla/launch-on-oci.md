@@ -1,4 +1,4 @@
-# Launch ScyllaDB 2026.2 on Oracle Cloud Infrastructure (OCI)
+# Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)
 
 This article will guide you through self-managed ScyllaDB deployment on Oracle Cloud Infrastructure (OCI)
 from the ScyllaDB image published in [Oracle Cloud Marketplace](https://docs.oracle.com/en-us/iaas/Content/Marketplace/Concepts/marketoverview.htm).

@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/cluster-management/replace-dead-node.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md" />
             
         
 
@@ -365,14 +365,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/procedures/cluster-management/replace-dead-node.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/cluster-management/replace-dead-node.md">https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/cluster-management/replace-dead-node.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md</a>.
                         </div>
                     
                     
@@ -403,7 +403,7 @@ Down (DN), and the node can be replaced.</p>
 --<span class="w">  </span>Address<span class="w">        </span>Load<span class="w">       </span>Tokens<span class="w">  </span>Owns<span class="w"> </span><span class="o">(</span>effective<span class="o">)</span><span class="w">                         </span>Host<span class="w"> </span>ID<span class="w">         </span>Rack
 UN<span class="w">  </span><span class="m">192</span>.168.1.201<span class="w">  </span><span class="m">112</span>.82<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.7%<span class="w">             </span>8d5ed9f4-7764-4dbd-bad8-43fddce94b7c<span class="w">   </span>B1
 UN<span class="w">  </span><span class="m">192</span>.168.1.202<span class="w">  </span><span class="m">91</span>.11<span class="w"> </span>KB<span class="w">   </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.9%<span class="w">             </span>125ed9f4-7777-1dbn-mac8-43fddce9123e<span class="w">   </span>B1
-DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-can8-43fddce952gy<span class="w">   </span>B1
+DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-ca08-43fddce952de<span class="w">   </span>B1
 </pre></div>
 </div>
 </section>
@@ -456,7 +456,7 @@ For example, use the following for installing ScyllaDB patch release (use your d
 </li>
 <li><p>Add the <code class="docutils literal notranslate"><span class="pre">replace_node_first_boot</span></code> parameter to the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> config file on the new node. This line can be added to any place in the config file. After a successful node replacement, there is no need to remove it from the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file. (Note: The obsolete parameters “replace_address” and “replace_address_first_boot” are not supported and should not be used). The value of the <code class="docutils literal notranslate"><span class="pre">replace_node_first_boot</span></code> parameter should be the Host ID of the node to be replaced.</p>
 <p>For example (using the Host ID of the failed node from above):</p>
-<p><code class="docutils literal notranslate"><span class="pre">replace_node_first_boot:</span> <span class="pre">675ed9f4-6564-6dbd-can8-43fddce952gy</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">replace_node_first_boot:</span> <span class="pre">675ed9f4-6564-6dbd-ca08-43fddce952de</span></code></p>
 </li>
 <li><p>Start the new node.</p>
 <div class="sphinx-tabs docutils container">
@@ -478,7 +478,7 @@ For example, use the following for installing ScyllaDB patch release (use your d
 --<span class="w">  </span>Address<span class="w">        </span>Load<span class="w">       </span>Tokens<span class="w">  </span>Owns<span class="w"> </span><span class="o">(</span>effective<span class="o">)</span><span class="w">                         </span>Host<span class="w"> </span>ID<span class="w">         </span>Rack
 UN<span class="w">  </span><span class="m">192</span>.168.1.201<span class="w">  </span><span class="m">112</span>.82<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.7%<span class="w">             </span>8d5ed9f4-7764-4dbd-bad8-43fddce94b7c<span class="w">   </span>B1
 UN<span class="w">  </span><span class="m">192</span>.168.1.202<span class="w">  </span><span class="m">91</span>.11<span class="w"> </span>KB<span class="w">   </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.9%<span class="w">             </span>125ed9f4-7777-1dbn-mac8-43fddce9123e<span class="w">   </span>B1
-DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-can8-43fddce952gy<span class="w">   </span>B1
+DN<span class="w">  </span><span class="m">192</span>.168.1.203<span class="w">  </span><span class="m">124</span>.42<span class="w"> </span>KB<span class="w">  </span><span class="m">256</span><span class="w">     </span><span class="m">32</span>.6%<span class="w">             </span>675ed9f4-6564-6dbd-ca08-43fddce952de<span class="w">   </span>B1
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">192.168.1.203</span></code> is the dead node.</p>
@@ -505,7 +505,7 @@ We will not see <code class="docutils literal notranslate"><span class="pre">192
 /192.168.1.203
 <span class="w">  </span>generation:1553759866
 <span class="w">  </span>heartbeat:2147483647
-<span class="w">  </span>HOST_ID:675ed9f4-6564-6dbd-can8-43fddce952gy
+<span class="w">  </span>HOST_ID:675ed9f4-6564-6dbd-ca08-43fddce952de
 <span class="w">  </span>STATUS:shutdown,true
 <span class="w">  </span>RELEASE_VERSION:3.0.8
 <span class="w">  </span>X3:3
@@ -567,7 +567,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
 </div>
 </li>
 <li><p>Run the following command to replace the instance whose ephemeral volumes were erased (previously known by the Host ID of the node you are restarting) with the restarted instance. The restarted node will be assigned a new random Host ID.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>echo &#39;replace_node_first_boot: 675ed9f4-6564-6dbd-can8-43fddce952gy&#39; | sudo tee --append /etc/scylla/scylla.yaml
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>echo &#39;replace_node_first_boot: 675ed9f4-6564-6dbd-ca08-43fddce952de&#39; | sudo tee --append /etc/scylla/scylla.yaml
 </pre></div>
 </div>
 </li>
@@ -624,7 +624,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Replace a Dead Node in a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/cluster-management/replace-dead-node%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Replace a Dead Node in a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -693,7 +693,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Replace a Dead Node in a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/cluster-management/replace-dead-node%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Replace a Dead Node in a ScyllaDB Cluster&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -770,7 +770,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -784,13 +784,13 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
             
                 
                     <li>
-                        <a href="../../../../branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.html">2026.3</a>
+                        <a href="replace-dead-node.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="replace-dead-node.html">2026.2</a>
+                        <a href="../../../../branch-2026.2/operating-scylla/procedures/cluster-management/replace-dead-node.html">2026.2</a>
                     </li>
                 
             
@@ -831,12 +831,12 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -944,6 +944,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -1019,6 +1020,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
 <li class="toctree-l2"><a class="reference internal" href="../../../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1227,7 +1229,7 @@ UN<span class="w">  </span><span class="m">192</span>.168.1.204<span class="w"> 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

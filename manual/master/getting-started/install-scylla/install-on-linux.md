@@ -2,7 +2,7 @@
 <!-- 5.2 supports Rocky/RHEL 8 only -->
 <!-- 5.4 supports Rocky/RHEL 8 and 9 -->
 
-# Install ScyllaDB 2026.2 Linux Packages
+# Install ScyllaDB 2026.3 Linux Packages
 
 We recommend installing ScyllaDB using [ScyllaDB Web Installer for Linux](https://docs.scylladb.com/manual/master/getting-started/installation-common/scylla-web-installer.md),
 a platform-agnostic installation script, to install ScyllaDB on any supported Linux platform.
@@ -39,7 +39,7 @@ Debian/Ubuntu
    > ```
 
    > ```console
-   > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.2.list
+   > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.3.list
    > ```
 2. Install ScyllaDB packages.
    > ```console
@@ -95,7 +95,7 @@ Centos/RHEL
    > ```
 2. Add the ScyllaDB RPM repository to your system.
    > ```console
-   > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.2.repo
+   > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.3.repo
    > ```
 3. Install ScyllaDB packages.
    > ```console

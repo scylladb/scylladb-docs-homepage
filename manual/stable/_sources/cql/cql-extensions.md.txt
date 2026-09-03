@@ -21,6 +21,30 @@ clause:
     ALLOW FILTERING          -- optional
     BYPASS CACHE
 
+## BYPASS LARGE_DATA_GUARDRAILS clause
+
+The `BYPASS LARGE_DATA_GUARDRAILS` clause on standalone `DELETE` statements
+skips large data guardrail checks for that delete. This is useful when a table
+has large data guardrails enabled and an oversized partition, row, or collection
+must be deleted, but ordinary writes to the same data are rejected by the hard
+limit.
+
+The clause is placed after the optional `IF` condition:
+
+```cql
+DELETE FROM ks.tbl
+WHERE pk = 1 AND ck = 10
+BYPASS LARGE_DATA_GUARDRAILS;
+
+DELETE FROM ks.tbl
+WHERE pk = 1 AND ck = 10
+IF EXISTS
+BYPASS LARGE_DATA_GUARDRAILS;
+```
+
+The clause is supported only for standalone `DELETE` statements. It is not
+supported for `INSERT`, `UPDATE`, or `BATCH` statements.
+
 ## "Paxos grace seconds" per-table option
 
 The `paxos_grace_seconds` option is used to set the amount of seconds which
@@ -78,6 +102,36 @@ INSERT, UPDATE, DELETE, PRUNE MATERIALIZED VIEW, BATCH,
 and to the TRUNCATE data definition query.
 
 In addition, the timeout parameter can be applied to SELECT queries as well.
+
+(cql-keyspace-storage-options)=
+## Keyspace storage options
+
+To store your keyspaces on Amazon S3 or another S3-compatible object store, you need to configure your storage endpoints.
+See {ref}`Configuring Object Storage <object-storage-configuration>` for instructions.
+
+After your storage endpoints are configured, you can configure your object storage when creating a keyspace:
+
+```cql
+CREATE KEYSPACE with STORAGE = { 'type': 'S3', 'endpoint': '$endpoint_name', 'bucket': '$bucket' } 
+```
+
+**Example**
+
+```cql
+CREATE KEYSPACE ks
+    WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'replication_factor' : 3 }
+    AND STORAGE = { 'type' : 'S3', 'bucket' : '/tmp/b1', 'endpoint' : 'localhost' } ;
+```
+
+Storage options can be inspected by checking the new system schema table: `system_schema.scylla_keyspaces`:
+
+```cql
+    cassandra@cqlsh> select * from system_schema.scylla_keyspaces;
+    
+     keyspace_name | storage_options                                | storage_type
+    ---------------+------------------------------------------------+--------------
+               ksx | {'bucket': '/tmp/xx', 'endpoint': 'localhost'} |           S3
+```
 
 ## PRUNE MATERIALIZED VIEW statements
 
@@ -437,6 +491,7 @@ statement: `DESCRIBE SCHEMA WITH INTERNALS AND PASSWORDS`, which also includes t
 
 For more details, see [the article on DESCRIBE SCHEMA](./describe-schema.rst).
 
+(cql-per-row-ttl)=
 ## Per-row TTL
 
 CQL's traditional time-to-live (TTL) feature attaches an expiration time to

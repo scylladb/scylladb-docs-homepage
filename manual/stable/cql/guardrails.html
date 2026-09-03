@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/cql/guardrails.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/guardrails.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/guardrails.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/cql/guardrails.md">https://docs.scylladb.com/manual/branch-2026.2/cql/guardrails.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/guardrails.md">https://docs.scylladb.com/manual/branch-2026.3/cql/guardrails.md</a>.
                         </div>
                     
                     
@@ -536,6 +536,184 @@ this metric can reveal whether any application is inadvertently using <code clas
 or <code class="docutils literal notranslate"><span class="pre">ALL</span></code> for writes.</p>
 </section>
 </section>
+<section id="large-data-guardrails">
+<span id="guardrails-large-data"></span><h2>Large Data Guardrails<a class="headerlink" href="#large-data-guardrails" title="Link to this heading">¶</a></h2>
+<p>Large data guardrails help detect and block writes that create or continue to
+write into data shapes that are known to hurt performance: oversized
+partitions, rows, cells, and collections with too many elements.</p>
+<p>Unlike schema-only guardrails, large data guardrails are enabled per table:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span> <span class="p">(</span>
+    <span class="n">pk</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">payload</span> <span class="nb">blob</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">)</span>
+<span class="p">)</span> <span class="k">WITH</span> <span class="n">large_data_guardrails_enabled</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span> <span class="k">WITH</span> <span class="n">large_data_guardrails_enabled</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">large_data_guardrails_enabled</span></code> is <code class="docutils literal notranslate"><span class="pre">false</span></code> or omitted, writes to that
+table are not checked by the large data guardrails. The option can be used only
+after all nodes in the cluster support the <code class="docutils literal notranslate"><span class="pre">LARGE_DATA_GUARDRAILS</span></code> feature.</p>
+<p>The global thresholds are live-updateable configuration parameters. A value of
+<code class="docutils literal notranslate"><span class="pre">0</span></code> disables a hard-limit threshold. Soft-limit thresholds use the existing
+<code class="docutils literal notranslate"><span class="pre">compaction_*_warning_threshold</span></code> parameters and are also used to decide which
+large-data records are stored in SSTable metadata.</p>
+<p>Large data guardrails use two kinds of checks:</p>
+<ul class="simple">
+<li><p><strong>Coordinator-side checks</strong> inspect the mutation being written before it is
+sent to replicas. These checks catch an individual write that is already too
+large, such as a single oversized cell, row, or collection update.</p></li>
+<li><p><strong>Replica-side checks</strong> inspect large-data metadata recorded for existing
+SSTables and, for rows and collections, recently merged memtable data. These
+checks catch writes to a partition, row, or collection that became too large
+cumulatively across previous writes.</p></li>
+</ul>
+<p>Enabling large data guardrails adds work to the write path. ScyllaDB examines
+mutations on the coordinator and performs replica-side metadata and cache lookups
+for affected writes. Enable this guardrail selectively on tables where the
+protection from large data shapes is worth the additional write-path overhead.</p>
+<p>Hard-limit violations reject the write. Hard-limit failures are
+returned to the client as an <code class="docutils literal notranslate"><span class="pre">InvalidRequestException</span></code>.</p>
+<p>Soft-limit violations are logged by the <code class="docutils literal notranslate"><span class="pre">large_data</span></code> logger. If
+<code class="docutils literal notranslate"><span class="pre">large_data_cql_warnings</span></code> is enabled, ScyllaDB also returns a CQL protocol
+warning to the client. The warning identifies the violated category, for
+example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Large data guardrail: Soft limit violation for partition, row
+</pre></div>
+</div>
+<p>Be aware that CQL warnings are attached to write responses and can increase
+network traffic for workloads that frequently hit soft limits.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Large data guardrail configuration parameters</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 28.0%" />
+<col style="width: 11.0%" />
+<col style="width: 16.0%" />
+<col style="width: 45.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_partition_warning_threshold_mb</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code> MB</p></td>
+<td><p>If a partition’s on-disk size exceeds this threshold, a write to that
+partition triggers a soft-limit violation. This is replica-side because
+it depends on accumulated on-disk partition size. SSTable large-data
+metadata is recorded during flush and compaction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_partition_fail_threshold_mb</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2000</span></code> MB</p></td>
+<td><p>If a partition’s on-disk size already exceeds this threshold, writes
+targeting that partition are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_rows_count_warning_threshold</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100000</span></code> rows</p></td>
+<td><p>If a partition’s on-disk row count exceeds this threshold, a write to
+that partition triggers a soft-limit violation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rows_count_fail_threshold</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">200000</span></code> rows</p></td>
+<td><p>If a partition’s on-disk row count already exceeds this threshold,
+writes targeting that partition are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_row_warning_threshold_mb</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code> MB</p></td>
+<td><p>If a row exceeds this threshold, a write to that row triggers a
+soft-limit violation. Coordinator-side checks can detect an oversized
+row in the current mutation. Replica-side checks can detect a row that
+became oversized across previous writes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_row_fail_threshold_mb</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">20</span></code> MB</p></td>
+<td><p>If a row exceeds this threshold, writes targeting that row are rejected.
+Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_cell_warning_threshold_mb</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> MB</p></td>
+<td><p>If a cell value exceeds this threshold, the write triggers a soft-limit
+violation. This check is coordinator-side and applies to individual
+atomic cell values in the mutation being written.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_cell_fail_threshold_mb</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code> MB</p></td>
+<td><p>If a cell value exceeds this threshold, the write is rejected. Set to
+<code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_collection_elements_count_warning_threshold</span></code></p></td>
+<td><p>Soft limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10000</span></code> elements</p></td>
+<td><p>If a collection contains more elements than this threshold, a write to
+that collection triggers a soft-limit violation. Coordinator-side checks
+can detect an oversized collection mutation. Replica-side checks can
+detect a collection that became oversized across previous writes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_collection_elements_fail_threshold</span></code></p></td>
+<td><p>Hard limit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">20000</span></code> elements</p></td>
+<td><p>If a collection contains more elements than this threshold, writes
+targeting that collection are rejected. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">large_data_cql_warnings</span></code></p></td>
+<td><p>Warning output</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>When set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, soft-limit violations are returned to CQL clients
+as protocol warnings in addition to being logged. When set to <code class="docutils literal notranslate"><span class="pre">false</span></code>,
+soft-limit violations are logged only. This setting does not affect
+hard-limit enforcement.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compaction_large_data_records_per_sstable</span></code></p></td>
+<td><p>Metadata</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+<td><p>Controls how many large-data metadata records of each type ScyllaDB
+stores in each SSTable. Replica-side checks use these records to detect
+writes to already large partitions, rows, and collections.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="bypassing-guardrails-for-deletes">
+<h3>Bypassing Guardrails for Deletes<a class="headerlink" href="#bypassing-guardrails-for-deletes" title="Link to this heading">¶</a></h3>
+<p>Deletes are sometimes needed to remove data from a partition, row, or collection
+that already exceeds a hard limit. A standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statement can bypass
+large data guardrail checks by adding <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">LARGE_DATA_GUARDRAILS</span></code> after the
+optional <code class="docutils literal notranslate"><span class="pre">IF</span></code> clause:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">events</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="k">IF</span> <span class="k">EXISTS</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The bypass clause is supported only for standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statements. It is
+not supported for <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, or <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> statements.</p>
+<p><strong>Metrics.</strong> ScyllaDB exposes per-shard metrics for large-data soft-threshold
+detection:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_partition_exceeding_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_rows_exceeding_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_cell_exceeding_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scylla_database_large_collection_exceeding_threshold</span></code></p></li>
+</ul>
+<p>These metrics count data items that exceed the corresponding warning threshold
+while large-data metadata is recorded.</p>
+</section>
+</section>
 <section id="compact-storage-guardrail">
 <span id="guardrails-compact-storage"></span><h2>Compact Storage Guardrail<a class="headerlink" href="#compact-storage-guardrail" title="Link to this heading">¶</a></h2>
 <section id="enable-create-table-with-compact-storage">
@@ -595,7 +773,7 @@ applications during a migration). For details on the <code class="docutils liter
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CQL Guardrails&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/guardrails%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CQL Guardrails&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/guardrails%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -664,7 +842,7 @@ applications during a migration). For details on the <code class="docutils liter
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CQL Guardrails&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/guardrails%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page CQL Guardrails&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/guardrails%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -699,6 +877,10 @@ applications during a migration). For details on the <code class="docutils liter
 <li><a class="reference internal" href="#write-consistency-level-guardrails">Write Consistency Level Guardrails</a><ul>
 <li><a class="reference internal" href="#write-consistency-levels-warned"><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_warned</span></code></a></li>
 <li><a class="reference internal" href="#write-consistency-levels-disallowed"><code class="docutils literal notranslate"><span class="pre">write_consistency_levels_disallowed</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#large-data-guardrails">Large Data Guardrails</a><ul>
+<li><a class="reference internal" href="#bypassing-guardrails-for-deletes">Bypassing Guardrails for Deletes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#compact-storage-guardrail">Compact Storage Guardrail</a><ul>
@@ -754,7 +936,7 @@ applications during a migration). For details on the <code class="docutils liter
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -768,13 +950,13 @@ applications during a migration). For details on the <code class="docutils liter
             
                 
                     <li>
-                        <a href="../../branch-2026.3/cql/guardrails.html">2026.3</a>
+                        <a href="guardrails.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="guardrails.html">2026.2</a>
+                        <a href="../../branch-2026.2/cql/guardrails.html">2026.2</a>
                     </li>
                 
             
@@ -815,12 +997,12 @@ applications during a migration). For details on the <code class="docutils liter
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -928,6 +1110,7 @@ applications during a migration). For details on the <code class="docutils liter
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -1003,6 +1186,7 @@ applications during a migration). For details on the <code class="docutils liter
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1211,7 +1395,7 @@ applications during a migration). For details on the <code class="docutils liter
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

@@ -468,26 +468,63 @@ and to the TRUNCATE data definition query.</p>
 </section>
 <section id="keyspace-storage-options">
 <span id="cql-keyspace-storage-options"></span><h2>Keyspace storage options<a class="headerlink" href="#keyspace-storage-options" title="Link to this heading">¶</a></h2>
-<p>To store your keyspaces on Amazon S3 or another S3-compatible object store, you need to configure your storage endpoints.
+<p>To store a keyspace’s SSTables on Amazon S3, Google Cloud Storage, or another
+S3-compatible object store, you first configure the storage endpoints.
 See <a class="reference internal" href="../operating-scylla/admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a> for instructions.</p>
-<p>After your storage endpoints are configured, you can configure your object storage when creating a keyspace:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="k">with</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;$endpoint_name&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;$bucket&#39;</span> <span class="p">}</span> 
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Object-storage keyspaces are supported for tablets only, and a number of features
+are not available for them. Review
+<a class="reference internal" href="../operating-scylla/admin.html#object-storage-limitations"><span class="std std-ref">Object storage keyspaces: status and limitations</span></a>
+before using this feature.</p>
+</div>
+<p>After your storage endpoints are configured, you can select object storage when
+creating a keyspace:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="mf">...</span> <span class="k">WITH</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;$endpoint_name&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;$bucket&#39;</span> <span class="p">}</span>
 </pre></div>
 </div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">'type':</span> <span class="pre">'S3'</span></code> for S3-compatible object stores and <code class="docutils literal notranslate"><span class="pre">'type':</span> <span class="pre">'GS'</span></code> for Google
+Cloud Storage.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><code class="docutils literal notranslate"><span class="pre">endpoint</span></code> must be <strong>character-for-character identical</strong> to the <code class="docutils literal notranslate"><span class="pre">name</span></code> of an
+endpoint configured in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>. The lookup is an exact string match, so
+<code class="docutils literal notranslate"><span class="pre">https://s3.us-east-1.amazonaws.com</span></code> and <code class="docutils literal notranslate"><span class="pre">https://s3.us-east-1.amazonaws.com:443</span></code>
+are different endpoints even though they describe the same server. If the value
+does not match a configured endpoint, <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> fails with a
+configuration error.</p>
+</div>
+<p>The storage type of a keyspace cannot be changed after it is created;
+<code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> cannot move a keyspace between local and object storage.</p>
 <p><strong>Example</strong></p>
+<p>Given this endpoint in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://s3.us-east-1.amazonaws.com</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-1</span>
+</pre></div>
+</div>
+<p>the keyspace is created with the same <code class="docutils literal notranslate"><span class="pre">name</span></code> string as <code class="docutils literal notranslate"><span class="pre">endpoint</span></code>:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span>
     <span class="k">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span> <span class="p">:</span> <span class="mf">3</span> <span class="p">}</span>
-    <span class="k">AND</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span> <span class="p">:</span> <span class="s1">&#39;/tmp/b1&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span> <span class="p">:</span> <span class="s1">&#39;localhost&#39;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">AND</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;endpoint&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://s3.us-east-1.amazonaws.com&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;bucket&#39;</span> <span class="p">:</span> <span class="s1">&#39;my-bucket&#39;</span> <span class="p">}</span> <span class="p">;</span>
 </pre></div>
 </div>
-<p>Storage options can be inspected by checking the new system schema table: <code class="docutils literal notranslate"><span class="pre">system_schema.scylla_keyspaces</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span>    <span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">system_schema</span><span class="mf">.</span><span class="n">scylla_keyspaces</span><span class="p">;</span>
-    
-     <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">storage_options</span>                                <span class="o">|</span> <span class="n">storage_type</span>
-    <span class="c1">---------------+------------------------------------------------+--------------</span>
-               <span class="n">ksx</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;/tmp/xx&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;localhost&#39;</span><span class="p">}</span> <span class="o">|</span>           <span class="n">S3</span>
+<p>Storage options can be inspected in the <code class="docutils literal notranslate"><span class="pre">system_schema.scylla_keyspaces</span></code> system
+schema table:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span>    <span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="n">keyspace_name</span><span class="p">,</span> <span class="n">storage_type</span><span class="p">,</span> <span class="n">storage_options</span>
+                     <span class="k">FROM</span> <span class="n">system_schema</span><span class="mf">.</span><span class="n">scylla_keyspaces</span><span class="p">;</span>
+
+     <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">storage_type</span> <span class="o">|</span> <span class="n">storage_options</span>
+    <span class="c1">---------------+--------------+-------------------------------------------</span>
+                <span class="n">ks</span> <span class="o">|</span>           <span class="n">S3</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;my-bucket&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;https://s3.us-east-1.amazonaws.com&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">storage_type</span></code> is set only for object-storage keyspaces, to <code class="docutils literal notranslate"><span class="pre">S3</span></code> or <code class="docutils literal notranslate"><span class="pre">GS</span></code>. There
+is no <code class="docutils literal notranslate"><span class="pre">LOCAL</span></code> value: a keyspace on local disk has a null <code class="docutils literal notranslate"><span class="pre">storage_type</span></code>, and not
+every keyspace has a row in this table, so it is not a list of all keyspaces.</p>
 </section>
 <section id="prune-materialized-view-statements">
 <h2>PRUNE MATERIALIZED VIEW statements<a class="headerlink" href="#prune-materialized-view-statements" title="Link to this heading">¶</a></h2>
@@ -1087,13 +1124,13 @@ both features in the same table, or even the same row.</p>
             
                 
                     <li>
-                        <a href="../../branch-2026.3/cql/cql-extensions.html">2026.3</a>
+                        <a href="../../stable/cql/cql-extensions.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../stable/cql/cql-extensions.html">2026.2</a>
+                        <a href="../../branch-2026.2/cql/cql-extensions.html">2026.2</a>
                     </li>
                 
             
@@ -1134,13 +1171,13 @@ both features in the same table, or even the same row.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.2 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1536,7 +1573,7 @@ both features in the same table, or even the same row.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

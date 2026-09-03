@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/cql/secondary-indexes.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/secondary-indexes.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/cql/secondary-indexes.md">https://docs.scylladb.com/manual/branch-2026.2/cql/secondary-indexes.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md">https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md</a>.
                         </div>
                     
                     
@@ -454,13 +454,15 @@ about Vector Search is available in the
 <p>ScyllaDB supports creating vector indexes on tables, allowing queries on the table to use those indexes for efficient
 similarity search on vector data. Vector indexes can be a global index for indexing vectors per table or a local
 index for indexing vectors per partition.</p>
-<p>The vector index is the only custom type index supported in ScyllaDB. It is created using
-the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code> keyword and specifying the index type as <code class="docutils literal notranslate"><span class="pre">vector_index</span></code>. It is also possible to
-add additional columns to the index for filtering the search results. The partition column
-specified in the global vector index definition must be the vector column, and any subsequent
-columns are treated as filtering columns. The local vector index requires that the partition key
-of the index is a subset of the table’s partition key columns and the vector column is the first
-one from the following columns.</p>
+<p>The vector index is one of the custom indexes supported in ScyllaDB. It is
+created using the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code> keyword and specifying the index type as
+<code class="docutils literal notranslate"><span class="pre">vector_index</span></code>. It is also possible to add additional columns to the index
+for filtering the search results. The first column specified in the global
+vector index definition must be the vector column, and any subsequent columns
+are treated as filtering columns. The local vector index requires that the
+partition key of the index is of a type allowed for filtering columns and the
+vector column is the first one after the partition key definition, and any
+subsequent columns are filtering columns.</p>
 <p>ScyllaDB allows creating multiple <strong>named</strong> vector indexes on the same vector column.
 This can be used to create a replacement index before dropping an older one.
 Unnamed duplicate vector index definitions are still rejected, and index names
@@ -493,12 +495,12 @@ of the base table.</p>
 <p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed for similarity search (a local
 index) and additional columns are added for filtering the search results. The
 filtering is possible on <code class="docutils literal notranslate"><span class="pre">category</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code> and all primary key columns of
-the base table. The partition key of the base table must contains both columns
-<code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code>. It is allowed to create a local vector index using
-only a part of the partition key columns of the base table.</p>
-<p>Vector indexes support additional filtering columns of native data types
-(excluding counter and duration). The indexed column itself must be a vector
-column, while the extra columns can be used to filter search results.</p>
+the base table. It is allowed to create a local vector index using
+primary key columns of the base table or non-primary-key columns.</p>
+<p>Vector indexes support a local index partition key or additional filtering
+columns of native data types (excluding counter and duration). The first column
+after the partition key definition must be a vector column, while the extra
+columns can be used to filter search results.</p>
 <p>The supported types are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ascii</span></code></p></li>
@@ -648,6 +650,78 @@ result in an error. General SAI indexing is not supported by ScyllaDB; use a
 </div>
 </section>
 </section>
+<section id="full-text-index-scylladb-cloud">
+<span id="create-fulltext-index-statement"></span><h2>Full-text Index <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#full-text-index-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Full-text indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For the full list of unsupported ScyllaDB features, see the
+<a class="reference internal" href="../features/fulltext-search.html"><span class="doc">Full-Text Search documentation</span></a>.</p>
+</div>
+<p>ScyllaDB supports creating full-text indexes on text columns, enabling full-text search queries that rank results
+by relevance using the BM25 scoring algorithm. A full-text index is a custom index created using the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code>
+keyword and specifying the index type as <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>.</p>
+<p>CDC is enabled automatically on the base table when a full-text index is created.</p>
+<p><strong>Column restrictions:</strong></p>
+<ul class="simple">
+<li><p>The indexed column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>. Other types are rejected.</p></li>
+<li><p>The indexed column must be a regular or clustering-key column. Partition-key columns cannot be indexed.</p></li>
+<li><p>The table must use tablets (not vnodes).</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">&#39;fulltext_index&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>You can specify an analyzer to control how text is tokenized:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">&#39;fulltext_index&#39;</span>
+    <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;analyzer&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>The following options are supported for full-text indexes:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">analyzer</span></code></p></td>
+<td><p>Text analyzer for tokenization. Determines how text is split into terms.
+Supported values (case-insensitive): <code class="docutils literal notranslate"><span class="pre">standard</span></code>, <code class="docutils literal notranslate"><span class="pre">english</span></code>, <code class="docutils literal notranslate"><span class="pre">german</span></code>,
+<code class="docutils literal notranslate"><span class="pre">french</span></code>, <code class="docutils literal notranslate"><span class="pre">spanish</span></code>, <code class="docutils literal notranslate"><span class="pre">italian</span></code>, <code class="docutils literal notranslate"><span class="pre">portuguese</span></code>, <code class="docutils literal notranslate"><span class="pre">russian</span></code>, <code class="docutils literal notranslate"><span class="pre">simple</span></code>,
+<code class="docutils literal notranslate"><span class="pre">whitespace</span></code>. No other values are supported.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">standard</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">positions</span></code></p></td>
+<td><p>Whether token positions are stored. Required for phrase queries.
+Supported values: <code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code> (case-insensitive).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The analyzers differ in how they tokenize and normalize text:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">standard</span></code> splits text into terms on whitespace and punctuation, lowercases
+them, and applies a generic set of English stop words. It does not apply any
+language-specific stemming.</p></li>
+<li><p>The language analyzers (<code class="docutils literal notranslate"><span class="pre">english</span></code>, <code class="docutils literal notranslate"><span class="pre">german</span></code>, <code class="docutils literal notranslate"><span class="pre">french</span></code>, <code class="docutils literal notranslate"><span class="pre">spanish</span></code>,
+<code class="docutils literal notranslate"><span class="pre">italian</span></code>, <code class="docutils literal notranslate"><span class="pre">portuguese</span></code>, <code class="docutils literal notranslate"><span class="pre">russian</span></code>) tokenize and lowercase like
+<code class="docutils literal notranslate"><span class="pre">standard</span></code>, but additionally apply stemming and stop-word removal specific
+to that language, so that related word forms (e.g., <code class="docutils literal notranslate"><span class="pre">running</span></code> and <code class="docutils literal notranslate"><span class="pre">run</span></code>)
+match the same term.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">simple</span></code> lowercases text and splits on any non-alphanumeric character
+(including punctuation); digits and letters adjacent to each other stay in
+the same term (e.g., <code class="docutils literal notranslate"><span class="pre">abc123</span></code> is one term), while punctuation is dropped
+rather than kept as part of a term or as a term of its own (e.g., <code class="docutils literal notranslate"><span class="pre">don't</span></code>
+becomes the terms <code class="docutils literal notranslate"><span class="pre">don</span></code> and <code class="docutils literal notranslate"><span class="pre">t</span></code>). It does not apply stemming or
+stop-word removal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whitespace</span></code> splits only on whitespace characters; punctuation attached to
+a word is kept as part of that term (e.g., <code class="docutils literal notranslate"><span class="pre">Hello,</span> <span class="pre">World!</span></code> becomes the terms
+<code class="docutils literal notranslate"><span class="pre">Hello,</span></code> and <code class="docutils literal notranslate"><span class="pre">World!</span></code>). It does not apply lowercasing, stemming,
+or stop-word removal.</p></li>
+</ul>
+</section>
 <section id="drop-index">
 <span id="drop-index-statement"></span><h2>DROP INDEX<a class="headerlink" href="#drop-index" title="Link to this heading">¶</a></h2>
 <p>Dropping a secondary index uses the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> statement:</p>
@@ -709,7 +783,7 @@ the system stops the build process and cleans up any partially built data associ
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -778,7 +852,7 @@ the system stops the build process and cleans up any partially built data associ
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -804,6 +878,7 @@ the system stops the build process and cleans up any partially built data associ
 <li><a class="reference internal" href="#cassandra-sai-compatibility-for-vector-search">Cassandra SAI Compatibility for Vector Search</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#full-text-index-scylladb-cloud">Full-text Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#drop-index">DROP INDEX</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
 </ul>
@@ -854,7 +929,7 @@ the system stops the build process and cleans up any partially built data associ
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -868,13 +943,13 @@ the system stops the build process and cleans up any partially built data associ
             
                 
                     <li>
-                        <a href="../../branch-2026.3/cql/secondary-indexes.html">2026.3</a>
+                        <a href="secondary-indexes.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="secondary-indexes.html">2026.2</a>
+                        <a href="../../branch-2026.2/cql/secondary-indexes.html">2026.2</a>
                     </li>
                 
             
@@ -915,12 +990,12 @@ the system stops the build process and cleans up any partially built data associ
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1028,6 +1103,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -1103,6 +1179,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1311,7 +1388,7 @@ the system stops the build process and cleans up any partially built data associ
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

@@ -1,4 +1,4 @@
-# Launch ScyllaDB 2026.2 on Azure
+# Launch ScyllaDB 2026.3 on Azure
 
 This article will guide you through self-managed ScyllaDB deployment on Azure. For a fully-managed deployment of ScyllaDB
 as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/).
@@ -35,11 +35,12 @@ search for *ScyllaDB Image* in Community Images.
    For earlier releases, see [Azure Images](https://docs.scylladb.com/manual/master/reference/azure-images.md)
    <!-- -*- mode: rst -*- -->
 
-   ### 2026.2.5
+   ### 2026.3.0
 
    | Gallery Image Definition   | Gallery Image Version   | Public Gallery Name                           |
    |----------------------------|-------------------------|-----------------------------------------------|
-   | scylla-2026.2              | 2026.2.5                | scylladb-7e8d8a04-23db-487d-87ec-0e175c0615bb |
+   | scylla-2026.3              | 2026.3.0                | scylladb-7e8d8a04-23db-487d-87ec-0e175c0615bb |
+   | scylla-2026.3-Arm64        | 2026.3.0                | scylladb-7e8d8a04-23db-487d-87ec-0e175c0615bb |
 6. Get the ScyllaDB image ID using the information from the previous step:
    ```console
      scyllaImageID=$(az sig image-version show-community --location <your region name> --gallery-image-definition <ScyllaDB gallery-image-definition> --gallery-image-version <ScyllaDB gallery-image-version> --public-gallery-name <ScyllDB public-gallery-name> --query ['uniqueId'] --output tsv)

@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md" />
             
         
 
@@ -365,14 +365,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md">https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md</a>.
                         </div>
                     
                     
@@ -423,25 +423,50 @@ tablet load balancer rebalances the data.</p>
 </div>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<section id="cluster-state">
+<h3>Cluster state<a class="headerlink" href="#cluster-state" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>All nodes in the cluster must be <strong>up and running</strong>. You can check the status
 of all nodes with
 <a class="reference internal" href="../../nodetool-commands/status.html"><span class="doc">nodetool status</span></a>.</p></li>
 <li><p>All nodes must be running ScyllaDB 2026.2 or later.</p></li>
+<li><p>Disk utilization on every node should be <strong>below 50%</strong>. This headroom helps
+prevent problems during the migration’s resharding phase, which temporarily
+requires additional disk space.</p></li>
 </ul>
+</section>
+<section id="keyspace-and-table-configuration">
+<h3>Keyspace and table configuration<a class="headerlink" href="#keyspace-and-table-configuration" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The keyspace’s replication strategy must be the <strong>NetworkTopologyStrategy</strong>,
+and its replication factor must equal the number of racks to ensure that the
+keyspace will be <a class="reference internal" href="../../../reference/glossary.html#term-RF-rack-valid-keyspace"><span class="xref std std-term">RF-rack-valid</span></a> after the
+migration. If your configuration requires changes, see
+<a class="reference internal" href="../cluster-management/update-topology-strategy-from-simple-to-network.html"><span class="doc">Update Topology Strategy From Simple to Network</span></a>
+and <a class="reference internal" href="../../../kb/rf-increase.html"><span class="doc">How to Safely Increase the Replication Factor</span></a>.</p></li>
+<li><p>All tables in the keyspace should have <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> mode set to <code class="docutils literal notranslate"><span class="pre">repair</span></code>
+to prevent tombstone garbage collection from running during migration.
+For guidance, see <a class="reference internal" href="../../../cql/ddl.html#ddl-tombstones-gc"><span class="std std-ref">Tombstone Garbage Collection</span></a>.</p></li>
+</ul>
+</section>
 </section>
 <section id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
 <p>The current migration procedure has the following limitations:</p>
 <ul class="simple">
+<li><p>Only <strong>single-DC clusters</strong> are supported.</p></li>
 <li><p><strong>No schema changes</strong> during the migration. Do not create, alter, or drop
 tables in the migrating keyspace until the migration is finished.</p></li>
 <li><p><strong>No topology changes</strong> during the migration. Do not add, remove, decommission,
-or replace nodes while a migration is in progress.</p></li>
+replace, or rebuild nodes while a migration is in progress.</p></li>
+<li><p><strong>No repair</strong> operations during the migration. Do not run <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code>
+on the migrating keyspace while a migration is in progress.</p></li>
 <li><p><strong>No TRUNCATE</strong> on tables in the migrating keyspace during the migration.</p></li>
 <li><p>Only <strong>CQL base tables</strong> can be migrated. Materialized views, secondary
 indexes, CDC tables, and Alternator tables are not supported.</p></li>
 <li><p>Tables with <strong>counters</strong> or <strong>LWTs</strong> cannot be migrated.</p></li>
+<li><p>Only tables using the <strong>Incremental Compaction Strategy (ICS)</strong> can be migrated.
+Other compaction strategies are not supported.</p></li>
 </ul>
 </section>
 <section id="overview">
@@ -604,6 +629,32 @@ keyspace cannot be switched back to vnodes.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>finalize<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: tablets</span>
+</pre></div>
+</div>
+</li>
+<li><p>Optionally, wait for tablet layout normalization to complete:</p>
+<p>After finalization, a tablet normalization process takes place in the
+background which transforms the tablets of all migrated tables into a
+power-of-two layout. Until power-of-two convergence is complete, the
+tablet layout of all these tables will be suboptimal, causing degraded
+performance. Run the following command repeatedly to monitor the per-table
+status of this background work:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt; --with-tablet-status</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks<span class="w"> </span>--with-tablet-status
+<span class="go">Keyspace: ks</span>
+<span class="go">Status: tablets</span>
+
+<span class="go">Tablet info:</span>
+<span class="go">  Pow2 tablet layout convergence: in progress</span>
+<span class="go">  Tables converging: 2/3</span>
+
+<span class="go">Table   Status       Tablets   Target</span>
+<span class="go">t1      converging   2301      2048</span>
+<span class="go">t2      converging   2176      2048</span>
+<span class="go">t3      converged    2048      -</span>
 </pre></div>
 </div>
 </li>
@@ -804,7 +855,7 @@ migration in one pass.</p></li>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Migrate a Keyspace from Vnodes to Tablets Experimental&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Migrate a Keyspace from Vnodes to Tablets Experimental&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -873,7 +924,7 @@ migration in one pass.</p></li>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Migrate a Keyspace from Vnodes to Tablets Experimental&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Migrate a Keyspace from Vnodes to Tablets Experimental&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -893,7 +944,11 @@ migration in one pass.</p></li>
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">Migrate a Keyspace from Vnodes to Tablets <span class="label label--caution">Experimental</span></a><ul>
-<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li><a class="reference internal" href="#cluster-state">Cluster state</a></li>
+<li><a class="reference internal" href="#keyspace-and-table-configuration">Keyspace and table configuration</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#limitations">Limitations</a></li>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#procedure">Procedure</a></li>
@@ -947,7 +1002,7 @@ migration in one pass.</p></li>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -961,13 +1016,13 @@ migration in one pass.</p></li>
             
                 
                     <li>
-                        <a href="../../../../branch-2026.3/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.html">2026.3</a>
+                        <a href="migrate-vnodes-to-tablets.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="migrate-vnodes-to-tablets.html">2026.2</a>
+                        <a href="../../../../branch-2026.2/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.html">2026.2</a>
                     </li>
                 
             
@@ -1008,12 +1063,12 @@ migration in one pass.</p></li>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1121,6 +1176,7 @@ migration in one pass.</p></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -1196,6 +1252,7 @@ migration in one pass.</p></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1404,7 +1461,7 @@ migration in one pass.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

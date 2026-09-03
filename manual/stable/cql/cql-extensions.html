@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/cql/cql-extensions.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/cql-extensions.md"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/cql/cql-extensions.md">https://docs.scylladb.com/manual/branch-2026.2/cql/cql-extensions.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md">https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md</a>.
                         </div>
                     
                     
@@ -384,6 +384,27 @@ ALLOW FILTERING          -- optional
 BYPASS CACHE
 </pre></div>
 </div>
+</section>
+<section id="bypass-large-data-guardrails-clause">
+<h2>BYPASS LARGE_DATA_GUARDRAILS clause<a class="headerlink" href="#bypass-large-data-guardrails-clause" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">LARGE_DATA_GUARDRAILS</span></code> clause on standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statements
+skips large data guardrail checks for that delete. This is useful when a table
+has large data guardrails enabled and an oversized partition, row, or collection
+must be deleted, but ordinary writes to the same data are rejected by the hard
+limit.</p>
+<p>The clause is placed after the optional <code class="docutils literal notranslate"><span class="pre">IF</span></code> condition:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">tbl</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">tbl</span>
+<span class="k">WHERE</span> <span class="n">pk</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">ck</span> <span class="o">=</span> <span class="mf">10</span>
+<span class="k">IF</span> <span class="k">EXISTS</span>
+<span class="n">BYPASS</span> <span class="n">LARGE_DATA_GUARDRAILS</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The clause is supported only for standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statements. It is not
+supported for <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, or <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> statements.</p>
 </section>
 <section id="paxos-grace-seconds-per-table-option">
 <h2>“Paxos grace seconds” per-table option<a class="headerlink" href="#paxos-grace-seconds-per-table-option" title="Link to this heading">¶</a></h2>
@@ -434,6 +455,29 @@ explicitly defined or provided as a marker:</p>
 INSERT, UPDATE, DELETE, PRUNE MATERIALIZED VIEW, BATCH,
 and to the TRUNCATE data definition query.</p>
 <p>In addition, the timeout parameter can be applied to SELECT queries as well.</p>
+</section>
+<section id="keyspace-storage-options">
+<span id="cql-keyspace-storage-options"></span><h2>Keyspace storage options<a class="headerlink" href="#keyspace-storage-options" title="Link to this heading">¶</a></h2>
+<p>To store your keyspaces on Amazon S3 or another S3-compatible object store, you need to configure your storage endpoints.
+See <a class="reference internal" href="../operating-scylla/admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a> for instructions.</p>
+<p>After your storage endpoints are configured, you can configure your object storage when creating a keyspace:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="k">with</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;$endpoint_name&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;$bucket&#39;</span> <span class="p">}</span> 
+</pre></div>
+</div>
+<p><strong>Example</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span>
+    <span class="k">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span> <span class="p">:</span> <span class="mf">3</span> <span class="p">}</span>
+    <span class="k">AND</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span> <span class="p">:</span> <span class="s1">&#39;/tmp/b1&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span> <span class="p">:</span> <span class="s1">&#39;localhost&#39;</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>Storage options can be inspected by checking the new system schema table: <code class="docutils literal notranslate"><span class="pre">system_schema.scylla_keyspaces</span></code>:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span>    <span class="n">cassandra</span><span class="o">@</span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">system_schema</span><span class="mf">.</span><span class="n">scylla_keyspaces</span><span class="p">;</span>
+    
+     <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">storage_options</span>                                <span class="o">|</span> <span class="n">storage_type</span>
+    <span class="c1">---------------+------------------------------------------------+--------------</span>
+               <span class="n">ksx</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;/tmp/xx&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;localhost&#39;</span><span class="p">}</span> <span class="o">|</span>           <span class="n">S3</span>
+</pre></div>
+</div>
 </section>
 <section id="prune-materialized-view-statements">
 <h2>PRUNE MATERIALIZED VIEW statements<a class="headerlink" href="#prune-materialized-view-statements" title="Link to this heading">¶</a></h2>
@@ -753,7 +797,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
 <p>For more details, see <a class="reference internal" href="describe-schema.html"><span class="std std-doc">the article on DESCRIBE SCHEMA</span></a>.</p>
 </section>
 <section id="per-row-ttl">
-<h2>Per-row TTL<a class="headerlink" href="#per-row-ttl" title="Link to this heading">¶</a></h2>
+<span id="cql-per-row-ttl"></span><h2>Per-row TTL<a class="headerlink" href="#per-row-ttl" title="Link to this heading">¶</a></h2>
 <p>CQL’s traditional time-to-live (TTL) feature attaches an expiration time to
 each cell - i.e., each value in each column. For example, the statement:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UPDATE</span> <span class="n">tbl</span> <span class="n">USING</span> <span class="n">TTL</span> <span class="mi">60</span> <span class="n">SET</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span>
@@ -856,7 +900,7 @@ both features in the same table, or even the same row.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -925,7 +969,7 @@ both features in the same table, or even the same row.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -946,8 +990,10 @@ both features in the same table, or even the same row.</p>
             <ul>
 <li><a class="reference internal" href="#">ScyllaDB CQL Extensions</a><ul>
 <li><a class="reference internal" href="#bypass-cache-clause">BYPASS CACHE clause</a></li>
+<li><a class="reference internal" href="#bypass-large-data-guardrails-clause">BYPASS LARGE_DATA_GUARDRAILS clause</a></li>
 <li><a class="reference internal" href="#paxos-grace-seconds-per-table-option">“Paxos grace seconds” per-table option</a></li>
 <li><a class="reference internal" href="#using-timeout">USING TIMEOUT</a></li>
+<li><a class="reference internal" href="#keyspace-storage-options">Keyspace storage options</a></li>
 <li><a class="reference internal" href="#prune-materialized-view-statements">PRUNE MATERIALIZED VIEW statements</a></li>
 <li><a class="reference internal" href="#synchronous-materialized-views">Synchronous materialized views</a><ul>
 <li><a class="reference internal" href="#synchronous-global-secondary-indexes">Synchronous global secondary indexes</a></li>
@@ -1017,7 +1063,7 @@ both features in the same table, or even the same row.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1031,13 +1077,13 @@ both features in the same table, or even the same row.</p>
             
                 
                     <li>
-                        <a href="../../branch-2026.3/cql/cql-extensions.html">2026.3</a>
+                        <a href="cql-extensions.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="cql-extensions.html">2026.2</a>
+                        <a href="../../branch-2026.2/cql/cql-extensions.html">2026.2</a>
                     </li>
                 
             
@@ -1078,12 +1124,12 @@ both features in the same table, or even the same row.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1191,6 +1237,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -1266,6 +1313,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1474,7 +1522,7 @@ both features in the same table, or even the same row.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

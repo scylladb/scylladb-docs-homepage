@@ -1,4 +1,4 @@
-# Launch ScyllaDB 2026.2 on GCP
+# Launch ScyllaDB 2026.3 on GCP
 
 This article will guide you through self-managed ScyllaDB deployment on GCP. For a fully-managed deployment of ScyllaDB
 as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/).
@@ -18,11 +18,11 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
    For earlier releases, see [GCP Images](https://docs.scylladb.com/manual/master/reference/gcp-images.md)
    <!-- -*- mode: rst -*- -->
 
-   ### 2026.2.5
+   ### 2026.3.0
 
    | Image Name        |            Image ID |
    |-------------------|---------------------|
-   | scylladb-2026-2-5 | 5588668313944528497 |
+   | scylladb-2026-3-0 | 9021025706677946776 |
 3. Launch a ScyllaDB instance on GCP with `gcloud` using the information from the previous step. Use the following syntax:
    ```console
    gcloud compute instances create <name of new instance> --image <ScyllaDB image name> --image-project < ScyllaDB project name> --local-ssd interface=nvme --zone=<GCP zone - optional> --machine-type=<machine type>

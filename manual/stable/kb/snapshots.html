@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/kb/snapshots.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/kb/snapshots.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/kb/snapshots.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/kb/snapshots.md">https://docs.scylladb.com/manual/branch-2026.2/kb/snapshots.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/kb/snapshots.md">https://docs.scylladb.com/manual/branch-2026.3/kb/snapshots.md</a>.
                         </div>
                     
                     
@@ -383,6 +383,10 @@ To prevent any issues with restoring your data, the backup strategy must include
 <p>If snapshots (hard links) were created to existing SSTables on disk they are preserved even if table data is eventually stored in one or more of the new SSTables. The <a class="reference internal" href="../cql/compaction.html"><span class="doc">compaction process</span></a> removes files in the data directory, but the snapshot hard links <strong>will still</strong> be pointing to the <strong>old files</strong>. Only after all of the pointers are removed, the actual file is removed. If even one pointer exists, the file will remain. Therefore, even as the database is moving on, once the snapshot hard links are created, the content of the data files can be copied off to another storage and serve as the foundation for a table, keyspace, or entire database restore (on that node, as this backup and restore process is node specific).</p>
 <p>Apart from <em>planned backup</em> procedure described above, and as a safeguard from <em>accidental</em> loss of data, the ScyllaDB database includes an optional creation of an automatic snapshot every time a table is dropped or truncated.  As dropping a keyspace involves dropping tables within that keyspace, these actions will invoke auto snapshots as well. This option is enabled out of the box and is controlled by the auto_snapshot flag in the <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> configuration file. Note that a keyspace cannot be truncated. It can only be dropped. A table, on the other hand, can  be either truncated or dropped. The data in a table can also be deleted, which is different from being truncated.</p>
 <p>The default setting for the <code class="docutils literal notranslate"><span class="pre">auto_snapshot</span></code> flag in <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> file is <code class="docutils literal notranslate"><span class="pre">true</span></code>. It is <strong>not</strong> recommended to set it to <code class="docutils literal notranslate"><span class="pre">false</span></code>, unless there is a good backup and recovery strategy in place.</p>
+<p>The automatically created snapshots remain on local storage until they are backed-up using the <code class="docutils literal notranslate"><span class="pre">move_files</span></code> option or they are explicitly deleted.
+Otherwise, stale snapshots might cause a node to run out of storage space by holding up to the SSTables in the snapshot after they are deleted from the table (by compaction, tablet-migration, TRUNCATE, DROP TABLE, and so on).
+The <code class="docutils literal notranslate"><span class="pre">auto_snapshot_ttl</span></code> configuration option can be used to automatically delete stale snapshots.</p>
+<p>The default setting for the <code class="docutils literal notranslate"><span class="pre">auto_snapshot_ttl</span></code> option in <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> file is <code class="docutils literal notranslate"><span class="pre">864000</span></code> seconds (10 days). It is recommended to set it to a reasonable time allowing backup of the auto-snapshot, yet have a safety net that will automatically clean up stale snapshots to reclaim their disk space.</p>
 </section>
 <section id="snapshot-creation">
 <h2>Snapshot Creation<a class="headerlink" href="#snapshot-creation" title="Link to this heading">¶</a></h2>
@@ -481,7 +485,7 @@ To prevent any issues with restoring your data, the backup strategy must include
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Snapshots&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/kb/snapshots%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Snapshots&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/kb/snapshots%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -550,7 +554,7 @@ To prevent any issues with restoring your data, the backup strategy must include
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Snapshots&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/kb/snapshots%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB Snapshots&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/kb/snapshots%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -624,7 +628,7 @@ To prevent any issues with restoring your data, the backup strategy must include
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -638,13 +642,13 @@ To prevent any issues with restoring your data, the backup strategy must include
             
                 
                     <li>
-                        <a href="../../branch-2026.3/kb/snapshots.html">2026.3</a>
+                        <a href="snapshots.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="snapshots.html">2026.2</a>
+                        <a href="../../branch-2026.2/kb/snapshots.html">2026.2</a>
                     </li>
                 
             
@@ -685,12 +689,12 @@ To prevent any issues with restoring your data, the backup strategy must include
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -798,6 +802,7 @@ To prevent any issues with restoring your data, the backup strategy must include
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -873,6 +878,7 @@ To prevent any issues with restoring your data, the backup strategy must include
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1081,7 +1087,7 @@ To prevent any issues with restoring your data, the backup strategy must include
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

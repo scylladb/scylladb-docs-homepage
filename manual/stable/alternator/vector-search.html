@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/alternator/vector-search.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/alternator/vector-search.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/alternator/vector-search.md"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/alternator/vector-search.md">https://docs.scylladb.com/manual/branch-2026.2/alternator/vector-search.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/alternator/vector-search.md">https://docs.scylladb.com/manual/branch-2026.3/alternator/vector-search.md</a>.
                         </div>
                     
                     
@@ -394,8 +394,11 @@ sections of the ScyllaDB Cloud documentation.</p>
 <ol class="arabic simple">
 <li><p><strong>Create</strong> a table (or update an existing one) with one or more
 <em>vector indexes</em>.</p></li>
-<li><p><strong>Write</strong> items that include the indexed vector attribute, just like any
-other list attribute.</p></li>
+<li><p><strong>Write</strong> items that include the indexed vector attribute. The attribute
+can be stored as a standard DynamoDB list (<code class="docutils literal notranslate"><span class="pre">L</span></code>) of number (<code class="docutils literal notranslate"><span class="pre">N</span></code>) elements,
+or as a ScyllaDB-specific optimized vector type (<code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>) — a list of
+JSON floating-point numbers that is stored internally as compact 4-byte
+floats rather than JSON-encoded strings, saving space and parse overhead.</p></li>
 <li><p><strong>Query</strong> using the <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter to retrieve the <em>k</em> nearest
 neighbors.</p></li>
 </ol>
@@ -426,6 +429,10 @@ It is a list of vector index definitions, each specifying:</p>
 <td><p>Structure</p></td>
 <td><p>Optional. Specifies which attributes are projected into the vector index (see below).</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Optional. The distance metric used for nearest-neighbor search. See below.</p></td>
+</tr>
 </tbody>
 </table>
 <p><strong>VectorAttribute fields:</strong></p>
@@ -444,6 +451,25 @@ It is a list of vector index definitions, each specifying:</p>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code></p></td>
 <td><p>Integer</p></td>
 <td><p>The fixed size of the vector (number of elements).</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>SimilarityFunction values:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COSINE</span></code></p></td>
+<td><p>Cosine similarity (angular distance). <strong>Default when <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> is omitted.</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EUCLIDEAN</span></code></p></td>
+<td><p>Euclidean (L2) distance.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DOT_PRODUCT</span></code></p></td>
+<td><p>Inner product (dot product). Useful when vectors are normalized.</p></td>
 </tr>
 </tbody>
 </table>
@@ -511,7 +537,8 @@ index operation (Create or Delete) may be requested per call.</p>
 <span class="w">  </span><span class="nt">&quot;Create&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;VectorAttribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;AttributeName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;SimilarityFunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COSINE&quot;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -520,6 +547,8 @@ index operation (Create or Delete) may be requested per call.</p>
 values as the <code class="docutils literal notranslate"><span class="pre">Projection</span></code> field in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> (see above).
 Currently only <code class="docutils literal notranslate"><span class="pre">ProjectionType=KEYS_ONLY</span></code> is supported; it is also the default
 when <code class="docutils literal notranslate"><span class="pre">Projection</span></code> is omitted.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> field is also optional and accepts the same values as
+in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> (see above). Defaults to <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> when omitted.</p>
 <p><strong>Delete:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;Delete&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -539,7 +568,10 @@ vector index. The structure mirrors the <code class="docutils literal notranslat
 objects each containing <code class="docutils literal notranslate"><span class="pre">IndexName</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code>
 (<code class="docutils literal notranslate"><span class="pre">AttributeName</span></code> + <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code>), and <code class="docutils literal notranslate"><span class="pre">Projection</span></code> (<code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code>).
 Currently <code class="docutils literal notranslate"><span class="pre">Projection</span></code> always contains <code class="docutils literal notranslate"><span class="pre">{&quot;ProjectionType&quot;:</span> <span class="pre">&quot;KEYS_ONLY&quot;}</span></code>
-because that is the only supported projection type.</p>
+because that is the only supported projection type.
+If a <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> was specified at index creation, it is returned
+at the index level (alongside <code class="docutils literal notranslate"><span class="pre">IndexName</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code>, and <code class="docutils literal notranslate"><span class="pre">Projection</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> was not specified, <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> is returned as the default.</p>
 <p>Each vector index entry also includes status fields that mirror the standard
 behavior of <code class="docutils literal notranslate"><span class="pre">GlobalSecondaryIndexes</span></code> in DynamoDB:</p>
 <table class="docutils align-default">
@@ -580,6 +612,24 @@ where each number is representable as a 32-bit float — is rejected with a
 <code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code>. A missing value for the indexed attribute is always
 allowed; such items simply are not indexed.</p></li>
 </ul>
+<p><strong>Optimized vector storage format (<code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type):</strong></p>
+<p>As a ScyllaDB extension, the indexed vector attribute may be written using
+the <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type instead of the standard <code class="docutils literal notranslate"><span class="pre">L</span></code> type. With the <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type the value
+is a JSON array of plain floating-point numbers (not strings):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="c1">// Standard DynamoDB list-of-numbers format:</span>
+<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-0.3&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7&quot;</span><span class="p">}]}}</span>
+
+<span class="c1">// Optimized FLOAT32VECTOR format (ScyllaDB extension):</span>
+<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;FLOAT32VECTOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]}}</span>
+</pre></div>
+</div>
+<p>Both representations are accepted for writes and queries. The <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>
+format is stored internally as packed 4-byte IEEE 754 floats (big-endian),
+rather than as JSON with string-encoded numbers. This reduces storage space
+and avoids JSON parsing overhead when the vector is read back. For large,
+high-dimensional vectors the space saving is significant: a 1536-dimension
+vector takes 6145 bytes with <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> versus roughly 25 KB with <code class="docutils literal notranslate"><span class="pre">L</span></code>/<code class="docutils literal notranslate"><span class="pre">N</span></code>
+strings.</p>
 <blockquote>
 <div><p><strong>Important:</strong> Applications must wait until <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code> before
 issuing <code class="docutils literal notranslate"><span class="pre">Query</span></code> requests against a vector index. Queries on a vector index
@@ -606,17 +656,27 @@ vector search rather than a standard key-condition query.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QueryVector</span></code></p></td>
-<td><p>AttributeValue (list <code class="docutils literal notranslate"><span class="pre">L</span></code>)</p></td>
-<td><p>The query vector as a DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code> of type <code class="docutils literal notranslate"><span class="pre">L</span></code>. Every element must be of type <code class="docutils literal notranslate"><span class="pre">N</span></code> (number).</p></td>
+<td><p>AttributeValue (list <code class="docutils literal notranslate"><span class="pre">L</span></code> or vector <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>)</p></td>
+<td><p>The query vector as a DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code>. Use type <code class="docutils literal notranslate"><span class="pre">L</span></code> with <code class="docutils literal notranslate"><span class="pre">N</span></code> elements (standard DynamoDB) or the optimized ScyllaDB <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type with plain floating-point elements.</p></td>
 </tr>
 </tbody>
 </table>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard DynamoDB format:</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
     <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
     <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.1&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;-0.3&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.7&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">]},</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="c1"># Optimized ScyllaDB FLOAT32VECTOR format:</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FLOAT32VECTOR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -633,7 +693,7 @@ vector search rather than a standard key-condition query.</p>
 <td><p>Required. Must name a vector index on this table (not a GSI or LSI).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VectorSearch.QueryVector</span></code></p></td>
-<td><p>Required. A DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code> of type <code class="docutils literal notranslate"><span class="pre">L</span></code>; all elements must be of type <code class="docutils literal notranslate"><span class="pre">N</span></code> (number).</p></td>
+<td><p>Required. A DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code> of type <code class="docutils literal notranslate"><span class="pre">L</span></code> (all elements of type <code class="docutils literal notranslate"><span class="pre">N</span></code>) or the ScyllaDB-specific type <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> (plain floating-point JSON numbers).</p></td>
 </tr>
 <tr class="row-even"><td><p>QueryVector length</p></td>
 <td><p>Must match the <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> configured for the named vector index.</p></td>
@@ -760,7 +820,95 @@ projected (key) attributes are returned for items that pass.</p></li>
 supported for vector search queries and will be rejected with a
 <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>. Use <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> instead.</p>
 </div></blockquote>
+<p><strong>ReturnScores field:</strong></p>
+<p>By default, a vector search <code class="docutils literal notranslate"><span class="pre">Query</span></code> response contains only the matched items
+(or a count) — it does not include how similar each result is to the query
+vector. To also receive similarity scores, set the optional
+<code class="docutils literal notranslate"><span class="pre">ReturnScores</span></code> field inside the <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">NONE</span></code></p></td>
+<td><p>Default. No similarity scores are returned.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SIMILARITY</span></code></p></td>
+<td><p>Each response includes a <code class="docutils literal notranslate"><span class="pre">Scores</span></code> array parallel to <code class="docutils literal notranslate"><span class="pre">Items</span></code>, with one floating-point score per item.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">Scores</span></code> array is always the same length as <code class="docutils literal notranslate"><span class="pre">Items</span></code> and in the same
+order: <code class="docutils literal notranslate"><span class="pre">Scores[i]</span></code> is the similarity score for <code class="docutils literal notranslate"><span class="pre">Items[i]</span></code>.</p>
+<p><strong>What the similarity score means:</strong></p>
+<p>The similarity score is a floating-point number computed from the distance
+between the query vector and each result’s stored vector, using the index’s
+<code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code>. A <strong>higher</strong> score means a <strong>closer</strong> (more similar)
+match, so results appear in descending similarity order.  The score range
+depends on the similarity function:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code></p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Mapping</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COSINE</span></code> (default)</p></td>
+<td><p>0.0 to 1.0</p></td>
+<td><p>The cosine of the angle between the two vectors is in <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">1]</span></code>. So taking <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">cos)/2</span></code> gives us a similarity value in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>: 1.0 means identical direction, 0.5 means orthogonal vectors, 0.0 means opposite direction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EUCLIDEAN</span></code></p></td>
+<td><p>0.0 to 1.0</p></td>
+<td><p>Euclidean distance <em>d</em> in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">inf)</span></code> is mapped to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">d)</span></code>. similarity 1.0 means identical vectors, 0.0 means infinitely far apart.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DOT_PRODUCT</span></code></p></td>
+<td><p>Unbounded</p></td>
+<td><p>Uses the same distance definition and mapping as <code class="docutils literal notranslate"><span class="pre">COSINE</span></code>. For L2-normalized vectors the result is identical to <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> and stays in [0, 1]. For unnormalized vectors the value may exceed 1 or be negative.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">ReturnScores=SIMILARITY</span></code> is not allowed with <code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code>,
+since <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> returns no <code class="docutils literal notranslate"><span class="pre">Items</span></code> array.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">Limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FLOAT32VECTOR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span> <span class="s1">&#39;ReturnScores&#39;</span><span class="p">:</span> <span class="s1">&#39;SIMILARITY&#39;</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;Items&#39;</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;Scores&#39;</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">  similarity=</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
+</section>
+<section id="metrics">
+<h2>Metrics<a class="headerlink" href="#metrics" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB exposes the following metrics (under the <code class="docutils literal notranslate"><span class="pre">alternator</span></code> group) for
+monitoring vector search activity:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query</span></code></p></td>
+<td><p>Number of <code class="docutils literal notranslate"><span class="pre">Query</span></code> operations that included a <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter. These are also counted in the general <code class="docutils literal notranslate"><span class="pre">operation{op=&quot;Query&quot;}</span></code> metric.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query_returned_items</span></code></p></td>
+<td><p>Total number of items returned across all vector search queries. Not incremented for <code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code> queries, since no items are actually returned in that case.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query_items_from_vs</span></code></p></td>
+<td><p>Total number of nearest-neighbor candidates returned by the vector store. Some candidates may be filtered out by a <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> and not appear in the final response.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query_items_from_base_table</span></code></p></td>
+<td><p>Total number of items read from the base table by vector search queries. Queries using <code class="docutils literal notranslate"><span class="pre">Select=ALL_PROJECTED_ATTRIBUTES</span></code> without a filter, or <code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code> without a filter, bypass the base-table read entirely and do not increment this counter.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 
@@ -796,7 +944,7 @@ supported for vector search queries and will be rejected with a
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator Vector Search&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/alternator/vector-search%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator Vector Search&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/alternator/vector-search%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -865,7 +1013,7 @@ supported for vector search queries and will be rejected with a
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator Vector Search&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/alternator/vector-search%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Alternator Vector Search&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/alternator/vector-search%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -894,6 +1042,7 @@ supported for vector search queries and will be rejected with a
 <li><a class="reference internal" href="#query-vectorsearch-parameter">Query — VectorSearch parameter</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#metrics">Metrics</a></li>
 </ul>
 </li>
 </ul>
@@ -942,7 +1091,7 @@ supported for vector search queries and will be rejected with a
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -956,13 +1105,13 @@ supported for vector search queries and will be rejected with a
             
                 
                     <li>
-                        <a href="../../branch-2026.3/alternator/vector-search.html">2026.3</a>
+                        <a href="vector-search.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="vector-search.html">2026.2</a>
+                        <a href="../../branch-2026.2/alternator/vector-search.html">2026.2</a>
                     </li>
                 
             
@@ -1003,12 +1152,12 @@ supported for vector search queries and will be rejected with a
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1116,6 +1265,7 @@ supported for vector search queries and will be rejected with a
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -1191,6 +1341,7 @@ supported for vector search queries and will be rejected with a
 <li class="toctree-l2"><a class="reference internal" href="../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1399,7 +1550,7 @@ supported for vector search queries and will be rejected with a
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

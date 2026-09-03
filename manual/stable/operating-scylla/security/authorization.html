@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/security/authorization.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md" />
             
         
 
@@ -355,14 +355,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.2/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/security/authorization.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.2/llms.txt">https://docs.scylladb.com/manual/branch-2026.2/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/security/authorization.md">https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/security/authorization.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md</a>.
                         </div>
                     
                     
@@ -648,6 +648,7 @@ following permissions changes.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">AUTHORIZE</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code></p></li>
 </ul>
 <p>Attempting to <code class="docutils literal notranslate"><span class="pre">GRANT</span></code> permission on a resource to which it cannot be applied results in an error response. The following illustrates which
 permissions can be granted on which types of resources, and which statements are enabled by that permission.</p>
@@ -738,17 +739,31 @@ permissions can be granted on which types of resources, and which statements are
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">KEYSPACES</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with vector search indexes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with vector search indexes, and on some <a class="reference internal" href="#external-index-system-tables"><span class="std std-ref">system tables</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">KEYSPACES</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with full-text search indexes, and on some <a class="reference internal" href="#external-index-system-tables"><span class="std std-ref">system tables</span></a></p></td>
 </tr>
 </tbody>
 </table>
+<p id="external-index-system-tables">Both the <code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code> and <code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code> permissions also grant <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on the following
+system tables, which the external Vector Store engine reads to track schema changes, tablet placement, and CDC
+streams for the tables it indexes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">system.group0_history</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.versions</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.cdc_streams</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.cdc_timestamps</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">system.tablets</span></code></p></li>
+</ul>
 </section>
 <section id="grant-permission">
 <span id="grant-permission-statement"></span><h3>GRANT PERMISSION<a class="headerlink" href="#grant-permission" title="Link to this heading">¶</a></h3>
 <p>Granting permission uses the <code class="docutils literal notranslate"><span class="pre">GRANT</span> <span class="pre">PERMISSION</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">grant_permission_statement</span><span class="p">:</span> <span class="k">GRANT</span> <span class="o">`</span><span class="k">permissions</span><span class="o">`</span> <span class="k">ON</span> <span class="o">`</span><span class="n">resource</span><span class="o">`</span> <span class="k">TO</span> <span class="o">`</span><span class="n">user_name</span><span class="o">`</span>
 <span class="k">permissions</span><span class="p">:</span> <span class="k">ALL</span> <span class="p">[</span> <span class="k">PERMISSIONS</span> <span class="p">]</span> <span class="o">|</span> <span class="o">`</span><span class="k">permission</span><span class="o">`</span> <span class="p">[</span> <span class="k">PERMISSION</span> <span class="p">]</span>
-<span class="k">permission</span><span class="p">:</span> <span class="k">CREATE</span> <span class="o">|</span> <span class="k">ALTER</span> <span class="o">|</span> <span class="k">DROP</span> <span class="o">|</span> <span class="k">SELECT</span> <span class="o">|</span> <span class="k">MODIFY</span> <span class="o">|</span> <span class="k">AUTHORIZE</span> <span class="o">|</span> <span class="k">DESCRIBE</span>
+<span class="k">permission</span><span class="p">:</span> <span class="k">CREATE</span> <span class="o">|</span> <span class="k">ALTER</span> <span class="o">|</span> <span class="k">DROP</span> <span class="o">|</span> <span class="k">SELECT</span> <span class="o">|</span> <span class="k">MODIFY</span> <span class="o">|</span> <span class="k">AUTHORIZE</span> <span class="o">|</span> <span class="k">DESCRIBE</span> <span class="o">|</span> <span class="n">VECTOR_SEARCH_INDEXING</span> <span class="o">|</span> <span class="n">TEXT_SEARCH_INDEXING</span>
 <span class="n">resource</span><span class="p">:</span> <span class="k">ALL</span> <span class="k">KEYSPACES</span>
         <span class="p">:</span><span class="o">|</span> <span class="k">KEYSPACE</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span>
         <span class="p">:</span><span class="o">|</span> <span class="p">[</span> <span class="k">TABLE</span> <span class="p">]</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
@@ -865,7 +880,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -934,7 +949,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Grant Authorization CQL Reference&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1037,7 +1052,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.2
+                2026.3
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1051,13 +1066,13 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 
                     <li>
-                        <a href="../../../branch-2026.3/operating-scylla/security/authorization.html">2026.3</a>
+                        <a href="authorization.html">2026.3</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="authorization.html">2026.2</a>
+                        <a href="../../../branch-2026.2/operating-scylla/security/authorization.html">2026.2</a>
                     </li>
                 
             
@@ -1098,12 +1113,12 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.2</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.2 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.2 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.2 on Azure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.2 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
@@ -1211,6 +1226,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/system-configuration.html">System Configuration Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../admin.html">scylla.yaml</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../system-configuration/snitch.html">ScyllaDB Snitches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
@@ -1286,6 +1302,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l2"><a class="reference internal" href="../../features/incremental-repair.html">Incremental Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1494,7 +1511,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Sep 2026.
+                        Last updated on 03 Sep 2026.
                     
                 </div>
             

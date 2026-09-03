@@ -117,7 +117,7 @@ Debian/Ubuntu
 
 1. Update the ScyllaDB deb repo to 2026.3.
    > ```console
-   > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.2.list
+   > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.3.list
    > ```
 2. Install the new ScyllaDB version:
    > ```console
@@ -132,7 +132,7 @@ RHEL/CentOS
 
 1. Update the ScyllaDB rpm repo to 2026.3.
    > ```console
-   > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.2.repo
+   > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.3.repo
    > ```
 2. Install the new ScyllaDB version:
    > ```sh
