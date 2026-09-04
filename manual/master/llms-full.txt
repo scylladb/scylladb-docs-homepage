@@ -65,6 +65,31 @@ In addition, you can read our [blog](https://www.scylladb.com/blog/) and attend 
 
 # index.md
 
+# Troubleshooting ScyllaDB
+
+ScyllaDB’s troubleshooting section contains articles which are targeted to pinpoint and answer problems with ScyllaDB. For broader issues and workarounds, consult the [Knowledge base](https://docs.scylladb.com/manual/master/kb/index.md).
+Keep your versions up-to-date. The two latest versions are supported. Also, always install the latest patches for your version.
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Troubleshooting Topics</h5>
+            * [Errors and ScyllaDB Customer Support](https://docs.scylladb.com/manual/master/troubleshooting/support/index.md)
+* [ScyllaDB Startup](https://docs.scylladb.com/manual/master/troubleshooting/startup/index.md)
+* [ScyllaDB Cluster and Node](https://docs.scylladb.com/manual/master/troubleshooting/cluster/index.md)
+* [Data Modeling](https://docs.scylladb.com/manual/master/troubleshooting/modeling/index.md)
+* [Data Storage and SSTables](https://docs.scylladb.com/manual/master/troubleshooting/storage/index.md)
+* [CQL errors](https://docs.scylladb.com/manual/master/troubleshooting/CQL/index.md)
+* [ScyllaDB Monitoring and ScyllaDB Manager](https://docs.scylladb.com/manual/master/troubleshooting/monitor/index.md)
+* [Installation and Removal](https://docs.scylladb.com/manual/master/troubleshooting/install-remove/index.md)
+
+</div></div>
+
+Also check out the [Monitoring lesson](https://university.scylladb.com/courses/scylla-operations/lessons/scylla-monitoring/) on ScyllaDB University, which covers how to troubleshoot different issues when running a ScyllaDB cluster.
+
+
+# index.md
+
 # Knowledge Base
 
 
@@ -127,32 +152,67 @@ In addition, you can read our [blog](https://www.scylladb.com/blog/) and attend 
 
 # index.md
 
-# ScyllaDB for Developers
+# ScyllaDB Architecture
+
+* [Data Distribution with Tablets](https://docs.scylladb.com/manual/master/architecture/tablets.md) - Tablets in ScyllaDB
+* [ScyllaDB Ring Architecture](https://docs.scylladb.com/manual/master/architecture/ringarchitecture/index.md) - High-Level view of ScyllaDB Ring Architecture
+* [ScyllaDB Fault Tolerance](https://docs.scylladb.com/manual/master/architecture/architecture-fault-tolerance.md) - Deep dive into ScyllaDB Fault Tolerance
+* [Consistency Level Console Demo](https://docs.scylladb.com/manual/master/architecture/console-CL-full-demo.md) - Console Demos of Consistency Level Settings
+* [ScyllaDB Anti-Entropy](https://docs.scylladb.com/manual/master/architecture/anti-entropy/index.md) - High-Level view of ScyllaDB Anti-Entropy
+* [SSTable](https://docs.scylladb.com/manual/master/architecture/sstable/index.md) - ScyllaDB SSTable 2.0 and 3.0 Format Information
+* [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md) - High-level analysis of different compaction strategies
+* [Raft Consensus Algorithm in ScyllaDB](https://docs.scylladb.com/manual/master/architecture/raft.md) - Overview of how Raft is implemented in ScyllaDB.
+* [Zero-token Nodes](https://docs.scylladb.com/manual/master/architecture/zero-token-nodes.md) - Nodes that do not replicate any data.
+
+Learn more about these topics in the [ScyllaDB University: Architecture lesson](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/architecture/).
+
+
+# index.md
+
+# Features
+
+This document highlights ScyllaDB’s key data modeling features.
 
 
             <div class="cell my-panel">
                 <div class="panel">
-                    <h5 class="panel_\_title">Get Started</h5>
-            * [Get Started with ScyllaDB](https://docs.scylladb.com/stable/get-started/index.html)
-* [Tutorials and Example Projects](https://docs.scylladb.com/stable/get-started/develop-with-scylladb/tutorials-example-projects.html)
-* [Learn to Use ScyllaDB](https://docs.scylladb.com/stable/get-started/learn-resources/index.html)
+                    <h5 class="panel_\_title">ScyllaDB Features</h5>
+            * Secondary Indexes and Materialized Views provide efficient search mechanisms
+  on non-partition keys by creating an index.
+  * [Global Secondary Indexes](https://docs.scylladb.com/manual/master/features/secondary-indexes.md)
+  * [Local Secondary Indexes](https://docs.scylladb.com/manual/master/features/local-secondary-indexes.md)
+  * [Materialized Views](https://docs.scylladb.com/manual/master/features/materialized-views.md)
+* [Lightweight Transactions](https://docs.scylladb.com/manual/master/features/lwt.md) provide conditional updates
+  through linearizability.
+* [Counters](https://docs.scylladb.com/manual/master/features/counters.md) are columns that only allow their values
+  to be incremented, decremented, read, or deleted.
+* [Change Data Capture](https://docs.scylladb.com/manual/master/features/cdc/index.md) allows you to query the current
+  state and the history of all changes made to tables in the database.
+* [Workload Attributes](https://docs.scylladb.com/manual/master/features/workload-attributes.md) assigned to your workloads
+  specify how ScyllaDB will handle requests depending on the workload.
+* [Backup and Restore](https://docs.scylladb.com/manual/master/features/backup-and-restore.md) allows you to create
+  backups of your data and restore it when needed.
+* [Incremental Repair](https://docs.scylladb.com/manual/master/features/incremental-repair.md) provides a much more
+  efficient and lightweight approach to maintaining data consistency by
+  repairing only the data that has changed since the last repair.
+* [Automatic Repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) schedules and runs repairs
+  directly in ScyllaDB, without external schedulers.
+* [Vector Search in ScyllaDB](https://docs.scylladb.com/manual/master/features/vector-search.md) enables
+  similarity-based queries on vector embeddings.
+* [Full-Text Search](https://docs.scylladb.com/manual/master/features/fulltext-search.md) lets you search and
+  rank text columns by relevance using the BM25 scoring algorithm.
 
 </div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Develop Your App with ScyllaDB</h5>
-            * [ScyllaDB Drivers](https://docs.scylladb.com/stable/drivers/index.html) - ScyllaDB and third-party drivers for CQL and DynamoDB
-* [ScyllaDB Alternator](https://docs.scylladb.com/manual/master/using-scylla/alternator/index.md) - DynamoDB-compatible API
-* [CQL Reference](https://docs.scylladb.com/manual/master/cql/index.md) - Reference for the Apache Cassandra Query Language (CQL) and its ScyllaDB extensions
 
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">ScyllaDB Tools and Resources</h5>
-            * [ScyllaDB Tools](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/index.md) - Tools for testing and integrating with ScyllaDB
-* [cqlsh](https://docs.scylladb.com/manual/master/cql/cqlsh.md) - A command line shell for interacting with ScyllaDB through CQL
 
-</div></div>
+# index.md
+
+# Upgrade ScyllaDB
+
+* [Upgrade Guides](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/index.md)
+  * [ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md)
+  * [ScyllaDB 2026.x Patch Upgrades](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md)
+  * [ScyllaDB Image](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/ami-upgrade.md)
 
 
 # index.md
@@ -198,6 +258,73 @@ In addition, you can read our [blog](https://www.scylladb.com/blog/) and attend 
             * [ScyllaDB Features](https://docs.scylladb.com/manual/master/features/index.md) - Feature list for ScyllaDB
 
 </div></div>
+
+
+# index.md
+
+# ScyllaDB for Developers
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Get Started</h5>
+            * [Get Started with ScyllaDB](https://docs.scylladb.com/stable/get-started/index.html)
+* [Tutorials and Example Projects](https://docs.scylladb.com/stable/get-started/develop-with-scylladb/tutorials-example-projects.html)
+* [Learn to Use ScyllaDB](https://docs.scylladb.com/stable/get-started/learn-resources/index.html)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Develop Your App with ScyllaDB</h5>
+            * [ScyllaDB Drivers](https://docs.scylladb.com/stable/drivers/index.html) - ScyllaDB and third-party drivers for CQL and DynamoDB
+* [ScyllaDB Alternator](https://docs.scylladb.com/manual/master/using-scylla/alternator/index.md) - DynamoDB-compatible API
+* [CQL Reference](https://docs.scylladb.com/manual/master/cql/index.md) - Reference for the Apache Cassandra Query Language (CQL) and its ScyllaDB extensions
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">ScyllaDB Tools and Resources</h5>
+            * [ScyllaDB Tools](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/index.md) - Tools for testing and integrating with ScyllaDB
+* [cqlsh](https://docs.scylladb.com/manual/master/cql/cqlsh.md) - A command line shell for interacting with ScyllaDB through CQL
+
+</div></div>
+
+
+# index.md
+
+# CQL Reference
+
+## cqlsh - The CQL Shell
+
+`cqlsh` is a command line shell for interacting with ScyllaDB through CQL.
+
+* [CQLSh: the CQL shell](https://docs.scylladb.com/manual/master/cql/cqlsh.md)
+
+## CQL - Apache Cassandra Query Language
+
+The Apache Cassandra Query Language (CQL) is the primary language for communicating with the ScyllaDB database.
+It allows you to create keyspaces and tables, insert and query tables, and more.
+
+> * [Reserved CQL Keywords and Types (Appendices)](https://docs.scylladb.com/manual/master/cql/appendices.md)
+> * [Compaction](https://docs.scylladb.com/manual/master/cql/compaction.md)
+> * [Consistency Levels](https://docs.scylladb.com/manual/master/cql/consistency.md)
+> * [Consistency Levels Calculator](https://docs.scylladb.com/manual/master/cql/consistency-calculator.md)
+> * [Data Definition](https://docs.scylladb.com/manual/master/cql/ddl.md)
+> * [Data Manipulation](https://docs.scylladb.com/manual/master/cql/dml.md)
+> * [Data Types](https://docs.scylladb.com/manual/master/cql/types.md)
+> * [Definitions](https://docs.scylladb.com/manual/master/cql/definitions.md)
+> * [Global Secondary Indexes](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md)
+> * [CQL Guardrails](https://docs.scylladb.com/manual/master/cql/guardrails.md)
+> * [Expiring Data with Time to Live (TTL)](https://docs.scylladb.com/manual/master/cql/time-to-live.md)
+> * [Functions](https://docs.scylladb.com/manual/master/cql/functions.md)
+> * [JSON Support](https://docs.scylladb.com/manual/master/cql/json.md)
+> * [Materialized Views](https://docs.scylladb.com/manual/master/cql/mv.md)
+
+## ScyllaDB CQL Extensions - CQL Extensions Provided by ScyllaDB
+
+ScyllaDB provides additional features that extend the Apache CQL.
+
+* [ScyllaDB CQL Extensions](https://docs.scylladb.com/manual/master/cql/cql-extensions.md)
 
 
 # index.md
@@ -253,133 +380,6 @@ The tutorials will show you how to use ScyllaDB as a data source for an applicat
 
 # index.md
 
-# Troubleshooting ScyllaDB
-
-ScyllaDB’s troubleshooting section contains articles which are targeted to pinpoint and answer problems with ScyllaDB. For broader issues and workarounds, consult the [Knowledge base](https://docs.scylladb.com/manual/master/kb/index.md).
-Keep your versions up-to-date. The two latest versions are supported. Also, always install the latest patches for your version.
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Troubleshooting Topics</h5>
-            * [Errors and ScyllaDB Customer Support](https://docs.scylladb.com/manual/master/troubleshooting/support/index.md)
-* [ScyllaDB Startup](https://docs.scylladb.com/manual/master/troubleshooting/startup/index.md)
-* [ScyllaDB Cluster and Node](https://docs.scylladb.com/manual/master/troubleshooting/cluster/index.md)
-* [Data Modeling](https://docs.scylladb.com/manual/master/troubleshooting/modeling/index.md)
-* [Data Storage and SSTables](https://docs.scylladb.com/manual/master/troubleshooting/storage/index.md)
-* [CQL errors](https://docs.scylladb.com/manual/master/troubleshooting/CQL/index.md)
-* [ScyllaDB Monitoring and ScyllaDB Manager](https://docs.scylladb.com/manual/master/troubleshooting/monitor/index.md)
-* [Installation and Removal](https://docs.scylladb.com/manual/master/troubleshooting/install-remove/index.md)
-
-</div></div>
-
-Also check out the [Monitoring lesson](https://university.scylladb.com/courses/scylla-operations/lessons/scylla-monitoring/) on ScyllaDB University, which covers how to troubleshoot different issues when running a ScyllaDB cluster.
-
-
-# index.md
-
-# ScyllaDB Architecture
-
-* [Data Distribution with Tablets](https://docs.scylladb.com/manual/master/architecture/tablets.md) - Tablets in ScyllaDB
-* [ScyllaDB Ring Architecture](https://docs.scylladb.com/manual/master/architecture/ringarchitecture/index.md) - High-Level view of ScyllaDB Ring Architecture
-* [ScyllaDB Fault Tolerance](https://docs.scylladb.com/manual/master/architecture/architecture-fault-tolerance.md) - Deep dive into ScyllaDB Fault Tolerance
-* [Consistency Level Console Demo](https://docs.scylladb.com/manual/master/architecture/console-CL-full-demo.md) - Console Demos of Consistency Level Settings
-* [ScyllaDB Anti-Entropy](https://docs.scylladb.com/manual/master/architecture/anti-entropy/index.md) - High-Level view of ScyllaDB Anti-Entropy
-* [SSTable](https://docs.scylladb.com/manual/master/architecture/sstable/index.md) - ScyllaDB SSTable 2.0 and 3.0 Format Information
-* [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md) - High-level analysis of different compaction strategies
-* [Raft Consensus Algorithm in ScyllaDB](https://docs.scylladb.com/manual/master/architecture/raft.md) - Overview of how Raft is implemented in ScyllaDB.
-* [Zero-token Nodes](https://docs.scylladb.com/manual/master/architecture/zero-token-nodes.md) - Nodes that do not replicate any data.
-
-Learn more about these topics in the [ScyllaDB University: Architecture lesson](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/architecture/).
-
-
-# index.md
-
-# CQL Reference
-
-## cqlsh - The CQL Shell
-
-`cqlsh` is a command line shell for interacting with ScyllaDB through CQL.
-
-* [CQLSh: the CQL shell](https://docs.scylladb.com/manual/master/cql/cqlsh.md)
-
-## CQL - Apache Cassandra Query Language
-
-The Apache Cassandra Query Language (CQL) is the primary language for communicating with the ScyllaDB database.
-It allows you to create keyspaces and tables, insert and query tables, and more.
-
-> * [Reserved CQL Keywords and Types (Appendices)](https://docs.scylladb.com/manual/master/cql/appendices.md)
-> * [Compaction](https://docs.scylladb.com/manual/master/cql/compaction.md)
-> * [Consistency Levels](https://docs.scylladb.com/manual/master/cql/consistency.md)
-> * [Consistency Levels Calculator](https://docs.scylladb.com/manual/master/cql/consistency-calculator.md)
-> * [Data Definition](https://docs.scylladb.com/manual/master/cql/ddl.md)
-> * [Data Manipulation](https://docs.scylladb.com/manual/master/cql/dml.md)
-> * [Data Types](https://docs.scylladb.com/manual/master/cql/types.md)
-> * [Definitions](https://docs.scylladb.com/manual/master/cql/definitions.md)
-> * [Global Secondary Indexes](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md)
-> * [CQL Guardrails](https://docs.scylladb.com/manual/master/cql/guardrails.md)
-> * [Expiring Data with Time to Live (TTL)](https://docs.scylladb.com/manual/master/cql/time-to-live.md)
-> * [Functions](https://docs.scylladb.com/manual/master/cql/functions.md)
-> * [JSON Support](https://docs.scylladb.com/manual/master/cql/json.md)
-> * [Materialized Views](https://docs.scylladb.com/manual/master/cql/mv.md)
-
-## ScyllaDB CQL Extensions - CQL Extensions Provided by ScyllaDB
-
-ScyllaDB provides additional features that extend the Apache CQL.
-
-* [ScyllaDB CQL Extensions](https://docs.scylladb.com/manual/master/cql/cql-extensions.md)
-
-
-# index.md
-
-# Features
-
-This document highlights ScyllaDB’s key data modeling features.
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">ScyllaDB Features</h5>
-            * Secondary Indexes and Materialized Views provide efficient search mechanisms
-  on non-partition keys by creating an index.
-  * [Global Secondary Indexes](https://docs.scylladb.com/manual/master/features/secondary-indexes.md)
-  * [Local Secondary Indexes](https://docs.scylladb.com/manual/master/features/local-secondary-indexes.md)
-  * [Materialized Views](https://docs.scylladb.com/manual/master/features/materialized-views.md)
-* [Lightweight Transactions](https://docs.scylladb.com/manual/master/features/lwt.md) provide conditional updates
-  through linearizability.
-* [Counters](https://docs.scylladb.com/manual/master/features/counters.md) are columns that only allow their values
-  to be incremented, decremented, read, or deleted.
-* [Change Data Capture](https://docs.scylladb.com/manual/master/features/cdc/index.md) allows you to query the current
-  state and the history of all changes made to tables in the database.
-* [Workload Attributes](https://docs.scylladb.com/manual/master/features/workload-attributes.md) assigned to your workloads
-  specify how ScyllaDB will handle requests depending on the workload.
-* [Backup and Restore](https://docs.scylladb.com/manual/master/features/backup-and-restore.md) allows you to create
-  backups of your data and restore it when needed.
-* [Incremental Repair](https://docs.scylladb.com/manual/master/features/incremental-repair.md) provides a much more
-  efficient and lightweight approach to maintaining data consistency by
-  repairing only the data that has changed since the last repair.
-* [Automatic Repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) schedules and runs repairs
-  directly in ScyllaDB, without external schedulers.
-* [Vector Search in ScyllaDB](https://docs.scylladb.com/manual/master/features/vector-search.md) enables
-  similarity-based queries on vector embeddings.
-* [Full-Text Search](https://docs.scylladb.com/manual/master/features/fulltext-search.md) lets you search and
-  rank text columns by relevance using the BM25 scoring algorithm.
-
-</div></div>
-
-
-# index.md
-
-# Upgrade ScyllaDB
-
-* [Upgrade Guides](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/index.md)
-  * [ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md)
-  * [ScyllaDB 2026.x Patch Upgrades](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md)
-  * [ScyllaDB Image](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/ami-upgrade.md)
-
-
-# index.md
-
 # API Reference
 
 * [Authorization Cache](https://docs.scylladb.com/manual/master/reference/api/authorization-cache.md)
@@ -403,408 +403,6 @@ This document highlights ScyllaDB’s key data modeling features.
 * [Task Manager Test](https://docs.scylladb.com/manual/master/reference/api/task-manager-test.md)
 * [Task Manager](https://docs.scylladb.com/manual/master/reference/api/task-manager.md)
 * [Tasks](https://docs.scylladb.com/manual/master/reference/api/tasks.md)
-
-
-# index.md
-
-# ScyllaDB Alternator
-
-ScyllaDB Alternator: DynamoDB-compatible API
-
-Project Alternator is an open-source project for an Amazon DynamoDB™-compatible API written in C++. The goal of this project is to deliver an open source alternative to Amazon’s DynamoDB, deployable wherever a user would want: on-premises, on other public clouds like Microsoft Azure or Google Cloud Platform, or still on AWS (for users who wish to take advantage of other aspects of Amazon’s market-leading cloud ecosystem, such as the high-density i3en instances).
-
-DynamoDB users can keep their same client code unchanged.
-
-* [ScyllaDB Alternator Documentation](https://docs.scylladb.com/manual/master/alternator/alternator.md)
-* [ScyllaDB Alternator project](https://github.com/scylladb/scylla/tree/master/alternator) - Part of the ScyllaDB project
-* [ScyllaDB Alternator course](https://university.scylladb.com/courses/scylla-alternator/) on ScyllaDB University
-
-
-# index.md
-
-# ScyllaDB Integrations and Connectors
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">ScyllaDB Integrations</h5>
-            
-ScyllaDB is Apache Cassandra compatible at the CQL binary protocol level, and any driver which uses CQL will work with ScyllaDB. See [ScyllaDB Drivers](https://docs.scylladb.com/stable/drivers/index.html).
-Any application which uses a CQL driver will work with ScyllaDB.
-
-The list below contains links to integration projects using ScyllaDB with third-party projects.
-If you have tested your application with ScyllaDB and want to publish the results, contact us using the [community forum](https://forum.scylladb.com).
-
-* [Integrate ScyllaDB with Spark](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-spark.md)
-* [Integrate ScyllaDB with KairosDB](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-kairos.md)
-* [Integrate ScyllaDB with Presto](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-presto.md)
-* [Integrate ScyllaDB with Elasticsearch](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-elasticsearch.md)
-* [Integrate ScyllaDB with Kubernetes](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-k8.md)
-* [Integrate ScyllaDB with JanusGraph](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-janus.md)
-* [Integrate ScyllaDB with DataDog](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-datadog.md)
-* [Integrate ScyllaDB with Apache Kafka](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-kafka.md)
-* [Integrate ScyllaDB with IOTA](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-iota.md)
-* [Integrate ScyllaDB with Spring](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-spring.md)
-* [Install ScyllaDB with Ansible](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-ansible.md)
-* [Integrate ScyllaDB with Databricks](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-databricks.md)
-* [Integrate ScyllaDB with Jaeger Server](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-jaeger.md)
-* [Integrate ScyllaDB with MindsDB](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-mindsdb.md)
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">ScyllaDB Connectors</h5>
-            * [ScyllaDB Kafka Sink Connector](https://docs.scylladb.com/manual/master/using-scylla/integrations/sink-kafka-connector.md)
-
-</div></div>
-
-
-# index.md
-
-# Admin Tools
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Admin Tools</h5>
-            * [Nodetool Reference](https://docs.scylladb.com/manual/master/operating-scylla/nodetool.md) - ScyllaDB commands for managing ScyllaDB node or cluster using the command-line nodetool utility.
-* [CQLSh - the CQL shell](https://docs.scylladb.com/manual/master/cql/cqlsh.md).
-* [Admin REST API - ScyllaDB Node Admin API](https://docs.scylladb.com/manual/master/operating-scylla/rest.md).
-* [Tracing](https://docs.scylladb.com/manual/master/using-scylla/tracing.md) - a ScyllaDB tool for debugging and analyzing internal flows in the server.
-* [SSTableloader](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/sstableloader.md) - Bulk load the sstables found in the directory to a ScyllaDB cluster
-* [ScyllaDB SStable](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-sstable.md) - Validates and dumps the content of SStables, generates a histogram, dumps the content of the SStable index.
-* [ScyllaDB Types](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
-* [cassandra-stress](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
-* scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
-* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb collectd/prometheus metrics.
-* [scylla_dev_mode_setup](https://docs.scylladb.com/manual/master/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
-* [perftune](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/perftune.md) - performance configuration.
-* [Reading mutation fragments](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.
-* [Maintenance socket](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/maintenance-socket.md) - a Unix domain socket for full-permission CQL connection.
-* [Maintenance mode](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/maintenance-mode.md) - a mode for performing maintenance tasks on an offline ScyllaDB node.
-* [Task manager](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/task-manager.md) - a tool for tracking long-running background operations.
-* [Compression Advisor](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/compression-advisor.md) - analyzes a table’s compression configuration and recommends LZ4/ZSTD settings that reduce on-disk size.
-
-Run each tool with `-h`, `--help` for full options description.
-
-</div></div>
-
-The [Admin Procedures and Monitoring lesson](https://university.scylladb.com/courses/scylla-operations/lessons/admin-procedures-and-basic-monitoring/topic/admin-procedures-and-monitoring/) on ScyllaDB University provides more training and examples material on this subject.
-
-
-# index.md
-
-# System Configuration
-
-* [System Configuration Guide](https://docs.scylladb.com/manual/master/getting-started/system-configuration.md)
-* [scylla.yaml](https://docs.scylladb.com/manual/master/operating-scylla/admin.md)
-* [ScyllaDB Snitches](https://docs.scylladb.com/manual/master/operating-scylla/system-configuration/snitch.md)
-* [Configuration Parameters](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md)
-
-
-# index.md
-
-# Procedures
-
-Procedures to create, out-scale, down-scale, and backup ScyllaDB clusters
-
-* [Cluster management procedures](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/index.md)
-* [Backup & Restore procedures](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/index.md)
-* [Procedures to change configuration](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/index.md)
-* [Maintenance Procedures](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/index.md)
-* [Best Practices](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/index.md)
-* [Benchmarking ScyllaDB](https://docs.scylladb.com/manual/master/operating-scylla/benchmarking-scylla.md)
-* [Migrate from Cassandra to ScyllaDB](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cassandra-to-scylla-migration-process.md)
-* [Disable ScyllaDB Housekeeping](https://docs.scylladb.com/manual/master/getting-started/installation-common/disable-housekeeping.md)
-* [How to Change Log Level in Runtime](https://docs.scylladb.com/manual/master/troubleshooting/log-level.md)
-* For training material and hands-on examples also check out the [Cluster Management Repair and ScyllaDB Manager lesson](https://university.scylladb.com/courses/scylla-operations/lessons/cluster-management-repair-and-scylla-manager/) on ScyllaDB University.
-
-
-# index.md
-
-# Security
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Security</h5>
-            * [ScyllaDB Security Checklist](https://docs.scylladb.com/manual/master/operating-scylla/security/security-checklist.md)
-* [ScyllaDB Auditing Guide](https://docs.scylladb.com/manual/master/operating-scylla/security/auditing.md)
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Authentication and Authorization</h5>
-            * [Enable Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/authentication.md)
-* [Enable and Disable Authentication Without Downtime](https://docs.scylladb.com/manual/master/operating-scylla/security/runtime-authentication.md)
-* [Creating a Superuser](https://docs.scylladb.com/manual/master/operating-scylla/security/create-superuser.md)
-* [Generate a cqlshrc File](https://docs.scylladb.com/manual/master/operating-scylla/security/gen-cqlsh-file.md)
-* [Enable Authorization](https://docs.scylladb.com/manual/master/operating-scylla/security/enable-authorization.md)
-* [Role Based Access Control (RBAC)](https://docs.scylladb.com/manual/master/operating-scylla/security/rbac-usecase.md)
-* [Grant Authorization CQL Reference](https://docs.scylladb.com/manual/master/operating-scylla/security/authorization.md)
-* [Reset Authenticator Password](https://docs.scylladb.com/manual/master/troubleshooting/password-reset.md)
-* [Certificate Based Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/certificate-authentication.md)
-* [Certificate or Password Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/certificate-or-password-authentication.md)
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Encryption</h5>
-            * [Encryption: Data in Transit Client to Node](https://docs.scylladb.com/manual/master/operating-scylla/security/client-node-encryption.md)
-* [Encryption: Data in Transit Node to Node](https://docs.scylladb.com/manual/master/operating-scylla/security/node-node-encryption.md)
-* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/master/operating-scylla/security/generate-certificate.md)
-* [Encryption at Rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md)
-
-</div></div>
-
-Also check out the [Security Features lesson](https://university.scylladb.com/courses/scylla-operations/lessons/security-features/topic/security-features/) on ScyllaDB University.
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Software Bill Of Materials (SBOM)</h5>
-            * [Software Bill Of Materials (SBOM)](https://docs.scylladb.com/manual/master/operating-scylla/security/sbom.md)
-
-</div></div>
-
-
-# index.md
-
-# ScyllaDB Maintenance Procedures
-
-ScyllaDB Maintenance Procedures
-
-* [Repair](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/repair.md)
-
-
-# index.md
-
-# ScyllaDB Best Practices
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">ScyllaDB Best Practices</h5>
-            
-Best Practices for running ScyllaDB
-
-* [Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md)
-* [Production Readiness Guidelines](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/production-readiness.md)
-* [How to Avoid Node Mismanagement](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/avoid-node-mismanagement.md)
-* [Maximizing ScyllaDB Performance](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/benchmark-tips.md)
-* [ScyllaDB Monitoring lesson](https://university.scylladb.com/courses/scylla-operations/lessons/scylla-monitoring/) on ScyllaDB University
-
-</div></div>
-
-
-# index.md
-
-# Cluster Management Procedures
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Cluster and DC Creation</h5>
-            
-Procedures for Cluster and Datacenter Management
-
-* [Create a ScyllaDB Cluster - Single Data Center (DC)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/create-cluster.md)
-* [Create a ScyllaDB Cluster - Multi Data Center (DC)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/create-cluster-multidc.md)
-* [Create a ScyllaDB Cluster on EC2 (Single or Multi Data Center)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/ec2-dc.md)
-* [Remove a Data-Center from a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/decommissioning-data-center.md)
-* [Remove a Seed Node from Seed List](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/remove-seed.md)
-* [Upscale a Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/scale-up-cluster.md)
-* [Safely Shutdown Your Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/safe-shutdown.md)
-* [Safely Start or Restart Your Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/safe-start.md)
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Node Management</h5>
-            
-Procedures for Node Management
-
-* [Adding a New Node Into an Existing ScyllaDB Cluster - Out Scale](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
-* [Adding a New Data-Center Into an Existing ScyllaDB Cluster - Out Scale](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md)
-* [Remove a Node from a ScyllaDB Cluster - Down Scale](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/remove-node.md)
-* [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node.md)
-* [Replace More than One Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node-or-more.md)
-* [Replace a Seed Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-seed-node.md)
-* [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-running-node.md)
-* [Safely Remove a Joining Node](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/safely-removing-joining-node.md)
-* [What to do if a Node Starts Automatically](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/clear-data.md)
-* [Add a Decommissioned Node Back to a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/revoke-decommission.md)
-* [Add Bigger Nodes to a Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/scale-up-cluster.md#add-bigger-nodes-to-a-cluster)
-* [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/repair-based-node-operation.md)
-* [Preventing Quorum Loss in Symmetrical Multi-DC Clusters](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/arbiter-dc.md)
-* [Cluster Platform Migration Using Node Cycling](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/cluster-platform-migration.md)
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Topology Changes</h5>
-            
-Procedures for Changing the Topology
-
-* [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md)
-* Some of these procedures are also covered in the [MMS course](https://university.scylladb.com/courses/the-mutant-monitoring-system-training-course/) and in the [ScyllaDB Operations course](https://university.scylladb.com/courses/scylla-operations) on ScyllaDB University
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Handling Failures</h5>
-            
-Procedures for handling failures and practical examples of different scenarios.
-
-* [Handling Failures](https://docs.scylladb.com/manual/master/architecture/raft.md#raft-handling-failures)
-
-</div></div>
-
-
-# index.md
-
-# ScyllaDB Configuration Procedures
-
-Procedures to change ScyllaDB Configuration settings.
-
-* [How to Switch Snitches](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/switch-snitch.md)
-* [How to Change Compaction Strategy](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/change-compaction.md)
-* [How to do a Rolling Restart](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/rolling-restart.md)
-* [Advanced Internode (RPC) Compression](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/advanced-internode-compression.md)
-* [Shared-dictionary compression for SSTables](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/sstable-dictionary-compression.md)
-* [Migrate a Keyspace from Vnodes to Tablets](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md)
-
-
-# index.md
-
-# Backup and Restore Procedures
-
-Procedures to backup and restore your ScyllaDB data safely
-
-* [Backup your Data](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md)
-* [Restore from Backup](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/restore.md)
-* [Delete your Backup](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/delete-snapshot.md)
-* Also covered in the [Cluster Backup Using ScyllaDB Manager lesson](https://university.scylladb.com/courses/scylla-operations/lessons/scylla-manager-repair-and-tombstones/topic/cluster-backup-using-scylla-manager/) on ScyllaDB University.
-
-#### NOTE
-For cluster-wide backup and restore, see the [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/) documentation.
-
-
-# index.md
-
-# Nodetool tasks
-
-**tasks** - Nodetool supercommand for managing task manager tasks.
-
-Task manager is an API-based tool for tracking long-running background operations, such as repair or compaction,
-which makes them observable and controllable. Task manager operates per node.
-
-## Task Status Retention
-
-* When a task completes, its status is temporarily stored on the executing node
-* Status information is retained for up to [`task_ttl_in_seconds`](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md#confval-task_ttl_in_seconds) seconds
-
-## Supported tasks suboperations
-
-* [abort](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/abort.md) - Aborts the task.
-* [drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/drain.md) - Unregisters all finished local tasks.
-* [user-ttl](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/user-ttl.md) - Gets or sets user_task_ttl value.
-* [list](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/list.md) - Lists tasks in the module.
-* [modules](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/modules.md) - Lists supported modules.
-* [status](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/status.md) - Gets status of the task.
-* [tree](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/tree.md) - Gets statuses of the task and all its descendants.
-* [ttl](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/ttl.md) - Gets or sets task_ttl value.
-* [wait](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/wait.md) - Waits for the task and gets its status.
-
-
-# index.md
-
-# Nodetool cluster
-
-**cluster** - Nodetool supercommand for running cluster operations.
-
-## Supported cluster suboperations
-
-* [repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md)  `<keyspace>` `<table>` - Repair one or more tablet tables.
-* [cleanup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/cleanup.md)  - Clean up all non tablet (vnode-based) keyspaces in a cluster
-
-
-# index.md
-
-# Install ScyllaDB 2026.3
-
-Keep your versions up-to-date. The two latest versions are supported. Also, always install the latest patches for your version.
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Cloud Deployment</h5>
-            * [Launch ScyllaDB on AWS](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-aws.md)
-* [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-gcp.md)
-* [Launch ScyllaDB on Azure](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-azure.md)
-* [Launch ScyllaDB on OCI](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-oci.md)
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Installation on Linux</h5>
-            * [Install ScyllaDB with Web Installer (recommended)](https://docs.scylladb.com/manual/master/getting-started/installation-common/scylla-web-installer.md)
-* [Install ScyllaDB Linux Packages](https://docs.scylladb.com/manual/master/getting-started/install-scylla/install-on-linux.md)
-* [Install ScyllaDB Without root Privileges](https://docs.scylladb.com/manual/master/getting-started/installation-common/unified-installer.md)
-* [Air-gapped Server Installation](https://docs.scylladb.com/manual/master/getting-started/installation-common/air-gapped-install.md)
-* [ScyllaDB Developer Mode](https://docs.scylladb.com/manual/master/getting-started/installation-common/dev-mod.md)
-
-</div></div>
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Docker</h5>
-            * [Run ScyllaDB in Docker](https://docs.scylladb.com/manual/master/getting-started/install-scylla/run-in-docker.md)
-
-</div></div>
-
-
-# index.md
-
-# ScyllaDB Startup
-
-* [ScyllaDB Fails to Start Due to Wrong Ownership Problems](https://docs.scylladb.com/manual/master/troubleshooting/change-ownership.md)
-* [ScyllaDB will not Start](https://docs.scylladb.com/manual/master/troubleshooting/scylla-wont-start.md)
-
-
-# index.md
-
-# Error Messages
-
-
-            <div class="cell my-panel">
-                <div class="panel">
-                    <h5 class="panel_\_title">Error Messages</h5>
-            * [“File system on /var/lib/scylla is not qualified for seastar AIO” on startup](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/kb-fs-not-qualified-aio.md)
-* [“Address already in use” messages](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/address-already-in-use.md)
-* [Schema Mismatch](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/schema-mismatch.md)
-* [Invalid SSL Protocol](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/invalid-ssl-prot-error.md)
-* [Critical disk utilization](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/critical-disk-utilization.md)
-
-</div></div>
-
-
-# index.md
-
-# Data Modeling
-
-* [ScyllaDB Large Partitions Table](https://docs.scylladb.com/manual/master/troubleshooting/large-partition-table.md)
-* [ScyllaDB Large Rows and Cells Tables](https://docs.scylladb.com/manual/master/troubleshooting/large-rows-large-cells-tables.md)
-* [Large Partitions Hunting](https://docs.scylladb.com/manual/master/troubleshooting/debugging-large-partition.md)
-* [Failure to Update the Schema](https://docs.scylladb.com/manual/master/troubleshooting/failed-update-schema.md)
-
-[Data Modeling course](https://university.scylladb.com/courses/data-modeling/) on ScyllaDB University
-
-
-# index.md
-
-# Installation and Removal
-
-* [Removing ScyllaDB with the “–autoremove” option on Ubuntu breaks system packages](https://docs.scylladb.com/manual/master/troubleshooting/autoremove-ubuntu.md)
 
 
 # index.md
@@ -833,37 +431,10 @@ Keep your versions up-to-date. The two latest versions are supported. Also, alwa
 
 # index.md
 
-# CQL
+# ScyllaDB Startup
 
-* [Time Range Queries Do Not Return Some or All of the Data](https://docs.scylladb.com/manual/master/troubleshooting/time-zone.md)
-* [COPY FROM fails - field larger than the field limit](https://docs.scylladb.com/manual/master/troubleshooting/copy-from-failed.md)
-* [CQL active connection table](https://docs.scylladb.com/manual/master/troubleshooting/clients-table.md)
-
-
-# index.md
-
-# Cluster and Node
-
-* [Handling Node Failures](https://docs.scylladb.com/manual/master/troubleshooting/handling-node-failures.md)
-* [Failure to Add, Remove, or Replace a Node](https://docs.scylladb.com/manual/master/troubleshooting/failed-add-remove-replace.md)
-* [Failed Decommission Problem](https://docs.scylladb.com/manual/master/troubleshooting/failed-decommission.md)
-* [Cluster Timeouts](https://docs.scylladb.com/manual/master/troubleshooting/timeouts.md)
-* [Node Joined With No Data](https://docs.scylladb.com/manual/master/troubleshooting/node-joined-without-any-data.md)
-* [Nodetool Throws NullPointerException](https://docs.scylladb.com/manual/master/troubleshooting/nodetool-nullpointerexception.md)
-* [Failed Schema Sync](https://docs.scylladb.com/manual/master/troubleshooting/failed-schema-sync.md)
-
-
-# index.md
-
-# Errors and Support
-
-* [How to Report a ScyllaDB Problem](https://docs.scylladb.com/manual/master/troubleshooting/report-scylla-problem.md)
-* [Error Messages](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/index.md)
-* [How to Change Log Level in Runtime](https://docs.scylladb.com/manual/master/troubleshooting/log-level.md)
-* [What to Do in the Event of a Core Dump](https://docs.scylladb.com/manual/master/troubleshooting/report-scylla-problem.md#report-scylla-problem-core-dump)
-* [What to Do if You’re Having a Performance Issue](https://docs.scylladb.com/manual/master/troubleshooting/report-scylla-problem.md#report-performance-problem)
-
-Also check out the [Onboarding lesson](https://university.scylladb.com/courses/scylla-operations/lessons/onboarding/topic/onboarding/) on ScyllaDB University
+* [ScyllaDB Fails to Start Due to Wrong Ownership Problems](https://docs.scylladb.com/manual/master/troubleshooting/change-ownership.md)
+* [ScyllaDB will not Start](https://docs.scylladb.com/manual/master/troubleshooting/scylla-wont-start.md)
 
 
 # index.md
@@ -881,43 +452,73 @@ More information on [SSTables](https://docs.scylladb.com/manual/master/architect
 
 # index.md
 
-# ScyllaDB SSTable Format
+# Data Modeling
 
-[Sorted Strings Table (SSTable)](https://docs.scylladb.com/manual/master/reference/glossary.md#term-SSTable) is the persistent file format used by ScyllaDB and Apache Cassandra. SSTable is saved as a persistent, ordered, immutable set of files on disk.
-Immutable means SSTables are never modified; they are created by a MemTable flush and are deleted by a compaction.
-The location of ScyllaDB SSTables is specified in scylla.yaml `data_file_directories` parameter (default location: `/var/lib/scylla/data`).
+* [ScyllaDB Large Partitions Table](https://docs.scylladb.com/manual/master/troubleshooting/large-partition-table.md)
+* [ScyllaDB Large Rows and Cells Tables](https://docs.scylladb.com/manual/master/troubleshooting/large-rows-large-cells-tables.md)
+* [Large Partitions Hunting](https://docs.scylladb.com/manual/master/troubleshooting/debugging-large-partition.md)
+* [Failure to Update the Schema](https://docs.scylladb.com/manual/master/troubleshooting/failed-update-schema.md)
 
-SSTable 3.x is more efficient and requires less disk space than the SSTable 2.x.
+[Data Modeling course](https://university.scylladb.com/courses/data-modeling/) on ScyllaDB University
 
-For more information on each of the SSTable formats, see below:
 
-* [SSTable 2.x](https://docs.scylladb.com/manual/master/architecture/sstable/sstable2/index.md)
-* [SSTable 3.x](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/index.md)
+# index.md
 
-## SSTable Version Support
+# Error Messages
 
-| SSTable Version   | ScyllaDB Version   |
-|-------------------|--------------------|
-| 3.x (‘mt’)        | 2026.2 and above   |
-| 3.x (‘ms’)        | 2025.4 and above   |
-| 3.x (`me`)        | 2022.2 and above   |
-| 3.x (`md`)        | 2021.1             |
-* The supported formats are `me` and `mt`.
-* The `md` format is used only when upgrading from an existing cluster using
-  `md`. The `sstable_format` parameter is ignored if it is set to `md`.
-* The `ms` format has been superseded by `mt`, and is used only when upgrading
-  from an existing cluster using `ms`. If the `sstable_format` parameter is
-  set to `ms`, `mt` files will be written.
-* Note: The `sstable_format` parameter specifies the SSTable format used for
-  **writes**. The legacy SSTable formats (`ka`, `la`, `mc`) remain
-  supported for reads, which is essential for restoring clusters from existing
-  backups.
 
-## The ms Format: Trie-Based SSTable Index
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Error Messages</h5>
+            * [“File system on /var/lib/scylla is not qualified for seastar AIO” on startup](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/kb-fs-not-qualified-aio.md)
+* [“Address already in use” messages](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/address-already-in-use.md)
+* [Schema Mismatch](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/schema-mismatch.md)
+* [Invalid SSL Protocol](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/invalid-ssl-prot-error.md)
+* [Critical disk utilization](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/critical-disk-utilization.md)
 
-The `ms` format introduces a *trie-based* SSTable index.
+</div></div>
 
-For a detailed description of the trie index format, see [SSTable ms Index](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstable-ms-index.md).
+
+# index.md
+
+# Errors and Support
+
+* [How to Report a ScyllaDB Problem](https://docs.scylladb.com/manual/master/troubleshooting/report-scylla-problem.md)
+* [Error Messages](https://docs.scylladb.com/manual/master/troubleshooting/error-messages/index.md)
+* [How to Change Log Level in Runtime](https://docs.scylladb.com/manual/master/troubleshooting/log-level.md)
+* [What to Do in the Event of a Core Dump](https://docs.scylladb.com/manual/master/troubleshooting/report-scylla-problem.md#report-scylla-problem-core-dump)
+* [What to Do if You’re Having a Performance Issue](https://docs.scylladb.com/manual/master/troubleshooting/report-scylla-problem.md#report-performance-problem)
+
+Also check out the [Onboarding lesson](https://university.scylladb.com/courses/scylla-operations/lessons/onboarding/topic/onboarding/) on ScyllaDB University
+
+
+# index.md
+
+# Cluster and Node
+
+* [Handling Node Failures](https://docs.scylladb.com/manual/master/troubleshooting/handling-node-failures.md)
+* [Failure to Add, Remove, or Replace a Node](https://docs.scylladb.com/manual/master/troubleshooting/failed-add-remove-replace.md)
+* [Failed Decommission Problem](https://docs.scylladb.com/manual/master/troubleshooting/failed-decommission.md)
+* [Cluster Timeouts](https://docs.scylladb.com/manual/master/troubleshooting/timeouts.md)
+* [Node Joined With No Data](https://docs.scylladb.com/manual/master/troubleshooting/node-joined-without-any-data.md)
+* [Nodetool Throws NullPointerException](https://docs.scylladb.com/manual/master/troubleshooting/nodetool-nullpointerexception.md)
+* [Failed Schema Sync](https://docs.scylladb.com/manual/master/troubleshooting/failed-schema-sync.md)
+
+
+# index.md
+
+# CQL
+
+* [Time Range Queries Do Not Return Some or All of the Data](https://docs.scylladb.com/manual/master/troubleshooting/time-zone.md)
+* [COPY FROM fails - field larger than the field limit](https://docs.scylladb.com/manual/master/troubleshooting/copy-from-failed.md)
+* [CQL active connection table](https://docs.scylladb.com/manual/master/troubleshooting/clients-table.md)
+
+
+# index.md
+
+# Installation and Removal
+
+* [Removing ScyllaDB with the “–autoremove” option on Ubuntu breaks system packages](https://docs.scylladb.com/manual/master/troubleshooting/autoremove-ubuntu.md)
 
 
 # index.md
@@ -1075,7 +676,7 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 
 # index.md
 
-# ScyllaDB SSTable - 3.x
+# ScyllaDB SSTable Format
 
 [Sorted Strings Table (SSTable)](https://docs.scylladb.com/manual/master/reference/glossary.md#term-SSTable) is the persistent file format used by ScyllaDB and Apache Cassandra. SSTable is saved as a persistent, ordered, immutable set of files on disk.
 Immutable means SSTables are never modified; they are created by a MemTable flush and are deleted by a compaction.
@@ -1112,17 +713,6 @@ For more information on each of the SSTable formats, see below:
 The `ms` format introduces a *trie-based* SSTable index.
 
 For a detailed description of the trie index format, see [SSTable ms Index](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstable-ms-index.md).
-
-## Additional Information
-
-For more information on ScyllaDB 3.x SSTable formats, see below:
-
-* [SSTable 3.0 Data File Format](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-data-file-format.md)
-* [SSTable 3.0 Statistics](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-statistics.md)
-* [SSTable 3.0 Summary](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-summary.md)
-* [SSTable 3.0 Index (me/md format)](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-index.md)
-* [SSTable ms Index (Trie-Based)](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstable-ms-index.md)
-* [SSTable 3.0 Format in ScyllaDB](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstable-format.md)
 
 
 # index.md
@@ -1178,6 +768,58 @@ Copyright
 © 2016, The Apache Software Foundation.
 
 Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.
+
+
+# index.md
+
+# ScyllaDB SSTable - 3.x
+
+[Sorted Strings Table (SSTable)](https://docs.scylladb.com/manual/master/reference/glossary.md#term-SSTable) is the persistent file format used by ScyllaDB and Apache Cassandra. SSTable is saved as a persistent, ordered, immutable set of files on disk.
+Immutable means SSTables are never modified; they are created by a MemTable flush and are deleted by a compaction.
+The location of ScyllaDB SSTables is specified in scylla.yaml `data_file_directories` parameter (default location: `/var/lib/scylla/data`).
+
+SSTable 3.x is more efficient and requires less disk space than the SSTable 2.x.
+
+For more information on each of the SSTable formats, see below:
+
+* [SSTable 2.x](https://docs.scylladb.com/manual/master/architecture/sstable/sstable2/index.md)
+* [SSTable 3.x](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/index.md)
+
+## SSTable Version Support
+
+| SSTable Version   | ScyllaDB Version   |
+|-------------------|--------------------|
+| 3.x (‘mt’)        | 2026.2 and above   |
+| 3.x (‘ms’)        | 2025.4 and above   |
+| 3.x (`me`)        | 2022.2 and above   |
+| 3.x (`md`)        | 2021.1             |
+* The supported formats are `me` and `mt`.
+* The `md` format is used only when upgrading from an existing cluster using
+  `md`. The `sstable_format` parameter is ignored if it is set to `md`.
+* The `ms` format has been superseded by `mt`, and is used only when upgrading
+  from an existing cluster using `ms`. If the `sstable_format` parameter is
+  set to `ms`, `mt` files will be written.
+* Note: The `sstable_format` parameter specifies the SSTable format used for
+  **writes**. The legacy SSTable formats (`ka`, `la`, `mc`) remain
+  supported for reads, which is essential for restoring clusters from existing
+  backups.
+
+## The ms Format: Trie-Based SSTable Index
+
+The `ms` format introduces a *trie-based* SSTable index.
+
+For a detailed description of the trie index format, see [SSTable ms Index](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstable-ms-index.md).
+
+## Additional Information
+
+For more information on ScyllaDB 3.x SSTable formats, see below:
+
+* [SSTable 3.0 Data File Format](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-data-file-format.md)
+* [SSTable 3.0 Statistics](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-statistics.md)
+* [SSTable 3.0 Summary](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-summary.md)
+* [SSTable 3.0 Index (me/md format)](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstables-3-index.md)
+* [SSTable ms Index (Trie-Based)](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstable-ms-index.md)
+* [SSTable 3.0 Format in ScyllaDB](https://docs.scylladb.com/manual/master/architecture/sstable/sstable3/sstable-format.md)
 
 
 # index.md
@@ -1243,6 +885,364 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 
 * [Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/upgrade-guide-from-2026.x-to-2026.3.md)
 * [Metrics Update Between 2026.x and 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.md)
+
+
+# index.md
+
+# System Configuration
+
+* [System Configuration Guide](https://docs.scylladb.com/manual/master/getting-started/system-configuration.md)
+* [scylla.yaml](https://docs.scylladb.com/manual/master/operating-scylla/admin.md)
+* [ScyllaDB Snitches](https://docs.scylladb.com/manual/master/operating-scylla/system-configuration/snitch.md)
+* [Configuration Parameters](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md)
+
+
+# index.md
+
+# Admin Tools
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Admin Tools</h5>
+            * [Nodetool Reference](https://docs.scylladb.com/manual/master/operating-scylla/nodetool.md) - ScyllaDB commands for managing ScyllaDB node or cluster using the command-line nodetool utility.
+* [CQLSh - the CQL shell](https://docs.scylladb.com/manual/master/cql/cqlsh.md).
+* [Admin REST API - ScyllaDB Node Admin API](https://docs.scylladb.com/manual/master/operating-scylla/rest.md).
+* [Tracing](https://docs.scylladb.com/manual/master/using-scylla/tracing.md) - a ScyllaDB tool for debugging and analyzing internal flows in the server.
+* [SSTableloader](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/sstableloader.md) - Bulk load the sstables found in the directory to a ScyllaDB cluster
+* [ScyllaDB SStable](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-sstable.md) - Validates and dumps the content of SStables, generates a histogram, dumps the content of the SStable index.
+* [ScyllaDB Types](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
+* [cassandra-stress](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
+* scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
+* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb collectd/prometheus metrics.
+* [scylla_dev_mode_setup](https://docs.scylladb.com/manual/master/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
+* [perftune](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/perftune.md) - performance configuration.
+* [Reading mutation fragments](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.
+* [Maintenance socket](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/maintenance-socket.md) - a Unix domain socket for full-permission CQL connection.
+* [Maintenance mode](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/maintenance-mode.md) - a mode for performing maintenance tasks on an offline ScyllaDB node.
+* [Task manager](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/task-manager.md) - a tool for tracking long-running background operations.
+* [Compression Advisor](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/compression-advisor.md) - analyzes a table’s compression configuration and recommends LZ4/ZSTD settings that reduce on-disk size.
+
+Run each tool with `-h`, `--help` for full options description.
+
+</div></div>
+
+The [Admin Procedures and Monitoring lesson](https://university.scylladb.com/courses/scylla-operations/lessons/admin-procedures-and-basic-monitoring/topic/admin-procedures-and-monitoring/) on ScyllaDB University provides more training and examples material on this subject.
+
+
+# index.md
+
+# Procedures
+
+Procedures to create, out-scale, down-scale, and backup ScyllaDB clusters
+
+* [Cluster management procedures](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/index.md)
+* [Backup & Restore procedures](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/index.md)
+* [Procedures to change configuration](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/index.md)
+* [Maintenance Procedures](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/index.md)
+* [Best Practices](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/index.md)
+* [Benchmarking ScyllaDB](https://docs.scylladb.com/manual/master/operating-scylla/benchmarking-scylla.md)
+* [Migrate from Cassandra to ScyllaDB](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cassandra-to-scylla-migration-process.md)
+* [Disable ScyllaDB Housekeeping](https://docs.scylladb.com/manual/master/getting-started/installation-common/disable-housekeeping.md)
+* [How to Change Log Level in Runtime](https://docs.scylladb.com/manual/master/troubleshooting/log-level.md)
+* For training material and hands-on examples also check out the [Cluster Management Repair and ScyllaDB Manager lesson](https://university.scylladb.com/courses/scylla-operations/lessons/cluster-management-repair-and-scylla-manager/) on ScyllaDB University.
+
+
+# index.md
+
+# Security
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Security</h5>
+            * [ScyllaDB Security Checklist](https://docs.scylladb.com/manual/master/operating-scylla/security/security-checklist.md)
+* [ScyllaDB Auditing Guide](https://docs.scylladb.com/manual/master/operating-scylla/security/auditing.md)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Authentication and Authorization</h5>
+            * [Enable Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/authentication.md)
+* [Enable and Disable Authentication Without Downtime](https://docs.scylladb.com/manual/master/operating-scylla/security/runtime-authentication.md)
+* [Creating a Superuser](https://docs.scylladb.com/manual/master/operating-scylla/security/create-superuser.md)
+* [Generate a cqlshrc File](https://docs.scylladb.com/manual/master/operating-scylla/security/gen-cqlsh-file.md)
+* [Enable Authorization](https://docs.scylladb.com/manual/master/operating-scylla/security/enable-authorization.md)
+* [Role Based Access Control (RBAC)](https://docs.scylladb.com/manual/master/operating-scylla/security/rbac-usecase.md)
+* [Grant Authorization CQL Reference](https://docs.scylladb.com/manual/master/operating-scylla/security/authorization.md)
+* [Reset Authenticator Password](https://docs.scylladb.com/manual/master/troubleshooting/password-reset.md)
+* [Certificate Based Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/certificate-authentication.md)
+* [Certificate or Password Authentication](https://docs.scylladb.com/manual/master/operating-scylla/security/certificate-or-password-authentication.md)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Encryption</h5>
+            * [Encryption: Data in Transit Client to Node](https://docs.scylladb.com/manual/master/operating-scylla/security/client-node-encryption.md)
+* [Encryption: Data in Transit Node to Node](https://docs.scylladb.com/manual/master/operating-scylla/security/node-node-encryption.md)
+* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/master/operating-scylla/security/generate-certificate.md)
+* [Encryption at Rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md)
+
+</div></div>
+
+Also check out the [Security Features lesson](https://university.scylladb.com/courses/scylla-operations/lessons/security-features/topic/security-features/) on ScyllaDB University.
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Software Bill Of Materials (SBOM)</h5>
+            * [Software Bill Of Materials (SBOM)](https://docs.scylladb.com/manual/master/operating-scylla/security/sbom.md)
+
+</div></div>
+
+
+# index.md
+
+# Nodetool tasks
+
+**tasks** - Nodetool supercommand for managing task manager tasks.
+
+Task manager is an API-based tool for tracking long-running background operations, such as repair or compaction,
+which makes them observable and controllable. Task manager operates per node.
+
+## Task Status Retention
+
+* When a task completes, its status is temporarily stored on the executing node
+* Status information is retained for up to [`task_ttl_in_seconds`](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md#confval-task_ttl_in_seconds) seconds
+
+## Supported tasks suboperations
+
+* [abort](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/abort.md) - Aborts the task.
+* [drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/drain.md) - Unregisters all finished local tasks.
+* [user-ttl](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/user-ttl.md) - Gets or sets user_task_ttl value.
+* [list](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/list.md) - Lists tasks in the module.
+* [modules](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/modules.md) - Lists supported modules.
+* [status](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/status.md) - Gets status of the task.
+* [tree](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/tree.md) - Gets statuses of the task and all its descendants.
+* [ttl](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/ttl.md) - Gets or sets task_ttl value.
+* [wait](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/wait.md) - Waits for the task and gets its status.
+
+
+# index.md
+
+# Nodetool cluster
+
+**cluster** - Nodetool supercommand for running cluster operations.
+
+## Supported cluster suboperations
+
+* [repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md)  `<keyspace>` `<table>` - Repair one or more tablet tables.
+* [cleanup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/cleanup.md)  - Clean up all non tablet (vnode-based) keyspaces in a cluster
+
+
+# index.md
+
+# ScyllaDB Best Practices
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">ScyllaDB Best Practices</h5>
+            
+Best Practices for running ScyllaDB
+
+* [Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md)
+* [Production Readiness Guidelines](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/production-readiness.md)
+* [How to Avoid Node Mismanagement](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/avoid-node-mismanagement.md)
+* [Maximizing ScyllaDB Performance](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/benchmark-tips.md)
+* [ScyllaDB Monitoring lesson](https://university.scylladb.com/courses/scylla-operations/lessons/scylla-monitoring/) on ScyllaDB University
+
+</div></div>
+
+
+# index.md
+
+# Cluster Management Procedures
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Cluster and DC Creation</h5>
+            
+Procedures for Cluster and Datacenter Management
+
+* [Create a ScyllaDB Cluster - Single Data Center (DC)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/create-cluster.md)
+* [Create a ScyllaDB Cluster - Multi Data Center (DC)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/create-cluster-multidc.md)
+* [Create a ScyllaDB Cluster on EC2 (Single or Multi Data Center)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/ec2-dc.md)
+* [Remove a Data-Center from a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/decommissioning-data-center.md)
+* [Remove a Seed Node from Seed List](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/remove-seed.md)
+* [Upscale a Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/scale-up-cluster.md)
+* [Safely Shutdown Your Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/safe-shutdown.md)
+* [Safely Start or Restart Your Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/safe-start.md)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Node Management</h5>
+            
+Procedures for Node Management
+
+* [Adding a New Node Into an Existing ScyllaDB Cluster - Out Scale](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
+* [Adding a New Data-Center Into an Existing ScyllaDB Cluster - Out Scale](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md)
+* [Remove a Node from a ScyllaDB Cluster - Down Scale](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/remove-node.md)
+* [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node.md)
+* [Replace More than One Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node-or-more.md)
+* [Replace a Seed Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-seed-node.md)
+* [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-running-node.md)
+* [Safely Remove a Joining Node](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/safely-removing-joining-node.md)
+* [What to do if a Node Starts Automatically](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/clear-data.md)
+* [Add a Decommissioned Node Back to a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/revoke-decommission.md)
+* [Add Bigger Nodes to a Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/scale-up-cluster.md#add-bigger-nodes-to-a-cluster)
+* [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/repair-based-node-operation.md)
+* [Preventing Quorum Loss in Symmetrical Multi-DC Clusters](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/arbiter-dc.md)
+* [Cluster Platform Migration Using Node Cycling](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/cluster-platform-migration.md)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Topology Changes</h5>
+            
+Procedures for Changing the Topology
+
+* [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md)
+* Some of these procedures are also covered in the [MMS course](https://university.scylladb.com/courses/the-mutant-monitoring-system-training-course/) and in the [ScyllaDB Operations course](https://university.scylladb.com/courses/scylla-operations) on ScyllaDB University
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Handling Failures</h5>
+            
+Procedures for handling failures and practical examples of different scenarios.
+
+* [Handling Failures](https://docs.scylladb.com/manual/master/architecture/raft.md#raft-handling-failures)
+
+</div></div>
+
+
+# index.md
+
+# ScyllaDB Maintenance Procedures
+
+ScyllaDB Maintenance Procedures
+
+* [Repair](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/repair.md)
+
+
+# index.md
+
+# ScyllaDB Configuration Procedures
+
+Procedures to change ScyllaDB Configuration settings.
+
+* [How to Switch Snitches](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/switch-snitch.md)
+* [How to Change Compaction Strategy](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/change-compaction.md)
+* [How to do a Rolling Restart](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/rolling-restart.md)
+* [Advanced Internode (RPC) Compression](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/advanced-internode-compression.md)
+* [Shared-dictionary compression for SSTables](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/sstable-dictionary-compression.md)
+* [Migrate a Keyspace from Vnodes to Tablets](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md)
+
+
+# index.md
+
+# Backup and Restore Procedures
+
+Procedures to backup and restore your ScyllaDB data safely
+
+* [Backup your Data](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md)
+* [Restore from Backup](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/restore.md)
+* [Delete your Backup](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/delete-snapshot.md)
+* Also covered in the [Cluster Backup Using ScyllaDB Manager lesson](https://university.scylladb.com/courses/scylla-operations/lessons/scylla-manager-repair-and-tombstones/topic/cluster-backup-using-scylla-manager/) on ScyllaDB University.
+
+#### NOTE
+For cluster-wide backup and restore, see the [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/) documentation.
+
+
+# index.md
+
+# ScyllaDB Alternator
+
+ScyllaDB Alternator: DynamoDB-compatible API
+
+Project Alternator is an open-source project for an Amazon DynamoDB™-compatible API written in C++. The goal of this project is to deliver an open source alternative to Amazon’s DynamoDB, deployable wherever a user would want: on-premises, on other public clouds like Microsoft Azure or Google Cloud Platform, or still on AWS (for users who wish to take advantage of other aspects of Amazon’s market-leading cloud ecosystem, such as the high-density i3en instances).
+
+DynamoDB users can keep their same client code unchanged.
+
+* [ScyllaDB Alternator Documentation](https://docs.scylladb.com/manual/master/alternator/alternator.md)
+* [ScyllaDB Alternator project](https://github.com/scylladb/scylla/tree/master/alternator) - Part of the ScyllaDB project
+* [ScyllaDB Alternator course](https://university.scylladb.com/courses/scylla-alternator/) on ScyllaDB University
+
+
+# index.md
+
+# ScyllaDB Integrations and Connectors
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">ScyllaDB Integrations</h5>
+            
+ScyllaDB is Apache Cassandra compatible at the CQL binary protocol level, and any driver which uses CQL will work with ScyllaDB. See [ScyllaDB Drivers](https://docs.scylladb.com/stable/drivers/index.html).
+Any application which uses a CQL driver will work with ScyllaDB.
+
+The list below contains links to integration projects using ScyllaDB with third-party projects.
+If you have tested your application with ScyllaDB and want to publish the results, contact us using the [community forum](https://forum.scylladb.com).
+
+* [Integrate ScyllaDB with Spark](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-spark.md)
+* [Integrate ScyllaDB with KairosDB](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-kairos.md)
+* [Integrate ScyllaDB with Presto](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-presto.md)
+* [Integrate ScyllaDB with Elasticsearch](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-elasticsearch.md)
+* [Integrate ScyllaDB with Kubernetes](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-k8.md)
+* [Integrate ScyllaDB with JanusGraph](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-janus.md)
+* [Integrate ScyllaDB with DataDog](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-datadog.md)
+* [Integrate ScyllaDB with Apache Kafka](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-kafka.md)
+* [Integrate ScyllaDB with IOTA](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-iota.md)
+* [Integrate ScyllaDB with Spring](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-spring.md)
+* [Install ScyllaDB with Ansible](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-ansible.md)
+* [Integrate ScyllaDB with Databricks](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-databricks.md)
+* [Integrate ScyllaDB with Jaeger Server](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-jaeger.md)
+* [Integrate ScyllaDB with MindsDB](https://docs.scylladb.com/manual/master/using-scylla/integrations/integration-mindsdb.md)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">ScyllaDB Connectors</h5>
+            * [ScyllaDB Kafka Sink Connector](https://docs.scylladb.com/manual/master/using-scylla/integrations/sink-kafka-connector.md)
+
+</div></div>
+
+
+# index.md
+
+# Install ScyllaDB 2026.3
+
+Keep your versions up-to-date. The two latest versions are supported. Also, always install the latest patches for your version.
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Cloud Deployment</h5>
+            * [Launch ScyllaDB on AWS](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-aws.md)
+* [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-gcp.md)
+* [Launch ScyllaDB on Azure](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-azure.md)
+* [Launch ScyllaDB on OCI](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-oci.md)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Installation on Linux</h5>
+            * [Install ScyllaDB with Web Installer (recommended)](https://docs.scylladb.com/manual/master/getting-started/installation-common/scylla-web-installer.md)
+* [Install ScyllaDB Linux Packages](https://docs.scylladb.com/manual/master/getting-started/install-scylla/install-on-linux.md)
+* [Install ScyllaDB Without root Privileges](https://docs.scylladb.com/manual/master/getting-started/installation-common/unified-installer.md)
+* [Air-gapped Server Installation](https://docs.scylladb.com/manual/master/getting-started/installation-common/air-gapped-install.md)
+* [ScyllaDB Developer Mode](https://docs.scylladb.com/manual/master/getting-started/installation-common/dev-mod.md)
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Docker</h5>
+            * [Run ScyllaDB in Docker](https://docs.scylladb.com/manual/master/getting-started/install-scylla/run-in-docker.md)
+
+</div></div>
 
 
 # abort.md
@@ -4269,30 +4269,30 @@ Node3 is dead. If you add node4 to replace node3 with the same IP address as nod
 
 ## 2026.3.0
 
-| Region                    | x86 AMI ID            | Launch x86                                                                                                              | ARM AMI ID            | Launch ARM                                                                                                              |
-|---------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
-| Asia Pacific (Hyderabad)  | ami-0c50a77dcf468f774 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-0c50a77dcf468f774)     | ami-06db7459a89574725 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-06db7459a89574725)     |
-| Africa (Cape Town)        | ami-0352b8a023f44a39b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0352b8a023f44a39b)     | ami-0fa61b6432721c8d7 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0fa61b6432721c8d7)     |
-| Asia Pacific (Mumbai)     | ami-09c0db6c014118cdf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-09c0db6c014118cdf)     | ami-0e5059cb5b1cfd0ba | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-0e5059cb5b1cfd0ba)     |
-| Europe (Stockholm)        | ami-05c37c80e8a8028f4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-05c37c80e8a8028f4)     | ami-04ad93e6103665fb5 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-04ad93e6103665fb5)     |
-| Europe (Paris)            | ami-00e68fdb45089f155 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-00e68fdb45089f155)      | ami-0279f3b5813729649 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-0279f3b5813729649)      |
-| Europe (Milan)            | ami-0b493125335780a3b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-0b493125335780a3b)     | ami-020ab418c529d91b3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-020ab418c529d91b3)     |
-| Europe (London)           | ami-0d5db7f3c70e6d1e6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0d5db7f3c70e6d1e6)      | ami-0961929f84a40c6a8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0961929f84a40c6a8)      |
-| Europe (Ireland)          | ami-02a9f7e3220cda3ae | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-02a9f7e3220cda3ae)      | ami-04cce8d8762d6ffc9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-04cce8d8762d6ffc9)      |
-| Asia Pacific (Osaka)      | ami-001154364b3260c4f | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-001154364b3260c4f) | ami-0641ec340e7b1c27c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-0641ec340e7b1c27c) |
-| Asia Pacific (Seoul)      | ami-0997232324b19a8ff | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0997232324b19a8ff) | ami-0e9bbc7cd0cf720b8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0e9bbc7cd0cf720b8) |
-| Asia Pacific (Tokyo)      | ami-0c90effcfd97ad4a9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0c90effcfd97ad4a9) | ami-0ed53ef4b24ac1b40 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0ed53ef4b24ac1b40) |
-| Israel (Tel Aviv)         | ami-055c61789cd87b39e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-055c61789cd87b39e)   | ami-004186ff94a8e0d0a | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-004186ff94a8e0d0a)   |
-| Canada (Central)          | ami-0f8e2de967d228555 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-0f8e2de967d228555)   | ami-00ce2b1e369dda0d8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-00ce2b1e369dda0d8)   |
-| South America (Sao Paulo) | ami-0683f81e81ce881bf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0683f81e81ce881bf)      | ami-0c4034c4ab1c5c67e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0c4034c4ab1c5c67e)      |
-| Asia Pacific (Hong Kong)  | ami-0a169ee86aea8ad11 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-0a169ee86aea8ad11)      | ami-061689995526a46b2 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-061689995526a46b2)      |
-| Asia Pacific (Singapore)  | ami-015ad42deb5c04172 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-015ad42deb5c04172) | ami-0eb6f52c0991973a4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-0eb6f52c0991973a4) |
-| Asia Pacific (Sydney)     | ami-0c0f8dd1f1c9e8b37 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0c0f8dd1f1c9e8b37) | ami-0bfc9f7d9f7f5b538 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0bfc9f7d9f7f5b538) |
-| Europe (Frankfurt)        | ami-060ae51fb6758b440 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-060ae51fb6758b440)   | ami-0b64cdf2235459dfe | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-0b64cdf2235459dfe)   |
-| US East (N. Virginia)     | ami-061b29c7c5c72cadf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-061b29c7c5c72cadf)      | ami-0d04f7c5755f1cfd3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-0d04f7c5755f1cfd3)      |
-| US East (Ohio)            | ami-06a3bdcbd481d37d6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-06a3bdcbd481d37d6)      | ami-03fa28cc2847425a3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-03fa28cc2847425a3)      |
-| US West (N. California)   | ami-0f11d7a084f10edfa | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-0f11d7a084f10edfa)      | ami-01c982784b64a0cbb | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-01c982784b64a0cbb)      |
-| US West (Oregon)          | ami-096844c739364f59b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-096844c739364f59b)      | ami-08c0f0dc81c99718c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-08c0f0dc81c99718c)      |
+| Region                    | x86 AMI ID            | Launch x86                                                                                                                                                                                                                                                                                                                                                                                                                                            | ARM AMI ID            | Launch ARM                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|---------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Asia Pacific (Hyderabad)  | ami-0c50a77dcf468f774 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-0c50a77dcf468f774)  / [Cluster](https://ap-south-2.console.aws.amazon.com/cloudformation/home?region=ap-south-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c50a77dcf468f774)             | ami-06db7459a89574725 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-06db7459a89574725)  / [Cluster](https://ap-south-2.console.aws.amazon.com/cloudformation/home?region=ap-south-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-06db7459a89574725)             |
+| Africa (Cape Town)        | ami-0352b8a023f44a39b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0352b8a023f44a39b)  / [Cluster](https://af-south-1.console.aws.amazon.com/cloudformation/home?region=af-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0352b8a023f44a39b)             | ami-0fa61b6432721c8d7 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0fa61b6432721c8d7)  / [Cluster](https://af-south-1.console.aws.amazon.com/cloudformation/home?region=af-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0fa61b6432721c8d7)             |
+| Asia Pacific (Mumbai)     | ami-09c0db6c014118cdf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-09c0db6c014118cdf)  / [Cluster](https://ap-south-1.console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-09c0db6c014118cdf)             | ami-0e5059cb5b1cfd0ba | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-0e5059cb5b1cfd0ba)  / [Cluster](https://ap-south-1.console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0e5059cb5b1cfd0ba)             |
+| Europe (Stockholm)        | ami-05c37c80e8a8028f4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-05c37c80e8a8028f4)  / [Cluster](https://eu-north-1.console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-05c37c80e8a8028f4)             | ami-04ad93e6103665fb5 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-04ad93e6103665fb5)  / [Cluster](https://eu-north-1.console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-04ad93e6103665fb5)             |
+| Europe (Paris)            | ami-00e68fdb45089f155 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-00e68fdb45089f155)  / [Cluster](https://eu-west-3.console.aws.amazon.com/cloudformation/home?region=eu-west-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-00e68fdb45089f155)                | ami-0279f3b5813729649 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-0279f3b5813729649)  / [Cluster](https://eu-west-3.console.aws.amazon.com/cloudformation/home?region=eu-west-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0279f3b5813729649)                |
+| Europe (Milan)            | ami-0b493125335780a3b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-0b493125335780a3b)  / [Cluster](https://eu-south-1.console.aws.amazon.com/cloudformation/home?region=eu-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0b493125335780a3b)             | ami-020ab418c529d91b3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-020ab418c529d91b3)  / [Cluster](https://eu-south-1.console.aws.amazon.com/cloudformation/home?region=eu-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-020ab418c529d91b3)             |
+| Europe (London)           | ami-0d5db7f3c70e6d1e6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0d5db7f3c70e6d1e6)  / [Cluster](https://eu-west-2.console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0d5db7f3c70e6d1e6)                | ami-0961929f84a40c6a8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0961929f84a40c6a8)  / [Cluster](https://eu-west-2.console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0961929f84a40c6a8)                |
+| Europe (Ireland)          | ami-02a9f7e3220cda3ae | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-02a9f7e3220cda3ae)  / [Cluster](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-02a9f7e3220cda3ae)                | ami-04cce8d8762d6ffc9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-04cce8d8762d6ffc9)  / [Cluster](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-04cce8d8762d6ffc9)                |
+| Asia Pacific (Osaka)      | ami-001154364b3260c4f | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-001154364b3260c4f)  / [Cluster](https://ap-northeast-3.console.aws.amazon.com/cloudformation/home?region=ap-northeast-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-001154364b3260c4f) | ami-0641ec340e7b1c27c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-0641ec340e7b1c27c)  / [Cluster](https://ap-northeast-3.console.aws.amazon.com/cloudformation/home?region=ap-northeast-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0641ec340e7b1c27c) |
+| Asia Pacific (Seoul)      | ami-0997232324b19a8ff | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0997232324b19a8ff)  / [Cluster](https://ap-northeast-2.console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0997232324b19a8ff) | ami-0e9bbc7cd0cf720b8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0e9bbc7cd0cf720b8)  / [Cluster](https://ap-northeast-2.console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0e9bbc7cd0cf720b8) |
+| Asia Pacific (Tokyo)      | ami-0c90effcfd97ad4a9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0c90effcfd97ad4a9)  / [Cluster](https://ap-northeast-1.console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c90effcfd97ad4a9) | ami-0ed53ef4b24ac1b40 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0ed53ef4b24ac1b40)  / [Cluster](https://ap-northeast-1.console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0ed53ef4b24ac1b40) |
+| Israel (Tel Aviv)         | ami-055c61789cd87b39e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-055c61789cd87b39e)  / [Cluster](https://il-central-1.console.aws.amazon.com/cloudformation/home?region=il-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-055c61789cd87b39e)       | ami-004186ff94a8e0d0a | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-004186ff94a8e0d0a)  / [Cluster](https://il-central-1.console.aws.amazon.com/cloudformation/home?region=il-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-004186ff94a8e0d0a)       |
+| Canada (Central)          | ami-0f8e2de967d228555 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-0f8e2de967d228555)  / [Cluster](https://ca-central-1.console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0f8e2de967d228555)       | ami-00ce2b1e369dda0d8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-00ce2b1e369dda0d8)  / [Cluster](https://ca-central-1.console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-00ce2b1e369dda0d8)       |
+| South America (Sao Paulo) | ami-0683f81e81ce881bf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0683f81e81ce881bf)  / [Cluster](https://sa-east-1.console.aws.amazon.com/cloudformation/home?region=sa-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0683f81e81ce881bf)                | ami-0c4034c4ab1c5c67e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0c4034c4ab1c5c67e)  / [Cluster](https://sa-east-1.console.aws.amazon.com/cloudformation/home?region=sa-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c4034c4ab1c5c67e)                |
+| Asia Pacific (Hong Kong)  | ami-0a169ee86aea8ad11 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-0a169ee86aea8ad11)  / [Cluster](https://ap-east-1.console.aws.amazon.com/cloudformation/home?region=ap-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0a169ee86aea8ad11)                | ami-061689995526a46b2 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-061689995526a46b2)  / [Cluster](https://ap-east-1.console.aws.amazon.com/cloudformation/home?region=ap-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-061689995526a46b2)                |
+| Asia Pacific (Singapore)  | ami-015ad42deb5c04172 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-015ad42deb5c04172)  / [Cluster](https://ap-southeast-1.console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-015ad42deb5c04172) | ami-0eb6f52c0991973a4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-0eb6f52c0991973a4)  / [Cluster](https://ap-southeast-1.console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0eb6f52c0991973a4) |
+| Asia Pacific (Sydney)     | ami-0c0f8dd1f1c9e8b37 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0c0f8dd1f1c9e8b37)  / [Cluster](https://ap-southeast-2.console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c0f8dd1f1c9e8b37) | ami-0bfc9f7d9f7f5b538 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0bfc9f7d9f7f5b538)  / [Cluster](https://ap-southeast-2.console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0bfc9f7d9f7f5b538) |
+| Europe (Frankfurt)        | ami-060ae51fb6758b440 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-060ae51fb6758b440)  / [Cluster](https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-060ae51fb6758b440)       | ami-0b64cdf2235459dfe | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-0b64cdf2235459dfe)  / [Cluster](https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0b64cdf2235459dfe)       |
+| US East (N. Virginia)     | ami-061b29c7c5c72cadf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-061b29c7c5c72cadf)  / [Cluster](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-061b29c7c5c72cadf)                | ami-0d04f7c5755f1cfd3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-0d04f7c5755f1cfd3)  / [Cluster](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0d04f7c5755f1cfd3)                |
+| US East (Ohio)            | ami-06a3bdcbd481d37d6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-06a3bdcbd481d37d6)  / [Cluster](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-06a3bdcbd481d37d6)                | ami-03fa28cc2847425a3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-03fa28cc2847425a3)  / [Cluster](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-03fa28cc2847425a3)                |
+| US West (N. California)   | ami-0f11d7a084f10edfa | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-0f11d7a084f10edfa)  / [Cluster](https://us-west-1.console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0f11d7a084f10edfa)                | ami-01c982784b64a0cbb | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-01c982784b64a0cbb)  / [Cluster](https://us-west-1.console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-01c982784b64a0cbb)                |
+| US West (Oregon)          | ami-096844c739364f59b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-096844c739364f59b)  / [Cluster](https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-096844c739364f59b)                | ami-08c0f0dc81c99718c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-08c0f0dc81c99718c)  / [Cluster](https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-08c0f0dc81c99718c)                |
 
 
 # azure-images.md
@@ -27532,30 +27532,30 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
 
    ### 2026.3.0
 
-   | Region                    | x86 AMI ID            | Launch x86                                                                                                              | ARM AMI ID            | Launch ARM                                                                                                              |
-   |---------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
-   | Asia Pacific (Hyderabad)  | ami-0c50a77dcf468f774 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-0c50a77dcf468f774)     | ami-06db7459a89574725 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-06db7459a89574725)     |
-   | Africa (Cape Town)        | ami-0352b8a023f44a39b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0352b8a023f44a39b)     | ami-0fa61b6432721c8d7 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0fa61b6432721c8d7)     |
-   | Asia Pacific (Mumbai)     | ami-09c0db6c014118cdf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-09c0db6c014118cdf)     | ami-0e5059cb5b1cfd0ba | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-0e5059cb5b1cfd0ba)     |
-   | Europe (Stockholm)        | ami-05c37c80e8a8028f4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-05c37c80e8a8028f4)     | ami-04ad93e6103665fb5 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-04ad93e6103665fb5)     |
-   | Europe (Paris)            | ami-00e68fdb45089f155 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-00e68fdb45089f155)      | ami-0279f3b5813729649 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-0279f3b5813729649)      |
-   | Europe (Milan)            | ami-0b493125335780a3b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-0b493125335780a3b)     | ami-020ab418c529d91b3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-020ab418c529d91b3)     |
-   | Europe (London)           | ami-0d5db7f3c70e6d1e6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0d5db7f3c70e6d1e6)      | ami-0961929f84a40c6a8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0961929f84a40c6a8)      |
-   | Europe (Ireland)          | ami-02a9f7e3220cda3ae | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-02a9f7e3220cda3ae)      | ami-04cce8d8762d6ffc9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-04cce8d8762d6ffc9)      |
-   | Asia Pacific (Osaka)      | ami-001154364b3260c4f | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-001154364b3260c4f) | ami-0641ec340e7b1c27c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-0641ec340e7b1c27c) |
-   | Asia Pacific (Seoul)      | ami-0997232324b19a8ff | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0997232324b19a8ff) | ami-0e9bbc7cd0cf720b8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0e9bbc7cd0cf720b8) |
-   | Asia Pacific (Tokyo)      | ami-0c90effcfd97ad4a9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0c90effcfd97ad4a9) | ami-0ed53ef4b24ac1b40 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0ed53ef4b24ac1b40) |
-   | Israel (Tel Aviv)         | ami-055c61789cd87b39e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-055c61789cd87b39e)   | ami-004186ff94a8e0d0a | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-004186ff94a8e0d0a)   |
-   | Canada (Central)          | ami-0f8e2de967d228555 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-0f8e2de967d228555)   | ami-00ce2b1e369dda0d8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-00ce2b1e369dda0d8)   |
-   | South America (Sao Paulo) | ami-0683f81e81ce881bf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0683f81e81ce881bf)      | ami-0c4034c4ab1c5c67e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0c4034c4ab1c5c67e)      |
-   | Asia Pacific (Hong Kong)  | ami-0a169ee86aea8ad11 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-0a169ee86aea8ad11)      | ami-061689995526a46b2 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-061689995526a46b2)      |
-   | Asia Pacific (Singapore)  | ami-015ad42deb5c04172 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-015ad42deb5c04172) | ami-0eb6f52c0991973a4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-0eb6f52c0991973a4) |
-   | Asia Pacific (Sydney)     | ami-0c0f8dd1f1c9e8b37 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0c0f8dd1f1c9e8b37) | ami-0bfc9f7d9f7f5b538 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0bfc9f7d9f7f5b538) |
-   | Europe (Frankfurt)        | ami-060ae51fb6758b440 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-060ae51fb6758b440)   | ami-0b64cdf2235459dfe | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-0b64cdf2235459dfe)   |
-   | US East (N. Virginia)     | ami-061b29c7c5c72cadf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-061b29c7c5c72cadf)      | ami-0d04f7c5755f1cfd3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-0d04f7c5755f1cfd3)      |
-   | US East (Ohio)            | ami-06a3bdcbd481d37d6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-06a3bdcbd481d37d6)      | ami-03fa28cc2847425a3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-03fa28cc2847425a3)      |
-   | US West (N. California)   | ami-0f11d7a084f10edfa | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-0f11d7a084f10edfa)      | ami-01c982784b64a0cbb | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-01c982784b64a0cbb)      |
-   | US West (Oregon)          | ami-096844c739364f59b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-096844c739364f59b)      | ami-08c0f0dc81c99718c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-08c0f0dc81c99718c)      |
+   | Region                    | x86 AMI ID            | Launch x86                                                                                                                                                                                                                                                                                                                                                                                                                                            | ARM AMI ID            | Launch ARM                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+   |---------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+   | Asia Pacific (Hyderabad)  | ami-0c50a77dcf468f774 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-0c50a77dcf468f774)  / [Cluster](https://ap-south-2.console.aws.amazon.com/cloudformation/home?region=ap-south-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c50a77dcf468f774)             | ami-06db7459a89574725 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-2#LaunchInstanceWizard:ami=ami-06db7459a89574725)  / [Cluster](https://ap-south-2.console.aws.amazon.com/cloudformation/home?region=ap-south-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-06db7459a89574725)             |
+   | Africa (Cape Town)        | ami-0352b8a023f44a39b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0352b8a023f44a39b)  / [Cluster](https://af-south-1.console.aws.amazon.com/cloudformation/home?region=af-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0352b8a023f44a39b)             | ami-0fa61b6432721c8d7 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=af-south-1#LaunchInstanceWizard:ami=ami-0fa61b6432721c8d7)  / [Cluster](https://af-south-1.console.aws.amazon.com/cloudformation/home?region=af-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0fa61b6432721c8d7)             |
+   | Asia Pacific (Mumbai)     | ami-09c0db6c014118cdf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-09c0db6c014118cdf)  / [Cluster](https://ap-south-1.console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-09c0db6c014118cdf)             | ami-0e5059cb5b1cfd0ba | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#LaunchInstanceWizard:ami=ami-0e5059cb5b1cfd0ba)  / [Cluster](https://ap-south-1.console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0e5059cb5b1cfd0ba)             |
+   | Europe (Stockholm)        | ami-05c37c80e8a8028f4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-05c37c80e8a8028f4)  / [Cluster](https://eu-north-1.console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-05c37c80e8a8028f4)             | ami-04ad93e6103665fb5 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-north-1#LaunchInstanceWizard:ami=ami-04ad93e6103665fb5)  / [Cluster](https://eu-north-1.console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-04ad93e6103665fb5)             |
+   | Europe (Paris)            | ami-00e68fdb45089f155 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-00e68fdb45089f155)  / [Cluster](https://eu-west-3.console.aws.amazon.com/cloudformation/home?region=eu-west-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-00e68fdb45089f155)                | ami-0279f3b5813729649 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-3#LaunchInstanceWizard:ami=ami-0279f3b5813729649)  / [Cluster](https://eu-west-3.console.aws.amazon.com/cloudformation/home?region=eu-west-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0279f3b5813729649)                |
+   | Europe (Milan)            | ami-0b493125335780a3b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-0b493125335780a3b)  / [Cluster](https://eu-south-1.console.aws.amazon.com/cloudformation/home?region=eu-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0b493125335780a3b)             | ami-020ab418c529d91b3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-south-1#LaunchInstanceWizard:ami=ami-020ab418c529d91b3)  / [Cluster](https://eu-south-1.console.aws.amazon.com/cloudformation/home?region=eu-south-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-020ab418c529d91b3)             |
+   | Europe (London)           | ami-0d5db7f3c70e6d1e6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0d5db7f3c70e6d1e6)  / [Cluster](https://eu-west-2.console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0d5db7f3c70e6d1e6)                | ami-0961929f84a40c6a8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchInstanceWizard:ami=ami-0961929f84a40c6a8)  / [Cluster](https://eu-west-2.console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0961929f84a40c6a8)                |
+   | Europe (Ireland)          | ami-02a9f7e3220cda3ae | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-02a9f7e3220cda3ae)  / [Cluster](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-02a9f7e3220cda3ae)                | ami-04cce8d8762d6ffc9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:ami=ami-04cce8d8762d6ffc9)  / [Cluster](https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-04cce8d8762d6ffc9)                |
+   | Asia Pacific (Osaka)      | ami-001154364b3260c4f | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-001154364b3260c4f)  / [Cluster](https://ap-northeast-3.console.aws.amazon.com/cloudformation/home?region=ap-northeast-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-001154364b3260c4f) | ami-0641ec340e7b1c27c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-3#LaunchInstanceWizard:ami=ami-0641ec340e7b1c27c)  / [Cluster](https://ap-northeast-3.console.aws.amazon.com/cloudformation/home?region=ap-northeast-3#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0641ec340e7b1c27c) |
+   | Asia Pacific (Seoul)      | ami-0997232324b19a8ff | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0997232324b19a8ff)  / [Cluster](https://ap-northeast-2.console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0997232324b19a8ff) | ami-0e9bbc7cd0cf720b8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#LaunchInstanceWizard:ami=ami-0e9bbc7cd0cf720b8)  / [Cluster](https://ap-northeast-2.console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0e9bbc7cd0cf720b8) |
+   | Asia Pacific (Tokyo)      | ami-0c90effcfd97ad4a9 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0c90effcfd97ad4a9)  / [Cluster](https://ap-northeast-1.console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c90effcfd97ad4a9) | ami-0ed53ef4b24ac1b40 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-northeast-1#LaunchInstanceWizard:ami=ami-0ed53ef4b24ac1b40)  / [Cluster](https://ap-northeast-1.console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0ed53ef4b24ac1b40) |
+   | Israel (Tel Aviv)         | ami-055c61789cd87b39e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-055c61789cd87b39e)  / [Cluster](https://il-central-1.console.aws.amazon.com/cloudformation/home?region=il-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-055c61789cd87b39e)       | ami-004186ff94a8e0d0a | [Node](https://console.aws.amazon.com/ec2/v2/home?region=il-central-1#LaunchInstanceWizard:ami=ami-004186ff94a8e0d0a)  / [Cluster](https://il-central-1.console.aws.amazon.com/cloudformation/home?region=il-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-004186ff94a8e0d0a)       |
+   | Canada (Central)          | ami-0f8e2de967d228555 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-0f8e2de967d228555)  / [Cluster](https://ca-central-1.console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0f8e2de967d228555)       | ami-00ce2b1e369dda0d8 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ca-central-1#LaunchInstanceWizard:ami=ami-00ce2b1e369dda0d8)  / [Cluster](https://ca-central-1.console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-00ce2b1e369dda0d8)       |
+   | South America (Sao Paulo) | ami-0683f81e81ce881bf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0683f81e81ce881bf)  / [Cluster](https://sa-east-1.console.aws.amazon.com/cloudformation/home?region=sa-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0683f81e81ce881bf)                | ami-0c4034c4ab1c5c67e | [Node](https://console.aws.amazon.com/ec2/v2/home?region=sa-east-1#LaunchInstanceWizard:ami=ami-0c4034c4ab1c5c67e)  / [Cluster](https://sa-east-1.console.aws.amazon.com/cloudformation/home?region=sa-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c4034c4ab1c5c67e)                |
+   | Asia Pacific (Hong Kong)  | ami-0a169ee86aea8ad11 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-0a169ee86aea8ad11)  / [Cluster](https://ap-east-1.console.aws.amazon.com/cloudformation/home?region=ap-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0a169ee86aea8ad11)                | ami-061689995526a46b2 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-east-1#LaunchInstanceWizard:ami=ami-061689995526a46b2)  / [Cluster](https://ap-east-1.console.aws.amazon.com/cloudformation/home?region=ap-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-061689995526a46b2)                |
+   | Asia Pacific (Singapore)  | ami-015ad42deb5c04172 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-015ad42deb5c04172)  / [Cluster](https://ap-southeast-1.console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-015ad42deb5c04172) | ami-0eb6f52c0991973a4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#LaunchInstanceWizard:ami=ami-0eb6f52c0991973a4)  / [Cluster](https://ap-southeast-1.console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0eb6f52c0991973a4) |
+   | Asia Pacific (Sydney)     | ami-0c0f8dd1f1c9e8b37 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0c0f8dd1f1c9e8b37)  / [Cluster](https://ap-southeast-2.console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0c0f8dd1f1c9e8b37) | ami-0bfc9f7d9f7f5b538 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=ap-southeast-2#LaunchInstanceWizard:ami=ami-0bfc9f7d9f7f5b538)  / [Cluster](https://ap-southeast-2.console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0bfc9f7d9f7f5b538) |
+   | Europe (Frankfurt)        | ami-060ae51fb6758b440 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-060ae51fb6758b440)  / [Cluster](https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-060ae51fb6758b440)       | ami-0b64cdf2235459dfe | [Node](https://console.aws.amazon.com/ec2/v2/home?region=eu-central-1#LaunchInstanceWizard:ami=ami-0b64cdf2235459dfe)  / [Cluster](https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0b64cdf2235459dfe)       |
+   | US East (N. Virginia)     | ami-061b29c7c5c72cadf | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-061b29c7c5c72cadf)  / [Cluster](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-061b29c7c5c72cadf)                | ami-0d04f7c5755f1cfd3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-0d04f7c5755f1cfd3)  / [Cluster](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0d04f7c5755f1cfd3)                |
+   | US East (Ohio)            | ami-06a3bdcbd481d37d6 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-06a3bdcbd481d37d6)  / [Cluster](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-06a3bdcbd481d37d6)                | ami-03fa28cc2847425a3 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-03fa28cc2847425a3)  / [Cluster](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-03fa28cc2847425a3)                |
+   | US West (N. California)   | ami-0f11d7a084f10edfa | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-0f11d7a084f10edfa)  / [Cluster](https://us-west-1.console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0f11d7a084f10edfa)                | ami-01c982784b64a0cbb | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-01c982784b64a0cbb)  / [Cluster](https://us-west-1.console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-01c982784b64a0cbb)                |
+   | US West (Oregon)          | ami-096844c739364f59b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-096844c739364f59b)  / [Cluster](https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-096844c739364f59b)                | ami-08c0f0dc81c99718c | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-08c0f0dc81c99718c)  / [Cluster](https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.0_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-08c0f0dc81c99718c)                |
 2. Choose the instance type. See [Cloud Instance Recommendations for AWS](https://docs.scylladb.com/manual/master/getting-started/cloud-instance-recommendations.md#system-requirements-aws) for the list of recommended instances.
 
    Other instance types will work, but with lesser performance. If you choose an instance type other than the recommended ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/master/getting-started/system-configuration.md#system-configuration-scripts) script.
@@ -32646,68 +32646,6 @@ See also [ScyllaDB Manager](https://manager.docs.scylladb.com/).
 
 # repair.md
 
-# ScyllaDB Repair
-
-During the regular operation, a ScyllaDB cluster continues to function and remains ‘always-on’ even in the face of failures such as:
-
-* A down node
-* A network partition
-* Complete datacenter failure
-* Dropped mutations due to timeouts
-* Process crashes (before a flush)
-* A replica that cannot write due to a lack of resources
-
-As long as the cluster can satisfy the required consistency level (usually quorum), availability and consistency will be maintained. However, in order to automatically mitigate data inconsistency (entropy), ScyllaDB uses three processes:
-
-* [Hinted Handoff](https://docs.scylladb.com/manual/master/architecture/anti-entropy/hinted-handoff.md)
-* [Read Repair](https://docs.scylladb.com/manual/master/architecture/anti-entropy/read-repair.md)
-* [Repair Based Node Operations](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/repair-based-node-operation.md)
-* Repair - described in the following sections
-
-## Repair Overview
-
-Data stored on nodes may become inconsistent with other replicas over time. For this reason, repairs are a necessary part of database maintenance.
-
-ScyllaDB repair is a process that runs in the background and synchronizes the data between nodes so that all the replicas hold the same data.
-Running repairs is necessary to ensure that data on a given node is consistent with the other nodes in the cluster.
-You can manually run the `nodetool repair` and `nodetool cluster repair` commands or schedule repair with [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/repair),
-which can run repairs for you.
-
-To synchronize all data in clusters that have both tablets- and vnodes-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/repair.md) on **all**
-of the nodes in the cluster, and [nodetool cluster repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md) on  **any** of the nodes in the cluster.
-
-#### NOTE
-Run the [nodetool repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/repair.md) and [nodetool cluster repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md) command regularly. If you delete data frequently, it should be more often than the value of `gc_grace_seconds` (by default: 10 days), for example, every week. Use the **nodetool repair -pr** on each node in the cluster, sequentially.
-
-In most cases, the proportion of data that is out of sync is very small.  In a few cases, for example, if a node was down for a day, the difference might be more significant.
-
-<a id="row-level-repair"></a>
-
-## Row-level Repair
-
-ScyllaDB uses row-level repair.
-
-Row-level repair improves ScyllaDB in two ways:
-
-* Minimizes data transfer. With row-level repair, ScyllaDB calculates the checksum for each row and uses set reconciliation algorithms to find the mismatches between nodes. As a result, only the mismatched rows are exchanged, which eliminates unnecessary data transmission over the network.
-* Minimize disk reads by :
-  * reading the data only once.
-  * keeping the data in a temporary buffer.
-  * using the cached data to calculate the checksum and send it to the replicas.
-
-See also the [ScyllaDB Manager documentation](https://manager.docs.scylladb.com/).
-
-## Incremental Repair
-
-Built on top of [Row-level Repair](#row-level-repair) and [Tablets](https://docs.scylladb.com/manual/master/architecture/tablets.md), Incremental Repair enables frequent and quick repairs. For more details, see [Incremental Repair](https://docs.scylladb.com/manual/master/features/incremental-repair.md).
-
-## Automatic Repair
-
-Built on top of [Incremental Repair](https://docs.scylladb.com/manual/master/features/incremental-repair.md), [Automatic Repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) offers repair scheduling and execution directly in ScyllaDB, without external processes.
-
-
-# repair.md
-
 # Nodetool cluster repair
 
 **cluster repair** - A process that runs in the background and synchronizes the data between nodes. It only repairs keyspaces with tablets enabled (default).
@@ -32780,6 +32718,68 @@ ScyllaDB nodetool cluster repair command supports the following options:
   ```
 
 See also [ScyllaDB Manager](https://manager.docs.scylladb.com/).
+
+
+# repair.md
+
+# ScyllaDB Repair
+
+During the regular operation, a ScyllaDB cluster continues to function and remains ‘always-on’ even in the face of failures such as:
+
+* A down node
+* A network partition
+* Complete datacenter failure
+* Dropped mutations due to timeouts
+* Process crashes (before a flush)
+* A replica that cannot write due to a lack of resources
+
+As long as the cluster can satisfy the required consistency level (usually quorum), availability and consistency will be maintained. However, in order to automatically mitigate data inconsistency (entropy), ScyllaDB uses three processes:
+
+* [Hinted Handoff](https://docs.scylladb.com/manual/master/architecture/anti-entropy/hinted-handoff.md)
+* [Read Repair](https://docs.scylladb.com/manual/master/architecture/anti-entropy/read-repair.md)
+* [Repair Based Node Operations](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/repair-based-node-operation.md)
+* Repair - described in the following sections
+
+## Repair Overview
+
+Data stored on nodes may become inconsistent with other replicas over time. For this reason, repairs are a necessary part of database maintenance.
+
+ScyllaDB repair is a process that runs in the background and synchronizes the data between nodes so that all the replicas hold the same data.
+Running repairs is necessary to ensure that data on a given node is consistent with the other nodes in the cluster.
+You can manually run the `nodetool repair` and `nodetool cluster repair` commands or schedule repair with [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/repair),
+which can run repairs for you.
+
+To synchronize all data in clusters that have both tablets- and vnodes-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/repair.md) on **all**
+of the nodes in the cluster, and [nodetool cluster repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md) on  **any** of the nodes in the cluster.
+
+#### NOTE
+Run the [nodetool repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/repair.md) and [nodetool cluster repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md) command regularly. If you delete data frequently, it should be more often than the value of `gc_grace_seconds` (by default: 10 days), for example, every week. Use the **nodetool repair -pr** on each node in the cluster, sequentially.
+
+In most cases, the proportion of data that is out of sync is very small.  In a few cases, for example, if a node was down for a day, the difference might be more significant.
+
+<a id="row-level-repair"></a>
+
+## Row-level Repair
+
+ScyllaDB uses row-level repair.
+
+Row-level repair improves ScyllaDB in two ways:
+
+* Minimizes data transfer. With row-level repair, ScyllaDB calculates the checksum for each row and uses set reconciliation algorithms to find the mismatches between nodes. As a result, only the mismatched rows are exchanged, which eliminates unnecessary data transmission over the network.
+* Minimize disk reads by :
+  * reading the data only once.
+  * keeping the data in a temporary buffer.
+  * using the cached data to calculate the checksum and send it to the replicas.
+
+See also the [ScyllaDB Manager documentation](https://manager.docs.scylladb.com/).
+
+## Incremental Repair
+
+Built on top of [Row-level Repair](#row-level-repair) and [Tablets](https://docs.scylladb.com/manual/master/architecture/tablets.md), Incremental Repair enables frequent and quick repairs. For more details, see [Incremental Repair](https://docs.scylladb.com/manual/master/features/incremental-repair.md).
+
+## Automatic Repair
+
+Built on top of [Incremental Repair](https://docs.scylladb.com/manual/master/features/incremental-repair.md), [Automatic Repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) offers repair scheduling and execution directly in ScyllaDB, without external processes.
 
 
 # replace-dead-node-or-more.md
@@ -37639,6 +37639,137 @@ not yet functional in any of the client libraries.
 
 # secondary-indexes.md
 
+# Global Secondary Indexes
+
+The data model in ScyllaDB partitions data between cluster nodes using a partition key, which is defined in the database schema. This is an efficient way to look up rows because you can find the node hosting the row by hashing the partition key.
+
+However, this also means that finding a row using a non-partition key requires a full table scan which is inefficient.
+
+**Global Secondary indexes** (named “Secondary indexes” for the rest of this doc) are a mechanism in ScyllaDB which allows efficient searches on non-partition keys by creating an index. They are indexes created on columns other than the entire partition key, where each secondary index indexes *one* specific column. A secondary index can index a column used in the partition key in the case of a composite partition key.
+
+Secondary indexes provide the following advantages:
+
+1. Secondary Indexes are (mostly) transparent to your application. Queries have access to all the columns in the table, and you can add or remove indexes on the fly without changing the application.
+2. We can use the value of the indexed column to find the corresponding index table row in the cluster so that reads are scalable.
+3. Updates can be more efficient with secondary indexes than materialized views because only changes to the primary key and indexed column cause an update in the index view.
+
+What’s more, the size of an index is proportional to the size of the indexed data. As data in ScyllaDB is distributed to multiple nodes, it’s impractical to store the whole index on a single node, as it limits the size of the index to the capacity of a single node, not the capacity of the whole cluster.
+
+For this reason, secondary indexes in ScyllaDB are **global** rather than local. With global indexing, a materialized view is created for each index. This [materialized view](https://docs.scylladb.com/manual/master/features/materialized-views.md) has the indexed column as a partition key and primary key (partition key and clustering keys) of the indexed row as clustering keys.
+
+Secondary indexes created globally provide a further advantage: you can use the value of the indexed column to find the corresponding index table row in the cluster so reads are scalable. Note however, that with this approach, writes are slower than with local indexing because of the overhead required to keep the indexed view up to date.
+
+## How Secondary Index Queries Work
+
+ScyllaDB breaks indexed queries into two parts:
+
+1. a query on the index table to retrieve partition keys for the indexed table, and
+2. a query to the indexed table using the retrieved partition keys.
+
+![Secondary Index Flow](features/images/si_building_example.png)
+
+In the example above:
+
+1. The query arrives to a coordinator
+2. The node notices the query on an index column and issues a read to an index table, which has the index table row for the base table
+3. This query will return a partition key for the base table that is used to retrieve contents of the base table.
+
+## Example
+
+The following is an example and does not contain all of the options available. To see all of the options available, refer to the [CQL Reference](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md).
+
+Given the following schema:
+
+```cql
+CREATE TABLE buildings  (name text, city text, height int, PRIMARY KEY (name));
+```
+
+Let’s populate it with some test data:
+
+```cql
+INSERT INTO buildings(name,city,height) VALUES ('Burj Khalifa','Dubai',828);
+INSERT INTO buildings(name,city,height) VALUES ('Shanghai Tower','Shanghai',632);
+INSERT INTO buildings(name,city,height) VALUES ('Abraj Al-Bait Clock Tower','Mecca',601);
+INSERT INTO buildings(name,city,height) VALUES ('Ping An Finance Centre','Shenzhen',599);
+INSERT INTO buildings(name,city,height) VALUES ('Lotte World Tower','Seoul',554);
+INSERT INTO buildings(name,city,height) VALUES ('One World Trade Center','New York City',541);
+INSERT INTO buildings(name,city,height) VALUES ('Guangzhou CTF Finance Centre','Guangzhou',530);
+INSERT INTO buildings(name,city,height) VALUES ('Tianjin CTF Finance Centre','Tianjin',530);
+INSERT INTO buildings(name,city,height) VALUES ('China Zun','Beijing',528);
+INSERT INTO buildings(name,city,height) VALUES ('Taipei 101','Taipei',508);
+```
+
+Note that if we try to query on a column (the part after the `WHERE` clause) in a ScyllaDB table that isn’t part of the primary key, we’ll see that this is not permitted. For example:
+
+```cql
+SELECT * FROM buildings WHERE city = 'Shenzhen';
+```
+
+will result in an error.
+
+Secondary indexes are designed to allow efficient querying of non-partition key columns. We can create an index on *city* by with the following CQL statements:
+
+```cql
+CREATE INDEX buildings_by_city ON buildings (city);
+```
+
+We can now query the indexed columns as if they were partition keys:
+
+```cql
+SELECT * FROM buildings WHERE city = 'Shenzhen';
+```
+
+returns
+
+```cql
+name                   | city     | height
+-----------------------+----------+--------
+Ping An Finance Centre | Shenzhen |    599
+
+(1 rows)
+```
+
+Note that you can use the `DESCRIBE` command to see the whole schema for the buildings table, including created indexes and views:
+
+```cql
+cqlsh:mykeyspace> DESC buildings;
+
+CREATE TABLE mykeyspace.buildings (
+             name text PRIMARY KEY,
+             city text,
+             height int
+) WITH bloom_filter_fp_chance = 0.01
+AND caching = {'keys': 'ALL', 'rows_per_partition': 'ALL'}
+...;
+
+CREATE INDEX buildings_by_city ON mykeyspace.buildings (city);
+
+CREATE MATERIALIZED VIEW mykeyspace.buildings_by_city_index AS
+SELECT city, idx_token, name
+FROM mykeyspace.buildings
+WHERE city IS NOT NULL
+PRIMARY KEY (city, idx_token, name)
+WITH CLUSTERING ORDER BY (idx_token ASC, name ASC)
+AND bloom_filter_fp_chance = 0.01
+AND caching = {'keys': 'ALL', 'rows_per_partition': 'ALL'}
+...
+```
+
+Note the Secondary Index is implemented as MATERIALIZED VIEW.
+
+## More information
+
+* [Local Secondary Indexes](https://docs.scylladb.com/manual/master/features/local-secondary-indexes.md)
+* [CQL Reference](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md) - CQL Reference for Secondary Indexes
+
+The following courses are available from ScyllaDB University:
+
+* [Materialized Views and Secondary Indexes](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/)
+* [Global Secondary Indexes](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/topic/global-secondary-indexes/)
+
+
+# secondary-indexes.md
+
 <!-- Licensed to the Apache Software Foundation (ASF) under one -->
 <!-- or more contributor license agreements.  See the NOTICE file -->
 <!-- distributed with this work for additional information -->
@@ -38045,137 +38176,6 @@ Copyright
 © 2016, The Apache Software Foundation.
 
 Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.
-
-
-# secondary-indexes.md
-
-# Global Secondary Indexes
-
-The data model in ScyllaDB partitions data between cluster nodes using a partition key, which is defined in the database schema. This is an efficient way to look up rows because you can find the node hosting the row by hashing the partition key.
-
-However, this also means that finding a row using a non-partition key requires a full table scan which is inefficient.
-
-**Global Secondary indexes** (named “Secondary indexes” for the rest of this doc) are a mechanism in ScyllaDB which allows efficient searches on non-partition keys by creating an index. They are indexes created on columns other than the entire partition key, where each secondary index indexes *one* specific column. A secondary index can index a column used in the partition key in the case of a composite partition key.
-
-Secondary indexes provide the following advantages:
-
-1. Secondary Indexes are (mostly) transparent to your application. Queries have access to all the columns in the table, and you can add or remove indexes on the fly without changing the application.
-2. We can use the value of the indexed column to find the corresponding index table row in the cluster so that reads are scalable.
-3. Updates can be more efficient with secondary indexes than materialized views because only changes to the primary key and indexed column cause an update in the index view.
-
-What’s more, the size of an index is proportional to the size of the indexed data. As data in ScyllaDB is distributed to multiple nodes, it’s impractical to store the whole index on a single node, as it limits the size of the index to the capacity of a single node, not the capacity of the whole cluster.
-
-For this reason, secondary indexes in ScyllaDB are **global** rather than local. With global indexing, a materialized view is created for each index. This [materialized view](https://docs.scylladb.com/manual/master/features/materialized-views.md) has the indexed column as a partition key and primary key (partition key and clustering keys) of the indexed row as clustering keys.
-
-Secondary indexes created globally provide a further advantage: you can use the value of the indexed column to find the corresponding index table row in the cluster so reads are scalable. Note however, that with this approach, writes are slower than with local indexing because of the overhead required to keep the indexed view up to date.
-
-## How Secondary Index Queries Work
-
-ScyllaDB breaks indexed queries into two parts:
-
-1. a query on the index table to retrieve partition keys for the indexed table, and
-2. a query to the indexed table using the retrieved partition keys.
-
-![Secondary Index Flow](features/images/si_building_example.png)
-
-In the example above:
-
-1. The query arrives to a coordinator
-2. The node notices the query on an index column and issues a read to an index table, which has the index table row for the base table
-3. This query will return a partition key for the base table that is used to retrieve contents of the base table.
-
-## Example
-
-The following is an example and does not contain all of the options available. To see all of the options available, refer to the [CQL Reference](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md).
-
-Given the following schema:
-
-```cql
-CREATE TABLE buildings  (name text, city text, height int, PRIMARY KEY (name));
-```
-
-Let’s populate it with some test data:
-
-```cql
-INSERT INTO buildings(name,city,height) VALUES ('Burj Khalifa','Dubai',828);
-INSERT INTO buildings(name,city,height) VALUES ('Shanghai Tower','Shanghai',632);
-INSERT INTO buildings(name,city,height) VALUES ('Abraj Al-Bait Clock Tower','Mecca',601);
-INSERT INTO buildings(name,city,height) VALUES ('Ping An Finance Centre','Shenzhen',599);
-INSERT INTO buildings(name,city,height) VALUES ('Lotte World Tower','Seoul',554);
-INSERT INTO buildings(name,city,height) VALUES ('One World Trade Center','New York City',541);
-INSERT INTO buildings(name,city,height) VALUES ('Guangzhou CTF Finance Centre','Guangzhou',530);
-INSERT INTO buildings(name,city,height) VALUES ('Tianjin CTF Finance Centre','Tianjin',530);
-INSERT INTO buildings(name,city,height) VALUES ('China Zun','Beijing',528);
-INSERT INTO buildings(name,city,height) VALUES ('Taipei 101','Taipei',508);
-```
-
-Note that if we try to query on a column (the part after the `WHERE` clause) in a ScyllaDB table that isn’t part of the primary key, we’ll see that this is not permitted. For example:
-
-```cql
-SELECT * FROM buildings WHERE city = 'Shenzhen';
-```
-
-will result in an error.
-
-Secondary indexes are designed to allow efficient querying of non-partition key columns. We can create an index on *city* by with the following CQL statements:
-
-```cql
-CREATE INDEX buildings_by_city ON buildings (city);
-```
-
-We can now query the indexed columns as if they were partition keys:
-
-```cql
-SELECT * FROM buildings WHERE city = 'Shenzhen';
-```
-
-returns
-
-```cql
-name                   | city     | height
------------------------+----------+--------
-Ping An Finance Centre | Shenzhen |    599
-
-(1 rows)
-```
-
-Note that you can use the `DESCRIBE` command to see the whole schema for the buildings table, including created indexes and views:
-
-```cql
-cqlsh:mykeyspace> DESC buildings;
-
-CREATE TABLE mykeyspace.buildings (
-             name text PRIMARY KEY,
-             city text,
-             height int
-) WITH bloom_filter_fp_chance = 0.01
-AND caching = {'keys': 'ALL', 'rows_per_partition': 'ALL'}
-...;
-
-CREATE INDEX buildings_by_city ON mykeyspace.buildings (city);
-
-CREATE MATERIALIZED VIEW mykeyspace.buildings_by_city_index AS
-SELECT city, idx_token, name
-FROM mykeyspace.buildings
-WHERE city IS NOT NULL
-PRIMARY KEY (city, idx_token, name)
-WITH CLUSTERING ORDER BY (idx_token ASC, name ASC)
-AND bloom_filter_fp_chance = 0.01
-AND caching = {'keys': 'ALL', 'rows_per_partition': 'ALL'}
-...
-```
-
-Note the Secondary Index is implemented as MATERIALIZED VIEW.
-
-## More information
-
-* [Local Secondary Indexes](https://docs.scylladb.com/manual/master/features/local-secondary-indexes.md)
-* [CQL Reference](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md) - CQL Reference for Secondary Indexes
-
-The following courses are available from ScyllaDB University:
-
-* [Materialized Views and Secondary Indexes](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/)
-* [Global Secondary Indexes](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/topic/global-secondary-indexes/)
 
 
 # security-checklist.md
@@ -41239,6 +41239,29 @@ is necessary:
 
 # sstable-format.md
 
+# SSTable format in ScyllaDB
+
+ScyllaDB supports the same SSTable format as Apache Cassandra 2.1.8, which means
+you can simply place SSTables from a Cassandra data directory into a
+ScyllaDB data directory—and it will just work
+
+Looking more carefully, you will see that ScyllaDB maintains more,
+smaller, SSTables than Cassandra does. On ScyllaDB, each core manages its
+own subset of SSTables. This internal sharding allows each core (shard)
+to work more efficiently, avoiding the complexity and delays of multiple
+cores competing for the same data
+
+[ScyllaDB Architecture](https://docs.scylladb.com/manual/master/architecture/index.md)
+
+Copyright
+
+© 2016, The Apache Software Foundation.
+
+Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.
+
+
+# sstable-format.md
+
 # SSTable 3.0 Format in ScyllaDB
 
 ScyllaDB supports the same SSTable format as Apache Cassandra 3.0.
@@ -41269,29 +41292,6 @@ parameter in `scylla.yaml`:
 
 Existing SSTables are not rewritten automatically when upgrading to 2026.2.
 They are upgraded to the `ms` format on the next compaction.
-
-[ScyllaDB Architecture](https://docs.scylladb.com/manual/master/architecture/index.md)
-
-Copyright
-
-© 2016, The Apache Software Foundation.
-
-Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.
-
-
-# sstable-format.md
-
-# SSTable format in ScyllaDB
-
-ScyllaDB supports the same SSTable format as Apache Cassandra 2.1.8, which means
-you can simply place SSTables from a Cassandra data directory into a
-ScyllaDB data directory—and it will just work
-
-Looking more carefully, you will see that ScyllaDB maintains more,
-smaller, SSTables than Cassandra does. On ScyllaDB, each core manages its
-own subset of SSTables. This internal sharding allows each core (shard)
-to work more efficiently, avoiding the complexity and delays of multiple
-cores competing for the same data
 
 [ScyllaDB Architecture](https://docs.scylladb.com/manual/master/architecture/index.md)
 
