@@ -386,18 +386,19 @@
 <p class="admonition-title">Note</p>
 <p>For cluster-wide backup and restore, see the <a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a> documentation.</p>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The following procedure assumes data is restored to the same cluster that was backed-up:</p>
+<section id="choosing-a-restore-method">
+<h2>Choosing a restore method<a class="headerlink" href="#choosing-a-restore-method" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB supports several restore methods. Choose the one that matches where your backup files are and whether the cluster topology changed since the backup was taken:</p>
 <ul class="simple">
-<li><p>same number of nodes</p></li>
-<li><p>same token range per node</p></li>
+<li><p><a class="reference internal" href="#restore-object-storage"><span class="std std-ref">Restore from object storage</span></a> - restore SSTables backed up to S3-compatible object storage with <a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool backup</span></a>. Runs on a running cluster and works regardless of cluster topology changes since the backup.</p></li>
+<li><p><a class="reference internal" href="#restore-load-and-stream"><span class="std std-ref">Restore with load and stream</span></a> - upload backed-up SSTable files to a running cluster; the data is streamed to the nodes owning it. Works regardless of cluster topology changes since the backup.</p></li>
+<li><p><a class="reference internal" href="#restore-procedure"><span class="std std-ref">Restore to an identical cluster</span></a> - copy snapshot files back in place and restart the nodes. Requires a cluster with the same number of nodes and the same token distribution as at the time of the backup, and each node must be restored from the backup of the <strong>same node</strong>. Suitable for vnode-based keyspaces only.</p></li>
 </ul>
-<p>The procedure restores each node using the backup file of the <strong>same node</strong>.
-If this is not the case, one should use other restoration methods tools like <a class="reference internal" href="../cassandra-to-scylla-migration-process.html"><span class="doc">sstableloader</span></a>. This procedure is much slower than restoring to the same topology cluster.</p>
-</div>
-<section id="procedure">
-<span id="restore-procedure"></span><h2>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">¶</a></h2>
+<p>For cluster-wide backup and restore, use <a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a>, which orchestrates the process across the cluster.</p>
+</section>
+<section id="prerequisites">
+<span id="restore-prerequisites"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>The following steps and notes apply to all restore methods.</p>
 <div class="line-block">
 <div class="line">From <strong>one</strong> of the nodes, recreate the schema.</div>
 </div>
@@ -409,12 +410,99 @@ If this is not the case, one should use other restoration methods tools like <a 
 <div class="line-block">
 <div class="line"><strong>Only</strong> a superuser should perform it.</div>
 </div>
-<section id="repeat-the-following-steps-for-each-node-in-the-cluster">
-<h3>Repeat the following steps for each node in the cluster:<a class="headerlink" href="#repeat-the-following-steps-for-each-node-in-the-cluster" title="Link to this heading">¶</a></h3>
+<div class="line-block">
+<div class="line">If the tables you are restoring already exist and contain data, truncate each of them, so that the existing data does not overwrite the restored data. Truncating a base table also truncates its materialized views and secondary indexes, no extra action is needed for them.</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cqlsh</span> <span class="pre">-e</span> <span class="pre">&quot;TRUNCATE</span> <span class="pre">&lt;keyspace_name&gt;.&lt;table_name&gt;&quot;</span></code></p>
+<div class="line-block">
+<div class="line">For example:</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cqlsh</span> <span class="pre">-e</span> <span class="pre">&quot;TRUNCATE</span> <span class="pre">mykeyspace.team_players&quot;</span></code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you are restoring <a class="reference internal" href="../../security/encryption-at-rest.html"><span class="doc">encrypted backup files</span></a>, make sure Scylla Enterprise has the same keys used by Scylla to encrypt the data before starting the restore process.</p>
+<p>If you are restoring <a class="reference internal" href="../../security/encryption-at-rest.html"><span class="doc">encrypted backup files</span></a>, make sure ScyllaDB is configured with the same keys that were used to encrypt the data before starting the restore process.</p>
 </div>
+</section>
+<section id="restore-from-object-storage">
+<span id="restore-object-storage"></span><h2>Restore from object storage<a class="headerlink" href="#restore-from-object-storage" title="Link to this heading">¶</a></h2>
+<p>Use this method to restore SSTables backed up to S3-compatible object storage with <a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool backup</span></a>. The node downloads the SSTables from the bucket and streams their contents to the nodes owning the data (load and stream), so the restore works regardless of cluster topology changes since the backup, and the cluster stays online.</p>
+<p>The object storage endpoint must be configured on the nodes, as described in <a class="reference internal" href="../../admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the table has any <a class="reference internal" href="../../../features/materialized-views.html"><span class="doc">Materialized Views (MV)</span></a> or <a class="reference internal" href="../../../features/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a>, view updates are generated automatically as the base table data is streamed. Restore the base table SSTables only; restoring MV or SI SSTables is not supported and will fail.</p>
+</div>
+<p><strong>Procedure</strong></p>
+<ol class="arabic">
+<li><p>Complete the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a>.</p></li>
+<li><p>List the backed-up SSTables in the bucket under the prefix used during the backup. The restore command takes the paths of the <code class="docutils literal notranslate"><span class="pre">TOC.txt</span></code> components of the SSTables to restore, <strong>relative to the prefix</strong> – the remainder of each object key after the prefix. Note that listing tools print full object keys, from the bucket root, so the prefix needs to be stripped. For example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>s3<span class="w"> </span>ls<span class="w"> </span>--recursive<span class="w"> </span>s3://bucket-foo/ks/cf/24601/<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/-TOC.txt$/ { print $4 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s|^ks/cf/24601/||&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Run <a class="reference internal" href="../../nodetool-commands/restore.html"><span class="doc">nodetool restore</span></a>, passing the endpoint, bucket, prefix, target keyspace and table, and the list of prefix-relative TOC paths:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>restore<span class="w"> </span>--endpoint<span class="w"> </span>s3.us-east-2.amazonaws.com<span class="w"> </span>--bucket<span class="w"> </span>bucket-foo<span class="w"> </span>--prefix<span class="w"> </span>ks/cf/24601<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--keyspace<span class="w"> </span>ks<span class="w"> </span>--table<span class="w"> </span>cf<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>me-3gdq_0bki_2dy4w2gqj6hoso4mw1-big-TOC.txt<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>me-3gdq_0bki_2dipc1ysb2x2a3btgh-big-TOC.txt
+</pre></div>
+</div>
+<p>Alternatively, put the same prefix-relative TOC paths (newline-separated) in a file and pass it with the <code class="docutils literal notranslate"><span class="pre">--sstables-file-list</span></code> option:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>&gt;<span class="w"> </span>sstables.list<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">me-3gdq_0bki_2dy4w2gqj6hoso4mw1-big-TOC.txt</span>
+<span class="s">me-3gdq_0bki_2dipc1ysb2x2a3btgh-big-TOC.txt</span>
+<span class="s">EOF</span>
+
+nodetool<span class="w"> </span>restore<span class="w"> </span>--endpoint<span class="w"> </span>s3.us-east-2.amazonaws.com<span class="w"> </span>--bucket<span class="w"> </span>bucket-foo<span class="w"> </span>--prefix<span class="w"> </span>ks/cf/24601<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--keyspace<span class="w"> </span>ks<span class="w"> </span>--table<span class="w"> </span>cf<span class="w"> </span>--sstables-file-list<span class="w"> </span>sstables.list
+</pre></div>
+</div>
+</li>
+<li><p>Monitor the restore. By default, the command waits for the restore to finish and reports its final status. With the <code class="docutils literal notranslate"><span class="pre">--nowait</span></code> option, it returns a task ID immediately; use the <a class="reference internal" href="../../nodetool-commands/tasks/index.html"><span class="doc">nodetool tasks</span></a> commands to track progress or cancel the operation.</p></li>
+</ol>
+<p><strong>Speeding up the restore</strong></p>
+<p>A single <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">restore</span></code> invocation runs on one node, which downloads and streams all the listed SSTables. To parallelize the work, split the list of SSTables between the nodes and run <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">restore</span></code> on each of them. The <code class="docutils literal notranslate"><span class="pre">--scope</span></code> option (<code class="docutils literal notranslate"><span class="pre">node</span></code>, <code class="docutils literal notranslate"><span class="pre">rack</span></code>, <code class="docutils literal notranslate"><span class="pre">dc</span></code>, or <code class="docutils literal notranslate"><span class="pre">all</span></code>) constrains where each node streams the data, so that concurrent restores don’t stream the same partition to a replica more than once. See <a class="reference internal" href="../../nodetool-commands/restore.html"><span class="doc">nodetool restore</span></a> for details on combining <code class="docutils literal notranslate"><span class="pre">--scope</span></code> with per-node SSTable lists.</p>
+<p>With the <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> option, each partition is streamed only to its primary replica. This reduces the amount of streamed data, but you <strong>must</strong> run a full cluster repair after the restore completes to replicate the data to the remaining replicas: for vnode-based keyspaces, run <a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair -pr</span></a> on <strong>every</strong> node; for tablet-based keyspaces, run <a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a> on any single node.</p>
+</section>
+<section id="restore-with-load-and-stream">
+<span id="restore-load-and-stream"></span><h2>Restore with load and stream<a class="headerlink" href="#restore-with-load-and-stream" title="Link to this heading">¶</a></h2>
+<p>Use this method when the backed-up SSTable files are available on disk (for example, snapshot files copied back from external storage). The SSTables are read and their contents are streamed to the nodes owning the data, so the method works regardless of cluster topology changes since the backup. Each SSTable needs to be uploaded to only <strong>one</strong> node, any node, and the cluster stays online.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the table has any <a class="reference internal" href="../../../features/materialized-views.html"><span class="doc">Materialized Views (MV)</span></a> or <a class="reference internal" href="../../../features/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a>, view updates are generated automatically as the base table data is streamed. Upload the base table SSTables only; uploading MV or SI SSTables is not supported and will fail.</p>
+</div>
+<p><strong>Procedure</strong></p>
+<ol class="arabic">
+<li><p>Complete the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a>.</p></li>
+<li><p>Copy the backed-up SSTable files of a table to that table’s <code class="docutils literal notranslate"><span class="pre">upload</span></code> directory on one of the nodes, and make sure the files are owned by the <code class="docutils literal notranslate"><span class="pre">scylla</span></code> user and group:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>/path/to/backup/sstables/*<span class="w"> </span>/var/lib/scylla/data/mykeyspace/team_players-6e856600017f11e790f4000000000000/upload/
+sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span>scylla:scylla<span class="w"> </span>/var/lib/scylla/data/mykeyspace/team_players-6e856600017f11e790f4000000000000/upload/
+</pre></div>
+</div>
+<p>You can distribute the backup files between several nodes to parallelize the restore; make sure each SSTable is uploaded to only one node.</p>
+</li>
+<li><p>Run <a class="reference internal" href="../../nodetool-commands/refresh.html"><span class="doc">nodetool refresh</span></a> with the <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option on each node holding uploaded files:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>refresh<span class="w"> </span>mykeyspace<span class="w"> </span>team_players<span class="w"> </span>--load-and-stream
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../../nodetool-commands/refresh.html#nodetool-refresh-load-and-stream"><span class="std std-ref">Load and Stream</span></a> for the <code class="docutils literal notranslate"><span class="pre">--scope</span></code> and <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> options that constrain the set of target replicas. If <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> is used, run a full cluster repair after the restore completes to replicate the data to the remaining replicas: for vnode-based keyspaces, run <a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair -pr</span></a> on <strong>every</strong> node; for tablet-based keyspaces, run <a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a> on any single node.</p>
+</li>
+</ol>
+</section>
+<section id="restore-to-an-identical-cluster">
+<span id="restore-procedure"></span><h2>Restore to an identical cluster<a class="headerlink" href="#restore-to-an-identical-cluster" title="Link to this heading">¶</a></h2>
+<p>This method places the snapshot files directly back into the table directories and restarts the nodes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following procedure assumes data is restored to the same cluster that was backed-up:</p>
+<ul class="simple">
+<li><p>same number of nodes</p></li>
+<li><p>same token range per node</p></li>
+</ul>
+<p>The procedure restores each node using the backup file of the <strong>same node</strong>.
+If this is not the case, use the <a class="reference internal" href="#restore-load-and-stream"><span class="std std-ref">load and stream</span></a> method described above instead. It works regardless of topology changes, but is slower than restoring to an identical cluster.</p>
+<p>This method is suitable for vnode-based keyspaces only. For <a class="reference internal" href="../../../architecture/tablets.html"><span class="doc">tablet-based</span></a> keyspaces, use the <a class="reference internal" href="#restore-object-storage"><span class="std std-ref">object storage</span></a> or <a class="reference internal" href="#restore-load-and-stream"><span class="std std-ref">load and stream</span></a> method instead.</p>
+</div>
+<p>Complete the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a> first.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Best practise is <strong>not</strong> to restore <a class="reference internal" href="../../../features/materialized-views.html"><span class="doc">Materialized Views (MV)</span></a> and <a class="reference internal" href="../../../features/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a> SSTables.
@@ -425,6 +513,8 @@ It is recommended to:</p>
 <li><p>Recreate the  MV or SI, using the original description from the CQL backup, using <cite>CREATE MATERIALIZED VIEW</cite> or <cite>CREATE INDEX</cite></p></li>
 </ul>
 </div>
+<section id="repeat-the-following-steps-for-each-node-in-the-cluster">
+<h3>Repeat the following steps for each node in the cluster:<a class="headerlink" href="#repeat-the-following-steps-for-each-node-in-the-cluster" title="Link to this heading">¶</a></h3>
 <ol class="arabic">
 <li><p>Run the <a class="reference internal" href="../../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a> command to ensure the data is flushed to the SSTables</p></li>
 <li><p>Shut down the node</p>
@@ -484,10 +574,14 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>-r<span class="w"> </span>*<span class="w"> </span>/var/lib/scylla/data/mykeyspace/team_players-6e856600017f11e790f4000000000000
 </pre></div>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Copying files into the table’s data directory is only allowed while the ScyllaDB service is <strong>stopped</strong>. To load SSTables into a running node, place them in the table’s <code class="docutils literal notranslate"><span class="pre">upload</span></code> directory and use <a class="reference internal" href="../../nodetool-commands/refresh.html"><span class="doc">nodetool refresh</span></a> instead.</p>
+</div>
 </li>
-<li><p>If you have incremental backup files, copy them from the <strong>backups</strong> folder <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/backups/&lt;backups_name&gt;</span></code> to  the <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/</span></code> directory</p>
+<li><p>If you have incremental backup files, copy them from the <strong>backups</strong> folder <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/backups</span></code> to  the <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/</span></code> directory</p>
 <p>For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>-r<span class="w"> </span>*<span class="w"> </span>/var/lib/scylla/data/mykeyspace/team_players-6e856600017f11e790f4000000000000
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>cp<span class="w"> </span>-r<span class="w"> </span>/var/lib/scylla/data/mykeyspace/team_players-6e856600017f11e790f4000000000000/backups/*<span class="w"> </span>/var/lib/scylla/data/mykeyspace/team_players-6e856600017f11e790f4000000000000
 </pre></div>
 </div>
 </li>
@@ -507,9 +601,8 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <p>(with <em>some-scylla</em> container already running)</p>
 </div></div>
 </li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code> command to guarantee that your data is consistent with other nodes.</p></li>
 </ol>
-<p>After performing the above on all nodes, repair the cluster with nodetool repair. This makes sure that the data is consistent on all nodes and between each node.</p>
+<p>After performing the above on all nodes, run a full cluster repair: for vnode-based keyspaces, run <a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair -pr</span></a> on <strong>every</strong> node; for tablet-based keyspaces, run <a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a> on any single node; run both if you restored keyspaces of both kinds. This makes sure that the data is consistent on all nodes and between each node.</p>
 </section>
 </section>
 </section>
@@ -635,7 +728,11 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">Restore from a Backup and Incremental Backup</a><ul>
-<li><a class="reference internal" href="#procedure">Procedure</a><ul>
+<li><a class="reference internal" href="#choosing-a-restore-method">Choosing a restore method</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#restore-from-object-storage">Restore from object storage</a></li>
+<li><a class="reference internal" href="#restore-with-load-and-stream">Restore with load and stream</a></li>
+<li><a class="reference internal" href="#restore-to-an-identical-cluster">Restore to an identical cluster</a><ul>
 <li><a class="reference internal" href="#repeat-the-following-steps-for-each-node-in-the-cluster">Repeat the following steps for each node in the cluster:</a></li>
 </ul>
 </li>
@@ -752,6 +849,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
@@ -1146,7 +1244,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Sep 2026.
+                        Last updated on 05 Sep 2026.
                     
                 </div>
             

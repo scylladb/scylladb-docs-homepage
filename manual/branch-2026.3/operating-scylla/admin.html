@@ -605,7 +605,7 @@ the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</sp
 should follow this format:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http[s]://&lt;endpoint_address_or_domain_name&gt;[:&lt;port_number&gt;]</span>
-<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;region_name&gt;</span><span class="w"> </span><span class="c1"># optional, e.g. us-east-1</span>
+<span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;region_name&gt;</span><span class="w"> </span><span class="c1"># required unless AWS_DEFAULT_REGION is set, e.g. us-east-1</span>
 <span class="w">    </span><span class="nt">iam_role_arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;iam_role&gt;</span><span class="w"> </span><span class="c1"># optional</span>
 </pre></div>
 </div>
@@ -617,7 +617,9 @@ should follow this format:</p>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">aws_region</span></code> option can also be specified using
-the <code class="docutils literal notranslate"><span class="pre">AWS_DEFAULT_REGION</span></code> environment variable.</p>
+the <code class="docutils literal notranslate"><span class="pre">AWS_DEFAULT_REGION</span></code> environment variable. An S3 endpoint needs a region
+from one of the two. If neither supplies a non-empty value, ScyllaDB logs an
+error and ignores that endpoint.</p>
 <p>The AWS-related credentials options (<code class="docutils literal notranslate"><span class="pre">aws_access_key_id</span></code>,
 <code class="docutils literal notranslate"><span class="pre">aws_secret_access_key</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_session_token</span></code>) can be configured using
 the following environment variables:</p>
@@ -1246,6 +1248,7 @@ with the ScyllaDB REST API.</p>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
@@ -1640,7 +1643,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Sep 2026.
+                        Last updated on 05 Sep 2026.
                     
                 </div>
             

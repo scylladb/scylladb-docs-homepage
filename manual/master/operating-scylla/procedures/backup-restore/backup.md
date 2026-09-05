@@ -77,15 +77,15 @@ For a complete point in time backup, the following is required:
 
 **Procedure**
 
-1. In the `/etc/scylla/scylla.yaml` file set the `incremental backups` parameters to `true` and restart the ScyllaDB service. Snapshot are created under ScyllaDB data directory `/var/lib/scylla/data`
+1. In the `/etc/scylla/scylla.yaml` file set the `incremental_backups` parameter to `true` and restart the ScyllaDB service. From now on, flushed SSTables are hard-linked under ScyllaDB data directory `/var/lib/scylla/data`
 <br/>
-with the following structure:
+into a directory with the following structure:
 <br/>
-`keyspace_name/table_name-UUID/backups/backups_name`
+`keyspace_name/table_name-UUID/backups`
 <br/>
 For example:
 <br/>
-`/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/backups/1437827672721`
+`/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/backups`
 <br/>
 
 ## Additional Resources

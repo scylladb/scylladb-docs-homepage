@@ -468,13 +468,13 @@ an older version of cqlsh may lead to data resurrection or data loss. To check t
 </div></blockquote>
 <p><strong>Procedure</strong></p>
 <div class="line-block">
-<div class="line">1. In the <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> file set the <code class="docutils literal notranslate"><span class="pre">incremental</span> <span class="pre">backups</span></code> parameters to <code class="docutils literal notranslate"><span class="pre">true</span></code> and restart the ScyllaDB service. Snapshot are created under ScyllaDB data directory <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data</span></code></div>
-<div class="line">with the following structure:</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">keyspace_name/table_name-UUID/backups/backups_name</span></code></div>
+<div class="line">1. In the <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code> file set the <code class="docutils literal notranslate"><span class="pre">incremental_backups</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">true</span></code> and restart the ScyllaDB service. From now on, flushed SSTables are hard-linked under ScyllaDB data directory <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data</span></code></div>
+<div class="line">into a directory with the following structure:</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">keyspace_name/table_name-UUID/backups</span></code></div>
 </div>
 <div class="line-block">
 <div class="line">For example:</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/backups/1437827672721</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/backups</span></code></div>
 </div>
 </section>
 <section id="additional-resources">
@@ -1120,7 +1120,7 @@ an older version of cqlsh may lead to data resurrection or data loss. To check t
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 04 Sep 2026.
+                        Last updated on 05 Sep 2026.
                     
                 </div>
             
