@@ -804,12 +804,21 @@ In contrast, DynamoDB keeps the old stream and its data readable for
 behave the same in Alternator. However, there are a few features which we have
 not implemented yet. Unimplemented features return an error when used, so
 they should be easy to detect. Here is a list of these unimplemented features:</p>
-<ul class="simple">
+<ul>
 <li><p>GSI (Global Secondary Index) and LSI (Local Secondary Index) may be
 configured to project only a subset of the base-table attributes to the
 index. This option is not yet respected by Alternator - all attributes
 are projected. This wastes some disk space when it is not needed.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/5036">https://github.com/scylladb/scylla/issues/5036</a></p></li>
+<li><p>The deprecated <code class="docutils literal notranslate"><span class="pre">KeyConditions</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Query</span></code> works only on
+single-attribute keys. Using it to query a composite GSI fails with a
+<code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>carrying this message:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Legacy</span> <span class="n">KeyConditions</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">supported</span> <span class="k">for</span> <span class="n">composite</span> <span class="n">key</span> <span class="n">GSIs</span> <span class="ow">in</span> <span class="n">Alternator</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code> instead - AWS recommends it for all new
+applications anyway.</p>
+</li>
 <li><p>DynamoDB’s multi-item transaction feature (TransactWriteItems,
 TransactGetItems) is not supported. Note that the older single-item
 conditional updates feature are fully supported.
@@ -897,9 +906,6 @@ November 2024.
 that can be used to achieve consistent reads on global (multi-region) tables.
 This table option was added as a preview to DynamoDB in December 2024.
 <a class="reference external" href="https://github.com/scylladb/scylladb/issues/21852">https://github.com/scylladb/scylladb/issues/21852</a></p></li>
-<li><p>Alternator does not support multi-attribute (composite) keys in GSIs.
-This feature was added to DynamoDB in November 2025.
-<a class="reference external" href="https://github.com/scylladb/scylladb/issues/27182">https://github.com/scylladb/scylladb/issues/27182</a></p></li>
 </ul>
 </section>
 </section>
@@ -1548,7 +1554,7 @@ This feature was added to DynamoDB in November 2025.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 06 Sep 2026.
+                        Last updated on 07 Sep 2026.
                     
                 </div>
             

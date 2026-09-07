@@ -407,6 +407,15 @@ they should be easy to detect. Here is a list of these unimplemented features:
   index. This option is not yet respected by Alternator - all attributes
   are projected. This wastes some disk space when it is not needed.
   [https://github.com/scylladb/scylla/issues/5036](https://github.com/scylladb/scylla/issues/5036)
+* The deprecated `KeyConditions` parameter of `Query` works only on
+  single-attribute keys. Using it to query a composite GSI fails with a
+  `ValidationException`carrying this message:
+  ```default
+  Legacy KeyConditions are not supported for composite key GSIs in Alternator
+  ```
+
+  Use `KeyConditionExpression` instead - AWS recommends it for all new
+  applications anyway.
 * DynamoDB’s multi-item transaction feature (TransactWriteItems,
   TransactGetItems) is not supported. Note that the older single-item
   conditional updates feature are fully supported.
@@ -494,6 +503,3 @@ they should be easy to detect. Here is a list of these unimplemented features:
   that can be used to achieve consistent reads on global (multi-region) tables.
   This table option was added as a preview to DynamoDB in December 2024.
   [https://github.com/scylladb/scylladb/issues/21852](https://github.com/scylladb/scylladb/issues/21852)
-* Alternator does not support multi-attribute (composite) keys in GSIs.
-  This feature was added to DynamoDB in November 2025.
-  [https://github.com/scylladb/scylladb/issues/27182](https://github.com/scylladb/scylladb/issues/27182)
