@@ -615,6 +615,13 @@ with extended syntax (<code class="docutils literal notranslate"><span class="pr
 alternation <code class="docutils literal notranslate"><span class="pre">&#64;(a|b)</span></code>, and quantifiers <code class="docutils literal notranslate"><span class="pre">+(…)</span></code>, <code class="docutils literal notranslate"><span class="pre">*(…)</span></code>, <code class="docutils literal notranslate"><span class="pre">?(…)</span></code>. For
 example, <code class="docutils literal notranslate"><span class="pre">&quot;prod_ks.*&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;!(system).*&quot;</span></code> for tables and <code class="docutils literal notranslate"><span class="pre">&quot;admin_*&quot;</span></code> for
 roles.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A login attempt that establishes no role name, such as one whose client
+certificate was rejected, is audited with an empty user name. <code class="docutils literal notranslate"><span class="pre">roles:</span> <span class="pre">[&quot;*&quot;]</span></code>
+and <code class="docutils literal notranslate"><span class="pre">roles:</span> <span class="pre">[&quot;&quot;]</span></code> match it; a rule listing only specific patterns, such as
+<code class="docutils literal notranslate"><span class="pre">[&quot;admin_*&quot;]</span></code>, does not record such attempts.</p>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">audit_rules</span></code> is a live-updatable parameter. To apply changes at runtime, edit
 <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> and send <code class="docutils literal notranslate"><span class="pre">SIGHUP</span></code> to the ScyllaDB process. See
 <a class="reference internal" href="../../reference/configuration-parameters.html"><span class="doc">Configuration Parameters</span></a> for details on live updates and
@@ -1444,7 +1451,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 07 Sep 2026.
+                        Last updated on 08 Sep 2026.
                     
                 </div>
             
