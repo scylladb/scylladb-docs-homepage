@@ -473,6 +473,9 @@ details below).</p></td>
 </tr>
 </tbody>
 </table>
+<p>A keyspace also accepts the options that can be set through CQL at the <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code> scope, such as
+<code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code>; setting one to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> removes it from the keyspace. See
+<a class="reference internal" href="cluster-config.html"><span class="doc">configuring a cluster with CQL</span></a>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property is optional. Omitting it is equivalent to supplying an empty map (<code class="docutils literal notranslate"><span class="pre">replication</span> <span class="pre">=</span> <span class="pre">{}</span></code>),
 and default value will be applied for each sub-option.
 The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property contains the <code class="docutils literal notranslate"><span class="pre">'class'</span></code> sub-option, which defines the replication strategy class to use.
@@ -1175,32 +1178,37 @@ it is an optimization to declare a descending clustering order.</p></li>
 <td><p>2048</p></td>
 <td><p>Not implemented (option value is ignored).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compaction</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code></p></td>
+<td><p>simple</p></td>
+<td><p>inherited</p></td>
+<td><p>Enable automatic repair for tablet-based tables. When not set for the table, the keyspace or cluster value applies. Set to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> to remove the table setting. See <a class="reference internal" href="cluster-config.html"><span class="doc">configuring a cluster with CQL</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compaction</span></code></p></td>
 <td><p>map</p></td>
 <td><p>see below</p></td>
 <td><p><a class="reference internal" href="#cql-compaction-options"><span class="std std-ref">Compaction options</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compression</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compression</span></code></p></td>
 <td><p>map</p></td>
 <td><p>see below</p></td>
 <td><p><a class="reference internal" href="#cql-compression-options"><span class="std std-ref">Compression options</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">caching</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">caching</span></code></p></td>
 <td><p>map</p></td>
 <td><p>see below</p></td>
 <td><p><a class="reference internal" href="#cql-caching-options"><span class="std std-ref">Caching Options</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cdc</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cdc</span></code></p></td>
 <td><p>map</p></td>
 <td><p>see below</p></td>
 <td><p><a class="reference internal" href="#cdc-options"><span class="std std-ref">CDC Options</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tablet_options</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tablet_options</span></code></p></td>
 <td><p>map</p></td>
 <td><p>see below</p></td>
 <td><p><a class="reference internal" href="#cql-per-table-tablet-options"><span class="std std-ref">Per-table tablet options</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">large_data_guardrails_enabled</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">large_data_guardrails_enabled</span></code></p></td>
 <td><p>simple</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 <td><p>Enables <a class="reference internal" href="guardrails.html#guardrails-large-data"><span class="std std-ref">large data guardrails</span></a> for this table.</p></td>
@@ -2113,6 +2121,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -2278,7 +2287,6 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -2359,7 +2367,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Sep 2026.
+                        Last updated on 12 Sep 2026.
                     
                 </div>
             

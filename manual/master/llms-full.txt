@@ -319,6 +319,7 @@ It allows you to create keyspaces and tables, insert and query tables, and more.
 > * [Functions](https://docs.scylladb.com/manual/master/cql/functions.md)
 > * [JSON Support](https://docs.scylladb.com/manual/master/cql/json.md)
 > * [Materialized Views](https://docs.scylladb.com/manual/master/cql/mv.md)
+> * [Configuring a Cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md)
 
 ## ScyllaDB CQL Extensions - CQL Extensions Provided by ScyllaDB
 
@@ -384,7 +385,6 @@ The tutorials will show you how to use ScyllaDB as a data source for an applicat
 
 * [Authorization Cache](https://docs.scylladb.com/manual/master/reference/api/authorization-cache.md)
 * [Cache Service](https://docs.scylladb.com/manual/master/reference/api/cache-service.md)
-* [Collectd](https://docs.scylladb.com/manual/master/reference/api/collectd.md)
 * [Column Family](https://docs.scylladb.com/manual/master/reference/api/column-family.md)
 * [Commit Log](https://docs.scylladb.com/manual/master/reference/api/commit-log.md)
 * [Compaction Manager](https://docs.scylladb.com/manual/master/reference/api/compaction-manager.md)
@@ -914,7 +914,7 @@ For more information on ScyllaDB 3.x SSTable formats, see below:
 * [ScyllaDB Types](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
 * [cassandra-stress](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
 * scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
-* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb collectd/prometheus metrics.
+* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb Prometheus metrics.
 * [scylla_dev_mode_setup](https://docs.scylladb.com/manual/master/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
 * [perftune](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/perftune.md) - performance configuration.
 * [Reading mutation fragments](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.
@@ -5378,7 +5378,7 @@ The tools are based on Apache Cassandra 3.11.
 * [ScyllaDB Types](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
 * [cassandra-stress](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
 * scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
-* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb collectd/prometheus metrics.
+* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb Prometheus metrics.
 * [scylla_dev_mode_setup](https://docs.scylladb.com/manual/master/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
 * [perftune](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/perftune.md) - performance configuration.
 * [Reading mutation fragments](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.
@@ -9678,6 +9678,156 @@ For Intel Xeon processors, each OCPU corresponds to two hardware execution threa
 | VM.DenseIO.E5.Flex (see [Flexible Shapes](https://docs.oracle.com/en-us/iaas/Content/Compute/References/computeshapes.htm#flexible)) | 8 - 48 | 96 - 576   | 6.8 - 40.8 |
 
 
+# cluster-config.md
+
+<a id="cluster-config"></a>
+
+# Configuring a Cluster with CQL
+
+CQL cluster configuration provides an additional way to configure ScyllaDB, next to
+`scylla.yaml`. An option set through CQL is stored once and applied by all nodes in the
+cluster, without editing `scylla.yaml` on every node or restarting anything. An option is set
+at a *scope*, which determines what it applies to: the whole cluster, a datacenter, a rack, a
+node, a keyspace, or a table; see [Scopes](#cql-cluster-config-scopes). The stored values
+are part of the schema: they are replicated to every node through the same path as tables and
+keyspaces, and they appear in `DESCRIBE` output.
+
+The options and scopes currently available through CQL are listed in
+[Available options](#cql-cluster-config-options) at the end of this page. They are a
+separate set from the `scylla.yaml` parameters; more options will be added over time.
+
+#### NOTE
+You can set a cluster configuration option only when all nodes in the cluster run a ScyllaDB
+version that supports it. During a rolling upgrade, attempts to set an option that is not
+supported by every node are rejected. Retry the statement when every node supports the
+option. Existing option values continue to apply during the upgrade.
+
+<a id="cql-cluster-config-scopes"></a>
+
+## Scopes
+
+An option can be set at several *scopes*. A value set at a narrower scope takes precedence over a
+value set at a broader one:
+
+* `TABLE` overrides `KEYSPACE`, which overrides `CLUSTER`.
+* `NODE` overrides `RACK`, which overrides `DATACENTER`, which overrides `CLUSTER`.
+
+Each option supports a fixed set of scopes. Options that describe a table (such as
+`auto_repair_enabled`) can be set at `TABLE`, `KEYSPACE` and `CLUSTER` scope. No option
+currently supports the `DATACENTER`, `RACK` or `NODE` scopes.
+
+Each scope stores only the values that were explicitly set there. The *effective* value of an
+option for a table is the value stored at the narrowest scope that has one: the table’s own value
+if it has one, otherwise the keyspace’s, otherwise the cluster’s. If no scope stores a value, the
+option’s built-in default applies.
+
+## Setting an option
+
+For a table or a keyspace, use the `WITH` clause of the usual statements. The option name is used
+directly as a property name:
+
+```cql
+CREATE TABLE ks.tbl (pk int PRIMARY KEY) WITH auto_repair_enabled = true;
+ALTER TABLE ks.tbl WITH auto_repair_enabled = false;
+ALTER KEYSPACE ks WITH auto_repair_enabled = true;
+```
+
+Cluster configuration options can be combined with other properties in the same statement, for
+example `WITH comment = 'orders' AND auto_repair_enabled = true`. The one exception is a
+tablets replication-factor change, which cannot be combined with a cluster configuration option
+in the same `ALTER KEYSPACE` statement. This is rejected:
+
+```cql
+ALTER KEYSPACE ks WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3} AND auto_repair_enabled = true;
+```
+
+Use separate statements instead:
+
+```cql
+ALTER KEYSPACE ks WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3};
+ALTER KEYSPACE ks WITH auto_repair_enabled = true;
+```
+
+For the cluster as a whole, use `ALTER CLUSTER`:
+
+```cql
+ALTER CLUSTER WITH auto_repair_enabled = true;
+```
+
+The statements for the node-oriented scopes exist for options that will support them:
+
+```cql
+alter_cluster_statement:    ALTER CLUSTER WITH `option` '=' `value`
+alter_datacenter_statement: ALTER DATACENTER `datacenter_name` WITH `option` '=' `value`
+alter_rack_statement:       ALTER RACK `datacenter_name` `rack_name` WITH `option` '=' `value`
+alter_node_statement:       ALTER NODE `host_id` WITH `option` '=' `value`
+```
+
+The datacenter, rack, or node named in the statement must exist in the cluster.
+
+Values are validated against the option’s type before anything is stored: a boolean option accepts
+`true` and `false` (in any letter case), an integer option accepts a signed 64-bit integer, and
+so on, and a text option accepts at most 4096 bytes. An unknown option name, an option used at a
+scope it does not support, or a value of the wrong type is rejected and nothing changes.
+
+## Removing an option
+
+Setting an option to `NULL` removes the value stored at that scope, so the option falls back to
+the next broader scope, or to its default:
+
+```cql
+ALTER TABLE ks.tbl WITH auto_repair_enabled = NULL;   -- ks.tbl now follows its keyspace
+ALTER CLUSTER WITH auto_repair_enabled = NULL;        -- back to the built-in default
+```
+
+Only the bare `NULL` keyword removes a value. The string `'null'` is an ordinary value and is
+validated like any other, so a boolean option rejects it.
+
+## Permissions
+
+The permission required depends on the scope, not on the option:
+
+* `ALTER TABLE ... WITH` requires `ALTER` permission on the table.
+* `ALTER KEYSPACE ... WITH` requires `ALTER` permission on the keyspace.
+* `ALTER CLUSTER`, `ALTER DATACENTER`, `ALTER RACK` and `ALTER NODE` require a superuser.
+
+## Inspecting effective values
+
+`DESCRIBE KEYSPACE` and `DESCRIBE TABLE` show the cluster configuration options that are in
+force for the described object, in the `WITH` clause alongside the other properties. Each such
+line ends with a comment that says where the value comes from and what every scope stores
+(`NULL` means nothing is stored at that scope).
+
+A value stored at the described object’s own scope is shown as a regular property:
+
+```cql
+... AND auto_repair_enabled = true  -- from table (table=true, keyspace=false, cluster=NULL)
+```
+
+A value inherited from a broader scope is shown as a commented-out property, so replaying the
+`DESCRIBE` output recreates exactly what was stored and nothing more:
+
+```cql
+... -- AND auto_repair_enabled = false  -- from keyspace (table=NULL, keyspace=false, cluster=NULL)
+```
+
+Removing the leading `--` marker and running the statement pins the inherited value at that
+scope as an explicit setting. An option that no scope stores is not shown at all.
+
+`DESCRIBE SCHEMA` lists the cluster-scope values first, before any keyspace, as
+`ALTER CLUSTER WITH ...` statements, so a schema dump carries them. Under
+`DESCRIBE SCHEMA WITH INTERNALS` the trailing comments are omitted and only stored values are
+emitted, which is the form used for backup and restore. See [DESCRIBE SCHEMA](https://docs.scylladb.com/manual/master/cql/describe-schema.md).
+
+<a id="cql-cluster-config-options"></a>
+
+## Available options
+
+| Option                | Type    | Scopes                         | Description                                                        |
+|-----------------------|---------|--------------------------------|--------------------------------------------------------------------|
+| `auto_repair_enabled` | boolean | `CLUSTER`, `KEYSPACE`, `TABLE` | Enable automatic repair for tablet-based tables. Default: `false`. |
+
+
 # cluster-platform-migration.md
 
 # Cluster Platform Migration Using Node Cycling
@@ -10081,11 +10231,6 @@ If nodes report different schema versions:
 * [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/remove-node.md)
 * [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-running-node.md)
 * [Upgrade](https://docs.scylladb.com/manual/master/upgrade/index.md)
-
-
-# collectd.md
-
-# Collectd
 
 
 # column-family.md
@@ -11668,6 +11813,10 @@ having the highest priority:
 2. `system.config` table
 3. command line options
 4. `scylla.yaml`
+
+In addition to the per-node options in `scylla.yaml`, cluster-configuration options are set
+through CQL and are automatically applied by all nodes in the cluster. See
+[Configuring a Cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md) for those options.
 
 <!-- -*- mode: rst -*- -->
 
@@ -17990,6 +18139,10 @@ The supported `options` are:
 | `tablets`        | *map*    | no          |           | Enables or disables tablets for the keyspace (see [tablets](#tablets))                                  |
 | `consistency`    | *simple* | no          | eventual  | Configures consistency mode for the keyspace (see [consistency](#consistency-option)).                  |
 
+A keyspace also accepts the options that can be set through CQL at the `KEYSPACE` scope, such as
+`auto_repair_enabled`; setting one to `NULL` removes it from the keyspace. See
+[configuring a cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md).
+
 The `replication` property is optional. Omitting it is equivalent to supplying an empty map (`replication = {}`),
 and default value will be applied for each sub-option.
 The `replication` property contains the `'class'` sub-option, which defines the replication strategy class to use.
@@ -18688,23 +18841,24 @@ has three visible consequences:
 
 A table supports the following options:
 
-| Option                          | Kind   | Default      | Description                                                                                                                                                                                                                       |
-|---------------------------------|--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `comment`                       | simple | none         | A free-form, human-readable comment.                                                                                                                                                                                              |
-| `speculative_retry`             | simple | 99PERCENTILE | [Speculative retry options](#speculative-retry-options)                                                                                                                                                                           |
-| `gc_grace_seconds`              | simple | 864000       | Time to wait before garbage collecting tombstones (deletion markers). See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                            |
-| `tombstone_gc`                  | mode   | see below    | The mode of garbage collecting tombstones. See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                       |
-| `bloom_filter_fp_chance`        | simple | 0.01         | The target probability of false-positive of the sstable bloom filters. Sstable bloom filters will be sized to provide the provided probability (thus lowering this value impact the size of bloom filters in-memory and on-disk). |
-| `default_time_to_live`          | simple | 0            | The default expiration time (“TTL”) in seconds for a table.                                                                                                                                                                       |
-| `memtable_flush_period_in_ms`   | simple | 0            | Flush the memtables associated with this table every `memtable_flush_period_in_ms` milliseconds. When set to `0`, periodic flush is disabled. Cannot set to values lower than `60000` (1 minute). Default: `0`.                   |
-| `min_index_interval`            | simple | 128          | Minimum gap between summary entries: ScyllaDB will create summary entries with at least this amount of partitions between them. Controls the maximums density of the summary.                                                     |
-| `max_index_interval`            | simple | 2048         | Not implemented (option value is ignored).                                                                                                                                                                                        |
-| `compaction`                    | map    | see below    | [Compaction options](#cql-compaction-options)                                                                                                                                                                                     |
-| `compression`                   | map    | see below    | [Compression options](#cql-compression-options)                                                                                                                                                                                   |
-| `caching`                       | map    | see below    | [Caching Options](#cql-caching-options)                                                                                                                                                                                           |
-| `cdc`                           | map    | see below    | [CDC Options](#cdc-options)                                                                                                                                                                                                       |
-| `tablet_options`                | map    | see below    | [Per-table tablet options](#cql-per-table-tablet-options)                                                                                                                                                                         |
-| `large_data_guardrails_enabled` | simple | `false`      | Enables [large data guardrails](https://docs.scylladb.com/manual/master/cql/guardrails.md#guardrails-large-data) for this table.                                                                                                  |
+| Option                          | Kind   | Default      | Description                                                                                                                                                                                                                                                         |
+|---------------------------------|--------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `comment`                       | simple | none         | A free-form, human-readable comment.                                                                                                                                                                                                                                |
+| `speculative_retry`             | simple | 99PERCENTILE | [Speculative retry options](#speculative-retry-options)                                                                                                                                                                                                             |
+| `gc_grace_seconds`              | simple | 864000       | Time to wait before garbage collecting tombstones (deletion markers). See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                              |
+| `tombstone_gc`                  | mode   | see below    | The mode of garbage collecting tombstones. See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                         |
+| `bloom_filter_fp_chance`        | simple | 0.01         | The target probability of false-positive of the sstable bloom filters. Sstable bloom filters will be sized to provide the provided probability (thus lowering this value impact the size of bloom filters in-memory and on-disk).                                   |
+| `default_time_to_live`          | simple | 0            | The default expiration time (“TTL”) in seconds for a table.                                                                                                                                                                                                         |
+| `memtable_flush_period_in_ms`   | simple | 0            | Flush the memtables associated with this table every `memtable_flush_period_in_ms` milliseconds. When set to `0`, periodic flush is disabled. Cannot set to values lower than `60000` (1 minute). Default: `0`.                                                     |
+| `min_index_interval`            | simple | 128          | Minimum gap between summary entries: ScyllaDB will create summary entries with at least this amount of partitions between them. Controls the maximums density of the summary.                                                                                       |
+| `max_index_interval`            | simple | 2048         | Not implemented (option value is ignored).                                                                                                                                                                                                                          |
+| `auto_repair_enabled`           | simple | inherited    | Enable automatic repair for tablet-based tables. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md). |
+| `compaction`                    | map    | see below    | [Compaction options](#cql-compaction-options)                                                                                                                                                                                                                       |
+| `compression`                   | map    | see below    | [Compression options](#cql-compression-options)                                                                                                                                                                                                                     |
+| `caching`                       | map    | see below    | [Caching Options](#cql-caching-options)                                                                                                                                                                                                                             |
+| `cdc`                           | map    | see below    | [CDC Options](#cdc-options)                                                                                                                                                                                                                                         |
+| `tablet_options`                | map    | see below    | [Per-table tablet options](#cql-per-table-tablet-options)                                                                                                                                                                                                           |
+| `large_data_guardrails_enabled` | simple | `false`      | Enables [large data guardrails](https://docs.scylladb.com/manual/master/cql/guardrails.md#guardrails-large-data) for this table.                                                                                                                                    |
 
 <a id="speculative-retry-options"></a>
 
@@ -19873,6 +20027,8 @@ and [restoring](https://docs.scylladb.com/manual/master/operating-scylla/procedu
 
 * `DESCRIBE [FULL] SCHEMA`: describe elements of the non-system schema: keyspaces, tables, views, UDTs, etc.
   When FULL is used, it also includes the elements of the system schema, e.g. system tables.
+  If any cluster-scope configuration overrides are stored (see `ALTER CLUSTER`), the corresponding
+  `ALTER CLUSTER WITH ...` statements lead the output, before any keyspace.
 * `DESCRIBE [FULL] SCHEMA WITH INTERNALS`: in addition to the output of the previous tier, the statement
   also describes authentication and authorization, as well as service levels. The statements corresponding to
   restoring roles do *not* contain any information about their passwords. Aside from that, additional information
@@ -23816,6 +23972,18 @@ In the `WHERE` clause, `>` is the only supported operator and the right-hand
 side must be the literal `0`. Operators such as `>=`, `=`, `<`, `<=`,
 and `!=` are rejected, as is any non-zero threshold.
 
+`BM25()` may also be selected, to return the relevance score of each row:
+
+```default
+SELECT id, BM25(v, 'search term') AS score FROM ks.t
+    WHERE BM25(v, 'search term') > 0
+    ORDER BY BM25(v, 'search term')
+    LIMIT 10;
+```
+
+It is the score the rows are ranked by, so it needs the two clauses above and has to reference the
+same column and the same search term they do.
+
 ### Filtering support
 
 Additional `WHERE` restrictions (such as partition key equality) are not
@@ -23833,9 +24001,10 @@ SELECT * FROM ks.t
     LIMIT 10;
 ```
 
-Both bind markers are checked at execution time and must be given the same
-value; binding different values for the `WHERE` and `ORDER BY` markers
-causes the query to be rejected.
+All the search-term bind markers are checked at execution time and must be
+given the same value; binding different values for the `WHERE` and
+`ORDER BY` clauses or for a selected `BM25()` causes the query to be
+rejected.
 
 ### Disambiguating from a user-defined function
 
@@ -23847,19 +24016,19 @@ built-in operator as `system.bm25(...)` to select it explicitly.
 
 FTS queries enforce the following rules:
 
-| Constraint                          | Details                                                                                                                                                                                              |
-|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Both clauses required               | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own. |
-| `>` and literal `0` only            | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                         |
-| Filtering support                   | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.         |
-| `LIMIT` is required                 | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                   |
-| `PER PARTITION LIMIT` not supported | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                               |
-| Aggregation not supported           | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                      |
-| Fulltext index required             | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                    |
-| `BM25()` cannot appear in `SELECT`  | `BM25()` is only valid in `WHERE` and `ORDER BY` clauses, not<br/>as a selector.                                                                                                                     |
-| Single ordering only                | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                          |
-| Paging not supported                | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                |
-| Grouping not supported              | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                      |
+| Constraint                                       | Details                                                                                                                                                                                                                                           |
+|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Both clauses required                            | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own.                                              |
+| `>` and literal `0` only                         | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                                                                      |
+| Filtering support                                | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.                                                      |
+| `LIMIT` is required                              | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                                                                |
+| `PER PARTITION LIMIT` not supported              | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                                                                            |
+| Aggregation not supported                        | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                                                                   |
+| Fulltext index required                          | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                                                                 |
+| `BM25()` in `SELECT` needs the other two clauses | `BM25()` may be used as a selector, to return each row’s relevance<br/>score, but only in a query that already has the required `WHERE` and<br/>`ORDER BY` clauses. Every occurrence must reference the same column<br/>and the same search term. |
+| Single ordering only                             | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                                                                       |
+| Paging not supported                             | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                             |
+| Grouping not supported                           | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                   |
 
 
 # functions.md
@@ -29907,7 +30076,7 @@ On Red Hat / CentOS, edit the `/etc/sysconfig/scylla-server`.
 For example:
 
 ```yaml
-SCYLLA_ARGS="--log-to-syslog 1 --log-to-stdout 0 --default-log-level info --collectd-address=127.0.0.1:25826 --collectd=1 --collectd-poll-period 3000 --network-stack posix --memory 2G --reserve-memory 2G
+SCYLLA_ARGS="--log-to-syslog 1 --log-to-stdout 0 --default-log-level info --network-stack posix --memory 2G --reserve-memory 2G"
 ```
 
 [Knowledge Base](https://docs.scylladb.com/manual/master/kb/index.md)
@@ -39210,12 +39379,25 @@ SELECT image_id FROM ImageEmbeddings
   ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
 ```
 
-There’s also possibility to return the similarity score along with the results by using the [similarity functions](https://docs.scylladb.com/manual/master/cql/functions.md#vector-similarity-functions).
+`ANN()` may also be used as a selector, to return the similarity score of each row:
+
+```cql
+SELECT image_id, ANN(embedding, [0.1, 0.2, 0.3, 0.4]) AS similarity
+  FROM ImageEmbeddings
+  ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
+```
+
+It is the score the rows are ranked by, so it is only accepted in a query that already orders by
+an ANN clause, and every occurrence must name the same column and the same query vector as that
+clause.
+
+To score rows against a vector other than the one being searched for, use the
+[similarity functions](https://docs.scylladb.com/manual/master/cql/functions.md#vector-similarity-functions) directly.
 
 For example:
 
 ```cql
-SELECT image_id, similarity_cosine(embedding, [0.1, 0.2, 0.3, 0.4])
+SELECT image_id, similarity_cosine(embedding, [0.9, 0.8, 0.7, 0.6])
   FROM ImageEmbeddings
   ORDER BY embedding ANN OF [0.1, 0.2, 0.3, 0.4] LIMIT 5;
 ```
@@ -39300,13 +39482,22 @@ SELECT * FROM articles
     LIMIT 10;
 ```
 
+Return the relevance score of each row:
+
+```cql
+SELECT title, BM25(body, 'distributed database') AS relevance FROM articles
+    WHERE BM25(body, 'distributed database') > 0
+    ORDER BY BM25(body, 'distributed database')
+    LIMIT 10;
+```
+
+It is the score the rows are ranked by, so it is only accepted in a query that already has the
+required `WHERE` and `ORDER BY` clauses, and every occurrence must reference the same column
+and the same search term.
+
 The `BM25()` operator is not a reserved word. If a user-defined function named
 `bm25` exists in a keyspace, unqualified `BM25()` becomes ambiguous; qualify
 the built-in operator as `system.bm25(...)` to disambiguate it.
-
-#### NOTE
-`BM25()` is only valid in the `WHERE` and `ORDER BY` clauses.
-It cannot be used as a selector in the `SELECT` clause.
 
 For the full list of query constraints and requirements, see
 [Full-Text Search](https://docs.scylladb.com/manual/master/features/fulltext-search.md).

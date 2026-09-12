@@ -18,7 +18,7 @@ On Red Hat / CentOS, edit the `/etc/sysconfig/scylla-server`.
 For example:
 
 ```yaml
-SCYLLA_ARGS="--log-to-syslog 1 --log-to-stdout 0 --default-log-level info --collectd-address=127.0.0.1:25826 --collectd=1 --collectd-poll-period 3000 --network-stack posix --memory 2G --reserve-memory 2G
+SCYLLA_ARGS="--log-to-syslog 1 --log-to-stdout 0 --default-log-level info --network-stack posix --memory 2G --reserve-memory 2G"
 ```
 
 [Knowledge Base](https://docs.scylladb.com/manual/master/kb/index.md)

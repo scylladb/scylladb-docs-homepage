@@ -13,7 +13,7 @@
 * [ScyllaDB Types](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
 * [cassandra-stress](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
 * scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
-* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb collectd/prometheus metrics.
+* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb Prometheus metrics.
 * [scylla_dev_mode_setup](https://docs.scylladb.com/manual/master/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
 * [perftune](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/perftune.md) - performance configuration.
 * [Reading mutation fragments](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.

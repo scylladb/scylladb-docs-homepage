@@ -734,9 +734,19 @@ in this case <code class="docutils literal notranslate"><span class="pre">[0.1,<
   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>There’s also possibility to return the similarity score along with the results by using the <a class="reference internal" href="../functions.html#vector-similarity-functions"><span class="std std-ref">similarity functions</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ANN()</span></code> may also be used as a selector, to return the similarity score of each row:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">similarity</span>
+  <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It is the score the rows are ranked by, so it is only accepted in a query that already orders by
+an ANN clause, and every occurrence must name the same column and the same query vector as that
+clause.</p>
+<p>To score rows against a vector other than the one being searched for, use the
+<a class="reference internal" href="../functions.html#vector-similarity-functions"><span class="std std-ref">similarity functions</span></a> directly.</p>
 <p>For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">similarity_cosine</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">similarity_cosine</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
   <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">embedding</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
 </pre></div>
@@ -807,14 +817,19 @@ specified value must not exceed 1000.</p>
     <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>Return the relevance score of each row:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">title</span><span class="p">,</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">relevance</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It is the score the rows are ranked by, so it is only accepted in a query that already has the
+required <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses, and every occurrence must reference the same column
+and the same search term.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> operator is not a reserved word. If a user-defined function named
 <code class="docutils literal notranslate"><span class="pre">bm25</span></code> exists in a keyspace, unqualified <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> becomes ambiguous; qualify
 the built-in operator as <code class="docutils literal notranslate"><span class="pre">system.bm25(...)</span></code> to disambiguate it.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> is only valid in the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses.
-It cannot be used as a selector in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause.</p>
-</div>
 <p>For the full list of query constraints and requirements, see
 <a class="reference internal" href="../../features/fulltext-search.html"><span class="doc">Full-Text Search</span></a>.</p>
 </section>
@@ -1622,6 +1637,7 @@ columns.</p>
 <li class="toctree-l2"><a class="reference internal" href="../json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1787,7 +1803,6 @@ columns.</p>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1868,7 +1883,7 @@ columns.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Sep 2026.
+                        Last updated on 12 Sep 2026.
                     
                 </div>
             

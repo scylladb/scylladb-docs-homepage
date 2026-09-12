@@ -389,7 +389,9 @@ and <a class="reference internal" href="../operating-scylla/procedures/backup-re
 <p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">SCHEMA</span></code> comes in three forms that differ in semantics. We will refer to those forms as “tiers”.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">[FULL]</span> <span class="pre">SCHEMA</span></code>: describe elements of the non-system schema: keyspaces, tables, views, UDTs, etc.
-When <cite>FULL</cite> is used, it also includes the elements of the system schema, e.g. system tables.</p></li>
+When <cite>FULL</cite> is used, it also includes the elements of the system schema, e.g. system tables.
+If any cluster-scope configuration overrides are stored (see <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">CLUSTER</span></code>), the corresponding
+<code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">CLUSTER</span> <span class="pre">WITH</span> <span class="pre">...</span></code> statements lead the output, before any keyspace.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">[FULL]</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span></code>: in addition to the output of the previous tier, the statement
 also describes authentication and authorization, as well as service levels. The statements corresponding to
 restoring roles do <em>not</em> contain any information about their passwords. Aside from that, additional information
@@ -556,9 +558,9 @@ See <a class="reference internal" href="../operating-scylla/security/authorizati
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="service-levels.html">
+            <a class="navigation__link" href="cluster-config.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Service Levels
+                    <span class="colored">NEXT</span> <br />Configuring a Cluster with CQL
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -870,6 +872,7 @@ See <a class="reference internal" href="../operating-scylla/security/authorizati
 <li class="toctree-l2"><a class="reference internal" href="json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1035,7 +1038,6 @@ See <a class="reference internal" href="../operating-scylla/security/authorizati
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1116,7 +1118,7 @@ See <a class="reference internal" href="../operating-scylla/security/authorizati
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Sep 2026.
+                        Last updated on 12 Sep 2026.
                     
                 </div>
             

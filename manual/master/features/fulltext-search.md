@@ -85,6 +85,18 @@ In the `WHERE` clause, `>` is the only supported operator and the right-hand
 side must be the literal `0`. Operators such as `>=`, `=`, `<`, `<=`,
 and `!=` are rejected, as is any non-zero threshold.
 
+`BM25()` may also be selected, to return the relevance score of each row:
+
+```default
+SELECT id, BM25(v, 'search term') AS score FROM ks.t
+    WHERE BM25(v, 'search term') > 0
+    ORDER BY BM25(v, 'search term')
+    LIMIT 10;
+```
+
+It is the score the rows are ranked by, so it needs the two clauses above and has to reference the
+same column and the same search term they do.
+
 ### Filtering support
 
 Additional `WHERE` restrictions (such as partition key equality) are not
@@ -102,9 +114,10 @@ SELECT * FROM ks.t
     LIMIT 10;
 ```
 
-Both bind markers are checked at execution time and must be given the same
-value; binding different values for the `WHERE` and `ORDER BY` markers
-causes the query to be rejected.
+All the search-term bind markers are checked at execution time and must be
+given the same value; binding different values for the `WHERE` and
+`ORDER BY` clauses or for a selected `BM25()` causes the query to be
+rejected.
 
 ### Disambiguating from a user-defined function
 
@@ -116,16 +129,16 @@ built-in operator as `system.bm25(...)` to select it explicitly.
 
 FTS queries enforce the following rules:
 
-| Constraint                          | Details                                                                                                                                                                                              |
-|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Both clauses required               | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own. |
-| `>` and literal `0` only            | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                         |
-| Filtering support                   | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.         |
-| `LIMIT` is required                 | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                   |
-| `PER PARTITION LIMIT` not supported | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                               |
-| Aggregation not supported           | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                      |
-| Fulltext index required             | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                    |
-| `BM25()` cannot appear in `SELECT`  | `BM25()` is only valid in `WHERE` and `ORDER BY` clauses, not<br/>as a selector.                                                                                                                     |
-| Single ordering only                | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                          |
-| Paging not supported                | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                |
-| Grouping not supported              | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                      |
+| Constraint                                       | Details                                                                                                                                                                                                                                           |
+|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Both clauses required                            | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own.                                              |
+| `>` and literal `0` only                         | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                                                                      |
+| Filtering support                                | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.                                                      |
+| `LIMIT` is required                              | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                                                                |
+| `PER PARTITION LIMIT` not supported              | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                                                                            |
+| Aggregation not supported                        | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                                                                   |
+| Fulltext index required                          | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                                                                 |
+| `BM25()` in `SELECT` needs the other two clauses | `BM25()` may be used as a selector, to return each row’s relevance<br/>score, but only in a query that already has the required `WHERE` and<br/>`ORDER BY` clauses. Every occurrence must reference the same column<br/>and the same search term. |
+| Single ordering only                             | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                                                                       |
+| Paging not supported                             | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                             |
+| Grouping not supported                           | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                   |

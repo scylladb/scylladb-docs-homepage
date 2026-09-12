@@ -25,6 +25,7 @@ It allows you to create keyspaces and tables, insert and query tables, and more.
 > * [Functions](https://docs.scylladb.com/manual/master/cql/functions.md)
 > * [JSON Support](https://docs.scylladb.com/manual/master/cql/json.md)
 > * [Materialized Views](https://docs.scylladb.com/manual/master/cql/mv.md)
+> * [Configuring a Cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md)
 
 ## ScyllaDB CQL Extensions - CQL Extensions Provided by ScyllaDB
 

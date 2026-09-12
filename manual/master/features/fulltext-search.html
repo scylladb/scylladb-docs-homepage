@@ -450,6 +450,15 @@ the <strong>same search term</strong>. Every FTS query also requires a <code cla
 <p>In the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> is the only supported operator and the right-hand
 side must be the literal <code class="docutils literal notranslate"><span class="pre">0</span></code>. Operators such as <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>,
 and <code class="docutils literal notranslate"><span class="pre">!=</span></code> are rejected, as is any non-zero threshold.</p>
+<p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> may also be selected, to return the relevance score of each row:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="nb">id</span><span class="p">,</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;search term&#39;</span><span class="p">)</span> <span class="n">AS</span> <span class="n">score</span> <span class="n">FROM</span> <span class="n">ks</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;search term&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;search term&#39;</span><span class="p">)</span>
+    <span class="n">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It is the score the rows are ranked by, so it needs the two clauses above and has to reference the
+same column and the same search term they do.</p>
 </section>
 <section id="filtering-support">
 <h3>Filtering support<a class="headerlink" href="#filtering-support" title="Link to this heading">¶</a></h3>
@@ -466,9 +475,10 @@ combined filtering is planned for a future release.</p>
     LIMIT 10;
 </pre></div>
 </div>
-<p>Both bind markers are checked at execution time and must be given the same
-value; binding different values for the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> markers
-causes the query to be rejected.</p>
+<p>All the search-term bind markers are checked at execution time and must be
+given the same value; binding different values for the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses or for a selected <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> causes the query to be
+rejected.</p>
 </section>
 <section id="disambiguating-from-a-user-defined-function">
 <h3>Disambiguating from a user-defined function<a class="headerlink" href="#disambiguating-from-a-user-defined-function" title="Link to this heading">¶</a></h3>
@@ -522,9 +532,11 @@ are rejected.</p></td>
 <td><p>The queried column must have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>. A regular secondary
 index does not satisfy this requirement.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> cannot appear in <code class="docutils literal notranslate"><span class="pre">SELECT</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> is only valid in <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses, not
-as a selector.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> in <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> needs the other two clauses</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> may be used as a selector, to return each row’s relevance
+score, but only in a query that already has the required <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses. Every occurrence must reference the same column
+and the same search term.</p></td>
 </tr>
 <tr class="row-even"><td><p>Single ordering only</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> cannot be combined with other <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> columns,
@@ -938,6 +950,7 @@ are returned in a single page.</p></td>
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1103,7 +1116,6 @@ are returned in a single page.</p></td>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1184,7 +1196,7 @@ are returned in a single page.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 11 Sep 2026.
+                        Last updated on 12 Sep 2026.
                     
                 </div>
             
