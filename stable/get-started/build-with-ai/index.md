@@ -6,3 +6,4 @@
   * [LangGraph](https://docs.scylladb.com/stable/get-started/build-with-ai/integrations/langgraph.md)
   * [Feast](https://docs.scylladb.com/stable/get-started/build-with-ai/integrations/feast.md)
   * [Resonate](https://docs.scylladb.com/stable/get-started/build-with-ai/integrations/resonate.md)
+  * [Temporal](https://docs.scylladb.com/stable/get-started/build-with-ai/integrations/temporal.md)
