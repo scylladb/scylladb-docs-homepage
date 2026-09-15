@@ -11,3 +11,4 @@ Use ScyllaDB with popular AI frameworks and tools.
    langgraph
    feast
    resonate
+   temporal
