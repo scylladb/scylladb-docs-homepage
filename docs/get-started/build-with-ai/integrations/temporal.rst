@@ -19,14 +19,16 @@ Two back-end store elements
 --------------------------------------------
 Starting from Temporal `v1.24.0 release notes
 <https://github.com/temporalio/temporal/releases/tag/v1.24.0>`_,  back-end is split into two elements:
+
 * **Execution store** (Workflow/Activity/history state) 
 * **Visibility store**
 
 Scope of this page is the first, Execution store.
+
 Prerequisites
 -------------
 
-* Docker Compose (for the quickstart below)
+* Docker Compose
 * A self-hosted ScyllaDB cluster or a `ScyllaDB Cloud <https://cloud.scylladb.com/>`_ cluster
 
 Self-hosted ScyllaDB
@@ -43,7 +45,7 @@ and fetch the upstream config template into it:
 
    mkdir -p temporal-config/config temporal-config/dynamicconfig
    curl -sL -o temporal-config/config/docker.yaml \
-     https://raw.githubusercontent.com/temporalio/temporal/v1.31.2/config/docker.yaml
+     https://raw.githubusercontent.com/temporalio/temporal/v1.32.0/config/docker.yaml
    touch temporal-config/dynamicconfig/docker.yaml
 
 The first command downloads the base server config template that the
@@ -69,7 +71,7 @@ just needs to exist; you can add `dynamic config settings
          start_period: 30s
 
      elasticsearch:
-       image: elasticsearch:8.19.19
+       image: elasticsearch:8.19.21
        environment:
          - discovery.type=single-node
          - xpack.security.enabled=false
@@ -84,7 +86,7 @@ just needs to exist; you can add `dynamic config settings
          start_period: 30s
 
      temporal-admin-tools:
-       image: temporalio/admin-tools:1.31.2
+       image: temporalio/admin-tools:1.32.0
        depends_on:
          scylladb:
            condition: service_healthy
@@ -106,7 +108,7 @@ just needs to exist; you can add `dynamic config settings
           temporal-elasticsearch-tool --ep http://elasticsearch:9200 create-index --index temporal_visibility_v1_dev"
 
      temporal:
-       image: temporalio/server:1.31.2
+       image: temporalio/server:1.32.0
        depends_on:
          temporal-admin-tools:
            condition: service_completed_successfully
@@ -128,7 +130,7 @@ just needs to exist; you can add `dynamic config settings
          - "7233:7233"
 
      temporal-ui:
-       image: temporalio/ui:2.52.1
+       image: temporalio/ui:2.54.1
        depends_on:
          - temporal
        environment:
@@ -154,7 +156,7 @@ completes successfully. Start the stack with:
    docker compose up -d
 
 Temporal is now listening on ``localhost:7233``, and the Web UI is at
-<http://localhost:8080>.
+http://localhost:8080.
 
 ScyllaDB Cloud
 --------------
@@ -171,7 +173,7 @@ config mounted into the container. Fetch the same upstream template:
 
    mkdir -p temporal-config/config temporal-config/dynamicconfig
    curl -sL -o temporal-config/config/docker.yaml \
-     https://raw.githubusercontent.com/temporalio/temporal/v1.31.2/config/docker.yaml
+     https://raw.githubusercontent.com/temporalio/temporal/v1.32.0/config/docker.yaml
    touch temporal-config/dynamicconfig/docker.yaml
 
 Before starting ``temporal-server``, you still need to create the
@@ -202,7 +204,7 @@ image). Run ``setup-schema`` followed by ``update-schema``:
 .. code-block:: bash
 
    docker run --rm --entrypoint temporal-cassandra-tool \
-     temporalio/admin-tools:1.31.2 \
+     temporalio/admin-tools:1.32.0 \
      --endpoint node-0.your-cluster.datacenter.clusters.scylla.cloud \
      --user "<your-username>" --password "<your-password>" \
      --keyspace temporal --datacenter <your-datacenter> \
@@ -210,7 +212,7 @@ image). Run ``setup-schema`` followed by ``update-schema``:
      setup-schema -v 0.0
 
    docker run --rm --entrypoint temporal-cassandra-tool \
-     temporalio/admin-tools:1.31.2 \
+     temporalio/admin-tools:1.32.0 \
      --endpoint node-0.your-cluster.datacenter.clusters.scylla.cloud \
      --user "<your-username>" --password "<your-password>" \
      --keyspace temporal --datacenter <your-datacenter> \
@@ -228,7 +230,7 @@ Start Elasticsearch:
      -e discovery.type=single-node \
      -e xpack.security.enabled=false \
      -e ES_JAVA_OPTS="-Xms256m -Xmx256m" \
-     elasticsearch:8.19.19
+     elasticsearch:8.19.21
 
 Then, before starting ``temporal-server``, load Temporal's index template
 into it:
@@ -236,12 +238,12 @@ into it:
 .. code-block:: bash
 
    docker run --rm --entrypoint temporal-elasticsearch-tool \
-     temporalio/admin-tools:1.31.2 \
+     temporalio/admin-tools:1.32.0 \
      --ep http://host.docker.internal:9200 \
      setup-schema
 
    docker run --rm --entrypoint temporal-elasticsearch-tool \
-     temporalio/admin-tools:1.31.2 \
+     temporalio/admin-tools:1.32.0 \
      --ep http://host.docker.internal:9200 \
      create-index --index temporal_visibility_v1_dev
 
@@ -268,7 +270,7 @@ you just created:
      -v "$(pwd)/temporal-config/config/docker.yaml:/etc/temporal/config/docker.yaml:ro" \
      -v "$(pwd)/temporal-config/dynamicconfig:/etc/temporal/config/dynamicconfig:ro" \
      --entrypoint temporal-server \
-     temporalio/server:1.31.2 \
+     temporalio/server:1.32.0 \
      --root /etc/temporal --env docker start
 
 
