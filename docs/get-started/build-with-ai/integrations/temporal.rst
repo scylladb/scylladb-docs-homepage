@@ -12,36 +12,17 @@ survives process crashes, network failures, and timeouts, automatically
 retrying and resuming from the last completed step.
 
 The Temporal Server persists all Workflow, Activity, and history state
-through a pluggable persistence layer. Temporal ships a generic **Cassandra**
-persistence plugin, and because ScyllaDB is Cassandra-compatible, that plugin
-works against a self-hosted ScyllaDB cluster or
-`ScyllaDB Cloud <https://cloud.scylladb.com/>`_ without any custom code,
-as long as you run the Temporal Server yourself.
+through a pluggable persistence layer. 
 
-.. note::
 
-   There is ongoing work in the `Temporal project
-   <https://github.com/temporalio/temporal/pulls?q=is%3Apr+is%3Aopen+scylladb>`_ to strengthen native
-   ScyllaDB support. This page documents the integration as it works
-   today, via the stable generic Cassandra plugin.
+Two back-end store elements
+--------------------------------------------
+Starting from Temporal `v1.24.0 release notes
+<https://github.com/temporalio/temporal/releases/tag/v1.24.0>`_,  back-end is split into two elements:
+* **Execution store** (Workflow/Activity/history state) 
+* **Visibility store**
 
-Visibility requires Elasticsearch
-----------------------------------
-
-Temporal Server **removed the Cassandra/ScyllaDB Visibility store in v1.24**,
-as noted in the `v1.24.0 release notes
-<https://github.com/temporalio/temporal/releases/tag/v1.24.0>`_.
-Visibility powers ``ListWorkflows`` queries and the Temporal Web
-UI's workflow list, so a ScyllaDB-only setup can no longer serve them.
-
-The supported way to run Temporal against ScyllaDB is a split backend:
-
-* **Execution store** (Workflow/Activity/history state) → ScyllaDB, via the
-  Cassandra persistence plugin.
-* **Visibility store** → Elasticsearch.
-
-This is a limitation of Temporal's persistence layer, not of ScyllaDB.
-
+Scope of this page is the first, Execution store.
 Prerequisites
 -------------
 
