@@ -45,8 +45,8 @@ versions.
       - * 1.19
         * 1.18
     * - `Rust Driver <https://rust-driver.docs.scylladb.com/>`_
-      - * 1.8
-        * 1.7
+      - * 1.9
+        * 1.8
     * - `C# Driver <https://csharp-driver.docs.scylladb.com/>`_
       - * 3.22
     * - `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_
@@ -56,4 +56,6 @@ versions.
       - Deprecated. Migrate to `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_.
     * - `Node.js RS Driver <https://nodejs-rs-driver.docs.scylladb.com/>`_
       - * 0.6
+    * - `Python RS Driver <https://nodejs-rs-driver.docs.scylladb.com/>`_
+      - * 0.1
 
