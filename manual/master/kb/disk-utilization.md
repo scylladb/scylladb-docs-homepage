@@ -20,7 +20,7 @@ nodetool listsnapshots
 Snapshot Details:
 
 Snapshot name Keyspace name Column family name True size Size on disk
-1574708464997 ks3           standard1          0 bytes   2.23 GB
+1574708464997 ks3           standard1          0 bytes   2.23 GiB
 
 Total TrueDiskSpaceUsed: 0 bytes
 ```
@@ -33,7 +33,7 @@ nodetool listsnapshots
 
 Snapshot Details:
 Snapshot name Keyspace name Column family name True size Size on disk
-1574708464997 ks3           standard1          2.23 GB   2.23 GB
+1574708464997 ks3           standard1          2.23 GiB  2.23 GiB
 
 Total TrueDiskSpaceUsed: 2.23 GiB
 ```
