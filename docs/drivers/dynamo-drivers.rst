@@ -19,6 +19,10 @@ ScyllaDB also provides Alternator driver forks for several languages.
 
     * - ScyllaDB Driver
       - Description
+    * - C# Driver
+      - ScyllaDB-maintained Alternator client for C# applications.
+
+        `C# Driver repository <https://github.com/scylladb/alternator-client-csharp>`_
     * - Python Driver
       - ScyllaDB-maintained Alternator client for Python applications.
 
