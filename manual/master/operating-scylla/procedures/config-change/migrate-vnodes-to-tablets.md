@@ -1,4 +1,4 @@
-# Migrate a Keyspace from Vnodes to Tablets Experimental
+# Migrate a Keyspace from Vnodes to Tablets
 
 This procedure describes how to migrate an existing keyspace from vnodes
 to tablets. Tablets are designed to be the long-term replacement for vnodes,
@@ -7,8 +7,8 @@ balancing, automatic cleanups, and improved streaming performance. Migrating to
 tablets is strongly recommended. See [Data Distribution with Tablets](https://docs.scylladb.com/manual/master/architecture/tablets.md)
 for details.
 
-ℹ️ This feature is experimental and will change in future releases, including
-the removal of current limitations.
+ℹ️ The migration currently has some [Limitations](), which will be lifted in
+future releases.
 
 #### NOTE
 The migration is an online operation. This means that the keyspace remains
