@@ -392,10 +392,51 @@
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>&lt;options&gt;<span class="w"> </span>stop<span class="w"> </span>--<span class="w"> </span>&lt;compaction_type&gt;
 </pre></div>
 </div>
-<p>Supported compaction types: COMPACTION, CLEANUP, SCRUB, RESHAPE</p>
+<p>Supported compaction types:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Stops</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COMPACTION</span></code></p></td>
+<td><p>Regular (automatic) compactions and major compactions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">REGULAR</span></code></p></td>
+<td><p>Regular (automatic) compactions only</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MAJOR</span></code></p></td>
+<td><p>Major compactions only</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLEANUP</span></code></p></td>
+<td><p>Cleanup compactions (see <a class="reference internal" href="cleanup.html"><span class="doc">nodetool cleanup</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SCRUB</span></code></p></td>
+<td><p>Scrub compactions (see <a class="reference internal" href="scrub.html"><span class="doc">nodetool scrub</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">UPGRADE</span></code></p></td>
+<td><p>SSTable upgrades (see <a class="reference internal" href="upgradesstables.html"><span class="doc">nodetool upgradesstables</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RESHAPE</span></code></p></td>
+<td><p>Reshape compactions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SPLIT</span></code></p></td>
+<td><p>Tablet split compactions</p></td>
+</tr>
+</tbody>
+</table>
 <p>Stopping a compaction by id (<code class="docutils literal notranslate"><span class="pre">--id</span> <span class="pre">&lt;id&gt;</span></code>) is not implemented.</p>
 <p>For example:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>stop<span class="w"> </span>COMPACTION
+
+nodetool<span class="w"> </span>stop<span class="w"> </span>REGULAR
+
+nodetool<span class="w"> </span>stop<span class="w"> </span>MAJOR
 
 nodetool<span class="w"> </span>stop<span class="w"> </span>RESHAPE
 </pre></div>
@@ -1025,7 +1066,7 @@ nodetool<span class="w"> </span>stop<span class="w"> </span>RESHAPE
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2026.
+                        Last updated on 19 Sep 2026.
                     
                 </div>
             
