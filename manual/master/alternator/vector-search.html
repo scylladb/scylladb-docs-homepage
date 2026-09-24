@@ -381,18 +381,34 @@
 </div>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
-<p>Alternator vector search is a ScyllaDB extension to the DynamoDB-compatible
-API that enables <em>approximate nearest neighbor</em> (ANN) search on numeric
-vectors stored as item attributes.</p>
-<p>In a typical use case, each item in a table contains a high-dimensional
-embedding vector (e.g., produced by a machine-learning model), and a query
-asks for the <em>k</em> items whose stored vectors are closest to a given query
-vector. This kind of similarity search is a building block for
-recommendation engines, semantic text search, image retrieval, and other
-AI/ML workloads.</p>
-<p>Because this feature does not exist in Amazon DynamoDB, all applications
-that use it must be written specifically for Alternator.</p>
-<p>For a broader introduction to Vector Search concepts and terminology, see the
+<p>Vector search enables <em>approximate nearest neighbor</em> (ANN) search on numeric
+vectors stored as item attributes. In a typical use case, each item in a
+table contains a high-dimensional embedding vector (e.g., produced by a
+machine-learning model), and a search asks for the <em>k</em> items whose stored
+vectors are closest to a given query vector. This kind of similarity search
+is a building block for recommendation engines, semantic text search, image
+retrieval, and other AI/ML workloads.</p>
+<p>Alternator implements the same Vector Search API that Amazon DynamoDB does:
+<code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>/<code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code>/<code class="docutils literal notranslate"><span class="pre">VectorIndexUpdates</span></code>
+parameters, <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code>’s reporting of vector indexes, and the
+<code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> operation all work the same way in Alternator as they do in
+DynamoDB, including DynamoDB’s <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> mechanism for filtering
+(<code class="docutils literal notranslate"><span class="pre">HASH</span></code> and <code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code> attributes, described below). Applications
+written against DynamoDB’s Vector Search API should work against Alternator
+unmodified, using an AWS SDK version that supports this API.</p>
+<p>On top of this DynamoDB-compatible core, Alternator also has its own
+<code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> attribute type — a ScyllaDB-only, more compact way to
+store and send vectors, described in
+<a class="reference internal" href="#the-float32vector-type-scylladb-extension">its own section below</a>. Sections
+below are marked <strong>ScyllaDB extension</strong> whenever they describe something
+beyond what DynamoDB’s own Vector Search API defines.</p>
+<p>This document describes the wire-level API in enough detail to use it
+directly (e.g., with a raw HTTP client, or an SDK version that doesn’t
+model this operation), but application authors will normally just use
+their favorite AWS SDK’s generated <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code>/<code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> bindings.
+For a broader introduction to vector search concepts and terminology
+(embeddings, ANN, distance functions, etc.) not specific to any particular
+database’s API, see the
 <a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/vector-search-concepts.html">Vector Search Concepts</a>
 and
 <a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/vector-search-glossary.html">Vector Search Glossary</a>
@@ -402,23 +418,27 @@ sections of the ScyllaDB Cloud documentation.</p>
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>The workflow has three steps:</p>
 <ol class="arabic simple">
-<li><p><strong>Create</strong> a table (or update an existing one) with one or more
-<em>vector indexes</em>.</p></li>
+<li><p><strong>Create</strong> a table (or update an existing one) with one or more <em>vector
+indexes</em>, each on a numeric vector attribute. Choose a <code class="docutils literal notranslate"><span class="pre">Projection</span></code> to
+control which attributes are returned by a search without an extra
+round-trip to the base table, and optionally declare one or more other
+attributes as the index’s <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code>, to allow filtering the vector
+search itself, not just examining the ANN results afterwards.</p></li>
 <li><p><strong>Write</strong> items that include the indexed vector attribute. The attribute
 can be stored as a standard DynamoDB list (<code class="docutils literal notranslate"><span class="pre">L</span></code>) of number (<code class="docutils literal notranslate"><span class="pre">N</span></code>) elements,
-or as a ScyllaDB-specific optimized vector type (<code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>) — a list of
-JSON floating-point numbers that is stored internally as compact 4-byte
-floats rather than JSON-encoded strings, saving space and parse overhead.</p></li>
-<li><p><strong>Query</strong> using the <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter to retrieve the <em>k</em> nearest
-neighbors.</p></li>
+or as the ScyllaDB-specific <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type — a list of JSON
+floating-point numbers stored internally as compact 4-byte floats instead
+of JSON-encoded decimal strings, saving space and parse overhead.</p></li>
+<li><p><strong>Search</strong> using the <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> operation to retrieve the <em>k</em> nearest
+neighbors of a query vector.</p></li>
 </ol>
 </section>
-<section id="api-extensions">
-<h2>API extensions<a class="headerlink" href="#api-extensions" title="Link to this heading">¶</a></h2>
-<section id="createtable-vectorindexes-parameter">
-<h3>CreateTable — VectorIndexes parameter<a class="headerlink" href="#createtable-vectorindexes-parameter" title="Link to this heading">¶</a></h3>
-<p>A new optional parameter <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> can be passed to <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>.
-It is a list of vector index definitions, each specifying:</p>
+<section id="vector-indexes-createtable-s-vectorindexes-parameter">
+<h2>Vector indexes: CreateTable’s VectorIndexes parameter<a class="headerlink" href="#vector-indexes-createtable-s-vectorindexes-parameter" title="Link to this heading">¶</a></h2>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> parameter can be passed to <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>. It is
+a list of vector index definitions, each an object with the following
+fields. All of them are mandatory, with no defaults, except <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code>
+which is genuinely optional:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
@@ -429,88 +449,30 @@ It is a list of vector index definitions, each specifying:</p>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexName</span></code></p></td>
 <td><p>String</p></td>
-<td><p>Unique name for this vector index. Follows the same naming rules as table names: 3–192 characters, matching the regex <code class="docutils literal notranslate"><span class="pre">[a-zA-Z0-9._-]+</span></code>.</p></td>
+<td><p>Unique name for this vector index (unique among all vector indexes, GSIs, and LSIs on the table). Follows the same naming rules as table names: 3–192 characters, matching the regex <code class="docutils literal notranslate"><span class="pre">[a-zA-Z0-9._-]+</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code></p></td>
 <td><p>Structure</p></td>
-<td><p>Describes the attribute to index (see below).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;AttributeName&quot;:</span> <span class="pre">&quot;&lt;name&gt;&quot;}</span></code> — the item attribute that holds the vector. It must not be a key column of the base table or of any GSI/LSI.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code></p></td>
+<td><p>Integer</p></td>
+<td><p>The fixed size of the vector (number of elements), between 1 and 16000.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DistanceFunction</span></code></p></td>
+<td><p>String</p></td>
+<td><p>The distance metric used for nearest-neighbor search: <code class="docutils literal notranslate"><span class="pre">COSINE</span></code>, <code class="docutils literal notranslate"><span class="pre">EUCLIDEAN</span></code>, or <code class="docutils literal notranslate"><span class="pre">DOT_PRODUCT</span></code>. See <a class="reference internal" href="#similarity-scores">Similarity scores</a> below for what each one means for the score returned by a search.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Projection</span></code></p></td>
 <td><p>Structure</p></td>
-<td><p>Optional. Specifies which attributes are projected into the vector index (see below).</p></td>
+<td><p>Which attributes are stored in the vector index and returned by default. See <a class="reference internal" href="#projection">Projection</a> below.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code></p></td>
-<td><p>String</p></td>
-<td><p>Optional. The distance metric used for nearest-neighbor search. See below.</p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>VectorAttribute fields:</strong></p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AttributeName</span></code></p></td>
-<td><p>String</p></td>
-<td><p>The item attribute that holds the vector. It must not be a key column.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code></p></td>
-<td><p>Integer</p></td>
-<td><p>The fixed size of the vector (number of elements).</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code></p></td>
+<td><p>Array</p></td>
+<td><p>Optional. Which attributes can be used to filter the search itself, and how. See <a class="reference internal" href="#filtering-with-searchschema-hash-and-inline-filter">Filtering with SearchSchema</a> below.</p></td>
 </tr>
 </tbody>
 </table>
-<p><strong>SimilarityFunction values:</strong></p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Value</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COSINE</span></code></p></td>
-<td><p>Cosine similarity (angular distance). <strong>Default when <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> is omitted.</strong></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EUCLIDEAN</span></code></p></td>
-<td><p>Euclidean (L2) distance.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DOT_PRODUCT</span></code></p></td>
-<td><p>Inner product (dot product). Useful when vectors are normalized.</p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Projection fields:</strong></p>
-<p>The optional <code class="docutils literal notranslate"><span class="pre">Projection</span></code> parameter is identical to the one used for DynamoDB
-GSI and LSI, and specifies which attributes are stored in the vector index and
-returned when <code class="docutils literal notranslate"><span class="pre">Select=ALL_PROJECTED_ATTRIBUTES</span></code> is used in a vector search query:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code></p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KEYS_ONLY</span></code></p></td>
-<td><p>Only the primary key attributes of the base table (hash key and range key if present) are projected into the index. This is the default when <code class="docutils literal notranslate"><span class="pre">Projection</span></code> is omitted.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ALL</span></code></p></td>
-<td><p>All table attributes are projected into the index. <em>(Not yet supported.)</em></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">INCLUDE</span></code></p></td>
-<td><p>The primary key attributes plus the additional non-key attributes listed in <code class="docutils literal notranslate"><span class="pre">NonKeyAttributes</span></code> are projected. <em>(Not yet supported.)</em></p></td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<div><p><strong>Note:</strong> Currently only <code class="docutils literal notranslate"><span class="pre">ProjectionType=KEYS_ONLY</span></code> is implemented. Specifying
-<code class="docutils literal notranslate"><span class="pre">ProjectionType=ALL</span></code> or <code class="docutils literal notranslate"><span class="pre">ProjectionType=INCLUDE</span></code> returns a <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>.
-Since <code class="docutils literal notranslate"><span class="pre">KEYS_ONLY</span></code> is also the default, omitting <code class="docutils literal notranslate"><span class="pre">Projection</span></code> entirely is
-equivalent to specifying <code class="docutils literal notranslate"><span class="pre">{'ProjectionType':</span> <span class="pre">'KEYS_ONLY'}</span></code>.</p>
-</div></blockquote>
 <p>Example (using boto3):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span>
     <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
@@ -520,7 +482,10 @@ equivalent to specifying <code class="docutils literal notranslate"><span class=
     <span class="n">VectorIndexes</span><span class="o">=</span><span class="p">[</span>
         <span class="p">{</span>
             <span class="s1">&#39;IndexName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;VectorAttribute&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="s1">&#39;Dimensions&#39;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">},</span>
+            <span class="s1">&#39;VectorAttribute&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;Dimensions&#39;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">,</span>
+            <span class="s1">&#39;DistanceFunction&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Projection&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;ProjectionType&#39;</span><span class="p">:</span> <span class="s1">&#39;KEYS_ONLY&#39;</span><span class="p">},</span>
         <span class="p">}</span>
     <span class="p">],</span>
 <span class="p">)</span>
@@ -528,37 +493,133 @@ equivalent to specifying <code class="docutils literal notranslate"><span class=
 </div>
 <p><strong>Constraints:</strong></p>
 <ul class="simple">
-<li><p>A vector index may not share a name with another vector index, a GSI, or an LSI on the same table.</p></li>
-<li><p>The target attribute must not be a key column or an index key column.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> must be a positive integer up to the implementation maximum.</p></li>
-<li><p>Vector indexes require ScyllaDB to operate with tablets (not vnodes).</p></li>
-<li><p>Multiple vector indexes can be created on the same table in a single <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> call.</p></li>
+<li><p>Multiple vector indexes can be created on the same table in a single
+<code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> call (or accumulated one at a time via <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code>, see
+below).</p></li>
+<li><p>Two vector indexes may target the same <code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code> as long as they
+agree on <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> — this is useful for comparing different
+<code class="docutils literal notranslate"><span class="pre">DistanceFunction</span></code>s on the same data, or for having indexes with
+different <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> or <code class="docutils literal notranslate"><span class="pre">Projection</span></code>.</p></li>
+<li><p>Vector indexes require ScyllaDB to operate with tablets, not vnodes.</p></li>
 </ul>
 </section>
-<hr class="docutils" />
+<section id="filtering-with-searchschema-hash-and-inline-filter">
+<h2>Filtering with SearchSchema: HASH and INLINE_FILTER<a class="headerlink" href="#filtering-with-searchschema-hash-and-inline-filter" title="Link to this heading">¶</a></h2>
+<p>Without a <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code>, a vector search examines every item indexed by the
+vector index. <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> lets a search instead be restricted, before the
+ANN algorithm even runs, to only the items matching a condition on one or
+more designated attributes — this is DynamoDB’s equivalent of what other
+vector databases call “pre-filtering” or a “filterable/local index”.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> is a list of objects, each <code class="docutils literal notranslate"><span class="pre">{&quot;AttributeName&quot;:</span> <span class="pre">&quot;&lt;name&gt;&quot;,</span> <span class="pre">&quot;SearchSchemaElementType&quot;:</span> <span class="pre">&quot;HASH&quot;|&quot;INLINE_FILTER&quot;}</span></code>. Every attribute it
+names must also be declared in the request’s <code class="docutils literal notranslate"><span class="pre">AttributeDefinitions</span></code>, with
+one of the key types <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">N</span></code>, or <code class="docutils literal notranslate"><span class="pre">B</span></code> — exactly like a GSI or LSI key
+attribute. Any attribute may be used, including one that is already a key
+attribute of the base table or one of its GSIs or LSIs.</p>
+<p>There are two kinds of <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> elements, and they behave quite
+differently:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">HASH</span></code></strong> (at most one per index) acts like a partition key for the
+vector index itself: items are effectively bucketed by this attribute’s
+value, the way a local secondary index buckets by the base table’s own
+partition key. Whenever a vector index declares a <code class="docutils literal notranslate"><span class="pre">HASH</span></code> attribute, every
+<code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> call against it <strong>must</strong> include a condition on that
+attribute — there is no way to search “across all partitions” at once.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code></strong> (any number per index) is a plain equality filter,
+evaluated inside the vector store before the ANN search runs. Including a
+condition on an <code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code> attribute in a search is optional.</p></li>
+</ul>
+<p>Both kinds of <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attribute are automatically projected into the
+vector index and returned by a search by default, regardless of the index’s
+<code class="docutils literal notranslate"><span class="pre">Projection</span></code> setting (see below) — there’s no need to separately list them
+in <code class="docutils literal notranslate"><span class="pre">Projection</span></code>.</p>
+<p><strong>Write-time enforcement:</strong> once a vector index’s <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> exists,
+<code class="docutils literal notranslate"><span class="pre">PutItem</span></code>/<code class="docutils literal notranslate"><span class="pre">UpdateItem</span></code> reject any write that gives a <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code>
+attribute a value of the wrong type (compared to what was declared in
+<code class="docutils literal notranslate"><span class="pre">AttributeDefinitions</span></code>), and additionally reject an empty string specifically
+for the <code class="docutils literal notranslate"><span class="pre">HASH</span></code> attribute (empty strings remain fine for <code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code>
+attributes, since they aren’t key-like). A write that simply omits the
+attribute is always allowed.</p>
+<p><strong>What happens to items already in the table:</strong> adding a vector index to
+an existing (non-empty) table via <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> triggers a backfill scan
+that indexes the table’s current contents (see <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code>/<code class="docutils literal notranslate"><span class="pre">Backfilling</span></code>
+below); this can’t rely on write-time validation, since that data was
+written before the <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> existed. So instead:</p>
+<ul class="simple">
+<li><p>An item that lacks the <code class="docutils literal notranslate"><span class="pre">HASH</span></code> attribute, or whose existing value has the
+wrong type or is an empty string, is simply left out of the index
+entirely — it will never be found by any search on this index. This is
+the same as what happens to an item that’s missing its <code class="docutils literal notranslate"><span class="pre">HASH</span></code> value even
+after <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> was already in place.</p></li>
+<li><p>An item that lacks an <code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code> attribute is still indexed
+normally; it just never matches a search that filters on that
+attribute.</p></li>
+<li><p>An item whose <em>existing</em> value for an <code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code> attribute has the
+wrong type, however, is skipped from indexing entirely — not indexed
+with that one value simply missing. This might be surprising, since it’s
+treated differently than an item simply missing the same attribute. The
+reason: if the item were indexed with a placeholder “missing” value, an
+unfiltered search could return it with an attribute that, according to
+the base table, does have a value — misrepresenting the item to the
+caller. Since ANN search is already inherently approximate (it doesn’t
+promise to find every matching item), it’s better to leave such an item
+out entirely than to return it with an incorrect projected attribute.</p></li>
+</ul>
+</section>
+<section id="projection">
+<h2>Projection<a class="headerlink" href="#projection" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Projection</span></code> controls which attributes (beyond the base table’s own key
+columns and <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attributes, which are always projected) a vector
+index stores, and therefore which attributes a search can return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code></p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KEYS_ONLY</span></code></p></td>
+<td><p>Only the base table’s key attributes (plus <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attributes) are projected.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">INCLUDE</span></code></p></td>
+<td><p>The above, plus the additional non-key attributes listed in the required <code class="docutils literal notranslate"><span class="pre">NonKeyAttributes</span></code> field.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ALL</span></code></p></td>
+<td><p>All of the item’s attributes are available.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">ProjectionType=ALL</span></code> is currently implemented less efficiently than
+<code class="docutils literal notranslate"><span class="pre">KEYS_ONLY</span></code>/<code class="docutils literal notranslate"><span class="pre">INCLUDE</span></code>: since an item can carry arbitrary attributes, there’s
+no fixed list to hand to the vector store ahead of time, so a search against
+such an index falls back to reading each matching item from the base table
+individually, rather than serving results directly out of the vector store
+(the one exception is a <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> naming only key columns, which
+needs nothing beyond the ANN results regardless of <code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code>). For
+latency-sensitive applications, prefer <code class="docutils literal notranslate"><span class="pre">KEYS_ONLY</span></code> or
+<code class="docutils literal notranslate"><span class="pre">INCLUDE</span></code> with a specific attribute list.</p>
+<p>DynamoDB’s Vector Search API has no way to read an attribute that isn’t
+projected into the index. As a ScyllaDB extension, <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code>’s
+<code class="docutils literal notranslate"><span class="pre">BaseRead</span></code> parameter (described below) can still reach into the base table
+for such attributes when needed.</p>
+</section>
 <section id="updatetable-vectorindexupdates-parameter">
-<h3>UpdateTable — VectorIndexUpdates parameter<a class="headerlink" href="#updatetable-vectorindexupdates-parameter" title="Link to this heading">¶</a></h3>
-<p>A new optional parameter <code class="docutils literal notranslate"><span class="pre">VectorIndexUpdates</span></code> can be passed to <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code>
-to add or remove a vector index after the table is created. At most one
-index operation (Create or Delete) may be requested per call.</p>
-<p>Each element of the list is an object with exactly one of the following keys:</p>
-<p><strong>Create:</strong></p>
+<h2>UpdateTable — VectorIndexUpdates parameter<a class="headerlink" href="#updatetable-vectorindexupdates-parameter" title="Link to this heading">¶</a></h2>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">VectorIndexUpdates</span></code> parameter can be passed to <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> to
+add or remove one vector index — <strong>at most one</strong> <code class="docutils literal notranslate"><span class="pre">Create</span></code> or <code class="docutils literal notranslate"><span class="pre">Delete</span></code>
+operation per <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> call (the same restriction DynamoDB places on
+<code class="docutils literal notranslate"><span class="pre">GlobalSecondaryIndexUpdates</span></code>).</p>
+<p><strong>Create</strong> (same fields as <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> entries above):</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;Create&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;VectorAttribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;AttributeName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;SimilarityFunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COSINE&quot;</span>
+<span class="w">    </span><span class="nt">&quot;VectorAttribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;AttributeName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;embedding&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;DistanceFunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COSINE&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Projection</span></code> field in the <code class="docutils literal notranslate"><span class="pre">Create</span></code> action is optional and accepts the same
-values as the <code class="docutils literal notranslate"><span class="pre">Projection</span></code> field in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> (see above).
-Currently only <code class="docutils literal notranslate"><span class="pre">ProjectionType=KEYS_ONLY</span></code> is supported; it is also the default
-when <code class="docutils literal notranslate"><span class="pre">Projection</span></code> is omitted.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> field is also optional and accepts the same values as
-in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> (see above). Defaults to <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> when omitted.</p>
 <p><strong>Delete:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;Delete&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -567,23 +628,17 @@ in <code class="docutils literal notranslate"><span class="pre">CreateTable</spa
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The same constraints as <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> apply.</p>
+<p><code class="docutils literal notranslate"><span class="pre">VectorIndexUpdates</span></code> cannot be combined with <code class="docutils literal notranslate"><span class="pre">GlobalSecondaryIndexUpdates</span></code>
+in the same <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> request.</p>
 </section>
-<hr class="docutils" />
 <section id="describetable-vectorindexes-in-the-response">
-<h3>DescribeTable — VectorIndexes in the response<a class="headerlink" href="#describetable-vectorindexes-in-the-response" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> (and <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s response) returns a <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code>
-field in the <code class="docutils literal notranslate"><span class="pre">TableDescription</span></code> object when the table has at least one
-vector index. The structure mirrors the <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> input: a list of
-objects each containing <code class="docutils literal notranslate"><span class="pre">IndexName</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code>
-(<code class="docutils literal notranslate"><span class="pre">AttributeName</span></code> + <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code>), and <code class="docutils literal notranslate"><span class="pre">Projection</span></code> (<code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code>).
-Currently <code class="docutils literal notranslate"><span class="pre">Projection</span></code> always contains <code class="docutils literal notranslate"><span class="pre">{&quot;ProjectionType&quot;:</span> <span class="pre">&quot;KEYS_ONLY&quot;}</span></code>
-because that is the only supported projection type.
-If a <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> was specified at index creation, it is returned
-at the index level (alongside <code class="docutils literal notranslate"><span class="pre">IndexName</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code>, and <code class="docutils literal notranslate"><span class="pre">Projection</span></code>).
-When <code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code> was not specified, <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> is returned as the default.</p>
-<p>Each vector index entry also includes status fields that mirror the standard
-behavior of <code class="docutils literal notranslate"><span class="pre">GlobalSecondaryIndexes</span></code> in DynamoDB:</p>
+<h2>DescribeTable — VectorIndexes in the response<a class="headerlink" href="#describetable-vectorindexes-in-the-response" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> (and <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s own response) returns a <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code>
+list in <code class="docutils literal notranslate"><span class="pre">TableDescription</span></code> whenever the table has at least one vector index.
+Each entry echoes back <code class="docutils literal notranslate"><span class="pre">IndexName</span></code>, <code class="docutils literal notranslate"><span class="pre">IndexArn</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Dimensions</span></code>, <code class="docutils literal notranslate"><span class="pre">DistanceFunction</span></code>, <code class="docutils literal notranslate"><span class="pre">Projection</span></code>, and — if the index has one —
+<code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code>, plus two status fields that mirror how DynamoDB reports GSI
+status:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
@@ -594,69 +649,37 @@ behavior of <code class="docutils literal notranslate"><span class="pre">GlobalS
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code></p></td>
 <td><p>String</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code> when the vector store has finished building the index and it is fully operational. <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> while the index is still being built (the vector store service is still initializing or has not yet been discovered).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code> once the vector store has finished building the index and is serving it. <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> while the index is still being built.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Backfilling</span></code></p></td>
 <td><p>Boolean</p></td>
-<td><p>Present and <code class="docutils literal notranslate"><span class="pre">true</span></code> only when <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> and the vector store is actively performing the initial scan of the base table (bootstrapping). When the initial scan is not yet started, or has already completed, this field is absent.</p></td>
+<td><p>Present and <code class="docutils literal notranslate"><span class="pre">true</span></code> only while <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> <em>and</em> the vector store is actively scanning the base table’s existing data (as opposed to still starting up). Absent once the scan hasn’t started yet, or has already finished.</p></td>
 </tr>
 </tbody>
 </table>
-<p>When creating a vector index on a non-empty table (via <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code>), data
-already in the table is picked up by the vector store through a full-table
-scan (backfill). During this period <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> will be <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Backfilling</span></code> will be <code class="docutils literal notranslate"><span class="pre">true</span></code>. Once the scan completes the vector store
-transitions to monitoring CDC for ongoing changes, and <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> becomes
-<code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code>.</p>
-<p><strong>Type enforcement before and after index creation differs:</strong></p>
-<ul class="simple">
-<li><p><strong>Pre-existing items:</strong> when the backfill scan encounters an item whose
-indexed attribute is not a list of exactly the right number of numbers
-(e.g., it is a string, a list of the wrong length, or contains
-non-numeric elements), that item is silently skipped and not indexed.
-The item remains in the base table unchanged.</p></li>
-<li><p><strong>New writes once the index exists:</strong> any attempt to write a value to the
-indexed attribute that is not a list of exactly <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> numbers —
-where each number is representable as a 32-bit float — is rejected with a
-<code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>. This applies to <code class="docutils literal notranslate"><span class="pre">PutItem</span></code>, <code class="docutils literal notranslate"><span class="pre">UpdateItem</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code>. A missing value for the indexed attribute is always
-allowed; such items simply are not indexed.</p></li>
-</ul>
-<p><strong>Optimized vector storage format (<code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type):</strong></p>
-<p>As a ScyllaDB extension, the indexed vector attribute may be written using
-the <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type instead of the standard <code class="docutils literal notranslate"><span class="pre">L</span></code> type. With the <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type the value
-is a JSON array of plain floating-point numbers (not strings):</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="c1">// Standard DynamoDB list-of-numbers format:</span>
-<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-0.3&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7&quot;</span><span class="p">}]}}</span>
-
-<span class="c1">// Optimized FLOAT32VECTOR format (ScyllaDB extension):</span>
-<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;FLOAT32VECTOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]}}</span>
-</pre></div>
-</div>
-<p>Both representations are accepted for writes and queries. The <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>
-format is stored internally as packed 4-byte IEEE 754 floats (big-endian),
-rather than as JSON with string-encoded numbers. This reduces storage space
-and avoids JSON parsing overhead when the vector is read back. For large,
-high-dimensional vectors the space saving is significant: a 1536-dimension
-vector takes 6145 bytes with <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> versus roughly 25 KB with <code class="docutils literal notranslate"><span class="pre">L</span></code>/<code class="docutils literal notranslate"><span class="pre">N</span></code>
-strings.</p>
-<blockquote>
-<div><p><strong>Important:</strong> Applications must wait until <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code> before
-issuing <code class="docutils literal notranslate"><span class="pre">Query</span></code> requests against a vector index. Queries on a vector index
-whose <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> is still <code class="docutils literal notranslate"><span class="pre">&quot;CREATING&quot;</span></code> may fail. This applies both when
-adding a vector index to an existing table via <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> <strong>and</strong> when
-creating a new table with a <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> — even
-though the new table starts empty, the vector store still needs a short
-initialization period before it can serve queries.</p>
-</div></blockquote>
+<p>When a vector index is added to a non-empty table, this backfill scan
+populates the index from the table’s current contents; once it completes,
+the vector store switches to consuming ongoing changes via CDC, and
+<code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code> becomes <code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code>. Applications should wait for
+<code class="docutils literal notranslate"><span class="pre">IndexStatus=&quot;ACTIVE&quot;</span></code> before relying on <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> finding all
+existing data — this applies both to a <code class="docutils literal notranslate"><span class="pre">VectorIndexUpdates</span></code> <code class="docutils literal notranslate"><span class="pre">Create</span></code> on an
+existing table and to a brand new table created with <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code>
+already set (even though it starts out empty, the vector store still needs
+a moment to initialize).</p>
+<p><strong>Vector indexes are eventually consistent.</strong> Even after <code class="docutils literal notranslate"><span class="pre">IndexStatus</span></code>
+reaches <code class="docutils literal notranslate"><span class="pre">&quot;ACTIVE&quot;</span></code>, ongoing writes (<code class="docutils literal notranslate"><span class="pre">PutItem</span></code>, <code class="docutils literal notranslate"><span class="pre">UpdateItem</span></code>,
+<code class="docutils literal notranslate"><span class="pre">BatchWriteItem</span></code>, etc.) reach the vector index asynchronously via the same
+CDC-based mechanism, not as part of the write itself. A <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code>
+call immediately following a write may not yet reflect it. Applications
+that need a just-written item to be immediately searchable must poll
+<code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> (or otherwise wait) until it appears, the same way they’d
+wait for <code class="docutils literal notranslate"><span class="pre">IndexStatus=&quot;ACTIVE&quot;</span></code> during backfill.</p>
 </section>
-<hr class="docutils" />
-<section id="query-vectorsearch-parameter">
-<h3>Query — VectorSearch parameter<a class="headerlink" href="#query-vectorsearch-parameter" title="Link to this heading">¶</a></h3>
-<p>To perform a nearest-neighbor search, pass the <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter
-to <code class="docutils literal notranslate"><span class="pre">Query</span></code>. When this parameter is present the request is interpreted as a
-vector search rather than a standard key-condition query.</p>
-<p><strong>VectorSearch fields:</strong></p>
+<section id="performing-a-search-the-searchvectors-operation">
+<h2>Performing a search: the SearchVectors operation<a class="headerlink" href="#performing-a-search-the-searchvectors-operation" title="Link to this heading">¶</a></h2>
+<p>A vector search is performed with its own distinct top-level operation,
+<code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> — not a variant of <code class="docutils literal notranslate"><span class="pre">Query</span></code> — with its own request and
+response shape:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
@@ -665,249 +688,324 @@ vector search rather than a standard key-condition query.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">QueryVector</span></code></p></td>
-<td><p>AttributeValue (list <code class="docutils literal notranslate"><span class="pre">L</span></code> or vector <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>)</p></td>
-<td><p>The query vector as a DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code>. Use type <code class="docutils literal notranslate"><span class="pre">L</span></code> with <code class="docutils literal notranslate"><span class="pre">N</span></code> elements (standard DynamoDB) or the optimized ScyllaDB <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type with plain floating-point elements.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TableName</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Required.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IndexName</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Required. Must name a vector index on this table.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SearchVector</span></code></p></td>
+<td><p>List (<code class="docutils literal notranslate"><span class="pre">L</span></code>) or <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code></p></td>
+<td><p>Required. The query vector. Its length must equal the index’s <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TopK</span></code></p></td>
+<td><p>Integer</p></td>
+<td><p>Required. How many nearest neighbors to return — between 1 and 1000.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SearchConditionExpression</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Optional (mandatory if the index has a <code class="docutils literal notranslate"><span class="pre">HASH</span></code> <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attribute). A pre-filter evaluated by the vector store itself before the ANN search, using <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attributes — see below.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Optional, ScyllaDB extension. A post-filter applied to the <code class="docutils literal notranslate"><span class="pre">TopK</span></code> candidates found by the ANN search — see below.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ExpressionAttributeNames</span></code> / <code class="docutils literal notranslate"><span class="pre">ExpressionAttributeValues</span></code></p></td>
+<td><p></p></td>
+<td><p>As usual, substituted into <code class="docutils literal notranslate"><span class="pre">SearchConditionExpression</span></code>/<code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code>/<code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Optional. Which attributes to return — see below.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BaseRead</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p>Optional, ScyllaDB extension, default <code class="docutils literal notranslate"><span class="pre">false</span></code>. Whether to read matching items from the base table — see below.</p></td>
 </tr>
 </tbody>
 </table>
+<p><code class="docutils literal notranslate"><span class="pre">SearchConditionExpression</span></code> only supports the <code class="docutils literal notranslate"><span class="pre">=</span></code> operator, combining
+multiple conditions with <code class="docutils literal notranslate"><span class="pre">AND</span></code> (no <code class="docutils literal notranslate"><span class="pre">OR</span></code>, <code class="docutils literal notranslate"><span class="pre">NOT</span></code>, or other comparators). Every
+attribute it references must be a <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attribute (<code class="docutils literal notranslate"><span class="pre">HASH</span></code> or
+<code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code>) of the index being searched, and only string (<code class="docutils literal notranslate"><span class="pre">S</span></code>),
+number (<code class="docutils literal notranslate"><span class="pre">N</span></code>), and binary (<code class="docutils literal notranslate"><span class="pre">B</span></code>) values are supported. Each comparison must have
+an attribute on one side and a constant on the other.</p>
+<p><strong>Extra operators — ScyllaDB extension.</strong> For <code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code> attributes,
+DynamoDB’s documentation describes the comparison, range and set-membership
+operators as “not yet available”, implying they may arrive later. ScyllaDB’s
+vector store can already evaluate them, so the live-updatable configuration option
+<code class="docutils literal notranslate"><span class="pre">alternator_vector_search_extra_operators</span></code> makes Alternator additionally accept
+<code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">IN</span></code> and <code class="docutils literal notranslate"><span class="pre">BETWEEN</span></code> on the index’s <code class="docutils literal notranslate"><span class="pre">INLINE_FILTER</span></code>
+attributes. It is <strong>disabled by default</strong>, because enabling it means accepting
+requests which DynamoDB rejects today. Two things it does not change:
+<code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> remains unsupported, and the <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code>’s <code class="docutils literal notranslate"><span class="pre">HASH</span></code> attribute stays
+<code class="docutils literal notranslate"><span class="pre">=</span></code>-only, because it partitions the vector index and so - like a query’s
+partition key - can only be matched exactly.</p>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard DynamoDB format:</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span>
+<span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0.1&quot;</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;-0.3&quot;</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0.7&quot;</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="c1"># A vector index without a SearchSchema:</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_vectors</span><span class="p">(</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
     <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
-    <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.1&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;-0.3&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.7&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">]},</span>
-    <span class="p">},</span>
+    <span class="n">SearchVector</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
+    <span class="n">TopK</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Optimized ScyllaDB FLOAT32VECTOR format:</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+<span class="c1"># A vector index whose SearchSchema declares &#39;category&#39; as HASH:</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_vectors</span><span class="p">(</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
     <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
-    <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FLOAT32VECTOR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span>
-    <span class="p">},</span>
+    <span class="n">SearchVector</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
+    <span class="n">TopK</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">SearchConditionExpression</span><span class="o">=</span><span class="s1">&#39;category = :c&#39;</span><span class="p">,</span>
+    <span class="n">ExpressionAttributeValues</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;:c&#39;</span><span class="p">:</span> <span class="s1">&#39;electronics&#39;</span><span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Requirements:</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code>, by default (<code class="docutils literal notranslate"><span class="pre">BaseRead=false</span></code>, see below), can only
+request attributes actually
+available from the index itself — the base table’s key columns,
+<code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attributes, and <code class="docutils literal notranslate"><span class="pre">Projection</span></code>’s <code class="docutils literal notranslate"><span class="pre">NonKeyAttributes</span></code> — plus, as
+a special case, the vector attribute itself can always be requested
+explicitly even under <code class="docutils literal notranslate"><span class="pre">ProjectionType=KEYS_ONLY</span></code>, though the value returned
+is only as precise as the vector store’s own storage of it (see
+<a class="reference internal" href="#the-float32vector-type-scylladb-extension">FLOAT32VECTOR</a> below), and
+comes back as a list (<code class="docutils literal notranslate"><span class="pre">L</span></code>) of numbers (<code class="docutils literal notranslate"><span class="pre">N</span></code>) — as it does in DynamoDB — even
+for an item whose attribute was written as a <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>, which the
+index keeps no record of. Naming
+an attribute that isn’t actually available is not an error; it’s simply
+left out of the result, the same as <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> naming an
+attribute an item doesn’t have. With <code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code>, this restriction is
+lifted: <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> can then name any attribute of the base
+table, not just ones projected into the index.</p>
+<p>Omitting <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> entirely always means the same thing - the
+entire item - but <code class="docutils literal notranslate"><span class="pre">BaseRead</span></code> decides which copy of the
+item that refers to: with <code class="docutils literal notranslate"><span class="pre">BaseRead=false</span></code>, the vector index’s own copy,
+which only ever has the projected attributes to begin with (matching
+DynamoDB’s own <code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code> default for a GSI/LSI <code class="docutils literal notranslate"><span class="pre">Query</span></code> -
+not a restricted view, just “the entire item” as the index actually has
+it); with <code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code>, the base table’s row, with every attribute it
+actually has. Either way, the vector attribute is excluded from this
+default; request it explicitly to get it.</p>
+<p><strong>BaseRead — ScyllaDB extension.</strong> DynamoDB’s own <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> can only
+ever return the attributes projected into the index — it has no way to read
+anything else from the base table. As a ScyllaDB extension, <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code>
+accepts a boolean <code class="docutils literal notranslate"><span class="pre">BaseRead</span></code> parameter to lift that restriction:</p>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Parameter</p></th>
-<th class="head"><p>Details</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexName</span></code></p></td>
-<td><p>Required. Must name a vector index on this table (not a GSI or LSI).</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VectorSearch.QueryVector</span></code></p></td>
-<td><p>Required. A DynamoDB <code class="docutils literal notranslate"><span class="pre">AttributeValue</span></code> of type <code class="docutils literal notranslate"><span class="pre">L</span></code> (all elements of type <code class="docutils literal notranslate"><span class="pre">N</span></code>) or the ScyllaDB-specific type <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> (plain floating-point JSON numbers).</p></td>
-</tr>
-<tr class="row-even"><td><p>QueryVector length</p></td>
-<td><p>Must match the <code class="docutils literal notranslate"><span class="pre">Dimensions</span></code> configured for the named vector index.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Limit</span></code></p></td>
-<td><p>Required. Defines <em>k</em> — how many nearest neighbors to return. Must be a positive integer no greater than 1000.</p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Differences from standard Query:</strong></p>
-<p>Vector search reinterprets several standard <code class="docutils literal notranslate"><span class="pre">Query</span></code> parameters in a fundamentally
-different way, and explicitly rejects others that have no meaningful interpretation:</p>
-<ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">Limit</span></code> means top-k, not page size.</strong> In a standard Query, <code class="docutils literal notranslate"><span class="pre">Limit</span></code> caps
-the number of items examined per page, and you page through results with
-<code class="docutils literal notranslate"><span class="pre">ExclusiveStartKey</span></code>. In vector search, <code class="docutils literal notranslate"><span class="pre">Limit</span></code> defines <em>k</em>: the ANN
-algorithm runs once and returns exactly the <em>k</em> nearest neighbors. There
-is no natural “next page” — each page would require a full re-run of the
-search — so <strong><code class="docutils literal notranslate"><span class="pre">ExclusiveStartKey</span></code> is rejected</strong>. Because vector search does
-not support pagination, <code class="docutils literal notranslate"><span class="pre">Limit</span></code> is capped at 1000; if you need more results
-you must issue separate queries with different query vectors.</p></li>
-<li><p><strong>Results are ordered by vector distance, not by sort key.</strong> A standard
-Query returns rows in sort-key order; <code class="docutils literal notranslate"><span class="pre">ScanIndexForward=false</span></code> reverses
-that order. Vector search always returns results ordered by their distance
-to <code class="docutils literal notranslate"><span class="pre">QueryVector</span></code> (nearest first). Having <code class="docutils literal notranslate"><span class="pre">ScanIndexForward</span></code> specify sort-key
-direction has no meaning here, so <strong><code class="docutils literal notranslate"><span class="pre">ScanIndexForward</span></code> is rejected</strong>.</p></li>
-<li><p><strong>Eventual consistency only.</strong> The vector store is an external service fed
-asynchronously from ScyllaDB via CDC. Like GSIs, vector indexes can never
-reflect writes instantly, so strongly-consistent reads are impossible.
-<strong><code class="docutils literal notranslate"><span class="pre">ConsistentRead=true</span></code> is rejected.</strong></p></li>
-</ul>
-<p><strong>Select parameter:</strong></p>
-<p>The standard DynamoDB <code class="docutils literal notranslate"><span class="pre">Select</span></code> parameter is supported for vector search queries
-and controls which attributes are returned for each matching item:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">Select</span></code> value</p></th>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">BaseRead</span></code> value</p></th>
 <th class="head"><p>Behavior</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code> (default)</p></td>
-<td><p>Return only the attributes projected to the vector index. Currently, only the primary key attributes (hash key, and range key if present) are projected; support for configuring additional projected attributes is not yet implemented. Note that the vector attribute itself is <strong>not</strong> included: the vector store may not retain the original floating-point values (e.g., it may quantize them), so the authoritative copy lives only in the base table. This is the most efficient option because Scylla can return the results directly from the vector store without an additional fetch from the base table.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">false</span></code> (default)</p></td>
+<td><p>The response is built entirely out of what’s already projected into the index; no base-table reads. This is the <em>only</em> mode real DynamoDB’s <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> supports. One thing currently still forces a base-table read even here, though it isn’t a deliberate restriction - it’s a missing feature to fix later, not part of the design: <code class="docutils literal notranslate"><span class="pre">ProjectionType=ALL</span></code>’s default response (see <a class="reference internal" href="#projection">Projection</a>).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ALL_ATTRIBUTES</span></code></p></td>
-<td><p>Return all attributes of each matching item, fetched from the base table.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code></p></td>
-<td><p>Return only the attributes named in <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> or <code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">COUNT</span></code></p></td>
-<td><p>Return only the count of matching items; no <code class="docutils literal notranslate"><span class="pre">Items</span></code> list is included in the response.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Unconditionally reads each matching item from the base table, returning whatever <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> asked for — any base table attribute, not just projected ones, and the full item if it wasn’t given (see above) — and giving <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> access to the full item. As a minor optimization, this is skipped for an explicit <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> naming only key columns (regardless of <code class="docutils literal notranslate"><span class="pre">ProjectionType</span></code>, even <code class="docutils literal notranslate"><span class="pre">ALL</span></code>), with no <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> - keys can’t differ between the index and the base table, so a base-table read couldn’t tell us anything new there.</p></td>
 </tr>
 </tbody>
 </table>
-<p>When neither <code class="docutils literal notranslate"><span class="pre">Select</span></code> nor <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code>/<code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code> is specified,
-<code class="docutils literal notranslate"><span class="pre">Select</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code>.  When <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> or
-<code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code> is present without an explicit <code class="docutils literal notranslate"><span class="pre">Select</span></code>, it implies
-<code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code>.  Using <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> or <code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code>
-together with an explicit <code class="docutils literal notranslate"><span class="pre">Select</span></code> other than <code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> is an error.</p>
-<p><strong>Note on performance:</strong> Unlike a DynamoDB LSI, a vector index allows you to
-read non-projected attributes (e.g., with <code class="docutils literal notranslate"><span class="pre">ALL_ATTRIBUTES</span></code> or
-<code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> requesting a non-key column).  However, doing so requires
-an additional read from the base table for each result — similar to reading
-through a secondary index (rather than a materialized view) in CQL — and is
-therefore significantly slower than returning only projected attributes with
-<code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code>.  For latency-sensitive applications, prefer
-<code class="docutils literal notranslate"><span class="pre">ALL_PROJECTED_ATTRIBUTES</span></code> or limiting <code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> to key columns.</p>
-<p><strong>Filtering: pre-filter and post-filter:</strong></p>
-<p>Vector search supports two complementary filtering mechanisms:</p>
-<p><strong>Pre-filtering (<code class="docutils literal notranslate"><span class="pre">KeyConditionExpression</span></code>):</strong> conditions are sent to the vector
-store before the ANN search, so the search is performed only over matching
-items. Because pre-filtering is evaluated inside the vector store, only
-attributes that are projected into the vector index can be referenced — today
-that means the base table’s key columns (hash key and range key if present).
-Supported operators are <code class="docutils literal notranslate"><span class="pre">=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">IN</span></code>, and <code class="docutils literal notranslate"><span class="pre">BETWEEN</span></code>;
-conditions are combined with <code class="docutils literal notranslate"><span class="pre">AND</span></code>. <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> are rejected because the
-vector store’s pre-filter API only accepts a flat list of conditions implicitly
-ANDed together. The <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> (not-equal) operator is also rejected. In cases where
-<code class="docutils literal notranslate"><span class="pre">OR</span></code> would otherwise test a single attribute against multiple values, <code class="docutils literal notranslate"><span class="pre">IN</span></code> can
-often serve as a replacement: instead of <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">:v1</span> <span class="pre">OR</span> <span class="pre">p</span> <span class="pre">=</span> <span class="pre">:v2</span></code>, write
-<code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">IN</span> <span class="pre">(:v1,</span> <span class="pre">:v2)</span></code>. <code class="docutils literal notranslate"><span class="pre">KeyConditions</span></code> (the legacy non-expression API) is <strong>not</strong>
-supported and will be rejected with a <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>.</p>
-<p>Pre-filtering searches only within the matching subset and returns the items
-most similar to the query vector, but the result count is <strong>not</strong> guaranteed
-to reach <code class="docutils literal notranslate"><span class="pre">Limit</span></code>: the underlying ANN algorithm explores a bounded neighborhood
-of the graph and may return fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items even when enough matching
-items exist in the index. There is no automatic retry to fill missing slots.</p>
-<p><strong>Post-filtering (<code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code>):</strong> after the ANN search returns its <code class="docutils literal notranslate"><span class="pre">Limit</span></code>
-nearest-neighbor candidates, the filter is applied to each candidate and only
-matching items are returned. Because filtering happens <em>after</em> the <code class="docutils literal notranslate"><span class="pre">Limit</span></code>
-candidates have already been selected, some may be discarded, and the response
-may contain <strong>fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items</strong>. The server does not automatically
-fetch additional neighbors to replace filtered-out items. Any attribute may be
-referenced in a <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code>, not only projected columns. This is
-identical to how <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> interacts with <code class="docutils literal notranslate"><span class="pre">Limit</span></code> in a standard
-DynamoDB <code class="docutils literal notranslate"><span class="pre">Query</span></code>. <code class="docutils literal notranslate"><span class="pre">QueryFilter</span></code> (the legacy non-expression filter API) is <strong>not</strong>
-supported and will be rejected with a <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code>.</p>
-<p>The response always includes two count fields:</p>
+<p><code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code> does not change <em>which</em> items a search can find: candidate
+selection always comes from the vector index itself, which is only
+eventually consistent (see above), so a very recently written item that
+hasn’t reached the index yet stays invisible to <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> either way.
+What <code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code> does give is up-to-date <em>attribute values</em> for
+whichever candidates the search did find: the index’s own copy of an
+item’s projected attributes is itself only as fresh as the last update
+that reached it through that same asynchronous pipeline, while
+<code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code> reads each matching item’s current row from the base table
+directly, at the cost of an extra read per item.</p>
+<p>These base-table reads use <code class="docutils literal notranslate"><span class="pre">ConsistentRead=true</span></code> to avoid reading stale data
+(or not finding data). This is not currently configurable - <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code>
+has no <code class="docutils literal notranslate"><span class="pre">ConsistentRead</span></code> parameter.</p>
+<p><code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code> is inherently less efficient than <code class="docutils literal notranslate"><span class="pre">BaseRead=false</span></code>, as the
+former needs to perform additional base-table reads for information that
+the latter retrieves from the vector store’s memory. In the current
+implementation, <code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code> is even more inefficient than it ought to be,
+because the items are read from the base table individually and sequentially.</p>
+<p>Interestingly, <code class="docutils literal notranslate"><span class="pre">BaseRead=false</span></code>’s fast path — serving a search entirely out
+of the vector index, without touching the base table — has no equivalent in
+ScyllaDB’s own CQL <code class="docutils literal notranslate"><span class="pre">ANN</span> <span class="pre">OF</span></code> vector search: CQL always works the way
+<code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code> does here, retrieving only the matching keys from the
+vector search engine and then reading the rest of each item from the base
+table. <code class="docutils literal notranslate"><span class="pre">BaseRead=false</span></code>, DynamoDB’s only supported mode, is thus an
+Alternator-only optimization not available to CQL users of the same index.</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">Query</span></code>, <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> does not accept a <code class="docutils literal notranslate"><span class="pre">Select</span></code> parameter at
+all — <code class="docutils literal notranslate"><span class="pre">BaseRead</span></code> together with <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> already covers the
+same ground (including <code class="docutils literal notranslate"><span class="pre">Query</span></code>’s <code class="docutils literal notranslate"><span class="pre">SPECIFIC_ATTRIBUTES</span></code> and <code class="docutils literal notranslate"><span class="pre">ALL_ATTRIBUTES</span></code>
+behaviors). Nor does it accept the legacy <code class="docutils literal notranslate"><span class="pre">AttributesToGet</span></code>
+(<code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code>’s predecessor) - use <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> instead.
+There’s also no <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> equivalent of <code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code>: the
+<code class="docutils literal notranslate"><span class="pre">SearchResults</span></code> response shape has no field for a bare count.</p>
+<p><strong>FilterExpression — ScyllaDB extension.</strong> Also as a ScyllaDB extension, a
+<code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> can be applied to the <code class="docutils literal notranslate"><span class="pre">TopK</span></code> candidates found by the ANN
+search, discarding any that don’t match. This is <em>post</em>-filtering: it
+happens only after the candidates have already been chosen — here, by the
+ANN search, rather than by a key condition or table scan as in <code class="docutils literal notranslate"><span class="pre">Query</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Scan</span></code> — so a discarded item is never replaced by another candidate. This
+is the same relationship <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> has to <code class="docutils literal notranslate"><span class="pre">Limit</span></code> in a standard
+<code class="docutils literal notranslate"><span class="pre">Query</span></code> or <code class="docutils literal notranslate"><span class="pre">Scan</span></code>, and because of it, the response can end up with fewer
+than <code class="docutils literal notranslate"><span class="pre">TopK</span></code> items.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> uses the exact same expression syntax, with the same
+capabilities, as <code class="docutils literal notranslate"><span class="pre">Query</span></code>’s and <code class="docutils literal notranslate"><span class="pre">Scan</span></code>’s <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> — comparison
+operators (<code class="docutils literal notranslate"><span class="pre">=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">BETWEEN</span></code>, <code class="docutils literal notranslate"><span class="pre">IN</span></code>), functions
+(<code class="docutils literal notranslate"><span class="pre">attribute_exists</span></code>, <code class="docutils literal notranslate"><span class="pre">attribute_not_exists</span></code>, <code class="docutils literal notranslate"><span class="pre">attribute_type</span></code>,
+<code class="docutils literal notranslate"><span class="pre">begins_with</span></code>, <code class="docutils literal notranslate"><span class="pre">contains</span></code>, <code class="docutils literal notranslate"><span class="pre">size</span></code>), and conditions combined with
+<code class="docutils literal notranslate"><span class="pre">AND</span></code>/<code class="docutils literal notranslate"><span class="pre">OR</span></code>/<code class="docutils literal notranslate"><span class="pre">NOT</span></code>. This is far more general than <code class="docutils literal notranslate"><span class="pre">SearchConditionExpression</span></code>
+(see above), which by default only supports the <code class="docutils literal notranslate"><span class="pre">=</span></code> operator, <code class="docutils literal notranslate"><span class="pre">AND</span></code>-combined
+conditions, and only on <code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> attributes — <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code>, in
+contrast, can reference <em>any</em> attribute of the item, of any type (including
+one that varies from item to item, since Alternator attributes are
+otherwise untyped): a condition like <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">:want</span></code> simply treats an item
+whose <code class="docutils literal notranslate"><span class="pre">x</span></code> has a different type than <code class="docutils literal notranslate"><span class="pre">:want</span></code> (or is missing <code class="docutils literal notranslate"><span class="pre">x</span></code> entirely)
+as not matching, rather than an error.</p>
+<p>The attributes available to <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> are exactly the ones
+available to <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> (see <code class="docutils literal notranslate"><span class="pre">BaseRead</span></code> above) — not the
+possibly-smaller subset that a given <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> actually asks
+to have <em>returned</em>: with <code class="docutils literal notranslate"><span class="pre">BaseRead=false</span></code>, only what’s projected into the
+index is available, regardless of what <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> requests — an
+attribute outside that set is silently treated as missing, the same as for
+an item that’s genuinely missing it, and referencing it never by itself
+triggers a base-table read; with <code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code>, the full base-table item
+is available, again regardless of what <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> requests.
+<code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> only trims the final response, after filtering has
+already happened.</p>
+</section>
+<section id="similarity-scores">
+<h2>Similarity scores<a class="headerlink" href="#similarity-scores" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> response has the shape:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;SearchResults&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;Item&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;S&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;item1&quot;</span><span class="p">}},</span><span class="w"> </span><span class="nt">&quot;Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0123</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;Item&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;S&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;item2&quot;</span><span class="p">}},</span><span class="w"> </span><span class="nt">&quot;Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4567</span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(with up to <code class="docutils literal notranslate"><span class="pre">TopK</span></code> entries in <code class="docutils literal notranslate"><span class="pre">SearchResults</span></code>, each carrying its own <code class="docutils literal notranslate"><span class="pre">Item</span></code>
+and <code class="docutils literal notranslate"><span class="pre">Score</span></code>)</p>
+<p><code class="docutils literal notranslate"><span class="pre">SearchResults</span></code> is already ordered — nearest match first — and every entry
+carries a <code class="docutils literal notranslate"><span class="pre">Score</span></code> alongside its <code class="docutils literal notranslate"><span class="pre">Item</span></code>. What <code class="docutils literal notranslate"><span class="pre">Score</span></code> means, and whether a
+<em>lower</em> or <em>higher</em> value is a better match, depends on the index’s
+<code class="docutils literal notranslate"><span class="pre">DistanceFunction</span></code>:</p>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code></p></td>
-<td><p>The number of candidates returned by the vector index. Normally equal to <code class="docutils literal notranslate"><span class="pre">Limit</span></code>, but may be less if there are fewer than <code class="docutils literal notranslate"><span class="pre">Limit</span></code> items in the table (or matching the pre-filtering condition), or if the approximate ANN search did not find enough candidates.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Count</span></code></p></td>
-<td><p>The number of items that passed the <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> (or equal to <code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code> when no filter is present).</p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Interaction with <code class="docutils literal notranslate"><span class="pre">Select</span></code>:</strong></p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Select=ALL_ATTRIBUTES</span></code>: Each candidate item is fetched from the
-base table, the filter is evaluated against all its attributes, and only
-matching items are returned. <code class="docutils literal notranslate"><span class="pre">Count</span></code> reflects the number of items that passed
-the filter.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Select=SPECIFIC_ATTRIBUTES</span></code>: Each candidate item is fetched from the base
-table — including any attributes needed by the filter expression, even if
-those attributes are not listed in <code class="docutils literal notranslate"><span class="pre">ProjectionExpression</span></code> — and the filter is
-applied. Only the projected attributes are returned in the response; filter
-attributes that were not requested are not included in the returned items.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code>: The candidate items are still fetched from the base table and
-the filter is evaluated for each one, but no <code class="docutils literal notranslate"><span class="pre">Items</span></code> list is returned. <code class="docutils literal notranslate"><span class="pre">Count</span></code>
-reflects the number of items that passed the filter; <code class="docutils literal notranslate"><span class="pre">ScannedCount</span></code> is the
-total number of candidates examined. This is useful for counting matches
-without transferring item data to the client.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Select=ALL_PROJECTED_ATTRIBUTES</span></code> (default): When no filter is present this is the most
-efficient mode — results are returned directly from the vector store without
-any base-table reads. When a <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> is present, however, the full
-item must be fetched from the base table to evaluate the filter, and only the
-projected (key) attributes are returned for items that pass.</p></li>
-</ul>
-<p><strong>ReturnScores field:</strong></p>
-<p>By default, a vector search <code class="docutils literal notranslate"><span class="pre">Query</span></code> response contains only the matched items
-(or a count) — it does not include how similar each result is to the query
-vector. To also receive similarity scores, set the optional
-<code class="docutils literal notranslate"><span class="pre">ReturnScores</span></code> field inside the <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Value</p></th>
-<th class="head"><p>Behavior</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">NONE</span></code></p></td>
-<td><p>Default. No similarity scores are returned.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SIMILARITY</span></code></p></td>
-<td><p>Each response includes a <code class="docutils literal notranslate"><span class="pre">Scores</span></code> array parallel to <code class="docutils literal notranslate"><span class="pre">Items</span></code>, with one floating-point score per item.</p></td>
-</tr>
-</tbody>
-</table>
-<p>The <code class="docutils literal notranslate"><span class="pre">Scores</span></code> array is always the same length as <code class="docutils literal notranslate"><span class="pre">Items</span></code> and in the same
-order: <code class="docutils literal notranslate"><span class="pre">Scores[i]</span></code> is the similarity score for <code class="docutils literal notranslate"><span class="pre">Items[i]</span></code>.</p>
-<p><strong>What the similarity score means:</strong></p>
-<p>The similarity score is a floating-point number computed from the distance
-between the query vector and each result’s stored vector, using the index’s
-<code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code>. A <strong>higher</strong> score means a <strong>closer</strong> (more similar)
-match, so results appear in descending similarity order.  The score range
-depends on the similarity function:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">SimilarityFunction</span></code></p></th>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">DistanceFunction</span></code></p></th>
+<th class="head"><p>What <code class="docutils literal notranslate"><span class="pre">Score</span></code> is</p></th>
 <th class="head"><p>Range</p></th>
-<th class="head"><p>Mapping</p></th>
+<th class="head"><p>Better match is…</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COSINE</span></code> (default)</p></td>
-<td><p>0.0 to 1.0</p></td>
-<td><p>The cosine of the angle between the two vectors is in <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">1]</span></code>. So taking <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">cos)/2</span></code> gives us a similarity value in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>: 1.0 means identical direction, 0.5 means orthogonal vectors, 0.0 means opposite direction.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COSINE</span></code></p></td>
+<td><p>Cosine distance: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">cosine_similarity</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">2]</span></code></p></td>
+<td><p><strong>lower</strong> (<code class="docutils literal notranslate"><span class="pre">0</span></code> = identical direction, <code class="docutils literal notranslate"><span class="pre">2</span></code> = opposite direction)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EUCLIDEAN</span></code></p></td>
-<td><p>0.0 to 1.0</p></td>
-<td><p>Euclidean distance <em>d</em> in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">inf)</span></code> is mapped to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">d)</span></code>. similarity 1.0 means identical vectors, 0.0 means infinitely far apart.</p></td>
+<td><p>Raw Euclidean (L2) distance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">∞)</span></code></p></td>
+<td><p><strong>lower</strong> (<code class="docutils literal notranslate"><span class="pre">0</span></code> = identical vectors)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DOT_PRODUCT</span></code></p></td>
-<td><p>Unbounded</p></td>
-<td><p>Uses the same distance definition and mapping as <code class="docutils literal notranslate"><span class="pre">COSINE</span></code>. For L2-normalized vectors the result is identical to <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> and stays in [0, 1]. For unnormalized vectors the value may exceed 1 or be negative.</p></td>
+<td><p>Raw dot product</p></td>
+<td><p>unbounded</p></td>
+<td><p><strong>higher</strong> (this one is a genuine similarity, not a distance — the other two are distances)</p></td>
 </tr>
 </tbody>
 </table>
-<p><code class="docutils literal notranslate"><span class="pre">ReturnScores=SIMILARITY</span></code> is not allowed with <code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code>,
-since <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> returns no <code class="docutils literal notranslate"><span class="pre">Items</span></code> array.</p>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
-    <span class="n">Limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FLOAT32VECTOR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span> <span class="s1">&#39;ReturnScores&#39;</span><span class="p">:</span> <span class="s1">&#39;SIMILARITY&#39;</span><span class="p">},</span>
-<span class="p">)</span>
-<span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;Items&#39;</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;Scores&#39;</span><span class="p">]):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">  similarity=</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<p>Because <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> and <code class="docutils literal notranslate"><span class="pre">EUCLIDEAN</span></code> scores are distances while <code class="docutils literal notranslate"><span class="pre">DOT_PRODUCT</span></code>’s
+is a similarity, take care when comparing scores across indexes using
+different <code class="docutils literal notranslate"><span class="pre">DistanceFunction</span></code>s, or when deciding a “good enough” threshold:
+the direction of “better” flips for <code class="docutils literal notranslate"><span class="pre">DOT_PRODUCT</span></code>.</p>
+</section>
+<section id="the-float32vector-type-scylladb-extension">
+<h2>The FLOAT32VECTOR type (ScyllaDB extension)<a class="headerlink" href="#the-float32vector-type-scylladb-extension" title="Link to this heading">¶</a></h2>
+<p>Amazon DynamoDB has no dedicated vector type: a vector is just an ordinary
+list (<code class="docutils literal notranslate"><span class="pre">L</span></code>) of numbers (<code class="docutils literal notranslate"><span class="pre">N</span></code>), each of which DynamoDB stores and transmits as
+a self-describing, variable-length decimal string. That’s a natural fit for
+DynamoDB’s general-purpose number type, but it’s needlessly wasteful for
+what a vector actually is: a fixed-length array of IEEE-754 floats.</p>
+<p>As a ScyllaDB-only extension, Alternator additionally accepts the vector
+attribute — both when writing an item and as the <code class="docutils literal notranslate"><span class="pre">SearchVector</span></code> in a
+search — using the <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type: a JSON array of plain floating
+point numbers (not quoted strings), stored internally as packed 4-byte
+big-endian floats rather than as a list of individually-tagged, decimal-
+string-encoded numbers:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="c1">// Standard DynamoDB list-of-numbers format:</span>
+<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-0.3&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7&quot;</span><span class="p">}]}}</span>
+
+<span class="c1">// FLOAT32VECTOR format (ScyllaDB extension):</span>
+<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;FLOAT32VECTOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]}}</span>
 </pre></div>
 </div>
+<p>For the high-dimensional vectors typical of ML embeddings — often in the
+hundreds or thousands of dimensions — this adds up: each <code class="docutils literal notranslate"><span class="pre">L</span></code>/<code class="docutils literal notranslate"><span class="pre">N</span></code> element
+carries a per-value <code class="docutils literal notranslate"><span class="pre">{&quot;N&quot;:</span> <span class="pre">...}</span></code> object wrapper and quoted decimal-text
+encoding on top of the number itself, while <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> is a bare JSON
+array of unquoted numbers, with no per-element wrapper. More importantly,
+Once parsed, a <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> is stored as exactly 4 bytes per dimension -
+a packed float array - rather than a list of decimal strings, saving
+significant amounts of storage for these vectors.
+Since a vector attribute’s precision is limited to what a 32-bit float can
+represent anyway (the vector store itself only ever deals in <code class="docutils literal notranslate"><span class="pre">float</span></code>,
+regardless of which format was used to write it), storing it as <code class="docutils literal notranslate"><span class="pre">L</span></code>/<code class="docutils literal notranslate"><span class="pre">N</span></code>
+doesn’t buy any extra precision — only extra bytes on the wire and extra
+CPU time parsing and reconstructing it.
+Both formats are accepted anywhere a vector value is expected (writing an
+item, or as <code class="docutils literal notranslate"><span class="pre">SearchVector</span></code> in a search), and can be freely mixed between
+different items or requests.</p>
 </section>
+<section id="constraints-and-limits">
+<h2>Constraints and limits<a class="headerlink" href="#constraints-and-limits" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Limit</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code></p></td>
+<td><p>1 to 16000</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TopK</span></code></p></td>
+<td><p>1 to 1000</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexName</span></code> length</p></td>
+<td><p>3 to 192 characters</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SearchSchema</span></code> <code class="docutils literal notranslate"><span class="pre">AttributeName</span></code> length</p></td>
+<td><p>up to 255 characters (same as any key attribute)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VectorAttribute</span></code>/<code class="docutils literal notranslate"><span class="pre">NonKeyAttributes</span></code> attribute name length</p></td>
+<td><p>up to 65535 characters (same as any non-key attribute)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VectorIndexUpdates</span></code> per <code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> call</p></td>
+<td><p>exactly one <code class="docutils literal notranslate"><span class="pre">Create</span></code> or <code class="docutils literal notranslate"><span class="pre">Delete</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SearchConditionExpression</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">=</span></code> only (more operators with <code class="docutils literal notranslate"><span class="pre">alternator_vector_search_extra_operators</span></code>, see above), <code class="docutils literal notranslate"><span class="pre">AND</span></code>-combined only, <code class="docutils literal notranslate"><span class="pre">S</span></code>/<code class="docutils literal notranslate"><span class="pre">N</span></code>/<code class="docutils literal notranslate"><span class="pre">B</span></code> values only</p></td>
+</tr>
+<tr class="row-odd"><td><p>Base table replication</p></td>
+<td><p>must use tablets, not vnodes</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Link to this heading">¶</a></h2>
-<p>ScyllaDB exposes the following metrics (under the <code class="docutils literal notranslate"><span class="pre">alternator</span></code> group) for
-monitoring vector search activity:</p>
+<p>ScyllaDB exposes the following metrics (under the <code class="docutils literal notranslate"><span class="pre">alternator</span></code> group, and
+per-table under <code class="docutils literal notranslate"><span class="pre">alternator_table</span></code>) for monitoring vector search activity,
+alongside the standard <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> label on the general
+<code class="docutils literal notranslate"><span class="pre">scylla_alternator_operation</span></code>/<code class="docutils literal notranslate"><span class="pre">scylla_alternator_operation_latency</span></code>
+metrics:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Metric</p></th>
@@ -915,17 +1013,14 @@ monitoring vector search activity:</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query</span></code></p></td>
-<td><p>Number of <code class="docutils literal notranslate"><span class="pre">Query</span></code> operations that included a <code class="docutils literal notranslate"><span class="pre">VectorSearch</span></code> parameter. These are also counted in the general <code class="docutils literal notranslate"><span class="pre">operation{op=&quot;Query&quot;}</span></code> metric.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_returned_items</span></code></p></td>
+<td><p>Total number of items actually returned in <code class="docutils literal notranslate"><span class="pre">SearchResults</span></code>, across all <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> calls.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query_returned_items</span></code></p></td>
-<td><p>Total number of items returned across all vector search queries. Not incremented for <code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code> queries, since no items are actually returned in that case.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_items_from_vs</span></code></p></td>
+<td><p>Total number of nearest-neighbor candidates returned by the vector store itself. Can exceed <code class="docutils literal notranslate"><span class="pre">vector_search_returned_items</span></code> when a <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> (a ScyllaDB extension) discards some of them.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query_items_from_vs</span></code></p></td>
-<td><p>Total number of nearest-neighbor candidates returned by the vector store. Some candidates may be filtered out by a <code class="docutils literal notranslate"><span class="pre">FilterExpression</span></code> and not appear in the final response.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_query_items_from_base_table</span></code></p></td>
-<td><p>Total number of items read from the base table by vector search queries. Queries using <code class="docutils literal notranslate"><span class="pre">Select=ALL_PROJECTED_ATTRIBUTES</span></code> without a filter, or <code class="docutils literal notranslate"><span class="pre">Select=COUNT</span></code> without a filter, bypass the base-table read entirely and do not increment this counter.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vector_search_items_from_base_table</span></code></p></td>
+<td><p>Total number of items read from the base table to serve <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> requests. <code class="docutils literal notranslate"><span class="pre">BaseRead=false</span></code> requests never need this - that’s the fast path real DynamoDB always uses - with one known-gap exception: <code class="docutils literal notranslate"><span class="pre">ProjectionType=ALL</span></code>’s default response (see <a class="reference internal" href="#projection">Projection</a>). <code class="docutils literal notranslate"><span class="pre">BaseRead=true</span></code> (a ScyllaDB extension) forces it, at a real latency cost - see <code class="docutils literal notranslate"><span class="pre">BaseRead</span></code> below for the one minor case it doesn’t.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1055,13 +1150,15 @@ monitoring vector search activity:</p>
 <li><a class="reference internal" href="#">Alternator Vector Search</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#api-extensions">API extensions</a><ul>
-<li><a class="reference internal" href="#createtable-vectorindexes-parameter">CreateTable — VectorIndexes parameter</a></li>
+<li><a class="reference internal" href="#vector-indexes-createtable-s-vectorindexes-parameter">Vector indexes: CreateTable’s VectorIndexes parameter</a></li>
+<li><a class="reference internal" href="#filtering-with-searchschema-hash-and-inline-filter">Filtering with SearchSchema: HASH and INLINE_FILTER</a></li>
+<li><a class="reference internal" href="#projection">Projection</a></li>
 <li><a class="reference internal" href="#updatetable-vectorindexupdates-parameter">UpdateTable — VectorIndexUpdates parameter</a></li>
 <li><a class="reference internal" href="#describetable-vectorindexes-in-the-response">DescribeTable — VectorIndexes in the response</a></li>
-<li><a class="reference internal" href="#query-vectorsearch-parameter">Query — VectorSearch parameter</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#performing-a-search-the-searchvectors-operation">Performing a search: the SearchVectors operation</a></li>
+<li><a class="reference internal" href="#similarity-scores">Similarity scores</a></li>
+<li><a class="reference internal" href="#the-float32vector-type-scylladb-extension">The FLOAT32VECTOR type (ScyllaDB extension)</a></li>
+<li><a class="reference internal" href="#constraints-and-limits">Constraints and limits</a></li>
 <li><a class="reference internal" href="#metrics">Metrics</a></li>
 </ul>
 </li>
@@ -1574,7 +1671,7 @@ monitoring vector search activity:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Sep 2026.
+                        Last updated on 24 Sep 2026.
                     
                 </div>
             

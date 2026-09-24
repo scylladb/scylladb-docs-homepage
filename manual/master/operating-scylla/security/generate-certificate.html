@@ -400,7 +400,8 @@
 <span class="k">[v3_ca]</span>
 <span class="na">subjectKeyIdentifier</span><span class="o">=</span><span class="s">hash</span>
 <span class="na">authorityKeyIdentifier</span><span class="o">=</span><span class="s">keyid:always,issuer:always</span>
-<span class="na">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">CA:true</span>
+<span class="na">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">critical,CA:true</span>
+<span class="na">keyUsage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">critical, keyCertSign, cRLSign</span>
 <span class="k">[v3_req]</span>
 <span class="c1"># Extensions to add to a certificate request</span>
 <span class="na">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">CA:FALSE</span>
@@ -425,7 +426,8 @@
 <span class="k">[v3_ca]</span>
 <span class="na">subjectKeyIdentifier</span><span class="o">=</span><span class="s">hash</span>
 <span class="na">authorityKeyIdentifier</span><span class="o">=</span><span class="s">keyid:always,issuer:always</span>
-<span class="na">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">CA:true</span>
+<span class="na">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">critical,CA:true</span>
+<span class="na">keyUsage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">critical, keyCertSign, cRLSign</span>
 <span class="k">[v3_req]</span>
 <span class="c1"># Extensions to add to a certificate request</span>
 <span class="na">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">CA:FALSE</span>
@@ -441,12 +443,20 @@
 </pre></div>
 </div>
 <p>And using this, a certificate signing authority:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>openssl<span class="w"> </span>req<span class="w"> </span>-x509<span class="w"> </span>-new<span class="w"> </span>-nodes<span class="w"> </span>-key<span class="w"> </span>cadb.key<span class="w"> </span>-days<span class="w"> </span><span class="m">3650</span><span class="w"> </span>-config<span class="w"> </span>db.cfg<span class="w"> </span>-out<span class="w"> </span>cadb.pem
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>openssl<span class="w"> </span>req<span class="w"> </span>-x509<span class="w"> </span>-new<span class="w"> </span>-nodes<span class="w"> </span>-key<span class="w"> </span>cadb.key<span class="w"> </span>-days<span class="w"> </span><span class="m">3650</span><span class="w"> </span>-config<span class="w"> </span>db.cfg<span class="w"> </span>-extensions<span class="w"> </span>v3_ca<span class="w"> </span>-out<span class="w"> </span>cadb.pem
 </pre></div>
 </div>
 <p>Now, generate a private key for our certificate:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>db.key<span class="w"> </span><span class="m">4096</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The node signs with this key on every TLS handshake, on the shard that
+accepted the connection. Larger RSA keys make that signature slower
+(RSA-4096 takes several milliseconds). An ECDSA key, for example
+<code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">ecparam</span> <span class="pre">-name</span> <span class="pre">prime256v1</span> <span class="pre">-genkey</span> <span class="pre">-noout</span> <span class="pre">-out</span> <span class="pre">db.key</span></code>, is
+accepted by ScyllaDB and signs in well under a millisecond.</p>
 </div>
 <p>And from this, a signing request:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-key<span class="w"> </span>db.key<span class="w"> </span>-out<span class="w"> </span>db.csr<span class="w"> </span>-config<span class="w"> </span>db.cfg
@@ -1117,7 +1127,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Sep 2026.
+                        Last updated on 24 Sep 2026.
                     
                 </div>
             

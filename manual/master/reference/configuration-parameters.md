@@ -1423,7 +1423,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 ### server_encryption_options
 
 > Enable or disable inter-node encryption. You must also generate keys and provide the appropriate key and trust store locations and passwords. The available options are:
-> : * internode_encryption: (Default: none) Enable or disable encryption of inter-node communication using the TLS_RSA_WITH_AES_128_CBC_SHA cipher suite for authentication, key exchange, and encryption of data transfers. The available inter-node options are:
+> : * internode_encryption: (Default: none) Enable or disable encryption of inter-node communication using TLS. The available inter-node options are:
 >     : * all: Encrypt all inter-node communications.
 >       * none: No encryption.
 >       * dc: Encrypt the traffic between the data centers (server only).
@@ -2587,6 +2587,16 @@ through CQL and are automatically applied by all nodes in the cluster. See
 ### alternator_streams_increased_compatibility
 
 > Increases compatibility with DynamoDB Streams at the cost of performance.     If enabled, Alternator compares the existing item with the new one during     data-modifying operations to determine which event type should be emitted.     This penalty is incurred only for tables with Alternator Streams enabled.
+
+> * **Type:** `bool`
+> * **Default value:** `false`
+> * Liveness: `True`
+
+<a id="confprop-alternator-vector-search-extra-operators"></a>
+
+### alternator_vector_search_extra_operators
+
+> Allow comparison, range and set-membership operators (<, <=, >, >=, IN, BETWEEN)     in SearchVectors’ SearchConditionExpression, on the vector index’s INLINE_FILTER     attributes. DynamoDB currently supports only the equality operator (=) there, and     documents the others as not yet available
 
 > * **Type:** `bool`
 > * **Default value:** `false`

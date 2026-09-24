@@ -1,0 +1,140 @@
+<!-- Licensed to the Apache Software Foundation (ASF) under one -->
+<!-- or more contributor license agreements.  See the NOTICE file -->
+<!-- distributed with this work for additional information -->
+<!-- regarding copyright ownership.  The ASF licenses this file -->
+<!-- to you under the Apache License, Version 2.0 (the -->
+<!-- "License"); you may not use this file except in compliance -->
+<!-- with the License.  You may obtain a copy of the License at -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
+<a id="secondary-indexes"></a>
+
+# Global Secondary Indexes
+
+CQL supports creating secondary indexes on tables, allowing queries on the table to use those indexes. A secondary index
+is identified by a name defined by:
+
+```cql
+index_name: re('[a-zA-Z_0-9]+')
+```
+
+<a id="create-index-statement"></a>
+
+## CREATE INDEX
+
+Creating a secondary index on a table uses the `CREATE INDEX` statement:
+
+```cql
+create_index_statement: CREATE [ CUSTOM ] INDEX [ IF NOT EXISTS ] [ `index_name` ]
+                      :     ON `table_name` '(' `index_identifier` ')'
+                      :     [ USING `string` [ WITH OPTIONS = `map_literal` ] ]
+index_identifier: `column_name`
+                :| ( FULL ) '(' `column_name` ')'
+```
+
+For instance:
+
+```cql
+CREATE INDEX userIndex ON NerdMovies (user);
+CREATE INDEX ON Mutants (abilityId);
+```
+
+The `CREATE INDEX` statement is used to create a new (automatic) secondary index for a given (existing) column in a
+given table. A name for the index itself can be specified before the `ON` keyword, if desired. If data already exists
+for the column, it will be indexed asynchronously. After the index is created, new data for the column is indexed
+automatically at insertion time.
+
+## Local Secondary Index
+
+[Local Secondary Indexes](https://docs.scylladb.com/manual/branch-2025.4/features/local-secondary-indexes.md) is an enhancement of [Global Secondary Indexes](https://docs.scylladb.com/manual/branch-2025.4/features/secondary-indexes.md), which allows ScyllaDB to optimize the use case in which the partition key of the base table is also the partition key of the index. Local Secondary Index syntax is the same as above, with extra parentheses on the partition key.
+
+```cql
+index_identifier: `column_name`
+                :| ( PK ) | KEYS | VALUES | FULL ) '(' `column_name` ')'
+```
+
+Example:
+
+```cql
+CREATE TABLE menus (location text, name text, price float, dish_type text, PRIMARY KEY(location, name));
+CREATE INDEX ON menus((location),dish_type);
+```
+
+More on [Local Secondary Indexes](https://docs.scylladb.com/manual/branch-2025.4/features/local-secondary-indexes.md)
+
+<!-- Attempting to create an already existing index will return an error unless the ``IF NOT EXISTS`` option is used. If it -->
+<!-- is used, the statement will be a no-op if the index already exists. -->
+<!-- Indexes on Map Keys (supported in ScyllaDB 2.2) -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- When creating an index on a :ref:`maps <maps>`, you may index either the keys or the values. If the column identifier is -->
+<!-- placed within the ``keys()`` function, the index will be on the map keys, allowing you to use ``CONTAINS KEY`` in -->
+<!-- ``WHERE`` clauses. Otherwise, the index will be on the map values. -->
+
+<a id="create-vector-index-statement"></a>
+
+## Vector Index ScyllaDB Cloud
+
+#### NOTE
+Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
+Vector indexes do not support all ScyllaDB features (e.g., tracing, TTL, paging, and grouping). More information
+about Vector Search is available in the
+[ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/vector-search/).
+
+ScyllaDB supports creating vector indexes on tables, allowing queries on the table to use those indexes for efficient
+similarity search on vector data.
+
+The vector index is the only custom type index supported in ScyllaDB. It is created using
+the `CUSTOM` keyword and specifying the index type as `vector_index`. Example:
+
+```cql
+CREATE CUSTOM INDEX vectorIndex ON ImageEmbeddings (embedding)
+USING 'vector_index'
+WITH OPTIONS = {'similarity_function': 'COSINE', 'maximum_node_connections': '16'};
+```
+
+The following options are supported for vector indexes. All of them are optional.
+
+| Option Name                | Description                                                                                                                                                                                                                                                                                                                                                                     | Default Value   |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| `similarity_function`      | The similarity function to use for vector comparisons. Supported values are:<br/>`COSINE`, `EUCLIDEAN`, and `DOT_PRODUCT`. `DOT_PRODUCT` requires vectors to be<br/>normalized, meaning each vector should have unit length (L2 norm = 1). For more information, see<br/>[Vector normalization](https://en.wikipedia.org/wiki/Normalization_(statistics)#Vector_normalization). | `COSINE`        |
+| `maximum_node_connections` | The maximum number of connections per node in the HNSW graph. In other HNSW implementations<br/>it is often denoted as `m`. Higher values lead to better recall (i.e., more relevant<br/>results are found) but increase memory usage and index size. Supported values are integers<br/>between 1 and 512.                                                                      | `16`            |
+| `construction_beam_width`  | The beam width to use during index **construction**. In other HNSW implementations it is often<br/>denoted as `efConstruction`. Higher values lead to better recall (i.e., more relevant<br/>results are found) but increase index creation time and memory usage. Supported values are<br/>integers between 1 and 4096.                                                        | `128`           |
+| `search_beam_width`        | The beam width to use during index **search**. In other HNSW implementations it is often denoted<br/>as `efSearch`. Higher values lead to better recall (i.e., more relevant results are found)<br/>but increase query latency. Supported values are integers between 1 and 4096.                                                                                               | `64`            |
+
+<a id="drop-index-statement"></a>
+
+## DROP INDEX
+
+Dropping a secondary index uses the `DROP INDEX` statement:
+
+```cql
+drop_index_statement: DROP INDEX [ IF EXISTS ] `index_name`
+```
+
+The `DROP INDEX` statement is used to drop an existing secondary index. The argument of the statement is the index
+name, which may optionally specify the keyspace of the index.
+
+<!-- If the index does not exists, the statement will return an error, unless ``IF EXISTS`` is used in which case the -->
+<!-- operation is a no-op. -->
+
+## Additional Information
+
+* [Global Secondary Indexes](https://docs.scylladb.com/manual/branch-2025.4/features/secondary-indexes.md)
+* [Local Secondary Indexes](https://docs.scylladb.com/manual/branch-2025.4/features/local-secondary-indexes.md)
+
+The following courses are available from ScyllaDB University:
+
+* [Materialized Views and Secondary Indexes](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/)
+* [Global Secondary Indexes](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/topic/global-secondary-indexes/)
+* [Local Secondary Indexes](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/topic/local-secondary-indexes-and-combining-both-types-of-indexes/)
+
+Copyright
+
+© 2016, The Apache Software Foundation.
+
+Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.

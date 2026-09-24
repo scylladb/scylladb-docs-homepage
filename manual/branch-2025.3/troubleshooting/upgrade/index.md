@@ -1,0 +1,9 @@
+# Upgrade
+
+
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Upgrade Issues</h5>
+            * [Inaccessible “/var/lib/scylla” and “/var/lib/systemd/coredump” after ScyllaDB upgrade](https://docs.scylladb.com/manual/branch-2025.3/troubleshooting/missing-dotmount-files.md)
+
+</div></div>

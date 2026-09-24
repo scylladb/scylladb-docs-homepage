@@ -158,7 +158,6 @@ schema_diff
 schema_loader
 schema_registry
 schema_tables
-scollectd
 scylla-nodetool
 scylla-sstable
 seastar

@@ -1,0 +1,13 @@
+# Nodetool help
+
+**help** - Display a list of available nodetool commands. It’s possible to
+specify a command to view its specific options.
+
+For example:
+
+```shell
+nodetool help
+nodetool help cfstats
+```
+
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2025.1/operating-scylla/nodetool.md)
