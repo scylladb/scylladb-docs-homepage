@@ -11090,6 +11090,32 @@ Explanation:
 | total_tombstone_purge_failure_due_to_overlapping_with_memtable             | purgeable tombstone which couldn’t be collected because memtable contains possibly shadowed data       |
 | total_tombstone_purge_failure_due_to_overlapping_with_uncompacting_sstable | purgeable tombstone which couldn’t be collected because other sstables contains possibly shadowed data |
 
+## Output formats
+
+Use `--format` (`-F`) to select the output format, one of `text` (the default),
+`json`, `yaml` or `log`.
+
+The `log` format reproduces the lines the compaction logger would have emitted at
+`debug` level when each compaction started and finished. Since the compaction log is
+not enabled by default, this allows the compaction activity to be put back into the
+node’s log, by sorting the two together by timestamp:
+
+```console
+nodetool compactionhistory -F log > history.log
+sort -k2 scylla.log history.log > merged.log
+```
+
+Example output:
+
+```console
+DEBUG 2024-12-17 16:19:55,914 [shard 0:comp] compaction - [Compact ks.test 17536e70-5358-11e6-9d5f-000000000000] Compacting [{generation: 2a5db691-bc8d-11ef-a5f9-bbbda77f5688, origin: memtable, size: 5468},{generation: 28c58a60-bc8d-11ef-a5f9-bbbda77f5688, origin: memtable, size: 5532}]
+DEBUG 2024-12-17 16:39:55,914 [shard 0:comp] compaction - [Compact ks.test 17536e70-5358-11e6-9d5f-000000000000] Compacted 2 sstables to [{generation: 2a5fb260-bc8d-11ef-a5f9-bbbda77f5688, origin: compaction, size: 5583}]. 11kB to 5583 bytes (~50% of original) in 1200000ms = 9 bytes/s.
+```
+
+The compaction history doesn’t record everything the original log line carries, so the
+SSTables are identified by generation rather than by file name, and the partition counts
+are left out.
+
 [Nodetool Reference](https://docs.scylladb.com/manual/master/operating-scylla/nodetool.md)
 
 
@@ -30410,10 +30436,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   uses vnodes
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses vnodes
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
 
    <a id="upgrade-nodes"></a>
@@ -30440,10 +30466,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   migrating to tablets  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   migrating to tablets  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    4. Drain and stop the node:
       ```console
@@ -30492,10 +30518,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   uses tablets  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses tablets  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    8. Move to the next node and repeat from step a until all nodes are upgraded.
 3. Finalize the migration:
@@ -30570,10 +30596,10 @@ following:
    Status: migrating_to_tablets
 
    Nodes:
-   Host ID                                Status
-   99d8de76-3954-4727-911a-6a07251b180c   uses tablets  <---
-   0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets  <---
-   017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+   Host ID                                Address    Status
+   99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses tablets  <---
+   0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets  <---
+   017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
    ```
 2. For **each upgraded or upgrading node** in the cluster, perform a downgrade
    (one node at a time):
@@ -30596,10 +30622,10 @@ following:
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   migrating to vnodes  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   migrating to vnodes  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    3. If the node status is `uses vnodes`, the downgrade is complete. Move to
       the next node and repeat from step a.
@@ -30652,10 +30678,10 @@ following:
          Status: migrating_to_tablets
 
          Nodes:
-         Host ID                                Status
-         99d8de76-3954-4727-911a-6a07251b180c   uses vnodes  <---
-         0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
-         017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+         Host ID                                Address    Status
+         99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses vnodes  <---
+         0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
+         017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
          ```
       5. Move to the next node and repeat from step a until all nodes are
          downgraded.
@@ -39034,6 +39060,21 @@ cqlsh> SELECT COUNT(*) FROM MUTATION_FRAGMENTS(ks.tbl) WHERE pk = 0 AND mutation
 
 (1 rows)
 ```
+
+Count fragments per mutation source:
+
+```console
+cqlsh> SELECT mutation_source, COUNT(*) FROM MUTATION_FRAGMENTS(ks.tbl) WHERE pk = 1 GROUP BY pk, mutation_source;
+
+ mutation_source                                                                                                  | count
+------------------------------------------------------------------------------------------------------------------+-------
+                                                                                                        row-cache |     3
+ sstable:/var/lib/scylla/data/ks/tbl-259b2520104011ee822ed2e489876007/me-3g79_0ur3_48e402ejkwsvj7viqr-big-Data.db |     3
+
+(2 rows)
+```
+
+`GROUP BY` takes a prefix of the output primary key: the partition key, then `mutation_source`, `partition_region`, the clustering key and `position_weight`.
 
 
 # select.md

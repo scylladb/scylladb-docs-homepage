@@ -694,6 +694,18 @@ Note that by default, drivers use round robin load balancing policies, and conse
 <span class="gp gp-VirtualEnv">(1 rows)</span>
 </pre></div>
 </div>
+<p>Count fragments per mutation source:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cqlsh&gt; SELECT mutation_source, COUNT(*) FROM MUTATION_FRAGMENTS(ks.tbl) WHERE pk = 1 GROUP BY pk, mutation_source;</span>
+
+<span class="go"> mutation_source                                                                                                  | count</span>
+<span class="go">------------------------------------------------------------------------------------------------------------------+-------</span>
+<span class="go">                                                                                                        row-cache |     3</span>
+<span class="go"> sstable:/var/lib/scylla/data/ks/tbl-259b2520104011ee822ed2e489876007/me-3g79_0ur3_48e402ejkwsvj7viqr-big-Data.db |     3</span>
+
+<span class="gp gp-VirtualEnv">(2 rows)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> takes a prefix of the output primary key: the partition key, then <code class="docutils literal notranslate"><span class="pre">mutation_source</span></code>, <code class="docutils literal notranslate"><span class="pre">partition_region</span></code>, the clustering key and <code class="docutils literal notranslate"><span class="pre">position_weight</span></code>.</p>
 </section>
 </section>
 </section>
@@ -1350,7 +1362,7 @@ Note that by default, drivers use round robin load balancing policies, and conse
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Sep 2026.
+                        Last updated on 25 Sep 2026.
                     
                 </div>
             

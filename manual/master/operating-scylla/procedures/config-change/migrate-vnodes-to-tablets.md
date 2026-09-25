@@ -126,10 +126,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   uses vnodes
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses vnodes
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
 
    <a id="upgrade-nodes"></a>
@@ -156,10 +156,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   migrating to tablets  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   migrating to tablets  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    4. Drain and stop the node:
       ```console
@@ -208,10 +208,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   uses tablets  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses tablets  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    8. Move to the next node and repeat from step a until all nodes are upgraded.
 3. Finalize the migration:
@@ -286,10 +286,10 @@ following:
    Status: migrating_to_tablets
 
    Nodes:
-   Host ID                                Status
-   99d8de76-3954-4727-911a-6a07251b180c   uses tablets  <---
-   0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets  <---
-   017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+   Host ID                                Address    Status
+   99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses tablets  <---
+   0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets  <---
+   017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
    ```
 2. For **each upgraded or upgrading node** in the cluster, perform a downgrade
    (one node at a time):
@@ -312,10 +312,10 @@ following:
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   migrating to vnodes  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   migrating to vnodes  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    3. If the node status is `uses vnodes`, the downgrade is complete. Move to
       the next node and repeat from step a.
@@ -368,10 +368,10 @@ following:
          Status: migrating_to_tablets
 
          Nodes:
-         Host ID                                Status
-         99d8de76-3954-4727-911a-6a07251b180c   uses vnodes  <---
-         0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
-         017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+         Host ID                                Address    Status
+         99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses vnodes  <---
+         0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
+         017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
          ```
       5. Move to the next node and repeat from step a until all nodes are
          downgraded.

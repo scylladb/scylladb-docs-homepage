@@ -454,7 +454,28 @@
 </tr>
 </tbody>
 </table>
+<section id="output-formats">
+<h2>Output formats<a class="headerlink" href="#output-formats" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--format</span></code> (<code class="docutils literal notranslate"><span class="pre">-F</span></code>) to select the output format, one of <code class="docutils literal notranslate"><span class="pre">text</span></code> (the default),
+<code class="docutils literal notranslate"><span class="pre">json</span></code>, <code class="docutils literal notranslate"><span class="pre">yaml</span></code> or <code class="docutils literal notranslate"><span class="pre">log</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">log</span></code> format reproduces the lines the compaction logger would have emitted at
+<code class="docutils literal notranslate"><span class="pre">debug</span></code> level when each compaction started and finished. Since the compaction log is
+not enabled by default, this allows the compaction activity to be put back into the
+node’s log, by sorting the two together by timestamp:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool compactionhistory -F log &gt; history.log</span>
+<span class="go">sort -k2 scylla.log history.log &gt; merged.log</span>
+</pre></div>
+</div>
+<p>Example output:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">DEBUG 2024-12-17 16:19:55,914 [shard 0:comp] compaction - [Compact ks.test 17536e70-5358-11e6-9d5f-000000000000] Compacting [{generation: 2a5db691-bc8d-11ef-a5f9-bbbda77f5688, origin: memtable, size: 5468},{generation: 28c58a60-bc8d-11ef-a5f9-bbbda77f5688, origin: memtable, size: 5532}]</span>
+<span class="go">DEBUG 2024-12-17 16:39:55,914 [shard 0:comp] compaction - [Compact ks.test 17536e70-5358-11e6-9d5f-000000000000] Compacted 2 sstables to [{generation: 2a5fb260-bc8d-11ef-a5f9-bbbda77f5688, origin: compaction, size: 5583}]. 11kB to 5583 bytes (~50% of original) in 1200000ms = 9 bytes/s.</span>
+</pre></div>
+</div>
+<p>The compaction history doesn’t record everything the original log line carries, so the
+SSTables are identified by generation rather than by file name, and the partition counts
+are left out.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
+</section>
 </section>
 
                 </div>
@@ -573,6 +594,17 @@
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">Nodetool compactionhistory</a><ul>
+<li><a class="reference internal" href="#output-formats">Output formats</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                     </div>
@@ -1079,7 +1111,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Sep 2026.
+                        Last updated on 25 Sep 2026.
                     
                 </div>
             

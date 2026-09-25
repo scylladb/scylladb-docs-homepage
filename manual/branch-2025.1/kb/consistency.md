@@ -35,7 +35,7 @@ In contrast to SQL’s ACID guarantees, NoSQL databases provide BASE guarantees:
 * **Soft State**: Replicas are not consistent all the time.
 * **Eventual Consistency**: Data will become consistent at some point in time, with no guarantee when.
 
-This is also related to the [CAP theorem](https://groups.google.com/d/forum/scylladb-users), which states that in a distributed data system,
+This is also related to the [CAP theorem](https://en.wikipedia.org/wiki/CAP_theorem), which states that in a distributed data system,
 only two out of the following three guarantees can be satisfied:
 
 * **(Atomic) Consistency**: The same response is given to all identical requests.
