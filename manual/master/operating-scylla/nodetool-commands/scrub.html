@@ -518,8 +518,24 @@ SSTables if severely corrupted (e.g., digest mismatch detected).</p></td>
 </section>
 <section id="procedures-for-removing-bad-sstables">
 <h2>Procedures for Removing Bad SSTables<a class="headerlink" href="#procedures-for-removing-bad-sstables" title="Link to this heading">¶</a></h2>
-<section id="method-1-quarantine-and-drop">
-<h3>Method 1: Quarantine and Drop<a class="headerlink" href="#method-1-quarantine-and-drop" title="Link to this heading">¶</a></h3>
+<section id="method-1-replace-the-node">
+<h3>Method 1: Replace the node<a class="headerlink" href="#method-1-replace-the-node" title="Link to this heading">¶</a></h3>
+<p>Replacing the node is the only supported way to remove bad sstables.
+The replacing node streams its data from the other replicas, so this method carries no risk of data resurrection.</p>
+<p>See <a class="reference internal" href="../procedures/cluster-management/replace-running-node.html"><span class="doc">Replace a Running Node in a ScyllaDB Cluster</span></a>,
+or <a class="reference internal" href="../procedures/cluster-management/replace-dead-node.html"><span class="doc">Replace a Dead Node in a ScyllaDB Cluster</span></a> if the node is down.</p>
+</section>
+<section id="method-2-quarantine-and-drop">
+<h3>Method 2: Quarantine and Drop<a class="headerlink" href="#method-2-quarantine-and-drop" title="Link to this heading">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The last step of this procedure is unsafe and may lead to data resurrection.
+This can happen regardless of the consistency level and of the <code class="docutils literal notranslate"><span class="pre">repair</span></code> tombstone GC mode.
+Because of that, this method should only be used as a backup when no viable alternatives remain
+and with the full understanding of the risks it carries.</p>
+<p>The only exception are tables which never produce tombstones.
+For such sstables this procedure is safe.</p>
+</div>
 <p><strong>Step 1</strong>: Run scrub in VALIDATE mode to identify and quarantine corrupted SSTables:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
 </pre></div>
@@ -545,29 +561,10 @@ to determine the root cause of the corruption.</p>
 </pre></div>
 </div>
 <p><strong>Step 3</strong>: Drop the quarantined SSTables using <a class="reference internal" href="dropquarantinedsstables.html"><span class="doc">dropquarantinedsstables</span></a>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>--i-accept-data-resurrection-risk<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
 </pre></div>
 </div>
 <p>This permanently removes the quarantined SSTables from the specified table.</p>
-</section>
-<section id="method-2-segregate-with-drop-unfixable-flag">
-<h3>Method 2: Segregate with Drop Unfixable Flag<a class="headerlink" href="#method-2-segregate-with-drop-unfixable-flag" title="Link to this heading">¶</a></h3>
-<p>This approach attempts to fix what can be fixed and automatically drops SSTables that cannot be fixed.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method should be used for the subset of corruption issues where SEGREGATE mode can actually help: where corruption manifests at least partly in reordered partitions or rows.</p>
-</div>
-<p><strong>Step 1</strong>: Run scrub in SEGREGATE mode with the <code class="docutils literal notranslate"><span class="pre">--drop-unfixable-sstables</span></code> flag:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>SEGREGATE<span class="w"> </span>--drop-unfixable-sstables<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
-</pre></div>
-</div>
-<p>This will:</p>
-<ul class="simple">
-<li><p>Attempt to segregate and fix out-of-order data where possible</p></li>
-<li><p>Remove faulty data</p></li>
-<li><p>Automatically drop SSTables that cannot be fixed</p></li>
-<li><p>Create new properly ordered SSTables from the recoverable data</p></li>
-</ul>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
 <p>Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.</p>
@@ -703,8 +700,8 @@ to determine the root cause of the corruption.</p>
 <li><a class="reference internal" href="#quarantine-modes">QUARANTINE MODES</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 <li><a class="reference internal" href="#procedures-for-removing-bad-sstables">Procedures for Removing Bad SSTables</a><ul>
-<li><a class="reference internal" href="#method-1-quarantine-and-drop">Method 1: Quarantine and Drop</a></li>
-<li><a class="reference internal" href="#method-2-segregate-with-drop-unfixable-flag">Method 2: Segregate with Drop Unfixable Flag</a></li>
+<li><a class="reference internal" href="#method-1-replace-the-node">Method 1: Replace the node</a></li>
+<li><a class="reference internal" href="#method-2-quarantine-and-drop">Method 2: Quarantine and Drop</a></li>
 </ul>
 </li>
 </ul>
@@ -1218,7 +1215,7 @@ to determine the root cause of the corruption.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Sep 2026.
+                        Last updated on 26 Sep 2026.
                     
                 </div>
             

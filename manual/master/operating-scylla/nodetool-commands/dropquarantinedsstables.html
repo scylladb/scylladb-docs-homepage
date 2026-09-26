@@ -389,6 +389,14 @@
 <h1>Nodetool dropquarantinedsstables<a class="headerlink" href="#nodetool-dropquarantinedsstables" title="Link to this heading">¶</a></h1>
 <p><strong>dropquarantinedsstables</strong> - Drop quarantined SSTables from the specified keyspace and table(s), or from all
 keyspaces if no keyspace is specified.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Dropping quarantined SSTables can resurrect deleted data.
+This can happen regardless of the consistency level and of the <code class="docutils literal notranslate"><span class="pre">repair</span></code> tombstone GC mode.
+Its usage is highly discouraged. The only supported way to rid a node of corrupt data is to replace it. Anything else risks data resurrection or data loss.
+This operation should only be used with full understanding of the risks when no viable alternatives remain.
+To accept the risk and carry out the operation, provide the <code class="docutils literal notranslate"><span class="pre">--i-accept-data-resurrection-risk</span></code> flag.</p>
+</div>
 <section id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Link to this heading">¶</a></h2>
 <table class="docutils align-default">
@@ -398,10 +406,13 @@ keyspaces if no keyspace is specified.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[&lt;keyspace&gt;]</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--i-accept-data-resurrection-risk</span></code></p></td>
+<td><p>Optional. Accept data resurrection risk. The command is rejected if not specified.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[&lt;keyspace&gt;]</span></code></p></td>
 <td><p>Optional. The keyspace to drop quarantined SSTables from. If not specified, all keyspaces will be affected.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[&lt;table...&gt;]</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[&lt;table...&gt;]</span></code></p></td>
 <td><p>Optional. One or more tables to drop quarantined SSTables from. If not specified, all tables in the keyspace will be affected.</p></td>
 </tr>
 </tbody>
@@ -410,19 +421,19 @@ keyspaces if no keyspace is specified.</p>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
 <p>Drop quarantined SSTables from all keyspaces and tables</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>--i-accept-data-resurrection-risk
 </pre></div>
 </div>
 <p>Drop quarantined SSTables from all tables in a keyspace (mykeyspace)</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>mykeyspace
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>--i-accept-data-resurrection-risk<span class="w"> </span>mykeyspace
 </pre></div>
 </div>
 <p>Drop quarantined SSTables from a specific table (mytable) in a keyspace (mykeyspace)</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>mykeyspace<span class="w"> </span>mytable
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>--i-accept-data-resurrection-risk<span class="w"> </span>mykeyspace<span class="w"> </span>mytable
 </pre></div>
 </div>
 <p>Drop quarantined SSTables from multiple specific tables (mytable1, mytable2) in a keyspace (mykeyspace)</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>mykeyspace<span class="w"> </span>mytable1<span class="w"> </span>mytable2
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>--i-accept-data-resurrection-risk<span class="w"> </span>mykeyspace<span class="w"> </span>mytable1<span class="w"> </span>mytable2
 </pre></div>
 </div>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
@@ -1063,7 +1074,7 @@ keyspaces if no keyspace is specified.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Sep 2026.
+                        Last updated on 26 Sep 2026.
                     
                 </div>
             

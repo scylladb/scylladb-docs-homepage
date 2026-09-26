@@ -734,15 +734,26 @@ in this case <code class="docutils literal notranslate"><span class="pre">[0.1,<
   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ANN()</span></code> may also be used as a selector, to return the similarity score of each row:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">similarity</span>
+<p><code class="docutils literal notranslate"><span class="pre">ANN()</span></code> may also be used as a selector. It returns a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>: the <strong>similarity</strong> the
+index gave the row, and the row’s <strong>rank</strong>, its position in the index’s result counted from 1:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">score_and_rank</span>
   <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>It is the score the rows are ranked by, so it is only accepted in a query that already orders by
-an ANN clause, and every occurrence must name the same column and the same query vector as that
-clause.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">ANN_RANK()</span></code> return the two values on their own:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">ANN_SCORE</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">similarity</span>
+  <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>All three describe the search the rows are ranked by, so each is only accepted in a query that
+already orders by an ANN clause, and every occurrence must name the same column and the same query
+vector as that clause. A query using several of them still makes a single request.</p>
+<p>An index configured for <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">rescoring</span></a> recomputes the similarity
+on the coordinator and reorders the rows by it, so the rank the Vector Store gave them no longer
+applies. <code class="docutils literal notranslate"><span class="pre">ANN_RANK()</span></code> and <code class="docutils literal notranslate"><span class="pre">ANN()</span></code> are rejected in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause of such a query;
+<code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code> and the <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> itself work as usual.</p>
 <p>To score rows against a vector other than the one being searched for, use the
 <a class="reference internal" href="../functions.html#vector-similarity-functions"><span class="std std-ref">similarity functions</span></a> directly.</p>
 <p>For example:</p>
@@ -817,16 +828,20 @@ specified value must not exceed 1000.</p>
     <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Return the relevance score of each row:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">title</span><span class="p">,</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">relevance</span> <span class="k">FROM</span> <span class="n">articles</span>
+<p>Return the score and the rank of each row:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">title</span><span class="p">,</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">score_and_rank</span> <span class="k">FROM</span> <span class="n">articles</span>
     <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
     <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">&#39;distributed database&#39;</span><span class="p">)</span>
     <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>It is the score the rows are ranked by, so it is only accepted in a query that already has the
-required <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses, and every occurrence must reference the same column
-and the same search term.</p>
+<p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>: the <strong>score</strong> the index gave the row, and the row’s
+<strong>rank</strong>, its position in the index’s result counted from 1. <code class="docutils literal notranslate"><span class="pre">BM25_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code>
+return the two values on their own.</p>
+<p>All three describe the search the rows are ranked by, so each is only accepted in a query that
+already has the required <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses, and every occurrence must reference the
+same column and the same search term. <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> compares the score, and is the same
+as <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25_SCORE(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code> cannot be used in the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> operator is not a reserved word. If a user-defined function named
 <code class="docutils literal notranslate"><span class="pre">bm25</span></code> exists in a keyspace, unqualified <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> becomes ambiguous; qualify
 the built-in operator as <code class="docutils literal notranslate"><span class="pre">system.bm25(...)</span></code> to disambiguate it.</p>
@@ -1883,7 +1898,7 @@ columns.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 25 Sep 2026.
+                        Last updated on 26 Sep 2026.
                     
                 </div>
             

@@ -20745,37 +20745,45 @@ Alternatively you can use the `rm` Linux utility to remove the files. If you do,
 **dropquarantinedsstables** - Drop quarantined SSTables from the specified keyspace and table(s), or from all
 keyspaces if no keyspace is specified.
 
+#### WARNING
+Dropping quarantined SSTables can resurrect deleted data.
+This can happen regardless of the consistency level and of the `repair` tombstone GC mode.
+Its usage is highly discouraged. The only supported way to rid a node of corrupt data is to replace it. Anything else risks data resurrection or data loss.
+This operation should only be used with full understanding of the risks when no viable alternatives remain.
+To accept the risk and carry out the operation, provide the `--i-accept-data-resurrection-risk` flag.
+
 ## OPTIONS
 
-| Parameter      | Description                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `[<keyspace>]` | Optional. The keyspace to drop quarantined SSTables from. If not specified, all keyspaces will be affected.                    |
-| `[<table...>]` | Optional. One or more tables to drop quarantined SSTables from. If not specified, all tables in the keyspace will be affected. |
+| Parameter                           | Description                                                                                                                    |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `--i-accept-data-resurrection-risk` | Optional. Accept data resurrection risk. The command is rejected if not specified.                                             |
+| `[<keyspace>]`                      | Optional. The keyspace to drop quarantined SSTables from. If not specified, all keyspaces will be affected.                    |
+| `[<table...>]`                      | Optional. One or more tables to drop quarantined SSTables from. If not specified, all tables in the keyspace will be affected. |
 
 ## Examples
 
 Drop quarantined SSTables from all keyspaces and tables
 
 ```shell
-> nodetool dropquarantinedsstables
+> nodetool dropquarantinedsstables --i-accept-data-resurrection-risk
 ```
 
 Drop quarantined SSTables from all tables in a keyspace (mykeyspace)
 
 ```shell
-> nodetool dropquarantinedsstables mykeyspace
+> nodetool dropquarantinedsstables --i-accept-data-resurrection-risk mykeyspace
 ```
 
 Drop quarantined SSTables from a specific table (mytable) in a keyspace (mykeyspace)
 
 ```shell
-> nodetool dropquarantinedsstables mykeyspace mytable
+> nodetool dropquarantinedsstables --i-accept-data-resurrection-risk mykeyspace mytable
 ```
 
 Drop quarantined SSTables from multiple specific tables (mytable1, mytable2) in a keyspace (mykeyspace)
 
 ```shell
-> nodetool dropquarantinedsstables mykeyspace mytable1 mytable2
+> nodetool dropquarantinedsstables --i-accept-data-resurrection-risk mykeyspace mytable1 mytable2
 ```
 
 [Nodetool Reference](https://docs.scylladb.com/manual/master/operating-scylla/nodetool.md)
@@ -24044,17 +24052,37 @@ In the `WHERE` clause, `>` is the only supported operator and the right-hand
 side must be the literal `0`. Operators such as `>=`, `=`, `<`, `<=`,
 and `!=` are rejected, as is any non-zero threshold.
 
-`BM25()` may also be selected, to return the relevance score of each row:
+`WHERE BM25(v, 'search term') > 0` compares the **score**, and is the same as
+`WHERE BM25_SCORE(v, 'search term') > 0`. Those are the only two calls the clause accepts.
+
+`BM25()` may also be selected. It returns a `tuple<float, int>`: the **score** the index gave
+the row, and the row’s **rank**, its position in the index’s result counted from 1:
 
 ```default
-SELECT id, BM25(v, 'search term') AS score FROM ks.t
+SELECT id, BM25(v, 'search term') AS score_and_rank FROM ks.t
     WHERE BM25(v, 'search term') > 0
     ORDER BY BM25(v, 'search term')
     LIMIT 10;
 ```
 
-It is the score the rows are ranked by, so it needs the two clauses above and has to reference the
-same column and the same search term they do.
+`BM25_SCORE()` and `BM25_RANK()` return the two values on their own, which is usually what a
+query wants:
+
+```default
+SELECT id, BM25_SCORE(v, 'search term') AS score, BM25_RANK(v, 'search term') AS rank
+    FROM ks.t
+    WHERE BM25(v, 'search term') > 0
+    ORDER BY BM25(v, 'search term')
+    LIMIT 10;
+```
+
+All three describe the search the rows are ranked by, so each needs the two clauses above and has
+to reference the same column and the same search term they do. A query using several of them still
+makes a single request.
+
+The rank is the position in the index’s result, not in the result set. If the index returns a row
+that is no longer in the base table, that row’s rank is missing from the result and the ranks after
+it are not renumbered.
 
 ### Filtering support
 
@@ -24088,19 +24116,19 @@ built-in operator as `system.bm25(...)` to select it explicitly.
 
 FTS queries enforce the following rules:
 
-| Constraint                                       | Details                                                                                                                                                                                                                                           |
-|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Both clauses required                            | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own.                                              |
-| `>` and literal `0` only                         | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                                                                      |
-| Filtering support                                | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.                                                      |
-| `LIMIT` is required                              | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                                                                |
-| `PER PARTITION LIMIT` not supported              | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                                                                            |
-| Aggregation not supported                        | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                                                                   |
-| Fulltext index required                          | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                                                                 |
-| `BM25()` in `SELECT` needs the other two clauses | `BM25()` may be used as a selector, to return each row’s relevance<br/>score, but only in a query that already has the required `WHERE` and<br/>`ORDER BY` clauses. Every occurrence must reference the same column<br/>and the same search term. |
-| Single ordering only                             | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                                                                       |
-| Paging not supported                             | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                             |
-| Grouping not supported                           | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                   |
+| Constraint                                              | Details                                                                                                                                                                                                                                                                                                                                                      |
+|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Both clauses required                                   | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own.                                                                                                                                                         |
+| `>` and literal `0` only                                | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                                                                                                                                                                                 |
+| Filtering support                                       | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.                                                                                                                                                                 |
+| `LIMIT` is required                                     | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                                                                                                                                                                           |
+| `PER PARTITION LIMIT` not supported                     | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                                                                                                                                                                                       |
+| Aggregation not supported                               | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                                                                                                                                                                              |
+| Fulltext index required                                 | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                                                                                                                                                                            |
+| Selecting a score or a rank needs the other two clauses | `BM25()` returns a `tuple<float, int>`, the row’s relevance score and<br/>its rank; `BM25_SCORE()` and `BM25_RANK()` return one element each.<br/>Any of them may be used as a selector, but only in a query that already<br/>has the required `WHERE` and `ORDER BY` clauses. Every occurrence<br/>must reference the same column and the same search term. |
+| Single ordering only                                    | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                                                                                                                                                                                  |
+| Paging not supported                                    | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                                                                                                                                        |
+| Grouping not supported                                  | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                                                                                                                              |
 
 
 # functions.md
@@ -35169,7 +35197,24 @@ Scrub **a** specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mod
 
 ## Procedures for Removing Bad SSTables
 
-### Method 1: Quarantine and Drop
+### Method 1: Replace the node
+
+Replacing the node is the only supported way to remove bad sstables.
+The replacing node streams its data from the other replicas, so this method carries no risk of data resurrection.
+
+See [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-running-node.md),
+or [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node.md) if the node is down.
+
+### Method 2: Quarantine and Drop
+
+#### WARNING
+The last step of this procedure is unsafe and may lead to data resurrection.
+This can happen regardless of the consistency level and of the `repair` tombstone GC mode.
+Because of that, this method should only be used as a backup when no viable alternatives remain
+and with the full understanding of the risks it carries.
+
+The only exception are tables which never produce tombstones.
+For such sstables this procedure is safe.
 
 **Step 1**: Run scrub in VALIDATE mode to identify and quarantine corrupted SSTables:
 
@@ -35205,30 +35250,10 @@ to determine the root cause of the corruption.
 **Step 3**: Drop the quarantined SSTables using [dropquarantinedsstables](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/dropquarantinedsstables.md):
 
 ```shell
-> nodetool dropquarantinedsstables keyspace_name table_name
+> nodetool dropquarantinedsstables --i-accept-data-resurrection-risk keyspace_name table_name
 ```
 
 This permanently removes the quarantined SSTables from the specified table.
-
-### Method 2: Segregate with Drop Unfixable Flag
-
-This approach attempts to fix what can be fixed and automatically drops SSTables that cannot be fixed.
-
-#### NOTE
-This method should be used for the subset of corruption issues where SEGREGATE mode can actually help: where corruption manifests at least partly in reordered partitions or rows.
-
-**Step 1**: Run scrub in SEGREGATE mode with the `--drop-unfixable-sstables` flag:
-
-```shell
-> nodetool scrub -m SEGREGATE --drop-unfixable-sstables keyspace_name table_name
-```
-
-This will:
-
-- Attempt to segregate and fix out-of-order data where possible
-- Remove faulty data
-- Automatically drop SSTables that cannot be fixed
-- Create new properly ordered SSTables from the recoverable data
 
 Copyright
 
@@ -39499,17 +39524,31 @@ SELECT image_id FROM ImageEmbeddings
   ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
 ```
 
-`ANN()` may also be used as a selector, to return the similarity score of each row:
+`ANN()` may also be used as a selector. It returns a `tuple<float, int>`: the **similarity** the
+index gave the row, and the row’s **rank**, its position in the index’s result counted from 1:
 
 ```cql
-SELECT image_id, ANN(embedding, [0.1, 0.2, 0.3, 0.4]) AS similarity
+SELECT image_id, ANN(embedding, [0.1, 0.2, 0.3, 0.4]) AS score_and_rank
   FROM ImageEmbeddings
   ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
 ```
 
-It is the score the rows are ranked by, so it is only accepted in a query that already orders by
-an ANN clause, and every occurrence must name the same column and the same query vector as that
-clause.
+`ANN_SCORE()` and `ANN_RANK()` return the two values on their own:
+
+```cql
+SELECT image_id, ANN_SCORE(embedding, [0.1, 0.2, 0.3, 0.4]) AS similarity
+  FROM ImageEmbeddings
+  ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
+```
+
+All three describe the search the rows are ranked by, so each is only accepted in a query that
+already orders by an ANN clause, and every occurrence must name the same column and the same query
+vector as that clause. A query using several of them still makes a single request.
+
+An index configured for [rescoring](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#create-vector-index-statement) recomputes the similarity
+on the coordinator and reorders the rows by it, so the rank the Vector Store gave them no longer
+applies. `ANN_RANK()` and `ANN()` are rejected in the `SELECT` clause of such a query;
+`ANN_SCORE()` and the `ORDER BY` itself work as usual.
 
 To score rows against a vector other than the one being searched for, use the
 [similarity functions](https://docs.scylladb.com/manual/master/cql/functions.md#vector-similarity-functions) directly.
@@ -39602,18 +39641,23 @@ SELECT * FROM articles
     LIMIT 10;
 ```
 
-Return the relevance score of each row:
+Return the score and the rank of each row:
 
 ```cql
-SELECT title, BM25(body, 'distributed database') AS relevance FROM articles
+SELECT title, BM25(body, 'distributed database') AS score_and_rank FROM articles
     WHERE BM25(body, 'distributed database') > 0
     ORDER BY BM25(body, 'distributed database')
     LIMIT 10;
 ```
 
-It is the score the rows are ranked by, so it is only accepted in a query that already has the
-required `WHERE` and `ORDER BY` clauses, and every occurrence must reference the same column
-and the same search term.
+`BM25()` returns a `tuple<float, int>`: the **score** the index gave the row, and the row’s
+**rank**, its position in the index’s result counted from 1. `BM25_SCORE()` and `BM25_RANK()`
+return the two values on their own.
+
+All three describe the search the rows are ranked by, so each is only accepted in a query that
+already has the required `WHERE` and `ORDER BY` clauses, and every occurrence must reference the
+same column and the same search term. `WHERE BM25(...) > 0` compares the score, and is the same
+as `WHERE BM25_SCORE(...) > 0`. `BM25_RANK()` cannot be used in the `WHERE` clause.
 
 The `BM25()` operator is not a reserved word. If a user-defined function named
 `bm25` exists in a keyspace, unqualified `BM25()` becomes ambiguous; qualify

@@ -90,7 +90,24 @@ Scrub **a** specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mod
 
 ## Procedures for Removing Bad SSTables
 
-### Method 1: Quarantine and Drop
+### Method 1: Replace the node
+
+Replacing the node is the only supported way to remove bad sstables.
+The replacing node streams its data from the other replicas, so this method carries no risk of data resurrection.
+
+See [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-running-node.md),
+or [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node.md) if the node is down.
+
+### Method 2: Quarantine and Drop
+
+#### WARNING
+The last step of this procedure is unsafe and may lead to data resurrection.
+This can happen regardless of the consistency level and of the `repair` tombstone GC mode.
+Because of that, this method should only be used as a backup when no viable alternatives remain
+and with the full understanding of the risks it carries.
+
+The only exception are tables which never produce tombstones.
+For such sstables this procedure is safe.
 
 **Step 1**: Run scrub in VALIDATE mode to identify and quarantine corrupted SSTables:
 
@@ -126,30 +143,10 @@ to determine the root cause of the corruption.
 **Step 3**: Drop the quarantined SSTables using [dropquarantinedsstables](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/dropquarantinedsstables.md):
 
 ```shell
-> nodetool dropquarantinedsstables keyspace_name table_name
+> nodetool dropquarantinedsstables --i-accept-data-resurrection-risk keyspace_name table_name
 ```
 
 This permanently removes the quarantined SSTables from the specified table.
-
-### Method 2: Segregate with Drop Unfixable Flag
-
-This approach attempts to fix what can be fixed and automatically drops SSTables that cannot be fixed.
-
-#### NOTE
-This method should be used for the subset of corruption issues where SEGREGATE mode can actually help: where corruption manifests at least partly in reordered partitions or rows.
-
-**Step 1**: Run scrub in SEGREGATE mode with the `--drop-unfixable-sstables` flag:
-
-```shell
-> nodetool scrub -m SEGREGATE --drop-unfixable-sstables keyspace_name table_name
-```
-
-This will:
-
-- Attempt to segregate and fix out-of-order data where possible
-- Remove faulty data
-- Automatically drop SSTables that cannot be fixed
-- Create new properly ordered SSTables from the recoverable data
 
 Copyright
 
