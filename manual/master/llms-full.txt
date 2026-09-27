@@ -988,7 +988,6 @@ Procedures to create, out-scale, down-scale, and backup ScyllaDB clusters
 * [Best Practices](https://docs.scylladb.com/manual/master/operating-scylla/procedures/tips/index.md)
 * [Benchmarking ScyllaDB](https://docs.scylladb.com/manual/master/operating-scylla/benchmarking-scylla.md)
 * [Migrate from Cassandra to ScyllaDB](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cassandra-to-scylla-migration-process.md)
-* [Disable ScyllaDB Housekeeping](https://docs.scylladb.com/manual/master/getting-started/installation-common/disable-housekeeping.md)
 * [How to Change Log Level in Runtime](https://docs.scylladb.com/manual/master/troubleshooting/log-level.md)
 * For training material and hands-on examples also check out the [Cluster Management Repair and ScyllaDB Manager lesson](https://university.scylladb.com/courses/scylla-operations/lessons/cluster-management-repair-and-scylla-manager/) on ScyllaDB University.
 
@@ -20368,23 +20367,6 @@ If you are diagnosing a problem that is related to sstables misbehaving or being
 The ultimate tool to extract any information from live ScyllaDB processes or coredumps.
 However, it requires intimate knowledge of ScyllaDB internals to be useful.
 For more details on how to debug scylla, see [Debugging](https://github.com/scylladb/scylladb/blob/master/docs/dev/debugging.md).
-
-
-# disable-housekeeping.md
-
-# ScyllaDB Housekeeping and how to disable it
-
-It is always recommended to run the latest stable version of ScyllaDB.
-
-When you install ScyllaDB, it installs by default two services: **scylla-housekeeping-restart** and **scylla-housekeeping-daily**. These services check for the latest ScyllaDB version and prompt the user if they are using a version that is older than what is publicly available.
-Information about your ScyllaDB deployment, including the ScyllaDB version currently used, as well as unique user and server identifiers, are collected by a centralized service.
-
-To disable these service, update file `/etc/scylla.d/housekeeping.cfg` as follow: `check-version: False`
-
-See also:
-
-* [ScyllaDB privacy](https://www.scylladb.com/privacy/)
-* [Getting Started](https://docs.scylladb.com/manual/master/getting-started/index.md)
 
 
 # disableautocompaction.md
@@ -44073,17 +44055,16 @@ The following scripts are available for you to run for configuring ScyllaDB. Som
 
 #### ScyllaDB Scripts (Not included with ScyllaDB-Setup)
 
-| Script Name             | Description                                                                                                                                                          |
-|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| node_health_check       | Gathers metrics and information on the node, checking that the node is configured correctly.                                                                         |
-| scylla-blocktune        | Tunes the filesystem and block layer (e.g. block size I/O scheduler configuration) for ScyllaDB.                                                                     |
-| scylla_cpuscaling_setup | Configures the CPU frequency scaling (IOW, puts the CPU in “performance” mode, instead of the slower “powersave” mode).                                              |
-| scylla_cpuset_setup     | Configures which CPUs the ScyllaDB server threads run on.                                                                                                            |
-| scylla_fstrim           | Runs `fstrim`, which cleans up unused blocks of data from your SSD storage device. It runs automatically if you run scylla_fstrim_set up (see below).                |
-| scylla_fstrim_setup     | Configures a job so that `fstrim` runs automatically.                                                                                                                |
-| scylla-housekeeping     | Checks if there are new versions of ScyllaDB available, and also shares some telemetry information for us to keep track of what versions are installed on the field. |
-| scylla_rsyslog_setup    | Configures the “rsyslog” service, which is used to send logs to a remote server.                                                                                     |
-| scylla_selinux_setup    | Disables SELinux for ScyllaDB.                                                                                                                                       |
+| Script Name             | Description                                                                                                                                           |
+|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| node_health_check       | Gathers metrics and information on the node, checking that the node is configured correctly.                                                          |
+| scylla-blocktune        | Tunes the filesystem and block layer (e.g. block size I/O scheduler configuration) for ScyllaDB.                                                      |
+| scylla_cpuscaling_setup | Configures the CPU frequency scaling (IOW, puts the CPU in “performance” mode, instead of the slower “powersave” mode).                               |
+| scylla_cpuset_setup     | Configures which CPUs the ScyllaDB server threads run on.                                                                                             |
+| scylla_fstrim           | Runs `fstrim`, which cleans up unused blocks of data from your SSD storage device. It runs automatically if you run scylla_fstrim_set up (see below). |
+| scylla_fstrim_setup     | Configures a job so that `fstrim` runs automatically.                                                                                                 |
+| scylla_rsyslog_setup    | Configures the “rsyslog” service, which is used to send logs to a remote server.                                                                      |
+| scylla_selinux_setup    | Disables SELinux for ScyllaDB.                                                                                                                        |
 
 <a id="note-io"></a>
 

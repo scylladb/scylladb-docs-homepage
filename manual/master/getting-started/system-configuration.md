@@ -42,17 +42,16 @@ The following scripts are available for you to run for configuring ScyllaDB. Som
 
 #### ScyllaDB Scripts (Not included with ScyllaDB-Setup)
 
-| Script Name             | Description                                                                                                                                                          |
-|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| node_health_check       | Gathers metrics and information on the node, checking that the node is configured correctly.                                                                         |
-| scylla-blocktune        | Tunes the filesystem and block layer (e.g. block size I/O scheduler configuration) for ScyllaDB.                                                                     |
-| scylla_cpuscaling_setup | Configures the CPU frequency scaling (IOW, puts the CPU in “performance” mode, instead of the slower “powersave” mode).                                              |
-| scylla_cpuset_setup     | Configures which CPUs the ScyllaDB server threads run on.                                                                                                            |
-| scylla_fstrim           | Runs `fstrim`, which cleans up unused blocks of data from your SSD storage device. It runs automatically if you run scylla_fstrim_set up (see below).                |
-| scylla_fstrim_setup     | Configures a job so that `fstrim` runs automatically.                                                                                                                |
-| scylla-housekeeping     | Checks if there are new versions of ScyllaDB available, and also shares some telemetry information for us to keep track of what versions are installed on the field. |
-| scylla_rsyslog_setup    | Configures the “rsyslog” service, which is used to send logs to a remote server.                                                                                     |
-| scylla_selinux_setup    | Disables SELinux for ScyllaDB.                                                                                                                                       |
+| Script Name             | Description                                                                                                                                           |
+|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| node_health_check       | Gathers metrics and information on the node, checking that the node is configured correctly.                                                          |
+| scylla-blocktune        | Tunes the filesystem and block layer (e.g. block size I/O scheduler configuration) for ScyllaDB.                                                      |
+| scylla_cpuscaling_setup | Configures the CPU frequency scaling (IOW, puts the CPU in “performance” mode, instead of the slower “powersave” mode).                               |
+| scylla_cpuset_setup     | Configures which CPUs the ScyllaDB server threads run on.                                                                                             |
+| scylla_fstrim           | Runs `fstrim`, which cleans up unused blocks of data from your SSD storage device. It runs automatically if you run scylla_fstrim_set up (see below). |
+| scylla_fstrim_setup     | Configures a job so that `fstrim` runs automatically.                                                                                                 |
+| scylla_rsyslog_setup    | Configures the “rsyslog” service, which is used to send logs to a remote server.                                                                      |
+| scylla_selinux_setup    | Disables SELinux for ScyllaDB.                                                                                                                        |
 
 <a id="note-io"></a>
 
