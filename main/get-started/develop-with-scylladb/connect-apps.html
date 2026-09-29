@@ -395,10 +395,10 @@ examples, please see our
 <span class="k">async</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">session</span><span class="p">:</span><span class="w"> </span><span class="nc">Session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SessionBuilder</span><span class="p">::</span><span class="n">new</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="n">known_nodes</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span>
-<span class="w">            </span><span class="s">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s">"localhost"</span><span class="p">,</span>
 <span class="w">        </span><span class="p">])</span>
 <span class="w">        </span><span class="p">.</span><span class="n">connection_timeout</span><span class="p">(</span><span class="n">Duration</span><span class="p">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">30</span><span class="p">))</span>
-<span class="w">        </span><span class="p">.</span><span class="n">user</span><span class="p">(</span><span class="s">&quot;scylla&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;your-awesome-password&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">user</span><span class="p">(</span><span class="s">"scylla"</span><span class="p">,</span><span class="w"> </span><span class="s">"your-awesome-password"</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="n">build</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="k">await</span>
 <span class="w">        </span><span class="p">.</span><span class="n">unwrap</span><span class="p">();</span>
@@ -408,14 +408,14 @@ examples, please see our
 </pre></div>
 </div>
 </div><div aria-labelledby="tab-0-R28=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-R28=" name="R28=" role="tabpanel" tabindex="0"><div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">cluster</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">gocql</span><span class="p">.</span><span class="nx">NewCluster</span><span class="p">(</span><span class="s">&quot;localhost&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">cluster</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">gocql</span><span class="p">.</span><span class="nx">NewCluster</span><span class="p">(</span><span class="s">"localhost"</span><span class="p">)</span>
 
-<span class="w">    </span><span class="nx">cluster</span><span class="p">.</span><span class="nx">Authenticator</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">gocql</span><span class="p">.</span><span class="nx">PasswordAuthenticator</span><span class="p">{</span><span class="nx">Username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;scylla&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-awesome-password&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="nx">cluster</span><span class="p">.</span><span class="nx">Authenticator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">gocql</span><span class="p">.</span><span class="nx">PasswordAuthenticator</span><span class="p">{</span><span class="nx">Username</span><span class="p">:</span><span class="w"> </span><span class="s">"scylla"</span><span class="p">,</span><span class="w"> </span><span class="nx">Password</span><span class="p">:</span><span class="w"> </span><span class="s">"your-awesome-password"</span><span class="p">}</span>
 
 <span class="w">          </span><span class="nx">session</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">gocqlx</span><span class="p">.</span><span class="nx">WrapSession</span><span class="p">(</span><span class="nx">cluster</span><span class="p">.</span><span class="nx">CreateSession</span><span class="p">())</span>
 
 <span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nb">panic</span><span class="p">(</span><span class="s">&quot;Connection fail&quot;</span><span class="p">)</span>
+<span class="w">                    </span><span class="nb">panic</span><span class="p">(</span><span class="s">"Connection fail"</span><span class="p">)</span>
 <span class="w">          </span><span class="p">}</span>
 <span class="w"> </span><span class="p">}</span>
 </pre></div>
@@ -428,8 +428,8 @@ examples, please see our
 
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">Cluster</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cluster</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">addContactPoints</span><span class="p">(</span><span class="s">&quot;localhost&quot;</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="na">withAuthProvider</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">PlainTextAuthProvider</span><span class="p">(</span><span class="s">&quot;scylla&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;your-awesome-password&quot;</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">addContactPoints</span><span class="p">(</span><span class="s">"localhost"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">withAuthProvider</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">PlainTextAuthProvider</span><span class="p">(</span><span class="s">"scylla"</span><span class="p">,</span><span class="w"> </span><span class="s">"your-awesome-password"</span><span class="p">))</span>
 <span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="w">    </span><span class="n">Session</span><span class="w"> </span><span class="n">session</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cluster</span><span class="p">.</span><span class="na">connect</span><span class="p">();</span>
@@ -442,17 +442,17 @@ examples, please see our
 <span class="kn">from</span><span class="w"> </span><span class="nn">cassandra.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlainTextAuthProvider</span>
 <span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span>
     <span class="n">contact_points</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="s2">"localhost"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="n">auth_provider</span><span class="o">=</span><span class="n">PlainTextAuthProvider</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;scylla&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;your-awesome-password&#39;</span><span class="p">)</span>
+    <span class="n">auth_provider</span><span class="o">=</span><span class="n">PlainTextAuthProvider</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">'scylla'</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">'your-awesome-password'</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div><div aria-labelledby="tab-0-SmF2YVNjcmlwdA==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-SmF2YVNjcmlwdA==" name="SmF2YVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">cassandra</span><span class="p">.</span><span class="nx">Client</span><span class="p">({</span>
-<span class="w">    </span><span class="nx">contactPoints</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...],</span>
-<span class="w">    </span><span class="nx">localDataCenter</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;your-data-center&#39;</span><span class="p">,</span>
-<span class="w">    </span><span class="nx">credentials</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">username</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;scylla&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;your-awesome-password&#39;</span><span class="p">},</span>
-<span class="w">    </span><span class="c1">// keyspace: &#39;your_keyspace&#39; // optional</span>
+<span class="w">    </span><span class="nx">contactPoints</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"localhost"</span><span class="p">,</span><span class="w"> </span><span class="p">...],</span>
+<span class="w">    </span><span class="nx">localDataCenter</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-data-center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">credentials</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">username</span><span class="o">:</span><span class="w"> </span><span class="s1">'scylla'</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-awesome-password'</span><span class="p">},</span>
+<span class="w">    </span><span class="c1">// keyspace: 'your_keyspace' // optional</span>
 <span class="p">})</span>
 </pre></div>
 </div>
@@ -724,7 +724,7 @@ examples, please see our
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Sep 2026.
+                        Last updated on 29 Sep 2026.
                     
                 </div>
             

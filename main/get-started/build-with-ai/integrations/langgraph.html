@@ -400,23 +400,23 @@ support multi-turn conversations across sessions.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.checkpoint.scylladb</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScyllaDBSaver</span>
 
 <span class="n">profile</span> <span class="o">=</span> <span class="n">ExecutionProfile</span><span class="p">(</span>
-    <span class="n">load_balancing_policy</span><span class="o">=</span><span class="n">DCAwareRoundRobinPolicy</span><span class="p">(</span><span class="n">local_dc</span><span class="o">=</span><span class="s2">&quot;AWS_US_EAST_1&quot;</span><span class="p">),</span>
+    <span class="n">load_balancing_policy</span><span class="o">=</span><span class="n">DCAwareRoundRobinPolicy</span><span class="p">(</span><span class="n">local_dc</span><span class="o">=</span><span class="s2">"AWS_US_EAST_1"</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span>
-    <span class="n">contact_points</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;node-0.example.scylla.cloud&quot;</span><span class="p">],</span>
+    <span class="n">contact_points</span><span class="o">=</span><span class="p">[</span><span class="s2">"node-0.example.scylla.cloud"</span><span class="p">],</span>
     <span class="n">port</span><span class="o">=</span><span class="mi">9042</span><span class="p">,</span>
-    <span class="n">auth_provider</span><span class="o">=</span><span class="n">PlainTextAuthProvider</span><span class="p">(</span><span class="s2">&quot;scylla&quot;</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">),</span>
+    <span class="n">auth_provider</span><span class="o">=</span><span class="n">PlainTextAuthProvider</span><span class="p">(</span><span class="s2">"scylla"</span><span class="p">,</span> <span class="s2">"secret"</span><span class="p">),</span>
     <span class="n">execution_profiles</span><span class="o">=</span><span class="p">{</span><span class="n">EXEC_PROFILE_DEFAULT</span><span class="p">:</span> <span class="n">profile</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
-<span class="n">checkpointer</span> <span class="o">=</span> <span class="n">ScyllaDBSaver</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">keyspace</span><span class="o">=</span><span class="s2">&quot;langgraph&quot;</span><span class="p">)</span>
+<span class="n">checkpointer</span> <span class="o">=</span> <span class="n">ScyllaDBSaver</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">keyspace</span><span class="o">=</span><span class="s2">"langgraph"</span><span class="p">)</span>
 <span class="n">checkpointer</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">checkpointer</span><span class="o">=</span><span class="n">checkpointer</span><span class="p">)</span>
 
-<span class="n">write_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;configurable&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;thread_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;checkpoint_ns&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}}</span>
-<span class="n">read_config</span>  <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;configurable&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;thread_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">}}</span>
+<span class="n">write_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"configurable"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"thread_id"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span> <span class="s2">"checkpoint_ns"</span><span class="p">:</span> <span class="s2">""</span><span class="p">}}</span>
+<span class="n">read_config</span>  <span class="o">=</span> <span class="p">{</span><span class="s2">"configurable"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"thread_id"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">}}</span>
 
 <span class="n">checkpointer</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">write_config</span><span class="p">,</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> <span class="p">{},</span> <span class="p">{})</span>
 <span class="n">checkpointer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">read_config</span><span class="p">)</span>
@@ -435,8 +435,8 @@ target keyspace before using the checkpointer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.checkpoint.scylladb</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScyllaDBSaver</span>
 
 <span class="n">SCYLLADB_URI</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;scylladb://scylla:secret@node-0.example.scylla.cloud:9042&quot;</span>
-    <span class="s2">&quot;/langgraph?dc=AWS_US_EAST_1&quot;</span>
+    <span class="s2">"scylladb://scylla:secret@node-0.example.scylla.cloud:9042"</span>
+    <span class="s2">"/langgraph?dc=AWS_US_EAST_1"</span>
 <span class="p">)</span>
 
 <span class="k">async</span> <span class="k">with</span> <span class="n">ScyllaDBSaver</span><span class="o">.</span><span class="n">from_conn_string</span><span class="p">(</span><span class="n">SCYLLADB_URI</span><span class="p">)</span> <span class="k">as</span> <span class="n">checkpointer</span><span class="p">:</span>
@@ -454,7 +454,7 @@ target keyspace before using the checkpointer.</p>
 <section id="ttl">
 <h4>TTL<a class="headerlink" href="#ttl" title="Link to this heading">¶</a></h4>
 <p>Checkpoints can be automatically expired by passing a <code class="docutils literal notranslate"><span class="pre">ttl</span></code> value in seconds:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkpointer</span> <span class="o">=</span> <span class="n">ScyllaDBSaver</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">keyspace</span><span class="o">=</span><span class="s2">&quot;langgraph&quot;</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span> <span class="c1"># seconds</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkpointer</span> <span class="o">=</span> <span class="n">ScyllaDBSaver</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">keyspace</span><span class="o">=</span><span class="s2">"langgraph"</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span> <span class="c1"># seconds</span>
 
 <span class="c1"># or via from_conn_string</span>
 <span class="k">async</span> <span class="k">with</span> <span class="n">ScyllaDBSaver</span><span class="o">.</span><span class="n">from_conn_string</span><span class="p">(</span><span class="n">SCYLLADB_URI</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span> <span class="k">as</span> <span class="n">checkpointer</span><span class="p">:</span>
@@ -791,7 +791,7 @@ needed.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Sep 2026.
+                        Last updated on 29 Sep 2026.
                     
                 </div>
             

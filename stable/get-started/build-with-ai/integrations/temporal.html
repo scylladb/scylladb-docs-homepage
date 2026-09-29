@@ -420,9 +420,9 @@ just needs to exist; you can add <a class="reference external" href="https://doc
 <span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
 <span class="w">      </span><span class="no">--smp 1 --memory 1G --overprovisioned 1 --api-address 0.0.0.0</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9042:9042&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"9042:9042"</span>
 <span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD-SHELL&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;cqlsh</span><span class="nv"> </span><span class="s">-e</span><span class="nv"> </span><span class="s">&#39;describe</span><span class="nv"> </span><span class="s">keyspaces&#39;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"cqlsh</span><span class="nv"> </span><span class="s">-e</span><span class="nv"> </span><span class="s">'describe</span><span class="nv"> </span><span class="s">keyspaces'"</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
@@ -435,9 +435,9 @@ just needs to exist; you can add <a class="reference external" href="https://doc
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xpack.security.enabled=false</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ES_JAVA_OPTS=-Xms256m -Xmx256m</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9200:9200&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"9200:9200"</span>
 <span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD-SHELL&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;curl</span><span class="nv"> </span><span class="s">-sf</span><span class="nv"> </span><span class="s">&#39;http://localhost:9200/_cluster/health?wait_for_status=yellow&amp;timeout=1s&#39;</span><span class="nv"> </span><span class="s">||</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">1&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"curl</span><span class="nv"> </span><span class="s">-sf</span><span class="nv"> </span><span class="s">'http://localhost:9200/_cluster/health?wait_for_status=yellow&amp;timeout=1s'</span><span class="nv"> </span><span class="s">||</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">1"</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
@@ -457,13 +457,13 @@ just needs to exist; you can add <a class="reference external" href="https://doc
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ES_SCHEME=http</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ES_VERSION=v8</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ES_VISIBILITY_INDEX=temporal_visibility_v1_dev</span>
-<span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/sh&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"/bin/sh"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"-c"</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
-<span class="w">      </span><span class="no">&quot;temporal-cassandra-tool --ep scylladb create -k temporal --rf 1 --datacenter datacenter1 &amp;&amp;</span>
+<span class="w">      </span><span class="no">"temporal-cassandra-tool --ep scylladb create -k temporal --rf 1 --datacenter datacenter1 &amp;&amp;</span>
 <span class="w">       </span><span class="no">temporal-cassandra-tool --ep scylladb -k temporal setup-schema -v 0.0 &amp;&amp;</span>
 <span class="w">       </span><span class="no">temporal-cassandra-tool --ep scylladb -k temporal update-schema -d /etc/temporal/schema/cassandra/temporal/versioned &amp;&amp;</span>
 <span class="w">       </span><span class="no">temporal-elasticsearch-tool --ep http://elasticsearch:9200 setup-schema &amp;&amp;</span>
-<span class="w">       </span><span class="no">temporal-elasticsearch-tool --ep http://elasticsearch:9200 create-index --index temporal_visibility_v1_dev&quot;</span>
+<span class="w">       </span><span class="no">temporal-elasticsearch-tool --ep http://elasticsearch:9200 create-index --index temporal_visibility_v1_dev"</span>
 
 <span class="w">  </span><span class="nt">temporal</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">temporalio/server:1.32.0</span>
@@ -483,9 +483,9 @@ just needs to exist; you can add <a class="reference external" href="https://doc
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./temporal-config/config/docker.yaml:/etc/temporal/config/docker.yaml:ro</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./temporal-config/dynamicconfig:/etc/temporal/config/dynamicconfig:ro</span>
-<span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;temporal-server&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;--root&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;/etc/temporal&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;--env&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;docker&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;start&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"temporal-server"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"--root"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"/etc/temporal"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"--env"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"docker"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"start"</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;7233:7233&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"7233:7233"</span>
 
 <span class="w">  </span><span class="nt">temporal-ui</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">temporalio/ui:2.54.1</span>
@@ -494,7 +494,7 @@ just needs to exist; you can add <a class="reference external" href="https://doc
 <span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TEMPORAL_ADDRESS=temporal:7233</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8080:8080&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"8080:8080"</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -538,11 +538,11 @@ Temporal create it. Pre-create it once from a CQL client (for example
 <a class="reference external" href="https://github.com/scylladb/scylla-cqlsh">cqlsh</a>):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>scylladb/scylla-cqlsh<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>node-0.your-cluster.datacenter.clusters.scylla.cloud<span class="w"> </span><span class="m">9042</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-u<span class="w"> </span><span class="s2">&quot;&lt;your-username&gt;&quot;</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;&lt;your-password&gt;&quot;</span>
+<span class="w">  </span>-u<span class="w"> </span><span class="s2">"&lt;your-username&gt;"</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">"&lt;your-password&gt;"</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CREATE KEYSPACE temporal
-WITH replication = {&#39;class&#39;: &#39;NetworkTopologyStrategy&#39;, &#39;replication_factor&#39;: 3};
+WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 3};
 </pre></div>
 </div>
 <p>Then load Temporal’s schema into the keyspace yourself with the
@@ -551,7 +551,7 @@ image). Run <code class="docutils literal notranslate"><span class="pre">setup-s
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--entrypoint<span class="w"> </span>temporal-cassandra-tool<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>temporalio/admin-tools:1.32.0<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--endpoint<span class="w"> </span>node-0.your-cluster.datacenter.clusters.scylla.cloud<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--user<span class="w"> </span><span class="s2">&quot;&lt;your-username&gt;&quot;</span><span class="w"> </span>--password<span class="w"> </span><span class="s2">&quot;&lt;your-password&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--user<span class="w"> </span><span class="s2">"&lt;your-username&gt;"</span><span class="w"> </span>--password<span class="w"> </span><span class="s2">"&lt;your-password&gt;"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--keyspace<span class="w"> </span>temporal<span class="w"> </span>--datacenter<span class="w"> </span>&lt;your-datacenter&gt;<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--disable-initial-host-lookup<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>setup-schema<span class="w"> </span>-v<span class="w"> </span><span class="m">0</span>.0
@@ -559,7 +559,7 @@ image). Run <code class="docutils literal notranslate"><span class="pre">setup-s
 docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--entrypoint<span class="w"> </span>temporal-cassandra-tool<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>temporalio/admin-tools:1.32.0<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--endpoint<span class="w"> </span>node-0.your-cluster.datacenter.clusters.scylla.cloud<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--user<span class="w"> </span><span class="s2">&quot;&lt;your-username&gt;&quot;</span><span class="w"> </span>--password<span class="w"> </span><span class="s2">&quot;&lt;your-password&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--user<span class="w"> </span><span class="s2">"&lt;your-username&gt;"</span><span class="w"> </span>--password<span class="w"> </span><span class="s2">"&lt;your-password&gt;"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--keyspace<span class="w"> </span>temporal<span class="w"> </span>--datacenter<span class="w"> </span>&lt;your-datacenter&gt;<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--disable-initial-host-lookup<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>update-schema<span class="w"> </span>-d<span class="w"> </span>/etc/temporal/schema/cassandra/temporal/versioned
@@ -572,7 +572,7 @@ docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>elasticsearch<span class="w"> </span>-p<span class="w"> </span><span class="m">9200</span>:9200<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span>discovery.type<span class="o">=</span>single-node<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span>xpack.security.enabled<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-e<span class="w"> </span><span class="nv">ES_JAVA_OPTS</span><span class="o">=</span><span class="s2">&quot;-Xms256m -Xmx256m&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">ES_JAVA_OPTS</span><span class="o">=</span><span class="s2">"-Xms256m -Xmx256m"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>elasticsearch:8.19.21
 </pre></div>
 </div>
@@ -597,17 +597,17 @@ docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </
 you just created:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">7233</span>:7233<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">DB</span><span class="o">=</span>cassandra<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-e<span class="w"> </span><span class="nv">CASSANDRA_SEEDS</span><span class="o">=</span><span class="s2">&quot;node-0.your-cluster.datacenter.clusters.scylla.cloud,node-1.your-cluster.datacenter.clusters.scylla.cloud,node-2.your-cluster.datacenter.clusters.scylla.cloud&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-e<span class="w"> </span><span class="nv">CASSANDRA_USER</span><span class="o">=</span><span class="s2">&quot;&lt;your-username&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-e<span class="w"> </span><span class="nv">CASSANDRA_PASSWORD</span><span class="o">=</span><span class="s2">&quot;&lt;your-password&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">CASSANDRA_SEEDS</span><span class="o">=</span><span class="s2">"node-0.your-cluster.datacenter.clusters.scylla.cloud,node-1.your-cluster.datacenter.clusters.scylla.cloud,node-2.your-cluster.datacenter.clusters.scylla.cloud"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">CASSANDRA_USER</span><span class="o">=</span><span class="s2">"&lt;your-username&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">CASSANDRA_PASSWORD</span><span class="o">=</span><span class="s2">"&lt;your-password&gt;"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">KEYSPACE</span><span class="o">=</span>temporal<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">ENABLE_ES</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">ES_SEEDS</span><span class="o">=</span>host.docker.internal<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">ES_VERSION</span><span class="o">=</span>v8<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">BIND_ON_IP</span><span class="o">=</span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">TEMPORAL_BROADCAST_ADDRESS</span><span class="o">=</span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/temporal-config/config/docker.yaml:/etc/temporal/config/docker.yaml:ro&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/temporal-config/dynamicconfig:/etc/temporal/config/dynamicconfig:ro&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="s2">"</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/temporal-config/config/docker.yaml:/etc/temporal/config/docker.yaml:ro"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="s2">"</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/temporal-config/dynamicconfig:/etc/temporal/config/dynamicconfig:ro"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--entrypoint<span class="w"> </span>temporal-server<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>temporalio/server:1.32.0<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--root<span class="w"> </span>/etc/temporal<span class="w"> </span>--env<span class="w"> </span>docker<span class="w"> </span>start
@@ -628,30 +628,30 @@ start using them:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cassandra.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cluster</span>
 
-<span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SCYLLA_HOSTS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SCYLLA_HOSTS"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">))</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
 <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    CREATE KEYSPACE IF NOT EXISTS orders_app</span>
-<span class="sd">    WITH replication = {&#39;class&#39;: &#39;NetworkTopologyStrategy&#39;, &#39;replication_factor&#39;: 1}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 1}</span>
+<span class="sd">    """</span>
 <span class="p">)</span>
-<span class="n">session</span><span class="o">.</span><span class="n">set_keyspace</span><span class="p">(</span><span class="s2">&quot;orders_app&quot;</span><span class="p">)</span>
+<span class="n">session</span><span class="o">.</span><span class="n">set_keyspace</span><span class="p">(</span><span class="s2">"orders_app"</span><span class="p">)</span>
 <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    CREATE TABLE IF NOT EXISTS orders (</span>
 <span class="sd">        order_id text PRIMARY KEY,</span>
 <span class="sd">        status text</span>
 <span class="sd">    )</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Then read/write from your Activities as usual:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-    <span class="s2">&quot;INSERT INTO orders (order_id, status) VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
-    <span class="p">(</span><span class="n">order_id</span><span class="p">,</span> <span class="s2">&quot;received&quot;</span><span class="p">),</span>
+    <span class="s2">"INSERT INTO orders (order_id, status) VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">order_id</span><span class="p">,</span> <span class="s2">"received"</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -956,7 +956,7 @@ schema while sharing the same cluster.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Sep 2026.
+                        Last updated on 29 Sep 2026.
                     
                 </div>
             

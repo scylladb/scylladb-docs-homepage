@@ -53,6 +53,10 @@ password: ${PASSWORD}
 localDC: AWS_US_EAST_1
 ```
 
+#### TIP
+Use environment variable replacement with the format `${ENV_NAME}` instead
+of hardcoding credentials into the configuration file.
+
 ### Source Reference
 
 | Field                    | Type     | Required   | Description                                                                                                                                              |
