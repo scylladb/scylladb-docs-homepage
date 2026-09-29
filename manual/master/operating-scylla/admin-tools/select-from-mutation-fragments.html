@@ -557,6 +557,9 @@ The reason for extracting this out into a separate column, is to allow deselecti
 <p>Data is read locally, from the node which receives the query, so replica is always the same node as the coordinator.
 The query cannot be migrated between nodes. If a query is paged, all its pages have to be served by the same coordinator. This is enforced, and any attempt to migrate the query to another coordinator will result in the query being aborted.
 Note that by default, drivers use round robin load balancing policies, and consequently they will attempt to read each page from a different coordinator.</p>
+<p>On strongly consistent tables the statement is accepted only with consistency level <code class="docutils literal notranslate"><span class="pre">ONE</span></code> or <code class="docutils literal notranslate"><span class="pre">LOCAL_ONE</span></code>.
+It reads the local replica as it is, with no read barrier, so its result is not linearizable.
+<code class="docutils literal notranslate"><span class="pre">QUORUM</span></code> and <code class="docutils literal notranslate"><span class="pre">LOCAL_QUORUM</span></code>, which promise a linearizable read on such tables, are rejected.</p>
 <p>The statement can output rows with a non-full clustering prefix.</p>
 </section>
 <section id="examples">
@@ -1360,7 +1363,7 @@ Note that by default, drivers use round robin load balancing policies, and conse
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Sep 2026.
+                        Last updated on 29 Sep 2026.
                     
                 </div>
             
