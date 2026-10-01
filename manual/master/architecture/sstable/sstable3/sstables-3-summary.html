@@ -432,7 +432,7 @@ The only noticeable change is that in 3.0 the summary file does not store inform
 <p>Note that <code class="docutils literal notranslate"><span class="pre">offsets</span></code> are written in the native order format although typically all the integers in SSTables files are written in big-endian. In ScyllaDB, they are always written in little-endian order to allow interoperability with 1. Summary files written by Cassandra on the more common little-endian machines, and 2. Summary files written by ScyllaDB on the rarer big-endian machines.</p>
 <p>Here is how a summary entry looks:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">summary_entry</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">byte</span><span class="w"> </span><span class="n">key</span><span class="p">[];</span><span class="w"> </span><span class="c1">// variable-length.</span>
+<span class="w">    </span><span class="kt">byte</span><span class="w"> </span><span class="n">key</span><span class="p">[];</span><span class="w"> </span><span class="c1">// variable-length.</span>
 <span class="w">    </span><span class="n">be64</span><span class="w"> </span><span class="n">position</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
@@ -445,7 +445,7 @@ Note that <code class="docutils literal notranslate"><span class="pre">summary_e
 <p>The last two entries in the <code class="docutils literal notranslate"><span class="pre">summary</span></code> structure are  <code class="docutils literal notranslate"><span class="pre">serialized_keys</span></code> that look like:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">serialized_key</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">be32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
-<span class="w">    </span><span class="n">byte</span><span class="w"> </span><span class="n">key</span><span class="p">[</span><span class="n">size</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">byte</span><span class="w"> </span><span class="n">key</span><span class="p">[</span><span class="n">size</span><span class="p">];</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -1093,7 +1093,7 @@ Note that <code class="docutils literal notranslate"><span class="pre">summary_e
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

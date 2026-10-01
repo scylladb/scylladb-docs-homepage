@@ -405,10 +405,10 @@
 </div>
 </li>
 <li><p>filter only ScyllaDB logs by date:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span><span class="nv">_COMM</span><span class="o">=</span>scylla<span class="w"> </span>--since<span class="o">=</span><span class="s2">&quot;2013-3-16 23:59:59&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span><span class="nv">_COMM</span><span class="o">=</span>scylla<span class="w"> </span>--since<span class="o">=</span><span class="s2">"2013-3-16 23:59:59"</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span><span class="nv">_COMM</span><span class="o">=</span>scylla<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;2015-01-10&quot;</span><span class="w"> </span>--until<span class="w"> </span><span class="s2">&quot;2015-01-11 03:00&quot;</span><span class="sb">`</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span><span class="nv">_COMM</span><span class="o">=</span>scylla<span class="w"> </span>--since<span class="w"> </span><span class="s2">"2015-01-10"</span><span class="w"> </span>--until<span class="w"> </span><span class="s2">"2015-01-11 03:00"</span><span class="sb">`</span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span><span class="nv">_COMM</span><span class="o">=</span>scylla<span class="w"> </span>--since<span class="w"> </span>yesterday
@@ -426,7 +426,7 @@
 <h2>Logging on Ubuntu 14.04<a class="headerlink" href="#logging-on-ubuntu-14-04" title="Link to this heading">¶</a></h2>
 <p>On Ubuntu 14.04, ScyllaDB writes its initial boot message into <code class="code docutils literal notranslate"><span class="pre">/var/log/upstart/scylla-server.log</span></code>.</p>
 <p>After ScyllaDB has started, logs are stored in <code class="code docutils literal notranslate"><span class="pre">/var/log/syslog</span></code>. ScyllaDB logs can be filter by creating a <code class="code docutils literal notranslate"><span class="pre">rsyslog</span></code> configuration file with the following rule (for example, in <code class="code docutils literal notranslate"><span class="pre">/etc/rsyslog.d/10-scylla.conf</span></code>)</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>:syslogtag,<span class="w"> </span>startswith,<span class="w"> </span><span class="s2">&quot;scylla&quot;</span><span class="w"> </span>/var/log/scylla/scylla.log
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>:syslogtag,<span class="w"> </span>startswith,<span class="w"> </span><span class="s2">"scylla"</span><span class="w"> </span>/var/log/scylla/scylla.log
 <span class="p">&amp;</span><span class="w"> </span>~
 </pre></div>
 </div>
@@ -1053,7 +1053,7 @@ service<span class="w"> </span>rsyslog<span class="w"> </span>restart
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

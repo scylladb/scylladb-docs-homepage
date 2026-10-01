@@ -387,7 +387,7 @@
 </div>
 <p>Although partition scans are convenient, they require the read coordinator to contact the entire cluster, not just a small set of replicas defined by the replication factor.</p>
 <p>The recommended alternative is to query each stream separately:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0x365fd1a9ae34373954529ac8169dfb93</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">"cdc$stream_id"</span> <span class="o">=</span> <span class="m">0x365fd1a9ae34373954529ac8169dfb93</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>With the above approach you can, for instance, build a distributed CDC consumer, where each of the consumer nodes queries only streams that are replicated to ScyllaDB nodes in proximity to the consumer node. This allows efficient, concurrent querying of streams, without putting strain on a single node due to a partition scan.</p>
@@ -465,7 +465,7 @@ cqlsh&gt; select totimestamp(now()) from system.local;
 <ol class="arabic">
 <li><p>Retrieve the timestamp of the currently operating CDC generation from the <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> table. If you have a multi-node cluster, query the table with QUORUM or ALL consistency level so you don’t miss any entry:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">CONSISTENCY</span> <span class="n">QUORUM</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'timestamps'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The query can return multiple entries:</p>
@@ -481,7 +481,7 @@ cqlsh&gt; select totimestamp(now()) from system.local;
 </li>
 <li><p>Retrieve the list of stream IDs in the current CDC generation from the <code class="docutils literal notranslate"><span class="pre">cdc_streams_descriptions_v2</span></code> table. Unfortunately, to use the time-date value in a <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, you have to modify the format of the time-date a little by removing the last three 0s before the <code class="docutils literal notranslate"><span class="pre">+</span></code>. In our case, the modified time-date is <code class="docutils literal notranslate"><span class="pre">2020-03-25</span> <span class="pre">16:05:29.484+0000</span></code>:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">CONSISTENCY</span> <span class="n">QUORUM</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="n">streams</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_streams_descriptions_v2</span> <span class="k">WHERE</span> <span class="nb">time</span> <span class="o">=</span> <span class="s1">&#39;2020-03-25 16:05:29.484+0000&#39;</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="n">streams</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_streams_descriptions_v2</span> <span class="k">WHERE</span> <span class="nb">time</span> <span class="o">=</span> <span class="s1">'2020-03-25 16:05:29.484+0000'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The result consists of a number of rows (most likely returned in multiple pages, unless you turned off paging), each row containing a list of stream IDs, such as:</p>
@@ -499,15 +499,15 @@ cqlsh&gt; select totimestamp(now()) from system.local;
 <p>Save all stream IDs returned by the query. When we ran the example, the query returned 256 * 3 = 768 stream IDs.</p>
 </li>
 <li><p>Use the obtained stream IDs to query your CDC log tables:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span><span class="p">};</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'enabled'</span><span class="p">:</span> <span class="n">true</span><span class="p">};</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0x7ffe0c687fcce86e0783343730000001</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0x80000000000000010d9ee5f1f4000001</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">"cdc$stream_id"</span> <span class="o">=</span> <span class="m">0x7ffe0c687fcce86e0783343730000001</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">"cdc$stream_id"</span> <span class="o">=</span> <span class="m">0x80000000000000010d9ee5f1f4000001</span><span class="p">;</span>
 <span class="mf">...</span>
 </pre></div>
 </div>
 <p>Each change will be present in exactly one of these stream IDs. When we ran the example, it was:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0xced00000000000009663c8dc500005a1</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">"cdc$stream_id"</span> <span class="o">=</span> <span class="m">0xced00000000000009663c8dc500005a1</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> cdc$stream_id                      | cdc$time                             | cdc$batch_seq_no | cdc$deleted_v | cdc$end_of_batch | cdc$operation | cdc$ttl | ck | pk | v
@@ -541,7 +541,7 @@ Each row includes the stream’s state (<code class="docutils literal notranslat
 <p>To list all available CDC streams for a tablets-based keyspace:</p>
 <ol class="arabic">
 <li><p>Retrieve the timestamps of the CDC stream sets for your table:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">timestamp</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_timestamps</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">&#39;ks&#39;</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">timestamp</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_timestamps</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">'ks'</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">'t'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The query returns all timestamps in descending order. The first timestamp is the timestamp for the currently operating CDC stream set. For example:</p>
@@ -555,7 +555,7 @@ Each row includes the stream’s state (<code class="docutils literal notranslat
 </div>
 </li>
 <li><p>Retrieve all CDC streams for a specific timestamp (stream_state = 0 means the stream is active at this timestamp):</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">stream_id</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">&#39;ks&#39;</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span> <span class="k">AND</span> <span class="nb">timestamp</span> <span class="o">=</span> <span class="s1">&#39;2025-09-02 15:34:42.467+0000&#39;</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">stream_id</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">'ks'</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">'t'</span> <span class="k">AND</span> <span class="nb">timestamp</span> <span class="o">=</span> <span class="s1">'2025-09-02 15:34:42.467+0000'</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>For example, the query can return:</p>
@@ -570,7 +570,7 @@ Each row includes the stream’s state (<code class="docutils literal notranslat
 </pre></div>
 </div>
 <p>Or, you can query for the streams that were opened or closed at a specific timestamp as follows:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">stream_id</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">&#39;ks&#39;</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span> <span class="k">AND</span> <span class="nb">timestamp</span> <span class="o">=</span> <span class="s1">&#39;2025-09-02 15:34:42.467+0000&#39;</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">&gt;=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">&lt;=</span> <span class="mf">2</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">stream_id</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">cdc_streams</span> <span class="k">WHERE</span> <span class="n">keyspace_name</span> <span class="o">=</span> <span class="s1">'ks'</span> <span class="k">AND</span> <span class="n">table_name</span> <span class="o">=</span> <span class="s1">'t'</span> <span class="k">AND</span> <span class="nb">timestamp</span> <span class="o">=</span> <span class="s1">'2025-09-02 15:34:42.467+0000'</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">&gt;=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">stream_state</span> <span class="o">&lt;=</span> <span class="mf">2</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>returns:</p>
@@ -588,8 +588,8 @@ Each row includes the stream’s state (<code class="docutils literal notranslat
 </div>
 </li>
 <li><p>Use the obtained stream IDs to query your CDC log tables:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0xffffffffffffffffdb6cb86b34000001</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span> <span class="o">=</span> <span class="m">0x7fffffffffffffff0ded3e1868000001</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">"cdc$stream_id"</span> <span class="o">=</span> <span class="m">0xffffffffffffffffdb6cb86b34000001</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span> <span class="k">WHERE</span> <span class="s s-Name">"cdc$stream_id"</span> <span class="o">=</span> <span class="m">0x7fffffffffffffff0ded3e1868000001</span><span class="p">;</span>
 <span class="mf">...</span>
 </pre></div>
 </div>
@@ -1254,7 +1254,7 @@ Since the stream has been closed for longer than the TTL, this means that all ro
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

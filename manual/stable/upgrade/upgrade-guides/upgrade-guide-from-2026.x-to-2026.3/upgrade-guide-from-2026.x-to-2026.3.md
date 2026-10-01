@@ -43,6 +43,10 @@ For each of the nodes in the cluster, serially (i.e., one node at a time), you w
 * Start ScyllaDB
 * Validate that the upgrade was successful
 
+#### CAUTION
+Apply the procedure **serially** on each node. Do not move to the next node before
+validating that the node you upgraded is up and running the new version.
+
 **During** the rolling upgrade, it is highly recommended:
 
 * Not to use the new 2026.3 features.

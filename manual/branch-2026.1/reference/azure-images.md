@@ -2,6 +2,13 @@
 
 <!-- -*- mode: rst -*- -->
 
+## 2026.1.14
+
+| Gallery Image Definition   | Gallery Image Version   | Public Gallery Name                           |
+|----------------------------|-------------------------|-----------------------------------------------|
+| scylla-2026.1              | 2026.1.14               | scylladb-7e8d8a04-23db-487d-87ec-0e175c0615bb |
+<!-- -*- mode: rst -*- -->
+
 ## 2026.1.13
 
 | Gallery Image Definition   | Gallery Image Version   | Public Gallery Name                           |

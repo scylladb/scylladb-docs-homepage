@@ -409,7 +409,7 @@ This includes <code class="docutils literal notranslate"><span class="pre">varin
 <span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">key</span><span class="p">[</span><span class="n">key_length</span><span class="p">];</span>
 <span class="w">    </span><span class="n">varint</span><span class="w"> </span><span class="n">position</span><span class="p">;</span><span class="w"> </span><span class="c1">// decoded into a 64-bit integer</span>
 <span class="w">    </span><span class="n">varint</span><span class="w"> </span><span class="n">promoted_index_length</span><span class="p">;</span><span class="w"> </span><span class="c1">// decoded into a 32-bit integer</span>
-<span class="w">    </span><span class="n">byte</span><span class="w"> </span><span class="n">promoted_index</span><span class="p">[</span><span class="n">promoted_index_length</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">byte</span><span class="w"> </span><span class="n">promoted_index</span><span class="p">[</span><span class="n">promoted_index_length</span><span class="p">];</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -439,7 +439,7 @@ This includes <code class="docutils literal notranslate"><span class="pre">varin
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">clustering_prefix</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
 <span class="w">    </span><span class="n">varint</span><span class="w"> </span><span class="n">offset</span><span class="p">;</span>
 <span class="w">    </span><span class="n">varint</span><span class="w"> </span><span class="n">delta_width</span><span class="p">;</span>
-<span class="w">    </span><span class="n">byte</span><span class="w"> </span><span class="n">end_open_marker_present</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">byte</span><span class="w"> </span><span class="n">end_open_marker_present</span><span class="p">;</span>
 <span class="w">    </span><span class="n">optional</span><span class="o">&lt;</span><span class="k">struct</span><span class="w"> </span><span class="nc">deletion_time</span><span class="o">&gt;</span><span class="w"> </span><span class="n">end_open_marker</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
@@ -449,7 +449,7 @@ This includes <code class="docutils literal notranslate"><span class="pre">varin
 <h3>Clustering Prefixes<a class="headerlink" href="#clustering-prefixes" title="Link to this heading">¶</a></h3>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">first_name</span></code> and <code class="docutils literal notranslate"><span class="pre">last_name</span></code> are the serialised prefixes of clustering columns marking the boundaries of the block. They are stored as follows:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">clustering_prefix</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">byte</span><span class="w"> </span><span class="n">kind</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">byte</span><span class="w"> </span><span class="n">kind</span><span class="p">;</span>
 <span class="w">    </span><span class="n">optional</span><span class="o">&lt;</span><span class="n">be16</span><span class="o">&gt;</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">clustering_block</span><span class="w"> </span><span class="n">clustering_blocks</span><span class="p">[];</span>
 <span class="p">};</span>
@@ -1140,7 +1140,7 @@ There are some better alternatives that should further improve the performance o
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

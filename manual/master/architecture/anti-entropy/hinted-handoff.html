@@ -427,16 +427,16 @@
 <p>ScyllaDB should return a JSON string containing the ID of the created sync point as the response. In case of an error, a JSON object reporting the issue will be returned instead.</p>
 <p>Examples:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a sync point for hosts of IP addresses: 127.0.0.2 and 127.0.0.3.</span>
-$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/hinted_handoff/sync_point?target_hosts=127.0.0.2,127.0.0.3&quot;</span>
-<span class="s2">&quot;Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA==&quot;</span>
+$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/hinted_handoff/sync_point?target_hosts=127.0.0.2,127.0.0.3"</span>
+<span class="s2">"Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA=="</span>
 
 <span class="c1"># Create a sync point for all hosts (the `target_hosts` parameter is empty).</span>
-$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/hinted_handoff/sync_point&quot;</span>
-<span class="s2">&quot;Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA==&quot;</span>
+$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/hinted_handoff/sync_point"</span>
+<span class="s2">"Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA=="</span>
 
 <span class="c1"># Invalid request to create a sync point.</span>
-$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/hinted_handoff/sync_point?target_hosts=invalid_host&quot;</span>
-<span class="o">{</span><span class="s2">&quot;message&quot;</span>:<span class="w"> </span><span class="s2">&quot;Failed to parse host address invalid_host: invalid_host&quot;</span>,<span class="w"> </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="m">400</span><span class="o">}</span>
+$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/hinted_handoff/sync_point?target_hosts=invalid_host"</span>
+<span class="o">{</span><span class="s2">"message"</span>:<span class="w"> </span><span class="s2">"Failed to parse host address invalid_host: invalid_host"</span>,<span class="w"> </span><span class="s2">"code"</span>:<span class="w"> </span><span class="m">400</span><span class="o">}</span>
 </pre></div>
 </div>
 <p>You can await a previously created sync point by sending a GET request to <code class="code docutils literal notranslate"><span class="pre">/hinted_handoff/sync_point</span></code> with the following parameters:</p>
@@ -452,16 +452,16 @@ $<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>P
 <p>In case of an error, a JSON object reporting the issue will be returned instead.</p>
 <p>Examples:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Await a sync point providing both parameters: `id` and `timeout`.</span>
-$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/hinted_handoff/sync_point?id=Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA==&amp;timeout=2&quot;</span>
-<span class="s2">&quot;DONE&quot;</span>
+$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/hinted_handoff/sync_point?id=Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA==&amp;timeout=2"</span>
+<span class="s2">"DONE"</span>
 
 <span class="c1"># Awaiting a sync point without the optional `timeout` parameter (equivalent to `timeout=0`).</span>
-$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/hinted_handoff/sync_point?id=Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA==&quot;</span>
-<span class="s2">&quot;DONE&quot;</span>
+$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/hinted_handoff/sync_point?id=Ay4AAADgR8IYRSM14vPuN232DLKSAQAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/CncIC5VDTA=="</span>
+<span class="s2">"DONE"</span>
 
 <span class="c1"># Invalid request to await a sync point.</span>
-$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/hinted_handoff/sync_point?timeout=-1&quot;</span>
-<span class="o">{</span><span class="s2">&quot;message&quot;</span>:<span class="w"> </span><span class="s2">&quot;Missing mandatory parameter &#39;id&#39;&quot;</span>,<span class="w"> </span><span class="s2">&quot;code&quot;</span>:<span class="w"> </span><span class="m">400</span><span class="o">}</span>
+$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/hinted_handoff/sync_point?timeout=-1"</span>
+<span class="o">{</span><span class="s2">"message"</span>:<span class="w"> </span><span class="s2">"Missing mandatory parameter 'id'"</span>,<span class="w"> </span><span class="s2">"code"</span>:<span class="w"> </span><span class="m">400</span><span class="o">}</span>
 </pre></div>
 </div>
 <p>See also the Hinted Handoff section of the <a class="reference internal" href="../../reference/api/hinted-handoff.html"><span class="doc">API reference</span></a>.</p>
@@ -1106,7 +1106,7 @@ $<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>G
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

@@ -477,18 +477,18 @@ Currently, auditing messages can only be saved to one location at a time. You ca
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># audit setting</span>
 <span class="c1"># by default, Scylla does not audit anything.</span>
 <span class="c1"># It is possible to enable auditing to the following places:</span>
-<span class="c1">#   - audit.audit_log column family by setting the flag to &quot;table&quot;</span>
-audit:<span class="w"> </span><span class="s2">&quot;syslog&quot;</span>
+<span class="c1">#   - audit.audit_log column family by setting the flag to "table"</span>
+audit:<span class="w"> </span><span class="s2">"syslog"</span>
 <span class="c1">#</span>
 <span class="c1"># List of statement categories that should be audited.</span>
-audit_categories:<span class="w"> </span><span class="s2">&quot;DCL,DDL,AUTH&quot;</span>
+audit_categories:<span class="w"> </span><span class="s2">"DCL,DDL,AUTH"</span>
 <span class="c1">#</span>
 <span class="c1"># List of tables that should be audited.</span>
-audit_tables:<span class="w"> </span><span class="s2">&quot;mykespace.mytable&quot;</span>
+audit_tables:<span class="w"> </span><span class="s2">"mykespace.mytable"</span>
 <span class="c1">#</span>
 <span class="c1"># List of keyspaces that should be fully audited.</span>
 <span class="c1"># All tables in those keyspaces will be audited</span>
-audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</span>
+audit_keyspaces:<span class="w"> </span><span class="s2">"mykespace"</span>
 </pre></div>
 </div>
 </li>
@@ -505,7 +505,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 </div></div>
 <p>By default, audit messages are written to the same destination as Scylla <a class="reference internal" href="../../getting-started/logging.html"><span class="doc">logging</span></a>, with <code class="docutils literal notranslate"><span class="pre">scylla-audit</span></code> as the process name.</p>
 <p>Logging output example (drop table):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">09</span>:53:52<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="s2">&quot;10.143.2.108&quot;</span>,<span class="w"> </span><span class="s2">&quot;DDL&quot;</span>,<span class="w"> </span><span class="s2">&quot;ONE&quot;</span>,<span class="w"> </span><span class="s2">&quot;team_roster&quot;</span>,<span class="w"> </span><span class="s2">&quot;nba&quot;</span>,<span class="w"> </span><span class="s2">&quot;DROP TABLE nba.team_roster ;&quot;</span>,<span class="w"> </span><span class="s2">&quot;127.0.0.1&quot;</span>,<span class="w"> </span><span class="s2">&quot;anonymous&quot;</span>,<span class="w"> </span><span class="s2">&quot;false&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">09</span>:53:52<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="s2">"10.143.2.108"</span>,<span class="w"> </span><span class="s2">"DDL"</span>,<span class="w"> </span><span class="s2">"ONE"</span>,<span class="w"> </span><span class="s2">"team_roster"</span>,<span class="w"> </span><span class="s2">"nba"</span>,<span class="w"> </span><span class="s2">"DROP TABLE nba.team_roster ;"</span>,<span class="w"> </span><span class="s2">"127.0.0.1"</span>,<span class="w"> </span><span class="s2">"anonymous"</span>,<span class="w"> </span><span class="s2">"false"</span>
 </pre></div>
 </div>
 <p>To redirect the Syslog output to a file, follow the steps below (available only for CentOS) :</p>
@@ -550,18 +550,18 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># audit setting</span>
 <span class="c1"># by default, Scylla does not audit anything.</span>
 <span class="c1"># It is possible to enable auditing to the following places:</span>
-<span class="c1">#   - audit.audit_log column family by setting the flag to &quot;table&quot;</span>
-audit:<span class="w"> </span><span class="s2">&quot;table&quot;</span>
+<span class="c1">#   - audit.audit_log column family by setting the flag to "table"</span>
+audit:<span class="w"> </span><span class="s2">"table"</span>
 <span class="c1">#</span>
 <span class="c1"># List of statement categories that should be audited.</span>
-audit_categories:<span class="w"> </span><span class="s2">&quot;DCL,DDL,AUTH&quot;</span>
+audit_categories:<span class="w"> </span><span class="s2">"DCL,DDL,AUTH"</span>
 <span class="c1">#</span>
 <span class="c1"># List of tables that should be audited.</span>
-audit_tables:<span class="w"> </span><span class="s2">&quot;mykespace.mytable&quot;</span>
+audit_tables:<span class="w"> </span><span class="s2">"mykespace.mytable"</span>
 <span class="c1">#</span>
 <span class="c1"># List of keyspaces that should be fully audited.</span>
 <span class="c1"># All tables in those keyspaces will be audited</span>
-audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</span>
+audit_keyspaces:<span class="w"> </span><span class="s2">"mykespace"</span>
 </pre></div>
 </div>
 </li>
@@ -1255,7 +1255,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

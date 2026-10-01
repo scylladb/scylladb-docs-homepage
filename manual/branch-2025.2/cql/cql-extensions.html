@@ -447,13 +447,13 @@ and to the TRUNCATE data definition query.</p>
 <p>After <a class="reference internal" href="../operating-scylla/admin.html#admin-keyspace-storage-options"><span class="std std-ref">enabling object storage support</span></a>, configure your endpoints by
 following these <a class="reference internal" href="../operating-scylla/admin.html#object-storage-configuration"><span class="std std-ref">instructions</span></a>.</p>
 <p>Now you can configure your object storage when creating a keyspace:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="k">with</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;$endpoint_name&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;$bucket&#39;</span> <span class="p">}</span> 
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="k">with</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'S3'</span><span class="p">,</span> <span class="s1">'endpoint'</span><span class="p">:</span> <span class="s1">'$endpoint_name'</span><span class="p">,</span> <span class="s1">'bucket'</span><span class="p">:</span> <span class="s1">'$bucket'</span> <span class="p">}</span> 
 </pre></div>
 </div>
 <p><strong>Example</strong></p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span>
-    <span class="k">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span> <span class="p">:</span> <span class="mf">3</span> <span class="p">}</span>
-    <span class="k">AND</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="s1">&#39;bucket&#39;</span> <span class="p">:</span> <span class="s1">&#39;/tmp/b1&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span> <span class="p">:</span> <span class="s1">&#39;localhost&#39;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'NetworkTopologyStrategy'</span><span class="p">,</span> <span class="s1">'replication_factor'</span> <span class="p">:</span> <span class="mf">3</span> <span class="p">}</span>
+    <span class="k">AND</span> <span class="k">STORAGE</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">'type'</span> <span class="p">:</span> <span class="s1">'S3'</span><span class="p">,</span> <span class="s1">'bucket'</span> <span class="p">:</span> <span class="s1">'/tmp/b1'</span><span class="p">,</span> <span class="s1">'endpoint'</span> <span class="p">:</span> <span class="s1">'localhost'</span> <span class="p">}</span> <span class="p">;</span>
 </pre></div>
 </div>
 <p>Storage options can be inspected by checking the new system schema table: <code class="docutils literal notranslate"><span class="pre">system_schema.scylla_keyspaces</span></code>:</p>
@@ -461,7 +461,7 @@ following these <a class="reference internal" href="../operating-scylla/admin.ht
     
      <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">storage_options</span>                                <span class="o">|</span> <span class="n">storage_type</span>
     <span class="c1">---------------+------------------------------------------------+--------------</span>
-               <span class="n">ksx</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;bucket&#39;</span><span class="p">:</span> <span class="s1">&#39;/tmp/xx&#39;</span><span class="p">,</span> <span class="s1">&#39;endpoint&#39;</span><span class="p">:</span> <span class="s1">&#39;localhost&#39;</span><span class="p">}</span> <span class="o">|</span>           <span class="n">S3</span>
+               <span class="n">ksx</span> <span class="o">|</span> <span class="p">{</span><span class="s1">'bucket'</span><span class="p">:</span> <span class="s1">'/tmp/xx'</span><span class="p">,</span> <span class="s1">'endpoint'</span><span class="p">:</span> <span class="s1">'localhost'</span><span class="p">}</span> <span class="o">|</span>           <span class="n">S3</span>
 </pre></div>
 </div>
 </section>
@@ -551,7 +551,7 @@ suffix to the index name:</p>
 
  <span class="n">keyspace_name</span> <span class="o">|</span> <span class="n">table_name</span> <span class="o">|</span> <span class="n">index_name</span> <span class="o">|</span> <span class="n">kind</span>       <span class="o">|</span> <span class="k">options</span>
 <span class="c1">---------------+------------+------------+------------+-----------------</span>
-          <span class="n">main</span> <span class="o">|</span>          <span class="n">t</span> <span class="o">|</span>    <span class="n">t_v_idx</span> <span class="o">|</span> <span class="n">COMPOSITES</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">}</span>
+          <span class="n">main</span> <span class="o">|</span>          <span class="n">t</span> <span class="o">|</span>    <span class="n">t_v_idx</span> <span class="o">|</span> <span class="n">COMPOSITES</span> <span class="o">|</span> <span class="p">{</span><span class="s1">'target'</span><span class="p">:</span> <span class="s1">'v'</span><span class="p">}</span>
 
 <span class="p">(</span><span class="mf">1</span> <span class="n">rows</span><span class="p">)</span>
 
@@ -700,14 +700,14 @@ limits but rather serve as an overload protection feature.</p>
 requests have the least cost).</p>
 <p>Limits are configured separately for reads and writes. Some examples:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span>    <span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">t</span> <span class="k">WITH</span> <span class="n">per_partition_rate_limit</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;max_reads_per_second&#39;</span><span class="p">:</span> <span class="mf">100</span><span class="p">,</span>
-        <span class="s1">&#39;max_writes_per_second&#39;</span><span class="p">:</span> <span class="mf">200</span>
+        <span class="s1">'max_reads_per_second'</span><span class="p">:</span> <span class="mf">100</span><span class="p">,</span>
+        <span class="s1">'max_writes_per_second'</span><span class="p">:</span> <span class="mf">200</span>
     <span class="p">};</span>
 </pre></div>
 </div>
 <p>Limit reads only, no limit for writes:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span>    <span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">t</span> <span class="k">WITH</span> <span class="n">per_partition_rate_limit</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;max_reads_per_second&#39;</span><span class="p">:</span> <span class="mf">200</span>
+        <span class="s1">'max_reads_per_second'</span><span class="p">:</span> <span class="mf">200</span>
     <span class="p">};</span>
 </pre></div>
 </div>
@@ -1371,7 +1371,7 @@ statement: <code class="docutils literal notranslate"><span class="pre">DESCRIBE
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

@@ -59,6 +59,9 @@ Snapshot information for tables or keyspaces which are present in the database a
 
 Snapshots are not removed automatically. On  active database nodes, old snapshots take up disk space and need to be removed manually to free up the storage space. Snapshots are only taking additional space on disk once the original data files have been changed.
 
+#### CAUTION
+Do not delete snapshots manually at the file system level, use the nodetool command.
+
 Use this procedure to remove snapshots or local backups.
 
 **Procedure**
@@ -76,6 +79,9 @@ To remove the named snapshot from all keyspaces, that is, if any of the keyspace
 To remove all existing snapshots without any warning:
 
 * Run `nodetool clearsnapshot`
+
+#### CAUTION
+use caution when running `nodetool clearsnapshot` without specifying a keyspace or snapshot as this command will remove not only snapshots listed by “nodetool listsnapshots” command but all other snapshots on the node’s storage as well, including those for previously dropped tables or keyspaces.
 
 When all else fails, and you need to remove the snapshot manually:
 

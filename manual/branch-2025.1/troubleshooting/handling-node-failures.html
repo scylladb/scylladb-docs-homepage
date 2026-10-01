@@ -518,7 +518,7 @@ unavailability (until the node finishes restarting).</p></li>
 <p><strong>Procedure</strong></p>
 <ol class="arabic">
 <li><p>Perform the following query on <strong>every alive node</strong> in the cluster, using e.g. <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">UPDATE</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">SET</span> <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;recovery&#39;</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;group0_upgrade_state&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">UPDATE</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">SET</span> <span class="n">value</span> <span class="o">=</span> <span class="s1">'recovery'</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'group0_upgrade_state'</span><span class="p">;</span>
 </pre></div>
 </div>
 </li>
@@ -537,13 +537,13 @@ unavailability (until the node finishes restarting).</p></li>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">topology</span><span class="p">;</span>
 <span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">discovery</span><span class="p">;</span>
 <span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">group0_history</span><span class="p">;</span>
-<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span><span class="p">;</span>
+<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'raft_group0_id'</span><span class="p">;</span>
 </pre></div>
 </div>
 </li>
 <li><p>Make sure that schema is synchronized in the cluster by executing <a class="reference internal" href="../operating-scylla/nodetool-commands/describecluster.html"><span class="doc">nodetool describecluster</span></a> on each node and verifying that the schema version is the same on all nodes.</p></li>
 <li><p>We can now leave <code class="docutils literal notranslate"><span class="pre">RECOVERY</span></code> mode. On <strong>every alive node</strong>, perform the following query:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;group0_upgrade_state&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'group0_upgrade_state'</span><span class="p">;</span>
 </pre></div>
 </div>
 </li>
@@ -1162,7 +1162,7 @@ unavailability (until the node finishes restarting).</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

@@ -146,6 +146,12 @@ The location of this file is specified in `scylla.yaml`, or in the table schema.
 The user has the option to generate the key(s) themselves, or let ScyllaDB
 generate the key(s) for them.
 
+#### CAUTION
+Care should be taken so that no unauthorized person can access the key data
+from the file system. Make sure that the owner of this file is the `scylla`
+user and that the file is **not** readable by **other users**, or accessible
+by **other roles**.
+
 You should also consider keeping the key directory on a network drive (using TLS
 for the file sharing) to avoid having keys and data on the same storage media,
 in case your storage is stolen or discarded.

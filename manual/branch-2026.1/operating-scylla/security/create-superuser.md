@@ -79,3 +79,9 @@ in the `scylla.yaml` configuration file:
 auth_superuser_name: <superuser name>
 auth_superuser_salted_password: <superuser salted password as processed by mkpassword or similar - cleartext is not allowed>
 ```
+
+#### CAUTION
+The superuser credentials in the `scylla.yaml` file will be ignored:
+
+* If any superuser other than `cassandra` is already defined in the cluster.
+* After you create a custom superuser with the CQL [procedure](#create-superuser-procedure).

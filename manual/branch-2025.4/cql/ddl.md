@@ -1017,6 +1017,9 @@ For example:
 TRUNCATE TABLE users USING TIMEOUT 5m;
 ```
 
+#### CAUTION
+Do not run any operation on a table that is being truncated. Truncate operation is an administrative operation, and running any other operation on the same table in parallel may cause the truncating table’s data to end up in an undefined state.
+
 * [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2025.4/cql/index.md)
 
 Copyright

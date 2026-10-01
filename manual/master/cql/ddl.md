@@ -1201,6 +1201,9 @@ In a prepared statement, the timeout can be given as a bind marker:
 TRUNCATE TABLE users USING TIMEOUT ?;
 ```
 
+#### CAUTION
+Do not run any operation on a table that is being truncated. Truncate operation is an administrative operation, and running any other operation on the same table in parallel may cause the truncating table’s data to end up in an undefined state.
+
 * [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/master/cql/index.md)
 
 Copyright

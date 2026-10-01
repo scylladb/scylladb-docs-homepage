@@ -430,7 +430,7 @@ A user provided schema in <code class="docutils literal notranslate"><span class
 <h3>Schema file<a class="headerlink" href="#schema-file" title="Link to this heading">¶</a></h3>
 <p>The schema file should contain all definitions needed to interpret data belonging to the table.</p>
 <p>Example <code class="docutils literal notranslate"><span class="pre">schema.cql</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;mydc1&#39;</span><span class="p">:</span> <span class="mf">1</span><span class="p">,</span> <span class="s1">&#39;mydc2&#39;</span><span class="p">:</span> <span class="mf">4</span><span class="p">};</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'NetworkTopologyStrategy'</span><span class="p">,</span> <span class="s1">'mydc1'</span><span class="p">:</span> <span class="mf">1</span><span class="p">,</span> <span class="s1">'mydc2'</span><span class="p">:</span> <span class="mf">4</span><span class="p">};</span>
 
 <span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">mytype</span> <span class="p">(</span>
     <span class="n">f1</span> <span class="nb">int</span><span class="p">,</span>
@@ -464,11 +464,11 @@ Dropped columns can be provided to the tool in the form of insert statements int
     <span class="n">dropped_time</span><span class="p">,</span>
     <span class="k">type</span>
 <span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span>
-    <span class="s1">&#39;ks&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;cf&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;v1&#39;</span><span class="p">,</span>
+    <span class="s1">'ks'</span><span class="p">,</span>
+    <span class="s1">'cf'</span><span class="p">,</span>
+    <span class="s1">'v1'</span><span class="p">,</span>
     <span class="mf">1631011979170675</span><span class="p">,</span>
-    <span class="s1">&#39;int&#39;</span>
+    <span class="s1">'int'</span>
 <span class="p">);</span>
 
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">cf</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">v2</span> <span class="nb">int</span><span class="p">);</span>
@@ -544,103 +544,103 @@ printers, which are also used when logging mutation-related data structures.</p>
 <p>The schema of the JSON output is the following:</p>
 <div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := $NON_MERGED_ROOT | $MERGED_ROOT
 
-$NON_MERGED_ROOT := { &quot;$sstable_path&quot;: $SSTABLE, ... } // without --merge
+$NON_MERGED_ROOT := { "$sstable_path": $SSTABLE, ... } // without --merge
 
-$MERGED_ROOT := { &quot;anonymous&quot;: $SSTABLE } // with --merge
+$MERGED_ROOT := { "anonymous": $SSTABLE } // with --merge
 
 $SSTABLE := [$PARTITION, ...]
 
 $PARTITION := {
-    &quot;key&quot;: {
-        &quot;token&quot;: String,
-        &quot;raw&quot;: String, // hexadecimal representation of the raw binary
-        &quot;value&quot;: String
+    "key": {
+        "token": String,
+        "raw": String, // hexadecimal representation of the raw binary
+        "value": String
     },
-    &quot;tombstone: $TOMBSTONE, // optional
-    &quot;static_row&quot;: $COLUMNS, // optional
-    &quot;clustering_elements&quot;: [
+    "tombstone: $TOMBSTONE, // optional
+    "static_row": $COLUMNS, // optional
+    "clustering_elements": [
         $CLUSTERING_ROW | $RANGE_TOMBSTONE_CHANGE,
         ...
     ]
 }
 
 $TOMBSTONE := {
-    &quot;timestamp&quot;: Int64,
-    &quot;deletion_time&quot;: String // YYYY-MM-DD HH:MM:SS
+    "timestamp": Int64,
+    "deletion_time": String // YYYY-MM-DD HH:MM:SS
 }
 
 $COLUMNS := {
-    &quot;$column_name&quot;: $REGULAR_CELL | $COUNTER_SHARDS_CELL | $COUNTER_UPDATE_CELL | $FROZEN_COLLECTION | $COLLECTION,
+    "$column_name": $REGULAR_CELL | $COUNTER_SHARDS_CELL | $COUNTER_UPDATE_CELL | $FROZEN_COLLECTION | $COLLECTION,
     ...
 }
 
 $REGULAR_CELL := {
-    &quot;is_live&quot;: Bool, // is the cell live or not
-    &quot;type&quot;: &quot;regular&quot;,
-    &quot;timestamp&quot;: Int64,
-    &quot;ttl&quot;: String, // gc_clock::duration - optional
-    &quot;expiry&quot;: String, // YYYY-MM-DD HH:MM:SS - optional
-    &quot;value&quot;: String // only if is_live == true
+    "is_live": Bool, // is the cell live or not
+    "type": "regular",
+    "timestamp": Int64,
+    "ttl": String, // gc_clock::duration - optional
+    "expiry": String, // YYYY-MM-DD HH:MM:SS - optional
+    "value": String // only if is_live == true
 }
 
 $COUNTER_SHARDS_CELL := {
-    &quot;is_live&quot;: true,
-    &quot;type&quot;: &quot;counter-shards&quot;,
-    &quot;timestamp&quot;: Int64,
-    &quot;value&quot;: [$COUNTER_SHARD, ...]
+    "is_live": true,
+    "type": "counter-shards",
+    "timestamp": Int64,
+    "value": [$COUNTER_SHARD, ...]
 }
 
 $COUNTER_SHARD := {
-    &quot;id&quot;: String, // UUID
-    &quot;value&quot;: Int64,
-    &quot;clock&quot;: Int64
+    "id": String, // UUID
+    "value": Int64,
+    "clock": Int64
 }
 
 $COUNTER_UPDATE_CELL := {
-    &quot;is_live&quot;: true,
-    &quot;type&quot;: &quot;counter-update&quot;,
-    &quot;timestamp&quot;: Int64,
-    &quot;value&quot;: Int64
+    "is_live": true,
+    "type": "counter-update",
+    "timestamp": Int64,
+    "value": Int64
 }
 
-$FROZEN_COLLECTION is the same as a $REGULAR_CELL, with type = &quot;frozen-collection&quot;.
+$FROZEN_COLLECTION is the same as a $REGULAR_CELL, with type = "frozen-collection".
 
 $COLLECTION := {
-    &quot;type&quot;: &quot;collection&quot;,
-    &quot;tombstone&quot;: $TOMBSTONE, // optional
-    &quot;cells&quot;: [
+    "type": "collection",
+    "tombstone": $TOMBSTONE, // optional
+    "cells": [
         {
-            &quot;key&quot;: String,
-            &quot;value&quot;: $REGULAR_CELL
+            "key": String,
+            "value": $REGULAR_CELL
         },
         ...
     ]
 }
 
 $CLUSTERING_ROW := {
-    &quot;type&quot;: &quot;clustering-row&quot;,
-    &quot;key&quot;: {
-        &quot;raw&quot;: String, // hexadecimal representation of the raw binary
-        &quot;value&quot;: String
+    "type": "clustering-row",
+    "key": {
+        "raw": String, // hexadecimal representation of the raw binary
+        "value": String
     },
-    &quot;tombstone&quot;: $TOMBSTONE, // optional
-    &quot;shadowable_tombstone&quot;: $TOMBSTONE, // optional
-    &quot;marker&quot;: { // optional
-        &quot;timestamp&quot;: Int64,
-        &quot;ttl&quot;: String, // gc_clock::duration
-        &quot;expiry&quot;: String // YYYY-MM-DD HH:MM:SS
+    "tombstone": $TOMBSTONE, // optional
+    "shadowable_tombstone": $TOMBSTONE, // optional
+    "marker": { // optional
+        "timestamp": Int64,
+        "ttl": String, // gc_clock::duration
+        "expiry": String // YYYY-MM-DD HH:MM:SS
     },
-    &quot;columns&quot;: $COLUMNS
+    "columns": $COLUMNS
 }
 
 $RANGE_TOMBSTONE_CHANGE := {
-    &quot;type&quot;: &quot;range-tombstone-change&quot;,
-    &quot;key&quot;: { // optional
-        &quot;raw&quot;: String, // hexadecimal representation of the raw binary
-        &quot;value&quot;: String
+    "type": "range-tombstone-change",
+    "key": { // optional
+        "raw": String, // hexadecimal representation of the raw binary
+        "value": String
     },
-    &quot;weight&quot;: Int, // -1 or 1
-    &quot;tombstone&quot;: $TOMBSTONE
+    "weight": Int, // -1 or 1
+    "tombstone": $TOMBSTONE
 }
 </pre></div>
 </div>
@@ -654,16 +654,16 @@ The promoted index contains a sampled index of the clustering rows in the partit
 Positions (both that of partition and that of rows) are valid for uncompressed
 data.</p>
 <p>The content is dumped in JSON, using the following schema:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $SSTABLE, ... }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $SSTABLE, ... }
 
 $SSTABLE := [$INDEX_ENTRY, ...]
 
 $INDEX_ENTRY := {
-    &quot;key&quot;: {
-        &quot;raw&quot;: String, // hexadecimal representation of the raw binary
-        &quot;value&quot;: String
+    "key": {
+        "raw": String, // hexadecimal representation of the raw binary
+        "value": String
     },
-    &quot;pos&quot;: Uint64
+    "pos": Uint64
 }
 </pre></div>
 </div>
@@ -676,17 +676,17 @@ data. Note that compression happens over chunks with configurable size, so to
 get data at a position in the middle of a compressed chunk, the entire chunk has
 to be decompressed.</p>
 <p>The content is dumped in JSON, using the following schema:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $SSTABLE, ... }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $SSTABLE, ... }
 
 $SSTABLE := {
-    &quot;name&quot;: String,
-    &quot;options&quot;: {
-        &quot;$option_name&quot;: String,
+    "name": String,
+    "options": {
+        "$option_name": String,
         ...
     },
-    &quot;chunk_len&quot;: Uint,
-    &quot;data_len&quot;: Uint64,
-    &quot;offsets&quot;: [Uint64, ...]
+    "chunk_len": Uint,
+    "data_len": Uint64,
+    "offsets": [Uint64, ...]
 }
 </pre></div>
 </div>
@@ -698,36 +698,36 @@ content of the index-component (an index of the index). The sampling rate is cho
 such that this file is small enough to be kept in memory even for very large
 SStables.</p>
 <p>The content is dumped in JSON, using the following schema:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $SSTABLE, ... }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $SSTABLE, ... }
 
 $SSTABLE := {
-    &quot;header&quot;: {
-        &quot;min_index_interval&quot;: Uint64,
-        &quot;size&quot;: Uint64,
-        &quot;memory_size&quot;: Uint64,
-        &quot;sampling_level&quot;: Uint64,
-        &quot;size_at_full_sampling&quot;: Uint64
+    "header": {
+        "min_index_interval": Uint64,
+        "size": Uint64,
+        "memory_size": Uint64,
+        "sampling_level": Uint64,
+        "size_at_full_sampling": Uint64
     },
-    &quot;positions&quot;: [Uint64, ...],
-    &quot;entries&quot;: [$SUMMARY_ENTRY, ...],
-    &quot;first_key&quot;: $KEY,
-    &quot;last_key&quot;: $KEY
+    "positions": [Uint64, ...],
+    "entries": [$SUMMARY_ENTRY, ...],
+    "first_key": $KEY,
+    "last_key": $KEY
 }
 
 $SUMMARY_ENTRY := {
-    &quot;key&quot;: $DECORATED_KEY,
-    &quot;position&quot;: Uint64
+    "key": $DECORATED_KEY,
+    "position": Uint64
 }
 
 $DECORATED_KEY := {
-    &quot;token&quot;: String,
-    &quot;raw&quot;: String, // hexadecimal representation of the raw binary
-    &quot;value&quot;: String
+    "token": String,
+    "raw": String, // hexadecimal representation of the raw binary
+    "value": String
 }
 
 $KEY := {
-    &quot;raw&quot;: String, // hexadecimal representation of the raw binary
-    &quot;value&quot;: String
+    "raw": String, // hexadecimal representation of the raw binary
+    "value": String
 }
 </pre></div>
 </div>
@@ -738,87 +738,87 @@ $KEY := {
 data component. In the SStable 3 format, this component is critical for parsing
 the data component.</p>
 <p>The content is dumped in JSON, using the following schema:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $SSTABLE, ... }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $SSTABLE, ... }
 
 $SSTABLE := {
-    &quot;offsets&quot;: {
-        &quot;$metadata&quot;: Uint,
+    "offsets": {
+        "$metadata": Uint,
         ...
     },
-    &quot;validation&quot;: $VALIDATION_METADATA,
-    &quot;compaction&quot;: $COMPACTION_METADATA,
-    &quot;stats&quot;: $STATS_METADATA,
-    &quot;serialization_header&quot;: $SERIALIZATION_HEADER // &gt;= MC only
+    "validation": $VALIDATION_METADATA,
+    "compaction": $COMPACTION_METADATA,
+    "stats": $STATS_METADATA,
+    "serialization_header": $SERIALIZATION_HEADER // &gt;= MC only
 }
 
 $VALIDATION_METADATA := {
-    &quot;partitioner&quot;: String,
-    &quot;filter_chance&quot;: Double
+    "partitioner": String,
+    "filter_chance": Double
 }
 
 $COMPACTION_METADATA := {
-    &quot;ancestors&quot;: [Uint, ...], // &lt; MC only
-    &quot;cardinality&quot;: [Uint, ...]
+    "ancestors": [Uint, ...], // &lt; MC only
+    "cardinality": [Uint, ...]
 }
 
 $STATS_METADATA := {
-    &quot;estimated_partition_size&quot;: $ESTIMATED_HISTOGRAM,
-    &quot;estimated_cells_count&quot;: $ESTIMATED_HISTOGRAM,
-    &quot;position&quot;: $REPLAY_POSITION,
-    &quot;min_timestamp&quot;: Int64,
-    &quot;max_timestamp&quot;: Int64,
-    &quot;min_local_deletion_time&quot;: Int64, // &gt;= MC only
-    &quot;max_local_deletion_time&quot;: Int64,
-    &quot;min_ttl&quot;: Int64, // &gt;= MC only
-    &quot;max_ttl&quot;: Int64, // &gt;= MC only
-    &quot;compression_ratio&quot;: Double,
-    &quot;estimated_tombstone_drop_time&quot;: $STREAMING_HISTOGRAM,
-    &quot;sstable_level&quot;: Uint,
-    &quot;repaired_at&quot;: Uint64,
-    &quot;min_column_names&quot;: [String, ...],
-    &quot;max_column_names&quot;: [String, ...],
-    &quot;has_legacy_counter_shards&quot;: Bool,
-    &quot;columns_count&quot;: Int64, // &gt;= MC only
-    &quot;rows_count&quot;: Int64, // &gt;= MC only
-    &quot;commitlog_lower_bound&quot;: $REPLAY_POSITION, // &gt;= MC only
-    &quot;commitlog_intervals&quot;: [$COMMITLOG_INTERVAL, ...] // &gt;= MC only
+    "estimated_partition_size": $ESTIMATED_HISTOGRAM,
+    "estimated_cells_count": $ESTIMATED_HISTOGRAM,
+    "position": $REPLAY_POSITION,
+    "min_timestamp": Int64,
+    "max_timestamp": Int64,
+    "min_local_deletion_time": Int64, // &gt;= MC only
+    "max_local_deletion_time": Int64,
+    "min_ttl": Int64, // &gt;= MC only
+    "max_ttl": Int64, // &gt;= MC only
+    "compression_ratio": Double,
+    "estimated_tombstone_drop_time": $STREAMING_HISTOGRAM,
+    "sstable_level": Uint,
+    "repaired_at": Uint64,
+    "min_column_names": [String, ...],
+    "max_column_names": [String, ...],
+    "has_legacy_counter_shards": Bool,
+    "columns_count": Int64, // &gt;= MC only
+    "rows_count": Int64, // &gt;= MC only
+    "commitlog_lower_bound": $REPLAY_POSITION, // &gt;= MC only
+    "commitlog_intervals": [$COMMITLOG_INTERVAL, ...] // &gt;= MC only
 }
 
 $ESTIMATED_HISTOGRAM := [$ESTIMATED_HISTOGRAM_BUCKET, ...]
 
 $ESTIMATED_HISTOGRAM_BUCKET := {
-    &quot;offset&quot;: Int64,
-    &quot;value&quot;: Int64
+    "offset": Int64,
+    "value": Int64
 }
 
 $STREAMING_HISTOGRAM := {
-    &quot;$key&quot;: Uint64,
+    "$key": Uint64,
     ...
 }
 
 $REPLAY_POSITION := {
-    &quot;id&quot;: Uint64,
-    &quot;pos&quot;: Uint
+    "id": Uint64,
+    "pos": Uint
 }
 
 $COMMITLOG_INTERVAL := {
-    &quot;start&quot;: $REPLAY_POSITION,
-    &quot;end&quot;: $REPLAY_POSITION
+    "start": $REPLAY_POSITION,
+    "end": $REPLAY_POSITION
 }
 
 $SERIALIZATION_HEADER_METADATA := {
-    &quot;min_timestamp_base&quot;: Uint64,
-    &quot;min_local_deletion_time_base&quot;: Uint64,
-    &quot;min_ttl_base&quot;: Uint64&quot;,
-    &quot;pk_type_name&quot;: String,
-    &quot;clustering_key_types_names&quot;: [String, ...],
-    &quot;static_columns&quot;: [$COLUMN_DESC, ...],
-    &quot;regular_columns&quot;: [$COLUMN_DESC, ...],
+    "min_timestamp_base": Uint64,
+    "min_local_deletion_time_base": Uint64,
+    "min_ttl_base": Uint64",
+    "pk_type_name": String,
+    "clustering_key_types_names": [String, ...],
+    "static_columns": [$COLUMN_DESC, ...],
+    "regular_columns": [$COLUMN_DESC, ...],
 }
 
 $COLUMN_DESC := {
-    &quot;name&quot;: String,
-    &quot;type_name&quot;: String
+    "name": String,
+    "type_name": String
 }
 </pre></div>
 </div>
@@ -829,53 +829,53 @@ $COLUMN_DESC := {
 metadata about the data component. This component won’t be present in SStables
 produced by Apache Cassandra.</p>
 <p>The content is dumped in JSON, using the following schema:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $SSTABLE, ... }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $SSTABLE, ... }
 
 $SSTABLE := {
-    &quot;sharding&quot;: [$SHARDING_METADATA, ...],
-    &quot;features&quot;: $FEATURES_METADATA,
-    &quot;extension_attributes&quot;: { &quot;$key&quot;: String, ...}
-    &quot;run_identifier&quot;: String, // UUID
-    &quot;large_data_stats&quot;: {&quot;$key&quot;: $LARGE_DATA_STATS_METADATA, ...}
-    &quot;sstable_origin&quot;: String
-    &quot;scylla_build_id&quot;: String
-    &quot;scylla_version&quot;: String
-    &quot;ext_timestamp_stats&quot;: {&quot;$key&quot;: int64, ...}
-    &quot;sstable_identifier&quot;: String, // UUID
-    &quot;large_data_records&quot;: [$LARGE_DATA_RECORD, ...]
+    "sharding": [$SHARDING_METADATA, ...],
+    "features": $FEATURES_METADATA,
+    "extension_attributes": { "$key": String, ...}
+    "run_identifier": String, // UUID
+    "large_data_stats": {"$key": $LARGE_DATA_STATS_METADATA, ...}
+    "sstable_origin": String
+    "scylla_build_id": String
+    "scylla_version": String
+    "ext_timestamp_stats": {"$key": int64, ...}
+    "sstable_identifier": String, // UUID
+    "large_data_records": [$LARGE_DATA_RECORD, ...]
 }
 
 $SHARDING_METADATA := {
-    &quot;left&quot;: {
-        &quot;exclusive&quot;: Bool,
-        &quot;token&quot;: String
+    "left": {
+        "exclusive": Bool,
+        "token": String
     },
-    &quot;right&quot;: {
-        &quot;exclusive&quot;: Bool,
-        &quot;token&quot;: String
+    "right": {
+        "exclusive": Bool,
+        "token": String
     }
 }
 
 $FEATURES_METADATA := {
-    &quot;mask&quot;: Uint64,
-    &quot;features&quot;: [String, ...]
+    "mask": Uint64,
+    "features": [String, ...]
 }
 
 $LARGE_DATA_STATS_METADATA := {
-    &quot;max_value&quot;: Uint64,
-    &quot;threshold&quot;: Uint64,
-    &quot;above_threshold&quot;: Uint
+    "max_value": Uint64,
+    "threshold": Uint64,
+    "above_threshold": Uint
 }
 
 $LARGE_DATA_RECORD := {
-    &quot;type&quot;: String,              // large_data_type name
-    &quot;partition_key&quot;: String,     // human-readable partition key (decoded from binary)
-    &quot;clustering_key&quot;: String,    // human-readable clustering key (decoded from binary), empty if N/A
-    &quot;column_name&quot;: String,       // column name, empty for partition/row entries
-    &quot;value&quot;: Uint64,             // size in bytes (partition, row, or cell size depending on type)
-    &quot;elements_count&quot;: Uint64,    // rows (partition_size, rows_in_partition) or collection elements (cell_size, elements_in_collection), 0 for row_size
-    &quot;range_tombstones&quot;: Uint64,  // range tombstones (partition_size records only, 0 otherwise)
-    &quot;dead_rows&quot;: Uint64          // dead rows (partition_size records only, 0 otherwise)
+    "type": String,              // large_data_type name
+    "partition_key": String,     // human-readable partition key (decoded from binary)
+    "clustering_key": String,    // human-readable clustering key (decoded from binary), empty if N/A
+    "column_name": String,       // column name, empty for partition/row entries
+    "value": Uint64,             // size in bytes (partition, row, or cell size depending on type)
+    "elements_count": Uint64,    // rows (partition_size, rows_in_partition) or collection elements (cell_size, elements_in_collection), 0 for row_size
+    "range_tombstones": Uint64,  // range tombstones (partition_size records only, 0 otherwise)
+    "dead_rows": Uint64          // dead rows (partition_size records only, 0 otherwise)
 }
 </pre></div>
 </div>
@@ -902,11 +902,11 @@ The following things are validated:</p>
 </ul>
 <p>Any errors found will be logged with error level to <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p>
 <p>The validation result is dumped in JSON, using the following schema:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $RESULT }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $RESULT }
 
 $RESULT := {
-    &quot;errors&quot;: Uint64,
-    &quot;valid&quot;: Bool,
+    "errors": Uint64,
+    "valid": Bool,
 }
 </pre></div>
 </div>
@@ -938,12 +938,12 @@ Errors found are logged to stderr. The output contains an object for each SStabl
 for which <code class="docutils literal notranslate"><span class="pre">CRC.db</span></code> is not present in <code class="docutils literal notranslate"><span class="pre">TOC.txt</span></code>), if the SStable has a digest, and if the SStable matches all checksums and the digest. If no digest is available,
 validation will proceed using only the per-chunk checksums.</p>
 <p>The content is dumped in JSON, using the following schema:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $RESULT, ... }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $RESULT, ... }
 
 $RESULT := {
-    &quot;has_checksums&quot;: Bool,
-    &quot;has_digest&quot;: Bool,
-    &quot;valid&quot;: Bool, // optional
+    "has_checksums": Bool,
+    "has_digest": Bool,
+    "valid": Bool, // optional
 }
 </pre></div>
 </div>
@@ -1024,7 +1024,7 @@ This can be relaxed, for example, if you want to produce intentionally corrupt S
 <h3>shard-of<a class="headerlink" href="#shard-of" title="Link to this heading">¶</a></h3>
 <p>Print out the shards which own the specified SSTables.</p>
 <p>The content is dumped in JSON, using the following schema when <code class="docutils literal notranslate"><span class="pre">--vnodes</span></code> command option is specified:</p>
-<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { &quot;$sstable_path&quot;: $SHARD_IDS, ... }
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $SHARD_IDS, ... }
 
 $SHARD_IDS := [$SHARD_ID, ...]
 
@@ -1076,31 +1076,31 @@ environment variable. This temporary directory is removed on exit.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--output-format<span class="o">=</span>json<span class="w"> </span>/path/to/data/system_schema/keyspaces-*/me-3gm7_127s_3ndxs28xt4llzxwqz6-big-Data.db<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
 <span class="go">[</span>
 <span class="go">  {</span>
-<span class="go">    &quot;keyspace_name&quot;: &quot;system_schema&quot;,</span>
-<span class="go">    &quot;durable_writes&quot;: true,</span>
-<span class="go">    &quot;replication&quot;: {</span>
-<span class="go">      &quot;class&quot;: &quot;org.apache.cassandra.locator.LocalStrategy&quot;</span>
+<span class="go">    "keyspace_name": "system_schema",</span>
+<span class="go">    "durable_writes": true,</span>
+<span class="go">    "replication": {</span>
+<span class="go">      "class": "org.apache.cassandra.locator.LocalStrategy"</span>
 <span class="go">    }</span>
 <span class="go">  },</span>
 <span class="go">  {</span>
-<span class="go">    &quot;keyspace_name&quot;: &quot;system&quot;,</span>
-<span class="go">    &quot;durable_writes&quot;: true,</span>
-<span class="go">    &quot;replication&quot;: {</span>
-<span class="go">      &quot;class&quot;: &quot;org.apache.cassandra.locator.LocalStrategy&quot;</span>
+<span class="go">    "keyspace_name": "system",</span>
+<span class="go">    "durable_writes": true,</span>
+<span class="go">    "replication": {</span>
+<span class="go">      "class": "org.apache.cassandra.locator.LocalStrategy"</span>
 <span class="go">    }</span>
 <span class="go">  }</span>
 <span class="go">]</span>
 </pre></div>
 </div>
 <p>Select a specific field in a specific partition using the command-line:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name=&#39;ks&#39;&quot;</span><span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-Data.db
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query<span class="w"> </span><span class="s2">"SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks'"</span><span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-Data.db
 <span class="go"> replication</span>
 <span class="go">-------------------------------------------------------------------------------------</span>
 <span class="go"> ({class : org.apache.cassandra.locator.NetworkTopologyStrategy}, {datacenter1 : 1})</span>
 </pre></div>
 </div>
 <p>Select a specific field in a specific partition using <code class="docutils literal notranslate"><span class="pre">--query-file</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name=&#39;ks&#39;;&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>query.cql
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks';"</span><span class="w"> </span>&gt;<span class="w"> </span>query.cql
 <span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query-file<span class="o">=</span>./query.cql<span class="w"> </span>./scylla-workdir/data/system_schema/keyspaces-*/*-Data.db
 <span class="go"> replication</span>
 <span class="go">-------------------------------------------------------------------------------------</span>
@@ -1894,7 +1894,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

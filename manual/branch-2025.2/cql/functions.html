@@ -616,7 +616,7 @@ UDFs can be overloaded, so that multiple UDFs with different argument types can 
   <span class="k">RETURNS</span> <span class="k">NULL</span> <span class="k">ON</span> <span class="k">NULL</span> <span class="k">INPUT</span>
   <span class="k">RETURNS</span> <span class="nb">double</span>
   <span class="k">LANGUAGE</span> <span class="n">LUA</span>
-  <span class="k">AS</span> <span class="s1">&#39;return dividend/divisor;&#39;</span><span class="p">;</span>
+  <span class="k">AS</span> <span class="s1">'return dividend/divisor;'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">FUNCTION</span></code> with the optional <code class="docutils literal notranslate"><span class="pre">OR</span> <span class="pre">REPLACE</span></code> keywords creates either a function
@@ -635,7 +635,7 @@ signature does not exist. <code class="docutils literal notranslate"><span class
 <li><p>For Wasm functions, the <code class="docutils literal notranslate"><span class="pre">LANGUAGE</span></code> is <code class="docutils literal notranslate"><span class="pre">wasm</span></code> and the body is a string literal containing a WebAssembly module in WebAssembly text format, which exports a function with the same name as specified in the <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">FUNCTION</span></code> statement. More details on generating the Wasm modules can be found <a class="reference internal" href="wasm.html"><span class="doc">here</span></a>.</p></li>
 </ul>
 <p>If the function code contains single quotes, they must be escaped by doubling them, for example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">hworld</span> <span class="p">()</span> <span class="k">RETURNS</span> <span class="nb">text</span> <span class="k">LANGUAGE</span> <span class="n">LUA</span> <span class="k">AS</span> <span class="s1">&#39;return &#39;&#39;hello world&#39;&#39;;&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">hworld</span> <span class="p">()</span> <span class="k">RETURNS</span> <span class="nb">text</span> <span class="k">LANGUAGE</span> <span class="n">LUA</span> <span class="k">AS</span> <span class="s1">'return ''hello world'';'</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -693,7 +693,7 @@ see <a class="reference internal" href="../kb/count-all-rows.html"><span class="
 <h4>Max and Min<a class="headerlink" href="#max-and-min" title="Link to this heading">¶</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">max</span></code> and <code class="docutils literal notranslate"><span class="pre">min</span></code> functions can be used to compute the maximum and the minimum value returned by a query for a
 given column. For instance:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">MIN</span> <span class="p">(</span><span class="n">players</span><span class="p">),</span> <span class="n">MAX</span> <span class="p">(</span><span class="n">players</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">plays</span> <span class="k">WHERE</span> <span class="n">game</span> <span class="o">=</span> <span class="s1">&#39;quake&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">MIN</span> <span class="p">(</span><span class="n">players</span><span class="p">),</span> <span class="n">MAX</span> <span class="p">(</span><span class="n">players</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">plays</span> <span class="k">WHERE</span> <span class="n">game</span> <span class="o">=</span> <span class="s1">'quake'</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -722,13 +722,13 @@ instance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">accumulate_len</span><span class="p">(</span><span class="n">acc</span> <span class="k">tuple</span><span class="o">&lt;</span><span class="nb">bigint</span><span class="p">,</span><span class="nb">bigint</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">a</span> <span class="nb">text</span><span class="p">)</span>
        <span class="k">RETURNS</span> <span class="k">NULL</span> <span class="k">ON</span> <span class="k">NULL</span> <span class="k">INPUT</span>
        <span class="k">RETURNS</span> <span class="k">tuple</span><span class="o">&lt;</span><span class="nb">bigint</span><span class="p">,</span><span class="nb">bigint</span><span class="o">&gt;</span>
-       <span class="k">LANGUAGE</span> <span class="n">lua</span> <span class="k">as</span> <span class="s1">&#39;return {acc[1] + 1, acc[2] + #a}&#39;</span><span class="p">;</span>
+       <span class="k">LANGUAGE</span> <span class="n">lua</span> <span class="k">as</span> <span class="s1">'return {acc[1] + 1, acc[2] + #a}'</span><span class="p">;</span>
 
 <span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">present</span><span class="p">(</span><span class="n">res</span> <span class="k">tuple</span><span class="o">&lt;</span><span class="nb">bigint</span><span class="p">,</span><span class="nb">bigint</span><span class="o">&gt;</span><span class="p">)</span>
        <span class="k">RETURNS</span> <span class="k">NULL</span> <span class="k">ON</span> <span class="k">NULL</span> <span class="k">INPUT</span>
        <span class="k">RETURNS</span> <span class="nb">text</span>
        <span class="k">LANGUAGE</span> <span class="n">lua</span> <span class="k">as</span>
-         <span class="s1">&#39;return &quot;The average string length is &quot; .. res[2]/res[1] .. &quot;!&quot;&#39;</span><span class="p">;</span>
+         <span class="s1">'return "The average string length is " .. res[2]/res[1] .. "!"'</span><span class="p">;</span>
 
 <span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">AGGREGATE</span> <span class="n">avg_length</span><span class="p">(</span><span class="nb">text</span><span class="p">)</span>
    <span class="k">SFUNC</span> <span class="n">accumulate_len</span>
@@ -1407,7 +1407,7 @@ instance:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

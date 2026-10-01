@@ -595,7 +595,7 @@ Within a single datacenter, add nodes one at a time for best results.</p>
 the seed configuration before decommissioning them.</p>
 <ol class="arabic">
 <li><p>Check the current seed configuration on any node:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="s2">&quot;seed_provider&quot;</span><span class="w"> </span>/etc/scylla/scylla.yaml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="s2">"seed_provider"</span><span class="w"> </span>/etc/scylla/scylla.yaml
 </pre></div>
 </div>
 </li>
@@ -604,7 +604,7 @@ on <strong>all new nodes</strong> to use the new node IPs as seeds:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">seed_provider</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">class_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.apache.cassandra.locator.SimpleSeedProvider</span>
 <span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">seeds</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;192.168.2.10,192.168.2.11,192.168.2.12&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">seeds</span><span class="p">:</span><span class="w"> </span><span class="s">"192.168.2.10,192.168.2.11,192.168.2.12"</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -715,7 +715,7 @@ Ensure no streaming operations are in progress.</p></li>
 <section id="verify-data-connectivity">
 <h3>Verify data connectivity<a class="headerlink" href="#verify-data-connectivity" title="Link to this heading">¶</a></h3>
 <p>Connect to the cluster and run a test query:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>&lt;node-ip&gt;<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;SELECT count(*) FROM system_schema.keyspaces;&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>&lt;node-ip&gt;<span class="w"> </span>-e<span class="w"> </span><span class="s2">"SELECT count(*) FROM system_schema.keyspaces;"</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1490,7 +1490,7 @@ apply the same add-and-replace procedure in reverse:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

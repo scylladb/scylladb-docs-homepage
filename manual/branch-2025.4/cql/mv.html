@@ -376,7 +376,7 @@
                     <section id="materialized-views">
 <span id="id1"></span><h1>Materialized Views<a class="headerlink" href="#materialized-views" title="Link to this heading">¶</a></h1>
 <p>Materialized views names are defined by:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">view_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z_0-9]+&#39;</span><span class="p">)</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">view_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">'[a-zA-Z_0-9]+'</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="create-materialized-view">
@@ -384,7 +384,7 @@
 <p>You can create a materialized view on a table using a <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_materialized_view_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">MATERIALIZED</span> <span class="k">VIEW</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="o">`</span><span class="n">view_name</span><span class="o">`</span> <span class="k">AS</span>
                                   <span class="p">:</span>     <span class="o">`</span><span class="n">select_statement</span><span class="o">`</span>
-                                  <span class="p">:</span>     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">primary_key</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+                                  <span class="p">:</span>     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">primary_key</span><span class="o">`</span> <span class="s1">')'</span>
                                   <span class="p">:</span>     <span class="k">WITH</span> <span class="o">`</span><span class="n">table_options</span><span class="o">`</span>
 </pre></div>
 </div>
@@ -393,7 +393,7 @@
     <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">monkeySpecies</span>
     <span class="k">WHERE</span> <span class="n">population</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="n">species</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span>
     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">species</span><span class="p">)</span>
-    <span class="k">WITH</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;Allow query by population instead of species&#39;</span><span class="p">;</span>
+    <span class="k">WITH</span> <span class="n">comment</span><span class="o">=</span><span class="s1">'Allow query by population instead of species'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code> statement creates a new materialized view. Each view is a set of <em>rows</em> that
@@ -471,7 +471,7 @@ exactly one row of the base table.</p></li>
     <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">WHERE</span> <span class="n">k</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="n">c1</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="n">c2</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="n">v1</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span>
     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
 
-<span class="c1">// Error: must include k in the primary as it&#39;s a base table primary key column</span>
+<span class="c1">// Error: must include k in the primary as it's a base table primary key column</span>
 <span class="k">CREATE</span> <span class="k">MATERIALIZED</span> <span class="k">VIEW</span> <span class="n">mv1</span> <span class="k">AS</span>
     <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">WHERE</span> <span class="n">c1</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AND</span> <span class="n">c2</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span>
     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
@@ -1168,7 +1168,7 @@ the operation is a no-op.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

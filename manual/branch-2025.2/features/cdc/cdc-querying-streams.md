@@ -16,6 +16,13 @@ SELECT * FROM ks.t_scylla_cdc_log WHERE "cdc$stream_id" = 0x365fd1a9ae3437395452
 
 With the above approach you can, for instance, build a distributed CDC consumer, where each of the consumer nodes queries only streams that are replicated to ScyllaDB nodes in proximity to the consumer node. This allows efficient, concurrent querying of streams, without putting strain on a single node due to a partition scan.
 
+#### CAUTION
+The tables mentioned in the following sections: `system_distributed.cdc_generation_timestamps` and `system_distributed.cdc_streams_descriptions_v2` have been introduced in ScyllaDB 4.4. It is highly recommended to upgrade to 4.4 for efficient CDC usage. The last section explains how to run the below examples in ScyllaDB 4.3.
+
+If you use CDC in ScyllaDB 4.3 and your application is constantly querying CDC log tables and using the old description table to learn about new generations and stream IDs, you should upgrade your application before upgrading to 4.4. The upgraded application should dynamically switch from using the old description table to the new description tables when the cluster is upgraded from 4.3 to 4.4. We present an example algorithm that the application can perform in the last section.
+
+We highly recommend using the newest releases of our client CDC libraries ([Java CDC library](https://github.com/scylladb/scylla-cdc-java), [Go CDC library](https://github.com/scylladb/scylla-cdc-go), [Rust CDC library](https://github.com/scylladb/scylla-cdc-rust)). They take care of correctly querying the stream description tables and they handle the upgrade procedure for you.
+
 ## Learning about available streams
 
 To query the log table without performing partition scans, you need to know which streams to look at. For this you can use the `system_distributed.cdc_generation_timestamps` and `system_distributed.cdc_streams_descriptions_v2` tables.

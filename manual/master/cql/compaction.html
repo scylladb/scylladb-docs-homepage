@@ -389,11 +389,11 @@
 <h2>Common options<a class="headerlink" href="#common-options" title="Link to this heading">¶</a></h2>
 <p>The following options are available for all compaction strategies.</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;compaction_strategy_name&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;enabled&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="n">true</span> <span class="o">|</span> <span class="n">false</span><span class="p">),</span>
-  <span class="s1">&#39;tombstone_threshold&#39;</span> <span class="p">:</span> <span class="n">ratio</span><span class="p">,</span>
-  <span class="s1">&#39;tombstone_compaction_interval&#39;</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
-  <span class="s1">&#39;unchecked_tombstone_compaction&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="n">true</span> <span class="o">|</span> <span class="n">false</span><span class="p">)}</span>
+  <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'compaction_strategy_name'</span><span class="p">,</span>
+  <span class="s1">'enabled'</span> <span class="p">:</span> <span class="p">(</span><span class="n">true</span> <span class="o">|</span> <span class="n">false</span><span class="p">),</span>
+  <span class="s1">'tombstone_threshold'</span> <span class="p">:</span> <span class="n">ratio</span><span class="p">,</span>
+  <span class="s1">'tombstone_compaction_interval'</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
+  <span class="s1">'unchecked_tombstone_compaction'</span> <span class="p">:</span> <span class="p">(</span><span class="n">true</span> <span class="o">|</span> <span class="n">false</span><span class="p">)}</span>
 </pre></div>
 </div>
 <dl>
@@ -441,13 +441,13 @@
 <span id="id2"></span><h3>STCS options<a class="headerlink" href="#stcs-options" title="Link to this heading">¶</a></h3>
 <p>The following options only apply to SizeTieredCompactionStrategy:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;SizeTieredCompactionStrategy&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;bucket_high&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
-  <span class="s1">&#39;bucket_low&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
-  <span class="s1">&#39;min_sstable_size&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-  <span class="s1">&#39;min_sstable_age&#39;</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
-  <span class="s1">&#39;min_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
-  <span class="s1">&#39;max_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">}</span>
+  <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'SizeTieredCompactionStrategy'</span><span class="p">,</span>
+  <span class="s1">'bucket_high'</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="s1">'bucket_low'</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="s1">'min_sstable_size'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">'min_sstable_age'</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
+  <span class="s1">'min_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
+  <span class="s1">'max_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">}</span>
 </pre></div>
 </div>
 <dl>
@@ -503,8 +503,8 @@ least <code class="docutils literal notranslate"><span class="pre">min_threshold
 <section id="lcs-options">
 <span id="id3"></span><h3>LCS options<a class="headerlink" href="#lcs-options" title="Link to this heading">¶</a></h3>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;LeveledCompactionStrategy&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sstable_size_in_mb&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">}</span>
+  <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'LeveledCompactionStrategy'</span><span class="p">,</span>
+  <span class="s1">'sstable_size_in_mb'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">}</span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -530,15 +530,15 @@ configuration option is set in the scylla.yaml configuration file.</p>
 <span id="id4"></span><h3>ICS options<a class="headerlink" href="#ics-options" title="Link to this heading">¶</a></h3>
 <p>The following options only apply to IncrementalCompactionStrategy:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;IncrementalCompactionStrategy&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;bucket_high&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
-  <span class="s1">&#39;bucket_low&#39;</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
-  <span class="s1">&#39;min_sstable_size&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-  <span class="s1">&#39;min_sstable_age&#39;</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
-  <span class="s1">&#39;min_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
-  <span class="s1">&#39;max_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
-  <span class="s1">&#39;sstable_size_in_mb&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-  <span class="s1">&#39;space_amplification_goal&#39;</span> <span class="p">:</span> <span class="nb">double</span><span class="p">}</span>
+  <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'IncrementalCompactionStrategy'</span><span class="p">,</span>
+  <span class="s1">'bucket_high'</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="s1">'bucket_low'</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+  <span class="s1">'min_sstable_size'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">'min_sstable_age'</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
+  <span class="s1">'min_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
+  <span class="s1">'max_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
+  <span class="s1">'sstable_size_in_mb'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">'space_amplification_goal'</span> <span class="p">:</span> <span class="nb">double</span><span class="p">}</span>
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -630,12 +630,12 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
 <section id="twcs-options">
 <span id="id5"></span><h3>TWCS options<a class="headerlink" href="#twcs-options" title="Link to this heading">¶</a></h3>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;TimeWindowCompactionStrategy&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;compaction_window_unit&#39;</span> <span class="p">:</span> <span class="n">string</span><span class="p">,</span>
-  <span class="s1">&#39;compaction_window_size&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-  <span class="s1">&#39;expired_sstable_check_frequency_seconds&#39;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-  <span class="s1">&#39;min_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
-  <span class="s1">&#39;max_threshold&#39;</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">}</span>
+  <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'TimeWindowCompactionStrategy'</span><span class="p">,</span>
+  <span class="s1">'compaction_window_unit'</span> <span class="p">:</span> <span class="n">string</span><span class="p">,</span>
+  <span class="s1">'compaction_window_size'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">'expired_sstable_check_frequency_seconds'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">'min_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
+  <span class="s1">'max_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">}</span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -1331,7 +1331,7 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

@@ -158,6 +158,9 @@ Try to adjust ldapsearch parameters until it returns the correct role entries fo
 
 Once that works as expected, you can use the [ldapurl](https://linux.die.net/man/1/ldapurl) utility to transform the parameters into a URL providing a basis for the ldap_url_template.
 
+#### TIP
+Always provide an explicit `-s` flag to both `ldapsearch` and `ldapurl`; the default `-s` value differs among the two tools.
+
 Remember to replace the specific user name with `{USER}` in the URL template.
 You can turn on debug logging in the LDAP role manager by passing the following argument to the Scylla executable: `--logger-log-level ldap_role_manager=debug`.
 This will make Scylla log useful additional details about the LDAP responses it receives.

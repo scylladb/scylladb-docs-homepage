@@ -422,9 +422,9 @@
 </pre></div>
 </div>
 <p>Note that, although each materialized view is a separate table, a user cannot modify a view directly:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh:mykeyspace&gt;<span class="w"> </span>DELETE<span class="w"> </span>FROM<span class="w"> </span>building_by_city<span class="w"> </span>WHERE<span class="w"> </span><span class="nv">city</span><span class="o">=</span><span class="s1">&#39;Taipei&#39;</span><span class="p">;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cqlsh:mykeyspace&gt;<span class="w"> </span>DELETE<span class="w"> </span>FROM<span class="w"> </span>building_by_city<span class="w"> </span>WHERE<span class="w"> </span><span class="nv">city</span><span class="o">=</span><span class="s1">'Taipei'</span><span class="p">;</span>
 
-InvalidRequest:<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="m">2200</span><span class="w"> </span><span class="o">[</span>Invalid<span class="w"> </span>query<span class="o">]</span><span class="w"> </span><span class="nv">message</span><span class="o">=</span><span class="s2">&quot;Cannot directly modify a materialized view&quot;</span>
+InvalidRequest:<span class="w"> </span><span class="nv">code</span><span class="o">=</span><span class="m">2200</span><span class="w"> </span><span class="o">[</span>Invalid<span class="w"> </span>query<span class="o">]</span><span class="w"> </span><span class="nv">message</span><span class="o">=</span><span class="s2">"Cannot directly modify a materialized view"</span>
 </pre></div>
 </div>
 <p>To modify views, remember that you must instead modify the base table associated with the view.</p>
@@ -441,13 +441,13 @@ Instead, the default compaction strategy (IncrementalCompactionStrategy) is used
   <span class="n">a</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span>
   <span class="k">AND</span> <span class="n">b</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span>
   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
-  <span class="k">WITH</span> <span class="n">COMPACTION</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;LeveledCompactionStrategy&#39;</span><span class="p">};</span>
+  <span class="k">WITH</span> <span class="n">COMPACTION</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'LeveledCompactionStrategy'</span><span class="p">};</span>
 </pre></div>
 </div>
 <p>You can also change the compaction strategy of an already existing materialized view, using an ALTER MATERIALIZED VIEW statement.</p>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">MATERIALIZED</span> <span class="k">VIEW</span> <span class="n">ks</span><span class="mf">.</span><span class="n">mv</span>
-  <span class="k">WITH</span> <span class="n">COMPACTION</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;LeveledCompactionStrategy&#39;</span><span class="p">}</span> <span class="p">;</span>
+  <span class="k">WITH</span> <span class="n">COMPACTION</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'LeveledCompactionStrategy'</span><span class="p">}</span> <span class="p">;</span>
 </pre></div>
 </div>
 <section id="more-information">
@@ -1098,7 +1098,7 @@ Instead, the default compaction strategy (IncrementalCompactionStrategy) is used
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

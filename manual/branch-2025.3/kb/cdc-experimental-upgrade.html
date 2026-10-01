@@ -377,7 +377,7 @@
 <h1>Upgrading from experimental CDC<a class="headerlink" href="#upgrading-from-experimental-cdc" title="Link to this heading">¶</a></h1>
 <p>If you used CDC in ScyllaDB 4.2 or earlier by enabling the experimental feature and you upgrade to 4.3, you must perform additional steps for CDC to work properly.</p>
 <p>First, if you enabled CDC on any table (using <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">cdc</span> <span class="pre">=</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code>), you should stop all writes to this table. Then disable CDC before the upgrade:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>alter table ks.t with cdc = {&#39;enabled&#39;: false};
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>alter table ks.t with cdc = {'enabled': false};
 </pre></div>
 </div>
 <div class="admonition caution">
@@ -387,7 +387,7 @@
 <p>This should work even if you already upgraded, but preferably disable CDC on all tables before the upgrade.</p>
 <p>After disabling CDC and finishing the upgrade you can safely re-enable it.</p>
 <p>The next step is running <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">checkAndRepairCdcStreams</span></code>. Up to this point, ScyllaDB may have periodically reported the following errors in its logs:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cdc - Could not retrieve CDC streams with timestamp {...} upon gossip event. Reason: &quot;std::runtime_error (Could not find CDC generation with timestamp ... in distributed system tables (current time: ...), even though some node gossiped about it.)&quot;. Action: not retrying.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cdc - Could not retrieve CDC streams with timestamp {...} upon gossip event. Reason: "std::runtime_error (Could not find CDC generation with timestamp ... in distributed system tables (current time: ...), even though some node gossiped about it.)". Action: not retrying.
 </pre></div>
 </div>
 <p>After running the <code class="docutils literal notranslate"><span class="pre">nodetool</span></code> command the errors should not appear anymore. If they do, please open an issue.</p>
@@ -1011,7 +1011,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

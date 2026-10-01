@@ -381,8 +381,8 @@ The conditional statements provide linearizable semantics thus allowing data to 
 <p>A basic rule of thumb is that any statement with an IF clause is a conditional statement.
 A batch that has at least one conditional statement is a conditional batch.
 Conditional statements and conditional batches are executed atomically, as a Lightweight Transaction (LWT) For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="n">employees</span> <span class="k">SET</span> <span class="n">join_date</span> <span class="o">=</span> <span class="s1">&#39;2018-05-19&#39;</span> <span class="k">WHERE</span>
-   <span class="n">firstname</span> <span class="o">=</span> <span class="s1">&#39;John&#39;</span> <span class="k">AND</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Doe&#39;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="n">employees</span> <span class="k">SET</span> <span class="n">join_date</span> <span class="o">=</span> <span class="s1">'2018-05-19'</span> <span class="k">WHERE</span>
+   <span class="n">firstname</span> <span class="o">=</span> <span class="s1">'John'</span> <span class="k">AND</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">'Doe'</span>
    <span class="k">IF</span> <span class="n">join_date</span> <span class="o">!=</span> <span class="k">null</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -541,7 +541,7 @@ the most up to date version of a row: a simple QUORUM read may not
 see a value that is currently being updated by a conditional
 write. In order to ensure a read is serial, set <code class="docutils literal notranslate"><span class="pre">CONSISTENCY</span></code> to
 <code class="docutils literal notranslate"><span class="pre">SERIAL</span></code> in <em>cqlsh</em> or prepared statement properties.</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">employees</span> <span class="k">WHERE</span> <span class="n">firstname</span> <span class="o">=</span> <span class="s1">&#39;John&#39;</span> <span class="k">AND</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Doe&#39;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">employees</span> <span class="k">WHERE</span> <span class="n">firstname</span> <span class="o">=</span> <span class="s1">'John'</span> <span class="k">AND</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">'Doe'</span>
 </pre></div>
 </div>
 </section>
@@ -561,7 +561,7 @@ You can use lightweight transactions for any of the following activities:</p>
 <li><p>Create a Keyspace</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">movies</span>
    <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span>
-   <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span> <span class="p">:</span> <span class="mf">3</span><span class="p">};</span>
+   <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'NetworkTopologyStrategy'</span><span class="p">,</span> <span class="s1">'replication_factor'</span> <span class="p">:</span> <span class="mf">3</span><span class="p">};</span>
 </pre></div>
 </div>
 </li>
@@ -582,12 +582,12 @@ You can use lightweight transactions for any of the following activities:</p>
 </li>
 <li><p>Insert values into the table using LWT:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">,</span> <span class="n">released</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Sonic the Hedgehog&#39;</span><span class="p">,</span> <span class="s1">&#39;Jeff Fowler&#39;</span><span class="p">,</span> <span class="s1">&#39;Ben Schwartz&#39;</span><span class="p">,</span> <span class="s1">&#39;2020-14-02&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Sonic the Hedgehog'</span><span class="p">,</span> <span class="s1">'Jeff Fowler'</span><span class="p">,</span> <span class="s1">'Ben Schwartz'</span><span class="p">,</span> <span class="s1">'2020-14-02'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">,</span> <span class="n">released</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Invisible Man&#39;</span><span class="p">,</span> <span class="s1">&#39;Leigh Whannell&#39;</span><span class="p">,</span> <span class="s1">&#39;Elisabeth Moss&#39;</span><span class="p">,</span> <span class="s1">&#39;2020-28-02&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Invisible Man'</span><span class="p">,</span> <span class="s1">'Leigh Whannell'</span><span class="p">,</span> <span class="s1">'Elisabeth Moss'</span><span class="p">,</span> <span class="s1">'2020-28-02'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -607,42 +607,42 @@ You can use lightweight transactions for any of the following activities:</p>
 </li>
 <li><p>Add more information to the table</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Sonic the Hedgehog&#39;</span><span class="p">,</span> <span class="s1">&#39;Times Square&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC Empire 25&#39;</span><span class="p">,</span> <span class="s1">&#39;Saturday&#39;</span><span class="p">,</span> <span class="s1">&#39;21:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Sonic the Hedgehog'</span><span class="p">,</span> <span class="s1">'Times Square'</span><span class="p">,</span> <span class="s1">'AMC Empire 25'</span><span class="p">,</span> <span class="s1">'Saturday'</span><span class="p">,</span> <span class="s1">'21:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Sonic the Hedgehog&#39;</span><span class="p">,</span> <span class="s1">&#39;Penn Station&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC 34th Street 14&#39;</span><span class="p">,</span> <span class="s1">&#39;Sunday&#39;</span><span class="p">,</span> <span class="s1">&#39;14:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Sonic the Hedgehog'</span><span class="p">,</span> <span class="s1">'Penn Station'</span><span class="p">,</span> <span class="s1">'AMC 34th Street 14'</span><span class="p">,</span> <span class="s1">'Sunday'</span><span class="p">,</span> <span class="s1">'14:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Sonic the Hedgehog&#39;</span><span class="p">,</span> <span class="s1">&#39;Times Square&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC Empire 25&#39;</span><span class="p">,</span> <span class="s1">&#39;Saturday&#39;</span><span class="p">,</span> <span class="s1">&#39;14:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Sonic the Hedgehog'</span><span class="p">,</span> <span class="s1">'Times Square'</span><span class="p">,</span> <span class="s1">'AMC Empire 25'</span><span class="p">,</span> <span class="s1">'Saturday'</span><span class="p">,</span> <span class="s1">'14:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Sonic the Hedgehog&#39;</span><span class="p">,</span> <span class="s1">&#39;Penn Station&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC 34th Street 14&#39;</span><span class="p">,</span> <span class="s1">&#39;Sunday&#39;</span><span class="p">,</span> <span class="s1">&#39;21:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Sonic the Hedgehog'</span><span class="p">,</span> <span class="s1">'Penn Station'</span><span class="p">,</span> <span class="s1">'AMC 34th Street 14'</span><span class="p">,</span> <span class="s1">'Sunday'</span><span class="p">,</span> <span class="s1">'21:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Invisible Man&#39;</span><span class="p">,</span> <span class="s1">&#39;Times Square&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC Empire 25&#39;</span><span class="p">,</span> <span class="s1">&#39;Friday&#39;</span><span class="p">,</span> <span class="s1">&#39;21:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Invisible Man'</span><span class="p">,</span> <span class="s1">'Times Square'</span><span class="p">,</span> <span class="s1">'AMC Empire 25'</span><span class="p">,</span> <span class="s1">'Friday'</span><span class="p">,</span> <span class="s1">'21:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Invisible Man&#39;</span><span class="p">,</span> <span class="s1">&#39;Penn Station&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC 34th Street 14&#39;</span><span class="p">,</span> <span class="s1">&#39;Sunday&#39;</span><span class="p">,</span> <span class="s1">&#39;22:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Invisible Man'</span><span class="p">,</span> <span class="s1">'Penn Station'</span><span class="p">,</span> <span class="s1">'AMC 34th Street 14'</span><span class="p">,</span> <span class="s1">'Sunday'</span><span class="p">,</span> <span class="s1">'22:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Invisible Man&#39;</span><span class="p">,</span> <span class="s1">&#39;Times Square&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC Empire 25&#39;</span><span class="p">,</span> <span class="s1">&#39;Saturday&#39;</span><span class="p">,</span> <span class="s1">&#39;22:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Invisible Man'</span><span class="p">,</span> <span class="s1">'Times Square'</span><span class="p">,</span> <span class="s1">'AMC Empire 25'</span><span class="p">,</span> <span class="s1">'Saturday'</span><span class="p">,</span> <span class="s1">'22:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Invisible Man&#39;</span><span class="p">,</span> <span class="s1">&#39;Penn Station&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC 34th Street 14&#39;</span><span class="p">,</span> <span class="s1">&#39;Sunday&#39;</span><span class="p">,</span> <span class="s1">&#39;18:00:00&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Invisible Man'</span><span class="p">,</span> <span class="s1">'Penn Station'</span><span class="p">,</span> <span class="s1">'AMC 34th Street 14'</span><span class="p">,</span> <span class="s1">'Sunday'</span><span class="p">,</span> <span class="s1">'18:00:00'</span><span class="p">)</span>
 <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -675,10 +675,10 @@ theater name from AMC Empire 25 to AMC Empire. It can be done
 using a conditional UPDATE, as shown here:</p>
 <ol class="arabic">
 <li><p>Update the table:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">theater</span> <span class="o">=</span> <span class="s1">&#39;AMC Empire&#39;</span>
-<span class="k">WHERE</span> <span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;Times Square&#39;</span>
-  <span class="k">AND</span> <span class="n">run_day</span> <span class="o">=</span> <span class="s1">&#39;Saturday&#39;</span> <span class="k">AND</span> <span class="n">run_time</span> <span class="o">=</span><span class="s1">&#39;14:00:00&#39;</span>
-  <span class="k">AND</span> <span class="n">Movie</span> <span class="o">=</span> <span class="s1">&#39;Sonic the Hedgehog&#39;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">theater</span> <span class="o">=</span> <span class="s1">'AMC Empire'</span>
+<span class="k">WHERE</span> <span class="n">location</span> <span class="o">=</span> <span class="s1">'Times Square'</span>
+  <span class="k">AND</span> <span class="n">run_day</span> <span class="o">=</span> <span class="s1">'Saturday'</span> <span class="k">AND</span> <span class="n">run_time</span> <span class="o">=</span><span class="s1">'14:00:00'</span>
+  <span class="k">AND</span> <span class="n">Movie</span> <span class="o">=</span> <span class="s1">'Sonic the Hedgehog'</span>
 <span class="k">IF</span> <span class="k">EXISTS</span><span class="p">;</span>
 
  <span class="p">[</span><span class="n">applied</span><span class="p">]</span> <span class="o">|</span> <span class="n">movie</span>              <span class="o">|</span> <span class="n">location</span>     <span class="o">|</span> <span class="n">run_day</span>  <span class="o">|</span> <span class="n">run_time</span>           <span class="o">|</span> <span class="n">director</span>    <span class="o">|</span> <span class="n">main_actor</span>   <span class="o">|</span> <span class="n">released</span>   <span class="o">|</span> <span class="n">theater</span>
@@ -716,12 +716,12 @@ However, you can remove and re-insert the record.</p>
 <li><p>Run a batch job which removes and inserts a record:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">BEGIN</span> <span class="k">BATCH</span>
     <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span>
-    <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Sonic the Hedgehog&#39;</span> <span class="k">AND</span> <span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;Times Square&#39;</span>
-      <span class="k">AND</span> <span class="n">run_day</span> <span class="o">=</span> <span class="s1">&#39;Saturday&#39;</span> <span class="k">AND</span> <span class="n">run_time</span> <span class="o">=</span> <span class="s1">&#39;21:00:00&#39;</span>
+    <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Sonic the Hedgehog'</span> <span class="k">AND</span> <span class="n">location</span> <span class="o">=</span> <span class="s1">'Times Square'</span>
+      <span class="k">AND</span> <span class="n">run_day</span> <span class="o">=</span> <span class="s1">'Saturday'</span> <span class="k">AND</span> <span class="n">run_time</span> <span class="o">=</span> <span class="s1">'21:00:00'</span>
     <span class="k">IF</span> <span class="k">EXISTS</span>
 
     <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">theater</span><span class="p">,</span> <span class="n">run_day</span><span class="p">,</span> <span class="n">run_time</span><span class="p">)</span>
-    <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Sonic the Hedgehog&#39;</span><span class="p">,</span> <span class="s1">&#39;Times Square&#39;</span><span class="p">,</span> <span class="s1">&#39;AMC Empire 25&#39;</span><span class="p">,</span> <span class="s1">&#39;Saturday&#39;</span><span class="p">,</span> <span class="s1">&#39;23:00:00&#39;</span><span class="p">)</span>
+    <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Sonic the Hedgehog'</span><span class="p">,</span> <span class="s1">'Times Square'</span><span class="p">,</span> <span class="s1">'AMC Empire 25'</span><span class="p">,</span> <span class="s1">'Saturday'</span><span class="p">,</span> <span class="s1">'23:00:00'</span><span class="p">)</span>
 <span class="k">APPLY</span> <span class="k">BATCH</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -744,8 +744,8 @@ This involves creating a batch job which will:</p>
 <ol class="arabic">
 <li><p>Run the following:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">BEGIN</span> <span class="k">BATCH</span>
-    <span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">released</span> <span class="o">=</span> <span class="k">NULL</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Invisible Man&#39;</span> <span class="k">IF</span> <span class="k">EXISTS</span>
-    <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Invisible Man&#39;</span>
+    <span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">released</span> <span class="o">=</span> <span class="k">NULL</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Invisible Man'</span> <span class="k">IF</span> <span class="k">EXISTS</span>
+    <span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Invisible Man'</span>
 <span class="k">APPLY</span> <span class="k">BATCH</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -781,8 +781,8 @@ Non-conditional statements may be present in a conditional batch, but do not con
 to the result set. The set of columns of conditional batch result set is a set union
 of all columns used in conditional expressions of all conditional statements of the batch.</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">BEGIN</span> <span class="k">BATCH</span>
-    <span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">main_actor</span> <span class="o">=</span> <span class="s1">&#39;Aldis Hodge&#39;</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Invisible Man&#39;</span> <span class="k">IF</span> <span class="n">main_actor</span> <span class="o">=</span> <span class="s1">&#39;Elisabeth Moss&#39;</span>
-    <span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">director</span> <span class="o">=</span> <span class="s1">&#39;Mr Saw &#39;</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Invisible Man&#39;</span> <span class="k">IF</span> <span class="n">director</span> <span class="o">=</span> <span class="s1">&#39;Leigh Whannell&#39;</span>
+    <span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">main_actor</span> <span class="o">=</span> <span class="s1">'Aldis Hodge'</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Invisible Man'</span> <span class="k">IF</span> <span class="n">main_actor</span> <span class="o">=</span> <span class="s1">'Elisabeth Moss'</span>
+    <span class="k">UPDATE</span> <span class="n">movies</span><span class="mf">.</span><span class="n">nowshowing</span> <span class="k">SET</span> <span class="n">director</span> <span class="o">=</span> <span class="s1">'Mr Saw '</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Invisible Man'</span> <span class="k">IF</span> <span class="n">director</span> <span class="o">=</span> <span class="s1">'Leigh Whannell'</span>
 <span class="k">APPLY</span> <span class="k">BATCH</span><span class="p">;</span>
 
  <span class="p">[</span><span class="n">applied</span><span class="p">]</span> <span class="o">|</span> <span class="n">movie</span>         <span class="o">|</span> <span class="n">location</span> <span class="o">|</span> <span class="n">run_day</span> <span class="o">|</span> <span class="n">run_time</span> <span class="o">|</span> <span class="n">director</span>       <span class="o">|</span> <span class="n">main_actor</span>
@@ -1536,7 +1536,7 @@ during these are still returned as write timeouts.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

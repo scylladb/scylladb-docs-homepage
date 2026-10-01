@@ -396,17 +396,17 @@
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_role_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">ROLE</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="o">`</span><span class="n">role_name</span><span class="o">`</span>
                      <span class="p">:</span>     <span class="p">[</span> <span class="k">WITH</span> <span class="o">`</span><span class="n">role_options</span><span class="o">`</span> <span class="p">]</span>
 <span class="n">role_options</span><span class="p">:</span> <span class="o">`</span><span class="n">role_option</span><span class="o">`</span> <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">role_option</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span>
-<span class="n">role_option</span><span class="p">:</span> <span class="k">PASSWORD</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span>
-           <span class="p">:</span><span class="o">|</span> <span class="k">LOGIN</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
-           <span class="p">:</span><span class="o">|</span> <span class="k">SUPERUSER</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
-           <span class="p">:</span><span class="o">|</span> <span class="k">OPTIONS</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span>
+<span class="n">role_option</span><span class="p">:</span> <span class="k">PASSWORD</span> <span class="s1">'='</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span>
+           <span class="p">:</span><span class="o">|</span> <span class="k">LOGIN</span> <span class="s1">'='</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
+           <span class="p">:</span><span class="o">|</span> <span class="k">SUPERUSER</span> <span class="s1">'='</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
+           <span class="p">:</span><span class="o">|</span> <span class="k">OPTIONS</span> <span class="s1">'='</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span>
 </pre></div>
 </div>
 <p>For instance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">new_role</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;password_a&#39;</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;password_b&#39;</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span> <span class="k">AND</span> <span class="k">SUPERUSER</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">carlos</span> <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;custom_option1&#39;</span> <span class="p">:</span> <span class="s1">&#39;option1_value&#39;</span><span class="p">,</span> <span class="s1">&#39;custom_option2&#39;</span> <span class="p">:</span> <span class="mf">99</span> <span class="p">};</span>
+<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">'password_a'</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">'password_b'</span> <span class="k">AND</span> <span class="k">LOGIN</span> <span class="o">=</span> <span class="n">true</span> <span class="k">AND</span> <span class="k">SUPERUSER</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">carlos</span> <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">'custom_option1'</span> <span class="p">:</span> <span class="s1">'option1_value'</span><span class="p">,</span> <span class="s1">'custom_option2'</span> <span class="p">:</span> <span class="mf">99</span> <span class="p">};</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -448,9 +448,9 @@ However, there also exists a version of the statement allowing you to create a r
                      <span class="p">:</span> <span class="k">WITH</span> <span class="n">HASHED</span> <span class="k">PASSWORD</span> <span class="o">`</span><span class="n">hashed_password</span><span class="o">`</span>
                      <span class="p">:</span>     <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">role_option</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">hashed_password</span><span class="p">:</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span>
-<span class="n">role_option</span><span class="p">:</span> <span class="k">LOGIN</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
-           <span class="p">:</span><span class="o">|</span> <span class="k">SUPERUSER</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
-           <span class="p">:</span><span class="o">|</span> <span class="k">OPTIONS</span> <span class="s1">&#39;=&#39;</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span>
+<span class="n">role_option</span><span class="p">:</span> <span class="k">LOGIN</span> <span class="s1">'='</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
+           <span class="p">:</span><span class="o">|</span> <span class="k">SUPERUSER</span> <span class="s1">'='</span> <span class="o">`</span><span class="nb">boolean</span><span class="o">`</span>
+           <span class="p">:</span><span class="o">|</span> <span class="k">OPTIONS</span> <span class="s1">'='</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span>
 </pre></div>
 </div>
 <p>When that statement is executed, ScyllaDB will not hash the provided hashed password; it will be inserted into
@@ -465,14 +465,14 @@ If the hashed password doesn’t satisfy those requirements, logging in as the r
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// Generate a hashed password using sha256.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">pwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crypt</span><span class="p">(</span><span class="s">&quot;myPassword&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$5$&quot;</span><span class="p">);</span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;The hashed password is %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pwd</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">pwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crypt</span><span class="p">(</span><span class="s">"myPassword"</span><span class="p">,</span><span class="w"> </span><span class="s">"$5$"</span><span class="p">);</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"The hashed password is %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">pwd</span><span class="p">);</span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Example how to create a role with a hashed password:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="n">HASHED</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;$5$$QdpObVOY40UOyo.BuWdpRq0Cr/DPkw7ckBEs2NqWVn5&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="n">HASHED</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">'$5$$QdpObVOY40UOyo.BuWdpRq0Cr/DPkw7ckBEs2NqWVn5'</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -484,7 +484,7 @@ If the hashed password doesn’t satisfy those requirements, logging in as the r
 </pre></div>
 </div>
 <p>For instance:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;PASSWORD_B&#39;</span> <span class="k">AND</span> <span class="k">SUPERUSER</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">ROLE</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="o">=</span> <span class="s1">'PASSWORD_B'</span> <span class="k">AND</span> <span class="k">SUPERUSER</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Conditions on executing <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">ROLE</span></code> statements:</p>
@@ -576,16 +576,16 @@ error conditions:</p>
 </pre></div>
 </div>
 <p>For instance:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">&#39;password_a&#39;</span> <span class="k">SUPERUSER</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">USER</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">&#39;password_b&#39;</span> <span class="k">NOSUPERUSER</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">'password_a'</span> <span class="k">SUPERUSER</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">USER</span> <span class="n">bob</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">'password_b'</span> <span class="k">NOSUPERUSER</span><span class="p">;</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">USER</span></code> where the <code class="docutils literal notranslate"><span class="pre">LOGIN</span></code> option is <code class="docutils literal notranslate"><span class="pre">true</span></code>. So, the following pairs of
 statements are equivalent:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">&#39;password_a&#39;</span> <span class="k">SUPERUSER</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">USER</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">&#39;password_a&#39;</span> <span class="k">SUPERUSER</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">&#39;password_a&#39;</span> <span class="k">NOSUPERUSER</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">&#39;password_a&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">'password_a'</span> <span class="k">SUPERUSER</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">USER</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">'password_a'</span> <span class="k">SUPERUSER</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">'password_a'</span> <span class="k">NOSUPERUSER</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">'password_a'</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -600,7 +600,7 @@ statements are equivalent:</p>
 </pre></div>
 </div>
 <p>For instance:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">&#39;PASSWORD_A&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">USER</span> <span class="n">alice</span> <span class="k">WITH</span> <span class="k">PASSWORD</span> <span class="s1">'PASSWORD_A'</span><span class="p">;</span>
 <span class="k">ALTER</span> <span class="k">USER</span> <span class="n">bob</span> <span class="k">SUPERUSER</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -1467,7 +1467,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

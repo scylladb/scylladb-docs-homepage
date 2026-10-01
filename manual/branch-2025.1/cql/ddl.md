@@ -269,6 +269,35 @@ Modifying a keyspace with tablets enabled is possible and doesn’t require any 
 - The replication strategy cannot be modified, as keyspaces with tablets only support `NetworkTopologyStrategy`.
 - The `ALTER` statement will fail if it would make the keyspace [RF-rack-invalid](https://docs.scylladb.com/manual/branch-2025.1/reference/glossary.md#term-RF-rack-valid-keyspace).
 
+<a id="fix-rf-change-tablet-rebuilds"></a>
+
+### Fixing invalid replica state with RF change
+
+If a tablet rebuild fails during an RF change, the state of replicas will be invalid, even though the RF change is marked as successful. The missing replicas will be eventually added in the background. However, until then, the following RF changes will fail.
+
+To fix the state of replicas in the foreground, retry the previous ALTER KEYSPACE statement, i.e. update the replication factor to the same value it currently has.
+
+For example, if the following statement fails due to invalid replica state:
+
+```cql
+ALTER KEYSPACE Excelsior WITH replication = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 1} AND tablets = { 'enabled': true };
+```
+
+Check the current replication factor with DESCRIBE KEYSPACE:
+
+```cql
+DESCRIBE KEYSPACE Excelsior;
+CREATE KEYSPACE Excelsior WITH replication = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 2} AND tablets = { 'enabled': true };
+```
+
+Ensure that reaching the valid replicas state is possible (e.g. there is enough non-excluded racks) and alter keyspace with the current replication factor:
+
+```cql
+ALTER KEYSPACE Excelsior WITH replication = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 2} AND tablets = { 'enabled': true };
+```
+
+This should fix the state of replicas and allow future RF changes to succeed.
+
 <a id="drop-keyspace-statement"></a>
 
 ## DROP KEYSPACE
@@ -924,6 +953,9 @@ For example:
 ```cql
 TRUNCATE TABLE users USING TIMEOUT 5m;
 ```
+
+#### CAUTION
+Do not run any operation on a table that is being truncated. Truncate operation is an administrative operation, and running any other operation on the same table in parallel may cause the truncating table’s data to end up in an undefined state.
 
 * [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2025.1/cql/index.md)
 

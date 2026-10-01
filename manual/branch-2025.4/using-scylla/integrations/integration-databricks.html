@@ -422,15 +422,15 @@ spark.cassandra.auth.password &lt;your_password&gt;
 <ol class="arabic simple">
 <li><p>Prepare test data [ScyllaDB]:</p></li>
 </ol>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CREATE KEYSPACE databriks WITH replication = {&#39;class&#39;: &#39;NetworkTopologyStrategy&#39;, &#39;replication_factor&#39; : 3};
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CREATE KEYSPACE databriks WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor' : 3};
 CREATE TABLE databriks.demo1 (pk text PRIMARY KEY, ck1 text, ck2 text);
-INSERT INTO databriks.demo1  (pk, ck1, ck2) VALUES (&#39;pk&#39;, &#39;ck1&#39;, &#39;ck2&#39;);
+INSERT INTO databriks.demo1  (pk, ck1, ck2) VALUES ('pk', 'ck1', 'ck2');
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>Create and play new notebook [Databricks]:</p></li>
 </ol>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>df = spark.read.cassandraFormat.table(&quot;&lt;your_catalog&gt;.databriks.demo1&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>df = spark.read.cassandraFormat.table("&lt;your_catalog&gt;.databriks.demo1")
 display(df)
 </pre></div>
 </div>
@@ -1070,7 +1070,7 @@ display(df)
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

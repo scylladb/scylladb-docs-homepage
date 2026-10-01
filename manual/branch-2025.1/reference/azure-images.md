@@ -2,6 +2,13 @@
 
 <!-- -*- mode: rst -*- -->
 
+## 2025.1.16
+
+| Gallery Image Definition   | Gallery Image Version   | Public Gallery Name                           |
+|----------------------------|-------------------------|-----------------------------------------------|
+| scylla-2025.1              | 2025.1.16               | scylladb-7e8d8a04-23db-487d-87ec-0e175c0615bb |
+<!-- -*- mode: rst -*- -->
+
 ## 2025.1.15
 
 | Gallery Image Definition   | Gallery Image Version   | Public Gallery Name                           |

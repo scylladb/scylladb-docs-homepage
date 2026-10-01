@@ -475,17 +475,17 @@ which is genuinely optional:</p>
 </table>
 <p>Example (using boto3):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span>
-    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
-    <span class="n">KeySchema</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;KeyType&#39;</span><span class="p">:</span> <span class="s1">&#39;HASH&#39;</span><span class="p">}],</span>
-    <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;AttributeType&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span><span class="p">}],</span>
-    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">&#39;PAY_PER_REQUEST&#39;</span><span class="p">,</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">'my-table'</span><span class="p">,</span>
+    <span class="n">KeySchema</span><span class="o">=</span><span class="p">[{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'KeyType'</span><span class="p">:</span> <span class="s1">'HASH'</span><span class="p">}],</span>
+    <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'AttributeType'</span><span class="p">:</span> <span class="s1">'S'</span><span class="p">}],</span>
+    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">'PAY_PER_REQUEST'</span><span class="p">,</span>
     <span class="n">VectorIndexes</span><span class="o">=</span><span class="p">[</span>
         <span class="p">{</span>
-            <span class="s1">&#39;IndexName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;VectorAttribute&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;Dimensions&#39;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">,</span>
-            <span class="s1">&#39;DistanceFunction&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Projection&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;ProjectionType&#39;</span><span class="p">:</span> <span class="s1">&#39;KEYS_ONLY&#39;</span><span class="p">},</span>
+            <span class="s1">'IndexName'</span><span class="p">:</span> <span class="s1">'embedding-index'</span><span class="p">,</span>
+            <span class="s1">'VectorAttribute'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'embedding'</span><span class="p">},</span>
+            <span class="s1">'Dimensions'</span><span class="p">:</span> <span class="mi">1536</span><span class="p">,</span>
+            <span class="s1">'DistanceFunction'</span><span class="p">:</span> <span class="s1">'COSINE'</span><span class="p">,</span>
+            <span class="s1">'Projection'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ProjectionType'</span><span class="p">:</span> <span class="s1">'KEYS_ONLY'</span><span class="p">},</span>
         <span class="p">}</span>
     <span class="p">],</span>
 <span class="p">)</span>
@@ -610,20 +610,20 @@ operation per <code class="docutils literal notranslate"><span class="pre">Updat
 <code class="docutils literal notranslate"><span class="pre">GlobalSecondaryIndexUpdates</span></code>).</p>
 <p><strong>Create</strong> (same fields as <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> entries above):</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Create&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;VectorAttribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;AttributeName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;embedding&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;Dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;DistanceFunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COSINE&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"Create"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"IndexName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-vector-index"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"VectorAttribute"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"AttributeName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"embedding"</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"Dimensions"</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"DistanceFunction"</span><span class="p">:</span><span class="w"> </span><span class="s2">"COSINE"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Projection"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"ProjectionType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KEYS_ONLY"</span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p><strong>Delete:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Delete&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span>
+<span class="w">  </span><span class="nt">"Delete"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"IndexName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-vector-index"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -747,24 +747,24 @@ partition key - can only be matched exactly.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span>
-<span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0.1&quot;</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;-0.3&quot;</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0.7&quot;</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">"0.1"</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">"-0.3"</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">"0.7"</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
 
 <span class="c1"># A vector index without a SearchSchema:</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_vectors</span><span class="p">(</span>
-    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
-    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">'my-table'</span><span class="p">,</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">'embedding-index'</span><span class="p">,</span>
     <span class="n">SearchVector</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
     <span class="n">TopK</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># A vector index whose SearchSchema declares &#39;category&#39; as HASH:</span>
+<span class="c1"># A vector index whose SearchSchema declares 'category' as HASH:</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_vectors</span><span class="p">(</span>
-    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
-    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">'my-table'</span><span class="p">,</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">'embedding-index'</span><span class="p">,</span>
     <span class="n">SearchVector</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
     <span class="n">TopK</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">SearchConditionExpression</span><span class="o">=</span><span class="s1">&#39;category = :c&#39;</span><span class="p">,</span>
-    <span class="n">ExpressionAttributeValues</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;:c&#39;</span><span class="p">:</span> <span class="s1">&#39;electronics&#39;</span><span class="p">},</span>
+    <span class="n">SearchConditionExpression</span><span class="o">=</span><span class="s1">'category = :c'</span><span class="p">,</span>
+    <span class="n">ExpressionAttributeValues</span><span class="o">=</span><span class="p">{</span><span class="s1">':c'</span><span class="p">:</span> <span class="s1">'electronics'</span><span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -882,9 +882,9 @@ already happened.</p>
 <h2>Similarity scores<a class="headerlink" href="#similarity-scores" title="Link to this heading">¶</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">SearchVectors</span></code> response has the shape:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;SearchResults&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;Item&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;S&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;item1&quot;</span><span class="p">}},</span><span class="w"> </span><span class="nt">&quot;Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0123</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;Item&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;S&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;item2&quot;</span><span class="p">}},</span><span class="w"> </span><span class="nt">&quot;Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4567</span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"SearchResults"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">"Item"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"S"</span><span class="p">:</span><span class="w"> </span><span class="s2">"item1"</span><span class="p">}},</span><span class="w"> </span><span class="nt">"Score"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0123</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">"Item"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"S"</span><span class="p">:</span><span class="w"> </span><span class="s2">"item2"</span><span class="p">}},</span><span class="w"> </span><span class="nt">"Score"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4567</span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
@@ -940,10 +940,10 @@ point numbers (not quoted strings), stored internally as packed 4-byte
 big-endian floats rather than as a list of individually-tagged, decimal-
 string-encoded numbers:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="c1">// Standard DynamoDB list-of-numbers format:</span>
-<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-0.3&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7&quot;</span><span class="p">}]}}</span>
+<span class="p">{</span><span class="nt">"embedding"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"L"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"-0.3"</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.7"</span><span class="p">}]}}</span>
 
 <span class="c1">// FLOAT32VECTOR format (ScyllaDB extension):</span>
-<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;FLOAT32VECTOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]}}</span>
+<span class="p">{</span><span class="nt">"embedding"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"FLOAT32VECTOR"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]}}</span>
 </pre></div>
 </div>
 <p>For the high-dimensional vectors typical of ML embeddings — often in the
@@ -1669,7 +1669,7 @@ metrics:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

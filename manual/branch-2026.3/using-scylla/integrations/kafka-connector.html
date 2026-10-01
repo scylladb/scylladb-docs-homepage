@@ -402,7 +402,7 @@
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">ps</span></code> to show the exposed ports. The output should be similar to this example:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>docker ps
 CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS                                              NAMES
-26cc6d47efe3        replace-with-image-name   &quot;/docker-entrypoint.…&quot;   4 hours ago         Up 23 seconds       0.0.0.0:32777-&gt;1883/tcp, 0.0.0.0:32776-&gt;9001/tcp   anonymous_my_1
+26cc6d47efe3        replace-with-image-name   "/docker-entrypoint.…"   4 hours ago         Up 23 seconds       0.0.0.0:32777-&gt;1883/tcp, 0.0.0.0:32776-&gt;9001/tcp   anonymous_my_1
 </pre></div>
 </div>
 </li>
@@ -479,24 +479,24 @@ connect is [UP]
 <ol class="arabic">
 <li><p>Save the configuration settings in a file named <code class="docutils literal notranslate"><span class="pre">kafka-connect-scylladb.json</span></code> its contents should contain:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">     </span><span class="nt">&quot;name&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scylladb-sink-connector&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="nt">&quot;config&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">       </span><span class="nt">&quot;connector.class&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;io.connect.scylladb.ScyllaDbSinkConnector&quot;</span><span class="p">,</span>
-<span class="w">       </span><span class="nt">&quot;tasks.max&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
-<span class="w">       </span><span class="nt">&quot;topics&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;topic1,topic2,topic3&quot;</span><span class="p">,</span>
-<span class="w">       </span><span class="nt">&quot;scylladb.contact.points&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scylladb-hosts&quot;</span><span class="p">,</span>
-<span class="w">       </span><span class="nt">&quot;scylladb.keyspace&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
+<span class="w">     </span><span class="nt">"name"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"scylladb-sink-connector"</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">"config"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"connector.class"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"io.connect.scylladb.ScyllaDbSinkConnector"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"tasks.max"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"topics"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"topic1,topic2,topic3"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"scylladb.contact.points"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"scylladb-hosts"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"scylladb.keyspace"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"test"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </li>
 <li><p>Load the connector. Run the following command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>--data<span class="w"> </span>@kafka-connect-scylladb.json<span class="w"> </span>http://localhost:8083/connectors
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span>--data<span class="w"> </span>@kafka-connect-scylladb.json<span class="w"> </span>http://localhost:8083/connectors
 </pre></div>
 </div>
 </li>
 <li><p>Update the configuration of the existing connector.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>--data<span class="w"> </span>@kafka-connect-scylladb.json<span class="w"> </span>http://localhost:8083/connectors/scylladb/config
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span>--data<span class="w"> </span>@kafka-connect-scylladb.json<span class="w"> </span>http://localhost:8083/connectors/scylladb/config
 </pre></div>
 </div>
 </li>
@@ -505,11 +505,11 @@ connect is [UP]
 --broker-list localhost:9092
 --topic example
 --property parse.key=true
---property key.schema=&#39;{&quot;type&quot;:&quot;record&quot;,name&quot;:&quot;key_schema&quot;,&quot;fields&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;int&quot;}]}&#39;
---property &quot;key.separator=$&quot;
---property value.schema=&#39;{&quot;type&quot;:&quot;record&quot;,&quot;name&quot;:&quot;value_schema&quot;,&quot;fields&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;int&quot;},
-{&quot;name&quot;:&quot;firstName&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;lastName&quot;,&quot;type&quot;:&quot;string&quot;}]}&#39;
-{&quot;id&quot;:1}${&quot;id&quot;:1,&quot;firstName&quot;:&quot;first&quot;,&quot;lastName&quot;:&quot;last&quot;}
+--property key.schema='{"type":"record",name":"key_schema","fields":[{"name":"id","type":"int"}]}'
+--property "key.separator=$"
+--property value.schema='{"type":"record","name":"value_schema","fields":[{"name":"id","type":"int"},
+{"name":"firstName","type":"string"},{"name":"lastName","type":"string"}]}'
+{"id":1}${"id":1,"firstName":"first","lastName":"last"}
 </pre></div>
 </div>
 </li>
@@ -531,7 +531,7 @@ connect is [UP]
 <li><p>Distributed - will use the JSON / REST examples.</p></li>
 </ul>
 <p>Use this command to load the connector and connect to ScyllaDB instance without authentication:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl -s -X POST -H &#39;Content-Type: application/json&#39; --data @kafka-connect-scylladb.json http://localhost:8083/connectors
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl -s -X POST -H 'Content-Type: application/json' --data @kafka-connect-scylladb.json http://localhost:8083/connectors
 </pre></div>
 </div>
 <p>Select one of the following configuration methods based on how you have deployed <code class="docutils literal notranslate"><span class="pre">|kconnect-long|</span></code>. Distributed Mode will the JSON / REST examples. The standalone mode will use the properties based example.</p>
@@ -542,21 +542,21 @@ connect is [UP]
 <section id="distributed-mode-json-example">
 <h3>Distributed Mode JSON example<a class="headerlink" href="#distributed-mode-json-example" title="Link to this heading">¶</a></h3>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> {
-  &quot;name&quot; : &quot;scylladb-sink-connector&quot;,
-  &quot;config&quot; : {
-    &quot;connector.class&quot; : &quot;io.connect.scylladb.ScyllaDbSinkConnector&quot;,
-    &quot;tasks.max&quot; : &quot;1&quot;,
-    &quot;topics&quot; : &quot;topic1,topic2,topic3&quot;,
-    &quot;scylladb.contact.points&quot; : &quot;scylladb-hosts&quot;,
-    &quot;scylladb.keyspace&quot; : &quot;test&quot;,
-    &quot;key.converter&quot; : &quot;org.apache.kafka.connect.json.JsonConverter&quot;,
-    &quot;value.converter&quot; : &quot;org.apache.kafka.connect.json.JsonConverter&quot;
-    &quot;key.converter.schemas.enable&quot; : &quot;true&quot;,
-    &quot;value.converter.schemas.enable&quot; : &quot;true&quot;,
+  "name" : "scylladb-sink-connector",
+  "config" : {
+    "connector.class" : "io.connect.scylladb.ScyllaDbSinkConnector",
+    "tasks.max" : "1",
+    "topics" : "topic1,topic2,topic3",
+    "scylladb.contact.points" : "scylladb-hosts",
+    "scylladb.keyspace" : "test",
+    "key.converter" : "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter" : "org.apache.kafka.connect.json.JsonConverter"
+    "key.converter.schemas.enable" : "true",
+    "value.converter.schemas.enable" : "true",
 
-    &quot;transforms&quot; : &quot;createKey&quot;,
-    &quot;transforms.createKey.fields&quot; : &quot;[field-you-want-as-primary-key-in-scylla]&quot;,
-    &quot;transforms.createKey.type&quot; : &quot;org.apache.kafka.connect.transforms.ValueToKey&quot;
+    "transforms" : "createKey",
+    "transforms.createKey.fields" : "[field-you-want-as-primary-key-in-scylla]",
+    "transforms.createKey.type" : "org.apache.kafka.connect.transforms.ValueToKey"
   }
 }
 </pre></div>
@@ -587,7 +587,7 @@ transforms.createKey.type=org.apache.kafka.connect.transforms.ValueToKey
 </div>
 <p>For Example:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>kafka-console-producer --broker-list localhost:9092 --topic sample-topic
-&gt;{&quot;schema&quot;:{&quot;type&quot;:&quot;struct&quot;,&quot;fields&quot;:[{&quot;type&quot;:&quot;int32&quot;,&quot;optional&quot;:false,&quot;field&quot;:&quot;id&quot;},{&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false,&quot;field&quot;:&quot;name&quot;},{&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:true,&quot;field&quot;:&quot;department&quot;},&quot;payload&quot;:{&quot;id&quot;:10,&quot;name&quot;:&quot;John Doe10&quot;,&quot;department&quot;:&quot;engineering&quot;}}
+&gt;{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"id"},{"type":"string","optional":false,"field":"name"},{"type":"string","optional":true,"field":"department"},"payload":{"id":10,"name":"John Doe10","department":"engineering"}}
 </pre></div>
 </div>
 <p>Run the select cql query to view the data:</p>
@@ -615,16 +615,16 @@ value.converter.schemas.enable=true
 <section id="distributed-mode-example">
 <h3>Distributed Mode example<a class="headerlink" href="#distributed-mode-example" title="Link to this heading">¶</a></h3>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
-  &quot;name&quot; : &quot;scylladbSinkConnector&quot;,
-  &quot;config&quot; : {
-    &quot;connector.class&quot; : &quot;io.connect.scylladb.ScyllaDbSinkConnector&quot;,
-    &quot;tasks.max&quot; : &quot;1&quot;,
-    &quot;topics&quot; : &quot;topic1,topic2,topic3&quot;,
-    &quot;scylladb.contact.points&quot; : &quot;cassandra&quot;,
-    &quot;scylladb.keyspace&quot; : &quot;test&quot;,
-    &quot;scylladb.security.enabled&quot; : &quot;true&quot;,
-    &quot;scylladb.username&quot; : &quot;example&quot;,
-    &quot;scylladb.password&quot; : &quot;password&quot;,
+  "name" : "scylladbSinkConnector",
+  "config" : {
+    "connector.class" : "io.connect.scylladb.ScyllaDbSinkConnector",
+    "tasks.max" : "1",
+    "topics" : "topic1,topic2,topic3",
+    "scylladb.contact.points" : "cassandra",
+    "scylladb.keyspace" : "test",
+    "scylladb.security.enabled" : "true",
+    "scylladb.username" : "example",
+    "scylladb.password" : "password",
     **add other properties same as in the above example**
   }
 }
@@ -1313,7 +1313,7 @@ scylladb.password=password
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

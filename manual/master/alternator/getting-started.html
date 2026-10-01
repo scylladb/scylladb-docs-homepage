@@ -432,22 +432,22 @@ famous hello world record to it, and then, reads it back.</p>
 to the address of your docker node if you are using docker):</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
-<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;dynamodb&#39;</span><span class="p">,</span><span class="n">endpoint_url</span><span class="o">=</span><span class="s1">&#39;http://localhost:8000&#39;</span><span class="p">,</span>
-                  <span class="n">region_name</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">)</span>
+<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">'dynamodb'</span><span class="p">,</span><span class="n">endpoint_url</span><span class="o">=</span><span class="s1">'http://localhost:8000'</span><span class="p">,</span>
+                  <span class="n">region_name</span><span class="o">=</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="s1">'None'</span><span class="p">)</span>
 
 <span class="n">dynamodb</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span>
     <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[</span>
     <span class="p">{</span>
-        <span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;AttributeType&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span>
+        <span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'key'</span><span class="p">,</span>
+        <span class="s1">'AttributeType'</span><span class="p">:</span> <span class="s1">'S'</span>
     <span class="p">},</span>
     <span class="p">],</span>
-    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">&#39;PAY_PER_REQUEST&#39;</span><span class="p">,</span>
-    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;usertable&#39;</span><span class="p">,</span>
+    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">'PAY_PER_REQUEST'</span><span class="p">,</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">'usertable'</span><span class="p">,</span>
     <span class="n">KeySchema</span><span class="o">=</span><span class="p">[</span>
     <span class="p">{</span>
-        <span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;KeyType&#39;</span><span class="p">:</span> <span class="s1">&#39;HASH&#39;</span>
+        <span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'key'</span><span class="p">,</span>
+        <span class="s1">'KeyType'</span><span class="p">:</span> <span class="s1">'HASH'</span>
     <span class="p">},</span>
     <span class="p">])</span>
 </pre></div>
@@ -457,15 +457,15 @@ to the address of your docker node if you are using docker):</p></li>
 to the address of your docker node if you are using docker):</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
-<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;dynamodb&#39;</span><span class="p">,</span><span class="n">endpoint_url</span><span class="o">=</span><span class="s1">&#39;http://localhost:8000&#39;</span><span class="p">,</span>
-                  <span class="n">region_name</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">)</span>
+<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">'dynamodb'</span><span class="p">,</span><span class="n">endpoint_url</span><span class="o">=</span><span class="s1">'http://localhost:8000'</span><span class="p">,</span>
+                  <span class="n">region_name</span><span class="o">=</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="s1">'None'</span><span class="p">)</span>
 
 <span class="n">dynamodb</span><span class="o">.</span><span class="n">batch_write_item</span><span class="p">(</span><span class="n">RequestItems</span><span class="o">=</span><span class="p">{</span>
-    <span class="s1">&#39;usertable&#39;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s1">'usertable'</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
-             <span class="s1">&#39;PutRequest&#39;</span><span class="p">:</span> <span class="p">{</span>
-                 <span class="s1">&#39;Item&#39;</span><span class="p">:</span> <span class="p">{</span>
-                     <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;hello&#39;</span><span class="p">:</span> <span class="s1">&#39;world&#39;</span><span class="p">}</span>
+             <span class="s1">'PutRequest'</span><span class="p">:</span> <span class="p">{</span>
+                 <span class="s1">'Item'</span><span class="p">:</span> <span class="p">{</span>
+                     <span class="s1">'key'</span><span class="p">:</span> <span class="s1">'test'</span><span class="p">,</span> <span class="s1">'x'</span> <span class="p">:</span> <span class="p">{</span><span class="s1">'hello'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">}</span>
                  <span class="p">}</span>
              <span class="p">},</span>
         <span class="p">}</span>
@@ -478,11 +478,11 @@ to the address of your docker node if you are using docker):</p></li>
 to the address of your docker node if you are using docker):</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
-<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;dynamodb&#39;</span><span class="p">,</span><span class="n">endpoint_url</span><span class="o">=</span><span class="s1">&#39;http://localhost:8000&#39;</span><span class="p">,</span>
-                  <span class="n">region_name</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">)</span>
+<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">'dynamodb'</span><span class="p">,</span><span class="n">endpoint_url</span><span class="o">=</span><span class="s1">'http://localhost:8000'</span><span class="p">,</span>
+                  <span class="n">region_name</span><span class="o">=</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="s1">'None'</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">dynamodb</span><span class="o">.</span><span class="n">batch_get_item</span><span class="p">(</span><span class="n">RequestItems</span><span class="o">=</span><span class="p">{</span>
-    <span class="s1">&#39;usertable&#39;</span> <span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;Keys&#39;</span><span class="p">:</span> <span class="p">[{</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span> <span class="p">}]</span> <span class="p">}</span>
+    <span class="s1">'usertable'</span> <span class="p">:</span> <span class="p">{</span> <span class="s1">'Keys'</span><span class="p">:</span> <span class="p">[{</span> <span class="s1">'key'</span><span class="p">:</span> <span class="s1">'test'</span> <span class="p">}]</span> <span class="p">}</span>
 <span class="p">}))</span>
 </pre></div>
 </div>
@@ -1131,7 +1131,7 @@ to the address of your docker node if you are using docker):</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

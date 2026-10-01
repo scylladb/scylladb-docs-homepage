@@ -382,7 +382,7 @@
                     <section id="select">
 <span id="select-statement"></span><h1>SELECT<a class="headerlink" href="#select" title="Link to this heading">¶</a></h1>
 <p>Querying data from data is done using a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">select_statement</span><span class="p">:</span> <span class="k">SELECT</span> <span class="p">[</span> <span class="k">DISTINCT</span> <span class="p">]</span> <span class="p">(</span> <span class="o">`</span><span class="n">select_clause</span><span class="o">`</span> <span class="o">|</span> <span class="s1">&#39;*&#39;</span> <span class="p">)</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">select_statement</span><span class="p">:</span> <span class="k">SELECT</span> <span class="p">[</span> <span class="k">DISTINCT</span> <span class="p">]</span> <span class="p">(</span> <span class="o">`</span><span class="n">select_clause</span><span class="o">`</span> <span class="o">|</span> <span class="s1">'*'</span> <span class="p">)</span>
                 <span class="p">:</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">WHERE</span> <span class="o">`</span><span class="n">where_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="n">GROUP</span> <span class="k">BY</span> <span class="o">`</span><span class="n">group_by_clause</span><span class="o">`</span> <span class="p">]</span>
@@ -393,20 +393,20 @@
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="n">BYPASS</span> <span class="n">CACHE</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="o">`</span><span class="n">timeout</span><span class="o">`</span> <span class="p">]</span>
-<span class="n">select_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">[</span> <span class="k">AS</span> <span class="o">`</span><span class="n">identifier</span><span class="o">`</span> <span class="p">]</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">[</span> <span class="k">AS</span> <span class="o">`</span><span class="n">identifier</span><span class="o">`</span> <span class="p">]</span> <span class="p">)</span><span class="o">*</span>
+<span class="n">select_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">[</span> <span class="k">AS</span> <span class="o">`</span><span class="n">identifier</span><span class="o">`</span> <span class="p">]</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">[</span> <span class="k">AS</span> <span class="o">`</span><span class="n">identifier</span><span class="o">`</span> <span class="p">]</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">selector</span><span class="p">:</span> <span class="p">(</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span>
-        <span class="p">:</span> <span class="o">|</span> <span class="k">CAST</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="k">AS</span> <span class="o">`</span><span class="n">cql_type</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
-        <span class="p">:</span> <span class="o">|</span> <span class="o">`</span><span class="n">function_name</span><span class="o">`</span> <span class="s1">&#39;(&#39;</span> <span class="p">[</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="p">]</span> <span class="s1">&#39;)&#39;</span>
-        <span class="p">:</span> <span class="o">|</span> <span class="k">COUNT</span> <span class="s1">&#39;(&#39;</span> <span class="s1">&#39;*&#39;</span> <span class="s1">&#39;)&#39;</span>
+        <span class="p">:</span> <span class="o">|</span> <span class="k">CAST</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="k">AS</span> <span class="o">`</span><span class="n">cql_type</span><span class="o">`</span> <span class="s1">')'</span>
+        <span class="p">:</span> <span class="o">|</span> <span class="o">`</span><span class="n">function_name</span><span class="o">`</span> <span class="s1">'('</span> <span class="p">[</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">selector</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="p">]</span> <span class="s1">')'</span>
+        <span class="p">:</span> <span class="o">|</span> <span class="k">COUNT</span> <span class="s1">'('</span> <span class="s1">'*'</span> <span class="s1">')'</span>
         <span class="p">:</span> <span class="p">)</span>
-        <span class="p">:</span> <span class="p">(</span> <span class="s1">&#39;.&#39;</span> <span class="o">`</span><span class="n">field_name</span><span class="o">`</span> <span class="o">|</span> <span class="s1">&#39;[&#39;</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">&#39;]&#39;</span> <span class="p">)</span><span class="o">*</span>
+        <span class="p">:</span> <span class="p">(</span> <span class="s1">'.'</span> <span class="o">`</span><span class="n">field_name</span><span class="o">`</span> <span class="o">|</span> <span class="s1">'['</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">']'</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">where_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">relation</span><span class="o">`</span> <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">relation</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span>
-<span class="n">group_by_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span><span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span>
+<span class="n">group_by_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span><span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">relation</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span>
-        <span class="p">:</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">&#39;)&#39;</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">tuple_literal</span><span class="o">`</span>
-        <span class="p">:</span> <span class="k">TOKEN</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">&#39;)&#39;</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span>
-<span class="n">operator</span><span class="p">:</span> <span class="s1">&#39;=&#39;</span> <span class="o">|</span> <span class="s1">&#39;&lt;&#39;</span> <span class="o">|</span> <span class="s1">&#39;&gt;&#39;</span> <span class="o">|</span> <span class="s1">&#39;&lt;=&#39;</span> <span class="o">|</span> <span class="s1">&#39;&gt;=&#39;</span> <span class="o">|</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="k">KEY</span>
-<span class="n">ordering_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">)</span><span class="o">*</span>
+        <span class="p">:</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">')'</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">tuple_literal</span><span class="o">`</span>
+        <span class="p">:</span> <span class="k">TOKEN</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">')'</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span>
+<span class="n">operator</span><span class="p">:</span> <span class="s1">'='</span> <span class="o">|</span> <span class="s1">'&lt;'</span> <span class="o">|</span> <span class="s1">'&gt;'</span> <span class="o">|</span> <span class="s1">'&lt;='</span> <span class="o">|</span> <span class="s1">'&gt;='</span> <span class="o">|</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="k">KEY</span>
+<span class="n">ordering_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">timeout</span><span class="p">:</span> <span class="o">`</span><span class="n">duration</span><span class="o">`</span>
 </pre></div>
 </div>
@@ -416,13 +416,13 @@
 
 <span class="k">SELECT</span> <span class="nb">time</span><span class="p">,</span> <span class="n">value</span>
 <span class="k">FROM</span> <span class="n">events</span>
-<span class="k">WHERE</span> <span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;myEvent&#39;</span>
-  <span class="k">AND</span> <span class="nb">time</span> <span class="o">&gt;</span> <span class="s1">&#39;2011-02-03&#39;</span>
-  <span class="k">AND</span> <span class="nb">time</span> <span class="o">&lt;=</span> <span class="s1">&#39;2012-01-01&#39;</span>
+<span class="k">WHERE</span> <span class="n">event_type</span> <span class="o">=</span> <span class="s1">'myEvent'</span>
+  <span class="k">AND</span> <span class="nb">time</span> <span class="o">&gt;</span> <span class="s1">'2011-02-03'</span>
+  <span class="k">AND</span> <span class="nb">time</span> <span class="o">&lt;=</span> <span class="s1">'2012-01-01'</span>
 
 <span class="k">SELECT</span> <span class="k">COUNT</span> <span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="n">user_count</span> <span class="k">FROM</span> <span class="k">users</span><span class="p">;</span>
 
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;myEvent&#39;</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="mf">50</span><span class="n">ms</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">event_type</span> <span class="o">=</span> <span class="s1">'myEvent'</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="mf">50</span><span class="n">ms</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement reads one or more columns for one or more rows in a table. It returns a result-set of the rows
@@ -511,17 +511,17 @@ instance, given:</p>
 </div>
 <p>The following query is allowed:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">entry_title</span><span class="p">,</span> <span class="n">content</span> <span class="k">FROM</span> <span class="n">posts</span>
- <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">&#39;john doe&#39;</span>
-   <span class="k">AND</span> <span class="n">blog_title</span><span class="o">=</span><span class="s1">&#39;John&#39;&#39;s Blog&#39;</span>
-   <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&gt;=</span> <span class="s1">&#39;2012-01-01&#39;</span> <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&lt;</span> <span class="s1">&#39;2012-01-31&#39;</span>
+ <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">'john doe'</span>
+   <span class="k">AND</span> <span class="n">blog_title</span><span class="o">=</span><span class="s1">'John''s Blog'</span>
+   <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&gt;=</span> <span class="s1">'2012-01-01'</span> <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&lt;</span> <span class="s1">'2012-01-31'</span>
 </pre></div>
 </div>
 <p>But the following query is not, as it does not select a contiguous set of rows (and we suppose no secondary indexes are
 set):</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="c1">// Needs a blog_title to be set to select ranges of posted_at</span>
 <span class="k">SELECT</span> <span class="n">entry_title</span><span class="p">,</span> <span class="n">content</span> <span class="k">FROM</span> <span class="n">posts</span>
- <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">&#39;john doe&#39;</span>
-   <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&gt;=</span> <span class="s1">&#39;2012-01-01&#39;</span> <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&lt;</span> <span class="s1">&#39;2012-01-31&#39;</span>
+ <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">'john doe'</span>
+   <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&gt;=</span> <span class="s1">'2012-01-01'</span> <span class="k">AND</span> <span class="n">posted_at</span> <span class="o">&lt;</span> <span class="s1">'2012-01-31'</span>
 </pre></div>
 </div>
 <p>When specifying relations, the <code class="docutils literal notranslate"><span class="pre">TOKEN</span></code> function can be used on the <code class="docutils literal notranslate"><span class="pre">PARTITION</span> <span class="pre">KEY</span></code> column to query. In that case,
@@ -530,15 +530,15 @@ key depends on the partitioner in use and that, in particular, the RandomPartiti
 note that ordering partitioners always order token values by bytes (so even if the partition key is of type int,
 <code class="docutils literal notranslate"><span class="pre">token(-1)</span> <span class="pre">&gt;</span> <span class="pre">token(0)</span></code> in particular). For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">posts</span>
- <span class="k">WHERE</span> <span class="k">token</span><span class="p">(</span><span class="n">userid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">token</span><span class="p">(</span><span class="s1">&#39;tom&#39;</span><span class="p">)</span> <span class="k">AND</span> <span class="k">token</span><span class="p">(</span><span class="n">userid</span><span class="p">)</span> <span class="o">&lt;</span> <span class="k">token</span><span class="p">(</span><span class="s1">&#39;bob&#39;</span><span class="p">)</span>
+ <span class="k">WHERE</span> <span class="k">token</span><span class="p">(</span><span class="n">userid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">token</span><span class="p">(</span><span class="s1">'tom'</span><span class="p">)</span> <span class="k">AND</span> <span class="k">token</span><span class="p">(</span><span class="n">userid</span><span class="p">)</span> <span class="o">&lt;</span> <span class="k">token</span><span class="p">(</span><span class="s1">'bob'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Moreover, the <code class="docutils literal notranslate"><span class="pre">IN</span></code> relation is only allowed on the last column of the partition key and on the last column of the full
 primary key.</p>
 <p>It is also possible to “group” <code class="docutils literal notranslate"><span class="pre">CLUSTERING</span> <span class="pre">COLUMNS</span></code> together in a relation using the tuple notation. For instance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">posts</span>
- <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">&#39;john doe&#39;</span>
-   <span class="k">AND</span> <span class="p">(</span><span class="n">blog_title</span><span class="p">,</span> <span class="n">posted_at</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="s1">&#39;John&#39;&#39;s Blog&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-01-01&#39;</span><span class="p">)</span>
+ <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">'john doe'</span>
+   <span class="k">AND</span> <span class="p">(</span><span class="n">blog_title</span><span class="p">,</span> <span class="n">posted_at</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="s1">'John''s Blog'</span><span class="p">,</span> <span class="s1">'2012-01-01'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>will request all rows that sort after the one having “John’s Blog” as <code class="docutils literal notranslate"><span class="pre">blog_title</span></code> and ‘2012-01-01’ for <code class="docutils literal notranslate"><span class="pre">posted_at</span></code>
@@ -546,8 +546,8 @@ in the clustering order. In particular, rows having a <code class="docutils lite
 <code class="docutils literal notranslate"><span class="pre">blog_title</span> <span class="pre">&gt;</span> <span class="pre">'John''s</span> <span class="pre">Blog'</span></code>.</p>
 <p>The tuple notation may also be used for <code class="docutils literal notranslate"><span class="pre">IN</span></code> clauses on clustering columns:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">posts</span>
- <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">&#39;john doe&#39;</span>
-   <span class="k">AND</span> <span class="p">(</span><span class="n">blog_title</span><span class="p">,</span> <span class="n">posted_at</span><span class="p">)</span> <span class="k">IN</span> <span class="p">((</span><span class="s1">&#39;John&#39;&#39;s Blog&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-01-01&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Extreme Chess&#39;</span><span class="p">,</span> <span class="s1">&#39;2014-06-01&#39;</span><span class="p">))</span>
+ <span class="k">WHERE</span> <span class="n">userid</span> <span class="o">=</span> <span class="s1">'john doe'</span>
+   <span class="k">AND</span> <span class="p">(</span><span class="n">blog_title</span><span class="p">,</span> <span class="n">posted_at</span><span class="p">)</span> <span class="k">IN</span> <span class="p">((</span><span class="s1">'John''s Blog'</span><span class="p">,</span> <span class="s1">'2012-01-01'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'Extreme Chess'</span><span class="p">,</span> <span class="s1">'2014-06-01'</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code> operator may only be used on collection columns (lists, sets, and maps). In the case of maps,
@@ -736,14 +736,14 @@ Nevertheless, the number of nodes will always be multiple orders of magnitude lo
 stored). Of course, both queries may return very large result sets in practice, but the amount of data returned can always
 be controlled by adding a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>.</p>
 <p>However, the following query will be rejected:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">birth_year</span> <span class="o">=</span> <span class="mf">1981</span> <span class="k">AND</span> <span class="n">country</span> <span class="o">=</span> <span class="s1">&#39;FR&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">birth_year</span> <span class="o">=</span> <span class="mf">1981</span> <span class="k">AND</span> <span class="n">country</span> <span class="o">=</span> <span class="s1">'FR'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>because ScyllaDB cannot guarantee that it won’t have to scan a large amount of data even if the result of those queries is
 small. Typically, it will scan all the index entries for users born in 1981 even if only a handful are actually from
 France. However, if you “know what you are doing”, you can force the execution of this query by using <code class="docutils literal notranslate"><span class="pre">ALLOW</span>
 <span class="pre">FILTERING</span></code> and so the following query is valid:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">birth_year</span> <span class="o">=</span> <span class="mf">1981</span> <span class="k">AND</span> <span class="n">country</span> <span class="o">=</span> <span class="s1">&#39;FR&#39;</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">birth_year</span> <span class="o">=</span> <span class="mf">1981</span> <span class="k">AND</span> <span class="n">country</span> <span class="o">=</span> <span class="s1">'FR'</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -779,7 +779,7 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="n">BYPASS</span> <span class="n">CACHE</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">occupation</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">userid</span> <span class="k">IN</span> <span class="p">(</span><span class="mf">199</span><span class="p">,</span> <span class="mf">200</span><span class="p">,</span> <span class="mf">207</span><span class="p">)</span> <span class="n">BYPASS</span> <span class="n">CACHE</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">birth_year</span> <span class="o">=</span> <span class="mf">1981</span> <span class="k">AND</span> <span class="n">country</span> <span class="o">=</span> <span class="s1">&#39;FR&#39;</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span> <span class="n">BYPASS</span> <span class="n">CACHE</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">birth_year</span> <span class="o">=</span> <span class="mf">1981</span> <span class="k">AND</span> <span class="n">country</span> <span class="o">=</span> <span class="s1">'FR'</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span> <span class="n">BYPASS</span> <span class="n">CACHE</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -1553,7 +1553,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

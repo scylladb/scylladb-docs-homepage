@@ -435,7 +435,7 @@
 <ol class="arabic">
 <li><p>Complete the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a>.</p></li>
 <li><p>List the backed-up SSTables in the bucket under the prefix used during the backup. The restore command takes the paths of the <code class="docutils literal notranslate"><span class="pre">TOC.txt</span></code> components of the SSTables to restore, <strong>relative to the prefix</strong> – the remainder of each object key after the prefix. Note that listing tools print full object keys, from the bucket root, so the prefix needs to be stripped. For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>s3<span class="w"> </span>ls<span class="w"> </span>--recursive<span class="w"> </span>s3://bucket-foo/ks/cf/24601/<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/-TOC.txt$/ { print $4 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s|^ks/cf/24601/||&#39;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>s3<span class="w"> </span>ls<span class="w"> </span>--recursive<span class="w"> </span>s3://bucket-foo/ks/cf/24601/<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">'/-TOC.txt$/ { print $4 }'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">'s|^ks/cf/24601/||'</span>
 </pre></div>
 </div>
 </li>
@@ -1244,7 +1244,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

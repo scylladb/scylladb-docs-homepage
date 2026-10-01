@@ -525,7 +525,7 @@ unavailability (until the node finishes restarting).</p></li>
 <ol class="arabic">
 <li><p>Perform a <a class="reference internal" href="../operating-scylla/procedures/config-change/rolling-restart.html"><span class="doc">rolling restart</span></a> of your live nodes.</p></li>
 <li><p>Find the group 0 ID by performing the following query on any live node, using e.g. <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code>:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'raft_group0_id'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The group 0 ID is needed in the following steps.</p>
@@ -539,7 +539,7 @@ The chosen node will be the <em>recovery leader</em>.</p>
 </li>
 <li><p>Perform the following queries on <strong>every live node</strong>:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="n">system</span><span class="mf">.</span><span class="n">discovery</span><span class="p">;</span>
-<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span><span class="p">;</span>
+<span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">DELETE</span> <span class="n">value</span> <span class="k">FROM</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'raft_group0_id'</span><span class="p">;</span>
 </pre></div>
 </div>
 </li>
@@ -1212,7 +1212,7 @@ ScyllaDB processes to ensure the change is applied.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

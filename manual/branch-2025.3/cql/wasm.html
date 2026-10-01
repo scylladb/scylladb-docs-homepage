@@ -536,7 +536,7 @@ wasm2wat<span class="w"> </span>fib.wasm<span class="w"> </span>&gt;<span class=
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
 <p>Here’s how a <code class="docutils literal notranslate"><span class="pre">wasm</span></code> function can be declared:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">ks</span><span class="mf">.</span><span class="n">fib</span> <span class="p">(</span><span class="k">input</span> <span class="nb">bigint</span><span class="p">)</span> <span class="k">RETURNS</span> <span class="k">NULL</span> <span class="k">ON</span> <span class="k">NULL</span> <span class="k">INPUT</span> <span class="k">RETURNS</span> <span class="nb">bigint</span> <span class="k">LANGUAGE</span> <span class="n">wasm</span> <span class="k">AS</span> <span class="s1">&#39;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">ks</span><span class="mf">.</span><span class="n">fib</span> <span class="p">(</span><span class="k">input</span> <span class="nb">bigint</span><span class="p">)</span> <span class="k">RETURNS</span> <span class="k">NULL</span> <span class="k">ON</span> <span class="k">NULL</span> <span class="k">INPUT</span> <span class="k">RETURNS</span> <span class="nb">bigint</span> <span class="k">LANGUAGE</span> <span class="n">wasm</span> <span class="k">AS</span> <span class="s1">'</span>
 <span class="s1">(module</span>
 <span class="s1">    (func $fib (param $n i64) (result i64)</span>
 <span class="s1">        (if</span>
@@ -549,12 +549,12 @@ wasm2wat<span class="w"> </span>fib.wasm<span class="w"> </span>&gt;<span class=
 <span class="s1">        )</span>
 <span class="s1">    )</span>
 <span class="s1">    (memory (;0;) 2)</span>
-<span class="s1">    (export &quot;memory&quot; (memory 0))</span>
-<span class="s1">    (export &quot;fib&quot; (func $fib))</span>
+<span class="s1">    (export "memory" (memory 0))</span>
+<span class="s1">    (export "fib" (func $fib))</span>
 <span class="s1">    (global (;0;) i32 (i32.const 1024))</span>
-<span class="s1">    (export &quot;_scylla_abi&quot; (global 0))</span>
-<span class="s1">    (data $.rodata (i32.const 1024) &quot;\01&quot;)</span>
-<span class="s1">)&#39;</span>
+<span class="s1">    (export "_scylla_abi" (global 0))</span>
+<span class="s1">    (data $.rodata (i32.const 1024) "\01")</span>
+<span class="s1">)'</span>
 </pre></div>
 </div>
 <p>and it can be invoked just like a regular UDF:</p>
@@ -1320,7 +1320,7 @@ Alternative ways of expressing whether a function can <strong>return</strong> nu
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

@@ -438,7 +438,7 @@ with the following CQL command:</p>
         <span class="n">age</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">PRIMARY</span> <span class="n">KEY</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span>
 <span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">harels</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;nadav&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">harels</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'nadav'</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>In this table, we have a row with the key “nadav”, and in this row, one
@@ -458,9 +458,9 @@ UpdateStatement.Java, and in
 <a class="reference external" href="https://issues.apache.org/jira/browse/CASSANDRA-4361">https://issues.apache.org/jira/browse/CASSANDRA-4361</a>.</p>
 <p>For example, if we inspect with <code class="docutils literal notranslate"><span class="pre">tools/bin/sstable2json</span></code> the table
 created in the previous example, we find:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;nadav&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1426688662900463</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="s2">&quot;40&quot;</span><span class="p">,</span><span class="mi">1426688662900463</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"nadav"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">""</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1426688662900463</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"age"</span><span class="p">,</span><span class="s2">"40"</span><span class="p">,</span><span class="mi">1426688662900463</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>The first cell, with the empty name (“”) and value (the second “”), is
@@ -488,7 +488,7 @@ longer have a single component:</p>
 <span class="p">)</span> <span class="n">WITH</span> <span class="n">compression</span> <span class="o">=</span> <span class="p">{};</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">harels2</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nick</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;nadav&#39;</span><span class="p">,</span> <span class="s1">&#39;nyh&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">harels2</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nick</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'nadav'</span><span class="p">,</span> <span class="s1">'nyh'</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Note how name and nick form the primary key, but the CQL syntax
@@ -498,9 +498,9 @@ name (but different nick) will appear in the same partition, i.e., in
 the same sstable row. Inside that partition, different nicks can appear,
 each with its own age. To see what this looks like in the sstable we
 again use the <em>sstable2json</em> tool, and see:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;nadav&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;nyh:&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1427032626839065</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;nyh:age&quot;</span><span class="p">,</span><span class="s2">&quot;40&quot;</span><span class="p">,</span><span class="mi">1427032626839065</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"nadav"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">"nyh:"</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1427032626839065</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"nyh:age"</span><span class="p">,</span><span class="s2">"40"</span><span class="p">,</span><span class="mi">1427032626839065</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>In other words, the composite column name (nyh:age) is used to store the
@@ -550,16 +550,16 @@ can have multiple expenses (<em>rows</em>), each with a different
 clustering-key expense_id, and corresponding amount. But the “balance”
 column is for all the different expenses of the same user.</p>
 <p>So if we insert one expense for ‘user1’, and set user1’s balance:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">balance</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">expense_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">balance</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'user1'</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">expense_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'user1'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>What is written to the sstable looks like this (as usual, output from
 <code class="docutils literal notranslate"><span class="pre">sstable2json</span></code>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;user1&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;:balance&quot;</span><span class="p">,</span><span class="s2">&quot;17&quot;</span><span class="p">,</span><span class="mi">1428849747953348</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;1:&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1428849747970947</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;1:amount&quot;</span><span class="p">,</span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="mi">1428849747970947</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"user1"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">":balance"</span><span class="p">,</span><span class="s2">"17"</span><span class="p">,</span><span class="mi">1428849747953348</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"1:"</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1428849747970947</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"1:amount"</span><span class="p">,</span><span class="s2">"8"</span><span class="p">,</span><span class="mi">1428849747970947</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>The (1:amount) and (1:) is what we already saw above, the new thing here
@@ -588,7 +588,7 @@ example consider:</p>
 <span class="p">);</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills3</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">expense_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="mi">2015</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills3</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">expense_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'user1'</span><span class="p">,</span> <span class="mi">2015</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Here as usual, the first column name in “PRIMARY KEY”, user, is the
@@ -597,9 +597,9 @@ clustering columns, forming a compound clustering key. I.e., each
 partition contains several rows, each defined by (and sorted by) the
 pair (year, expense_id).</p>
 <p>The resulting SSTable row is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;user1&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;2015:1:&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1428853746711253</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;2015:1:amount&quot;</span><span class="p">,</span><span class="s2">&quot;8&quot;</span><span class="p">,</span><span class="mi">1428853746711253</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"user1"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">"2015:1:"</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1428853746711253</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"2015:1:amount"</span><span class="p">,</span><span class="s2">"8"</span><span class="p">,</span><span class="mi">1428853746711253</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>Note how the column name “amount” is now prefixed by two components, the
@@ -625,7 +625,7 @@ example:</p>
      <span class="n">amount</span> <span class="nb">int</span><span class="p">,</span>
      <span class="n">PRIMARY</span> <span class="n">KEY</span> <span class="p">((</span><span class="n">user</span><span class="p">,</span> <span class="n">expense_id</span><span class="p">))</span>
 <span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">expense_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">bills</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">expense_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'user1'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Note the extra pair of parenthesis in the “PRIMARY KEY” specification,
@@ -647,15 +647,15 @@ collection:</p>
 <span class="p">);</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">col2</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">favorites</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;raindrops&#39;</span><span class="p">,</span> <span class="s1">&#39;kittens&#39;</span><span class="p">});</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">col2</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">favorites</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'user1'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'raindrops'</span><span class="p">,</span> <span class="s1">'kittens'</span><span class="p">});</span>
 </pre></div>
 </div>
 <p>The resulting SSTable row is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;user1&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1428855312063525</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:_&quot;</span><span class="p">,</span><span class="s2">&quot;favorites:!&quot;</span><span class="p">,</span><span class="mi">1428855312063524</span><span class="p">,</span><span class="s2">&quot;t&quot;</span><span class="p">,</span><span class="mi">1428855312</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:6b697474656e73&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1428855312063525</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:7261696e64726f7073&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1428855312063525</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"user1"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">""</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1428855312063525</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:_"</span><span class="p">,</span><span class="s2">"favorites:!"</span><span class="p">,</span><span class="mi">1428855312063524</span><span class="p">,</span><span class="s2">"t"</span><span class="p">,</span><span class="mi">1428855312</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:6b697474656e73"</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1428855312063525</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:7261696e64726f7073"</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1428855312063525</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>Here we also have two components in the column names, but we need to
@@ -697,15 +697,15 @@ example,</p>
      <span class="n">favorites</span> <span class="nb">map</span><span class="o">&lt;</span><span class="n">text</span><span class="p">,</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span>
      <span class="n">PRIMARY</span> <span class="n">KEY</span> <span class="p">(</span><span class="n">user</span><span class="p">)</span>
 <span class="p">)</span> <span class="n">WITH</span> <span class="n">compression</span> <span class="o">=</span> <span class="p">{};</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">col4</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">favorites</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;raindrops&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;kittens&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">});</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">col4</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">favorites</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'user1'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'raindrops'</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'kittens'</span> <span class="p">:</span> <span class="mi">2</span><span class="p">});</span>
 </pre></div>
 </div>
 <p>We see in the SSTable with sstable2json:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;user1&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1428864848550739</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:_&quot;</span><span class="p">,</span><span class="s2">&quot;favorites:!&quot;</span><span class="p">,</span><span class="mi">1428864848550738</span><span class="p">,</span><span class="s2">&quot;t&quot;</span><span class="p">,</span><span class="mi">1428864848</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:6b697474656e73&quot;</span><span class="p">,</span><span class="s2">&quot;00000002&quot;</span><span class="p">,</span><span class="mi">1428864848550739</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:7261696e64726f7073&quot;</span><span class="p">,</span><span class="s2">&quot;00000001&quot;</span><span class="p">,</span><span class="mi">1428864848550739</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"user1"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">""</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1428864848550739</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:_"</span><span class="p">,</span><span class="s2">"favorites:!"</span><span class="p">,</span><span class="mi">1428864848550738</span><span class="p">,</span><span class="s2">"t"</span><span class="p">,</span><span class="mi">1428864848</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:6b697474656e73"</span><span class="p">,</span><span class="s2">"00000002"</span><span class="p">,</span><span class="mi">1428864848550739</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:7261696e64726f7073"</span><span class="p">,</span><span class="s2">"00000001"</span><span class="p">,</span><span class="mi">1428864848550739</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>I.e., indeed exactly the same as the representation of the set, except
@@ -721,15 +721,15 @@ the same because of the need to keep the desired item order:</p>
      <span class="n">favorites</span> <span class="nb">list</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">,</span>
      <span class="n">PRIMARY</span> <span class="n">KEY</span> <span class="p">(</span><span class="n">user</span><span class="p">)</span>
 <span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">col1</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">favorites</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;raindrops&#39;</span><span class="p">,</span> <span class="s1">&#39;kittens&#39;</span><span class="p">]);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">col1</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">favorites</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'user1'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'raindrops'</span><span class="p">,</span> <span class="s1">'kittens'</span><span class="p">]);</span>
 </pre></div>
 </div>
 <p>The resulting SSTable row is now:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;user1&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1428854738475900</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:_&quot;</span><span class="p">,</span><span class="s2">&quot;favorites:!&quot;</span><span class="p">,</span><span class="mi">1428854738475899</span><span class="p">,</span><span class="s2">&quot;t&quot;</span><span class="p">,</span><span class="mi">1428854738</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:c2bcd290e12d11e49cac000000000000&quot;</span><span class="p">,</span><span class="s2">&quot;7261696e64726f7073&quot;</span><span class="p">,</span><span class="mi">1428854738475900</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;favorites:c2bcd291e12d11e49cac000000000000&quot;</span><span class="p">,</span><span class="s2">&quot;6b697474656e73&quot;</span><span class="p">,</span><span class="mi">1428854738475900</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"user1"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">""</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1428854738475900</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:_"</span><span class="p">,</span><span class="s2">"favorites:!"</span><span class="p">,</span><span class="mi">1428854738475899</span><span class="p">,</span><span class="s2">"t"</span><span class="p">,</span><span class="mi">1428854738</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:c2bcd290e12d11e49cac000000000000"</span><span class="p">,</span><span class="s2">"7261696e64726f7073"</span><span class="p">,</span><span class="mi">1428854738475900</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"favorites:c2bcd291e12d11e49cac000000000000"</span><span class="p">,</span><span class="s2">"6b697474656e73"</span><span class="p">,</span><span class="mi">1428854738475900</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>Note how this time, the items (“raindrops” and “kittens”) are the value
@@ -772,13 +772,13 @@ seconds:</p>
     <span class="n">age</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">PRIMARY</span> <span class="n">KEY</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span>
 <span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">ttl</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;nadav&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span> <span class="n">USING</span> <span class="n">TTL</span> <span class="mi">3600</span><span class="p">;</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">ttl</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'nadav'</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span> <span class="n">USING</span> <span class="n">TTL</span> <span class="mi">3600</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>sstable2json prints the resulting SSTable row as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;nadav&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="mi">1430151018675502</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="mi">3600</span><span class="p">,</span><span class="mi">1430154618</span><span class="p">],</span>
-           <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="s2">&quot;40&quot;</span><span class="p">,</span><span class="mi">1430151018675502</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="mi">3600</span><span class="p">,</span><span class="mi">1430154618</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"nadav"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">""</span><span class="p">,</span><span class="s2">""</span><span class="p">,</span><span class="mi">1430151018675502</span><span class="p">,</span><span class="s2">"e"</span><span class="p">,</span><span class="mi">3600</span><span class="p">,</span><span class="mi">1430154618</span><span class="p">],</span>
+           <span class="p">[</span><span class="s2">"age"</span><span class="p">,</span><span class="s2">"40"</span><span class="p">,</span><span class="mi">1430151018675502</span><span class="p">,</span><span class="s2">"e"</span><span class="p">,</span><span class="mi">3600</span><span class="p">,</span><span class="mi">1430154618</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>Note how each of cells (the cql row marker, and our actual data cell)
@@ -804,19 +804,19 @@ a table with some data:</p>
     <span class="n">age</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">PRIMARY</span> <span class="n">KEY</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span>
 <span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">deleted</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;nadav&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">deleted</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'nadav'</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Then flushing this data to an SSTable (with
 <code class="docutils literal notranslate"><span class="pre">bin/nodetool</span> <span class="pre">flush</span> <span class="pre">keyspacename</span></code>), and then deleting the cell we
 added:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DELETE</span> <span class="n">age</span> <span class="n">FROM</span> <span class="n">deleted</span> <span class="n">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;nadav&#39;</span><span class="p">;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DELETE</span> <span class="n">age</span> <span class="n">FROM</span> <span class="n">deleted</span> <span class="n">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'nadav'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>When the second SSTable is flushed, it will have a cell tombstone.
 sstable2json shows the second SSTable like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;nadav&quot;</span><span class="p">,</span>
- <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="mi">1430200516</span><span class="p">,</span><span class="mi">1430200516937621</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"nadav"</span><span class="p">,</span>
+ <span class="s2">"cells"</span><span class="p">:</span> <span class="p">[[</span><span class="s2">"age"</span><span class="p">,</span><span class="mi">1430200516</span><span class="p">,</span><span class="mi">1430200516937621</span><span class="p">,</span><span class="s2">"d"</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <p>Note how the cell has the DELETION_MASK bit (written as a “d”), its
@@ -1446,7 +1446,7 @@ timestamp</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

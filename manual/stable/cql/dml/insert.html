@@ -377,14 +377,14 @@
                 <span class="p">:</span>  <span class="p">[</span> <span class="k">USING</span> <span class="o">`</span><span class="n">update_parameter</span><span class="o">`</span> <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">update_parameter</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="p">];</span>
 <span class="n">names_values</span><span class="p">:</span> <span class="o">`</span><span class="n">names</span><span class="o">`</span> <span class="k">VALUES</span> <span class="o">`</span><span class="n">tuple_literal</span><span class="o">`</span>
 <span class="n">json_clause</span><span class="p">:</span>  <span class="k">JSON</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span> <span class="p">[</span> <span class="n">DEFAULT</span> <span class="p">(</span> <span class="k">NULL</span> <span class="o">|</span> <span class="n">UNSET</span> <span class="p">)</span> <span class="p">]</span>
-<span class="n">names</span><span class="p">:</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">&#39;)&#39;</span>
+<span class="n">names</span><span class="p">:</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">')'</span>
 <span class="n">update_parameter</span><span class="p">:</span> <span class="p">(</span> <span class="nb">TIMESTAMP</span> <span class="o">`</span><span class="n">int_value</span><span class="o">`</span> <span class="o">|</span> <span class="k">TTL</span>  <span class="o">`</span><span class="n">int_value</span><span class="o">`</span> <span class="o">|</span> <span class="n">TIMEOUT</span> <span class="o">`</span><span class="n">duration</span><span class="o">`</span> <span class="p">)</span>
 <span class="n">int_value</span><span class="p">:</span> <span class="p">(</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
-      <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Serenity&#39;</span><span class="p">,</span> <span class="s1">&#39;Joss Whedon&#39;</span><span class="p">,</span> <span class="s1">&#39;Nathan Fillion&#39;</span><span class="p">,</span> <span class="mf">2005</span><span class="p">)</span>
+      <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Serenity'</span><span class="p">,</span> <span class="s1">'Joss Whedon'</span><span class="p">,</span> <span class="s1">'Nathan Fillion'</span><span class="p">,</span> <span class="mf">2005</span><span class="p">)</span>
       <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span>
       <span class="k">USING</span> <span class="k">TTL</span> <span class="mf">86400</span><span class="p">;</span>
 </pre></div>
@@ -411,13 +411,13 @@ is not unlikely. If it happens, i.e. two <code class="docutils literal notransla
 timestamp, a conflict resolution algorithm determines which of the inserted cells prevails (see <a class="reference internal" href="../dml.html#update-ordering"><span class="std std-ref">update ordering</span></a>).</p>
 <p>Please refer to the <a class="reference internal" href="../dml.html#update-parameters"><span class="std std-ref">update parameters</span></a> section for more information on the <code class="xref std std-token docutils literal notranslate"><span class="pre">update_parameter</span></code>.</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span>  <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Serenity&#39;</span><span class="p">,</span> <span class="s1">&#39;Anonymous&#39;</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Serenity'</span><span class="p">,</span> <span class="s1">'Anonymous'</span><span class="p">,</span> <span class="s1">'Unknown'</span><span class="p">)</span>
 <span class="k">USING</span> <span class="nb">TIMESTAMP</span>  <span class="mf">1442880000000000</span><span class="p">;</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span>  <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Serenity&#39;</span><span class="p">,</span> <span class="s1">&#39;Joseph Whedon&#39;</span><span class="p">,</span> <span class="s1">&#39;Nathan Fillion&#39;</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Serenity'</span><span class="p">,</span> <span class="s1">'Joseph Whedon'</span><span class="p">,</span> <span class="s1">'Nathan Fillion'</span><span class="p">)</span>
 <span class="k">USING</span> <span class="nb">TIMESTAMP</span> <span class="mf">1442880000000000</span><span class="p">;</span>
 
-<span class="k">SELECT</span> <span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span> <span class="k">FROM</span> <span class="n">NerdMovies</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Serenity&#39;</span>
+<span class="k">SELECT</span> <span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span> <span class="k">FROM</span> <span class="n">NerdMovies</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Serenity'</span>
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>movie    | director      | main_actor
@@ -429,10 +429,10 @@ Serenity | Joseph Whedon |    Unknown
 statements modify the same primary key but assign different
 columns effects of both statements are preserved:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">main_actor</span><span class="p">)</span>
-      <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Serenity&#39;</span><span class="p">,</span> <span class="s1">&#39;Joss Whedon&#39;</span><span class="p">,</span> <span class="s1">&#39;Nathan Fillion&#39;</span><span class="p">);</span>
+      <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Serenity'</span><span class="p">,</span> <span class="s1">'Joss Whedon'</span><span class="p">,</span> <span class="s1">'Nathan Fillion'</span><span class="p">);</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NerdMovies</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">director</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
-      <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Serenity&#39;</span><span class="p">,</span> <span class="s1">&#39;Josseph Hill Whedon&#39;</span><span class="p">,</span> <span class="mf">2005</span><span class="p">);</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">NerdMovies</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Serenity&#39;</span>
+      <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'Serenity'</span><span class="p">,</span> <span class="s1">'Josseph Hill Whedon'</span><span class="p">,</span> <span class="mf">2005</span><span class="p">);</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">NerdMovies</span> <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Serenity'</span>
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>╭─────────┬───────────────────┬──────────────┬─────╮
@@ -1073,7 +1073,7 @@ columns effects of both statements are preserved:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

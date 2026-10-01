@@ -150,6 +150,9 @@ See [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/stable/) fo
 
 ### Configuration Management
 
+#### CAUTION
+**All** configuration settings for **all** nodes in the **same cluster** should be **identical or coherent**.
+
 Using tools such as Ansible, Chef, Puppet, Salt, or Juju are recommended.
 
 See this [article](https://www.softwaretestinghelp.com/top-5-software-configuration-management-tools/) for more information.

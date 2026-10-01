@@ -23,6 +23,9 @@ There are two types of compactions:
 * Major Compaction
   : A user triggers (using nodetool) a compaction over all SSTables, merging the individual tables according to the selected compaction strategy.
 
+#### CAUTION
+It is always best to allow ScyllaDB to automatically run minor compactions. Major compactions can exhaust resources, increase operational costs, and take up valuable disk space. This requires you to have 50% more disk space than your data unless you are using [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics).
+
 ## View Compaction Statistics
 
 ScyllaDB has tools you can use to see the status of your compactions. These include nodetool ([compactionhistory](https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/nodetool-commands/compactionhistory.md)  and [compactionstats](https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/nodetool-commands/compactionstats.md))  and the Grafana dashboards which are part of the [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/) which display the compaction statistics on a per cluster and per node basis.  Compaction errors can be seen in the [logs](https://manager.docs.scylladb.com/stable/config/scylla-manager-config.html).
@@ -39,6 +42,9 @@ A compaction strategy is what determines which of the SSTables will be compacted
 ### How to Set a Compaction Strategy
 
 Compaction strategies are set as part of the `CREATE` or `ALTER` statement when creating or altering tables. Refer to the [CQL syntax](https://docs.scylladb.com/manual/branch-2026.2/cql/compaction.md) for details.
+
+#### CAUTION
+Changing the parameters for compaction strategies or changing from one strategy to another (using the `ALTER` statement) can create issues. See [Changing Compaction Strategies or Properties]() for more information.
 
 <a id="size-tiered-compaction-strategy-stcs"></a>
 
@@ -140,6 +146,15 @@ For example, when compacting two SSTables (or SSTable runs) holding 7GB each: in
 ## Time-window Compaction Strategy (TWCS)
 
 Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)](). SSTables from different time windows are never compacted together.
+
+#### CAUTION
+* We strongly recommend using a single TTL value for any given table.
+* This means sticking to the default time to live as specified in the table’s schema.
+* Using multiple TTL values for a given table may lead to inefficiency when purging expired data, because an SSTable will remain until **all** of its data is expired.
+* Tombstone compaction can be enabled to remove data from partially expired SSTables, but this creates additional WA (write amplification).
+
+#### CAUTION
+Avoid overwriting data and deleting data explicitly at all costs, as this can potentially block an expired SSTable from being purged, due to the checks that are performed to avoid data resurrection.
 
 The strategy works as follows:
 

@@ -400,7 +400,7 @@ Dec 14 02:23:38 sjc-315.rfiserve.net scylla[370430]:  [shard 39] repair - repair
 <h2>Problem<a class="headerlink" href="#problem" title="Link to this heading">¶</a></h2>
 <p>The root cause for this issue is usually that the networking stack ran out of free ports due to having too many sockets in a <code class="docutils literal notranslate"><span class="pre">TIME_WAIT/CLOSE_WAIT</span></code> state.</p>
 <p>To verify that, use:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>netstat -np | grep -i &quot;_wait&quot;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>netstat -np | grep -i "_wait"
 </pre></div>
 </div>
 </section>
@@ -408,7 +408,7 @@ Dec 14 02:23:38 sjc-315.rfiserve.net scylla[370430]:  [shard 39] repair - repair
 <h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">¶</a></h2>
 <p>Usually, the situation described above is caused by some program malfunctioning. To find out which program it is, check which programs are the primary consumers of TCP sockets:</p>
 <p>This is an example output on a machine that doesn’t have an issue:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>netstat -npt | tr -s &#39; &#39; | cut -d&quot; &quot; -f7- | sort | uniq -c
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>netstat -npt | tr -s ' ' | cut -d" " -f7- | sort | uniq -c
 
 (Not all processes could be identified, non-owned process info
 will not be shown, you would have to be root to see it all.)
@@ -1074,7 +1074,7 @@ Note that in the output above, we included the PID of the program, and as a resu
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

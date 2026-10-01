@@ -79,6 +79,9 @@ Local keys are used for encrypting user data, such as SSTables.
 Currently, this is the only option  available for user data and, as such, is the default key storage manager.
 With local key storage, keys are stored locally on disk in a text file. The location of this file is specified in the scylla.yaml.
 
+#### CAUTION
+Care should be taken so that no unauthorized person can access the key data from the file system. Make sure that the owner of this file is the `scylla` user and that the file is **not** readable by **other users**, not accessible by **other roles**.
+
 You should also consider keeping the key directory on a network drive (using TLS for the file sharing) to avoid having keys and data on the same storage media, in case your storage is stolen or discarded.
 
 <a id="ear-cipher-algorithms"></a>

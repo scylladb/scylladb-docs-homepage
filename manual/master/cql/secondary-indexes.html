@@ -377,17 +377,17 @@
 <span id="secondary-indexes"></span><h1>Global Secondary Indexes<a class="headerlink" href="#global-secondary-indexes" title="Link to this heading">¶</a></h1>
 <p>CQL supports creating secondary indexes on tables, allowing queries on the table to use those indexes. A secondary index
 is identified by a name defined by:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">index_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z_0-9]+&#39;</span><span class="p">)</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">index_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">'[a-zA-Z_0-9]+'</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="create-index">
 <span id="create-index-statement"></span><h2>CREATE INDEX<a class="headerlink" href="#create-index" title="Link to this heading">¶</a></h2>
 <p>Creating a secondary index on a table uses the <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_index_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="p">[</span> <span class="k">CUSTOM</span> <span class="p">]</span> <span class="k">INDEX</span> <span class="p">[</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="p">]</span> <span class="p">[</span> <span class="o">`</span><span class="n">index_name</span><span class="o">`</span> <span class="p">]</span>
-                      <span class="p">:</span>     <span class="k">ON</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">index_identifier</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+                      <span class="p">:</span>     <span class="k">ON</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">index_identifier</span><span class="o">`</span> <span class="s1">')'</span>
                       <span class="p">:</span>     <span class="p">[</span> <span class="k">USING</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span> <span class="p">[</span> <span class="k">WITH</span> <span class="o">`</span><span class="n">index_properties</span><span class="o">`</span> <span class="p">]</span> <span class="p">]</span>
 <span class="n">index_identifier</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span>
-                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">')'</span>
 <span class="n">index_properties</span><span class="p">:</span> <span class="n">index_property</span> <span class="p">(</span><span class="k">AND</span> <span class="n">index_property</span><span class="p">)</span><span class="o">*</span>
 <span class="n">index_property</span><span class="p">:</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span>
               <span class="p">:</span><span class="o">|</span> <span class="n">view_property</span>
@@ -405,9 +405,9 @@ Instead, it will be applied to the underlying materialized view of it.</p>
 <span class="c1">-- Create a secondary index called `catsIndex` on the table `Animals`.</span>
 <span class="c1">-- The indexed column is `cats`. Both properties, `comment` and</span>
 <span class="c1">-- `synchronous_updates`, are view properties, so the underlying materialized</span>
-<span class="c1">-- view will be configured with: `comment = &#39;everyone likes cats&#39;` and</span>
+<span class="c1">-- view will be configured with: `comment = 'everyone likes cats'` and</span>
 <span class="c1">-- `synchronous_updates = true`.</span>
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">catsIndex</span> <span class="k">ON</span> <span class="n">Animals</span> <span class="p">(</span><span class="n">cats</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;everyone likes cats&#39;</span> <span class="k">AND</span> <span class="n">synchronous_updates</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">catsIndex</span> <span class="k">ON</span> <span class="n">Animals</span> <span class="p">(</span><span class="n">cats</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">'everyone likes cats'</span> <span class="k">AND</span> <span class="n">synchronous_updates</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
 
 <span class="c1">-- Create a secondary index called `dogsIndex` on the same table, `Animals`.</span>
 <span class="c1">-- This time, the indexed column is `dogs`. The property `gc_grace_seconds` is</span>
@@ -429,7 +429,7 @@ a secondary index with the same property will not be possible either.</p>
 <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">names</span> <span class="k">ON</span> <span class="n">clients</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">WITH</span> <span class="n">gc_grace_seconds</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
 
 <span class="c1">-- This statement will also be rejected by Scylla.</span>
-<span class="c1">-- It&#39;s not possible to use `COMPACT STORAGE` with a materialized view.</span>
+<span class="c1">-- It's not possible to use `COMPACT STORAGE` with a materialized view.</span>
 <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">names</span> <span class="k">ON</span> <span class="n">clients</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">WITH</span> <span class="k">COMPACT</span> <span class="k">STORAGE</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -442,7 +442,7 @@ automatically at insertion time.</p>
 <h2>Local Secondary Index<a class="headerlink" href="#local-secondary-index" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../features/local-secondary-indexes.html"><span class="doc">Local Secondary Indexes</span></a> is an enhancement of <a class="reference internal" href="../features/secondary-indexes.html"><span class="doc">Global Secondary Indexes</span></a>, which allows ScyllaDB to optimize the use case in which the partition key of the base table is also the partition key of the index. Local Secondary Index syntax is the same as above, with extra parentheses on the partition key.</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">index_identifier</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span>
-                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="n">PK</span> <span class="p">)</span> <span class="o">|</span> <span class="k">KEYS</span> <span class="o">|</span> <span class="k">VALUES</span> <span class="o">|</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="n">PK</span> <span class="p">)</span> <span class="o">|</span> <span class="k">KEYS</span> <span class="o">|</span> <span class="k">VALUES</span> <span class="o">|</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">')'</span>
 </pre></div>
 </div>
 <p>Example:</p>
@@ -479,8 +479,8 @@ Unnamed duplicate vector index definitions are still rejected, and index names
 must remain unique within a keyspace.</p>
 <p>Example of a simple index:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="n">vectorIndex</span> <span class="k">ON</span> <span class="n">ImageEmbeddings</span> <span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
-<span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
-<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="s1">&#39;maximum_node_connections&#39;</span><span class="p">:</span> <span class="s1">&#39;16&#39;</span><span class="p">};</span>
+<span class="k">USING</span> <span class="s1">'vector_index'</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'similarity_function'</span><span class="p">:</span> <span class="s1">'COSINE'</span><span class="p">,</span> <span class="s1">'maximum_node_connections'</span><span class="p">:</span> <span class="s1">'16'</span><span class="p">};</span>
 </pre></div>
 </div>
 <p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed to enable similarity search using
@@ -488,8 +488,8 @@ a global vector index. Additional filtering can be performed on the primary key
 columns of the base table.</p>
 <p>Example of a global vector index with additional filtering:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="n">vectorIndex</span> <span class="k">ON</span> <span class="n">ImageEmbeddings</span> <span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
-<span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
-<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="s1">&#39;maximum_node_connections&#39;</span><span class="p">:</span> <span class="s1">&#39;16&#39;</span><span class="p">};</span>
+<span class="k">USING</span> <span class="s1">'vector_index'</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'similarity_function'</span><span class="p">:</span> <span class="s1">'COSINE'</span><span class="p">,</span> <span class="s1">'maximum_node_connections'</span><span class="p">:</span> <span class="s1">'16'</span><span class="p">};</span>
 </pre></div>
 </div>
 <p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed to enable similarity search using
@@ -498,8 +498,8 @@ The filtering is possible on <code class="docutils literal notranslate"><span cl
 of the base table.</p>
 <p>Example of a local vector index:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="n">vectorIndex</span> <span class="k">ON</span> <span class="n">ImageEmbeddings</span> <span class="p">((</span><span class="n">id</span><span class="p">,</span> <span class="n">created_at</span><span class="p">),</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
-<span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
-<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="s1">&#39;maximum_node_connections&#39;</span><span class="p">:</span> <span class="s1">&#39;16&#39;</span><span class="p">};</span>
+<span class="k">USING</span> <span class="s1">'vector_index'</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'similarity_function'</span><span class="p">:</span> <span class="s1">'COSINE'</span><span class="p">,</span> <span class="s1">'maximum_node_connections'</span><span class="p">:</span> <span class="s1">'16'</span><span class="p">};</span>
 </pre></div>
 </div>
 <p>The vector column (<code class="docutils literal notranslate"><span class="pre">embedding</span></code>) is indexed for similarity search (a local
@@ -624,13 +624,13 @@ created as a native <code class="docutils literal notranslate"><span class="pre"
 <p>Example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Cassandra SAI statement accepted by ScyllaDB:</span>
 <span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
-<span class="k">USING</span> <span class="s1">&#39;org.apache.cassandra.index.sai.StorageAttachedIndex&#39;</span>
-<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">};</span>
+<span class="k">USING</span> <span class="s1">'org.apache.cassandra.index.sai.StorageAttachedIndex'</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'similarity_function'</span><span class="p">:</span> <span class="s1">'COSINE'</span><span class="p">};</span>
 
 <span class="c1">-- Equivalent to:</span>
 <span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
-<span class="k">USING</span> <span class="s1">&#39;vector_index&#39;</span>
-<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;similarity_function&#39;</span><span class="p">:</span> <span class="s1">&#39;COSINE&#39;</span><span class="p">};</span>
+<span class="k">USING</span> <span class="s1">'vector_index'</span>
+<span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'similarity_function'</span><span class="p">:</span> <span class="s1">'COSINE'</span><span class="p">};</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">similarity_function</span></code> option is supported by both Cassandra SAI and ScyllaDB.</p>
@@ -651,7 +651,7 @@ result in an error. General SAI indexing is not supported by ScyllaDB; use a
 <p>Example of the metadata-map rewrite:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- CassIO issues this during schema setup:</span>
 <span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="k">ENTRIES</span><span class="p">(</span><span class="n">metadata_s</span><span class="p">))</span>
-<span class="k">USING</span> <span class="s1">&#39;org.apache.cassandra.index.sai.StorageAttachedIndex&#39;</span><span class="p">;</span>
+<span class="k">USING</span> <span class="s1">'org.apache.cassandra.index.sai.StorageAttachedIndex'</span><span class="p">;</span>
 
 <span class="c1">-- ScyllaDB creates the equivalent of:</span>
 <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">my_table</span> <span class="p">(</span><span class="k">ENTRIES</span><span class="p">(</span><span class="n">metadata_s</span><span class="p">));</span>
@@ -679,12 +679,12 @@ keyword and specifying the index type as <code class="docutils literal notransla
 <li><p>The table must use tablets (not vnodes).</p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">&#39;fulltext_index&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">'fulltext_index'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>You can specify an analyzer to control how text is tokenized:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">&#39;fulltext_index&#39;</span>
-    <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;analyzer&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">};</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">articles</span> <span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">'fulltext_index'</span>
+    <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'analyzer'</span><span class="p">:</span> <span class="s1">'english'</span><span class="p">};</span>
 </pre></div>
 </div>
 <p>The following options are supported for full-text indexes:</p>
@@ -1424,7 +1424,7 @@ the new table holds before that position is skipped without an error.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

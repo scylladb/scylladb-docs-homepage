@@ -419,12 +419,12 @@ One way to verify it is to look for the following message in the log:</p>
 <p>Alternatively, it can be verified programmatically by checking whether the <code class="docutils literal notranslate"><span class="pre">value</span></code>
 column under the <code class="docutils literal notranslate"><span class="pre">enabled_features</span></code> key contains the name of the feature in
 the <code class="docutils literal notranslate"><span class="pre">system.scylla_local</span></code> table. One way to do it is with the following bash script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">until</span><span class="w"> </span>cqlsh<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;select value from system.scylla_local where key = &#39;enabled_features&#39;&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;SUPPORTS_CONSISTENT_TOPOLOGY_CHANGES&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">until</span><span class="w"> </span>cqlsh<span class="w"> </span>-e<span class="w"> </span><span class="s2">"select value from system.scylla_local where key = 'enabled_features'"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">"SUPPORTS_CONSISTENT_TOPOLOGY_CHANGES"</span>
 <span class="k">do</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Upgrade didn&#39;t finish yet on the local node, waiting 10 seconds before checking again...&quot;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Upgrade didn't finish yet on the local node, waiting 10 seconds before checking again..."</span>
 <span class="w">    </span>sleep<span class="w"> </span><span class="m">10</span>
 <span class="k">done</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Upgrade completed on the local node&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"Upgrade completed on the local node"</span>
 </pre></div>
 </div>
 </li>
@@ -457,7 +457,7 @@ during the procedure. Failing to do so may put the cluster in an inconsistent st
 <li><p>Issue a POST HTTP request to the <code class="docutils literal notranslate"><span class="pre">/storage_service/raft_topology/upgrade</span></code>
 endpoint to any of the nodes in the cluster.
 For example, you can do it with <code class="docutils literal notranslate"><span class="pre">curl</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/storage_service/raft_topology/upgrade&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/storage_service/raft_topology/upgrade"</span>
 </pre></div>
 </div>
 </li>
@@ -466,14 +466,14 @@ whether a node finished the procedure in one of two ways:</p>
 <ul>
 <li><p>By sending a HTTP <code class="docutils literal notranslate"><span class="pre">GET</span></code> request on the <code class="docutils literal notranslate"><span class="pre">/storage_service/raft_topology/upgrade</span></code>
 endpoint. For example, you can do it with <code class="docutils literal notranslate"><span class="pre">curl</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/storage_service/raft_topology/upgrade&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/storage_service/raft_topology/upgrade"</span>
 </pre></div>
 </div>
 <p>It will return a JSON string that will be equal to <code class="docutils literal notranslate"><span class="pre">done</span></code> after the procedure is complete on that node.</p>
 </li>
 <li><p>By querying the <code class="docutils literal notranslate"><span class="pre">upgrade_state</span></code> column in the <code class="docutils literal notranslate"><span class="pre">system.topology</span></code> table.
 You can use <code class="docutils literal notranslate"><span class="pre">cqlsh</span></code> to get the value of the column:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;select upgrade_state from system.topology&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cqlsh<span class="w"> </span>-e<span class="w"> </span><span class="s2">"select upgrade_state from system.topology"</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">upgrade_state</span></code> column should be set to <code class="docutils literal notranslate"><span class="pre">done</span></code> after the procedure
@@ -1113,7 +1113,7 @@ the procedure described in this document.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

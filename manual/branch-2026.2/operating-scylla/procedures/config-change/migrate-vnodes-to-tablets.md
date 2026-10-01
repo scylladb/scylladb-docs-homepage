@@ -115,6 +115,12 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       This is a node-local operation. Use the IP address of the node that
       you are upgrading.
 
+      #### CAUTION
+      Do not mark more than one node for upgrade at the same time. Even if
+      you restart them serially, unexpected restarts can happen for various
+      reasons (crashes, power failures, etc.) leading to parallel node
+      upgrades which can reduce availability.
+
       ```console
       scylla nodetool -h <node-ip> migrate-to-tablets upgrade
       ```

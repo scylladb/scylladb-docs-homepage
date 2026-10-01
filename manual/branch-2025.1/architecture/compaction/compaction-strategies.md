@@ -97,6 +97,15 @@ For more information, see the [Compaction KB Article](https://docs.scylladb.com/
 Time-Window Compaction Strategy compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)]().
 SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/branch-2025.1/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
 
+#### CAUTION
+* We strongly recommend using a single TTL value for any given table.
+* This means sticking to the default time to live as specified in the table’s schema.
+* Using multiple TTL values for a given table may lead to inefficiency when purging expired data, because an SSTable will remain until **all** of its data is expired.
+* Tombstone compaction can be enabled to remove data from partially expired SSTables, but this creates additional WA (write amplification).
+
+#### CAUTION
+Avoid overwriting data and deleting data explicitly at all costs, as this can potentially block an expired SSTable from being purged, due to the checks that are performed to avoid data resurrection.
+
 ### Time-window Compaction benefits
 
 * Keeps entries according to a time range, making searches for data within a given range easy to do, resulting in better read performance.

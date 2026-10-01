@@ -8,6 +8,9 @@ First, if you enabled CDC on any table (using `with cdc = { ... }`), you should 
 alter table ks.t with cdc = {'enabled': false};
 ```
 
+#### CAUTION
+This will delete the CDC log table associated with this table - in this example, `ks.t_scylla_cdc_log`.
+
 This should work even if you already upgraded, but preferably disable CDC on all tables before the upgrade.
 
 After disabling CDC and finishing the upgrade you can safely re-enable it.

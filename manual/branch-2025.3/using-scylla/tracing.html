@@ -407,7 +407,7 @@ of nodes in that datacenter. Alternatively, you can use <code class="docutils li
 </pre></div>
 </div>
 <p>Resume your normal activities, such as adding information into a table. For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">into</span> <span class="n">keyspace1</span><span class="mf">.</span><span class="n">standard1</span> <span class="p">(</span><span class="k">key</span><span class="p">,</span> <span class="s s-Name">&quot;C0&quot;</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="m">0x12345679</span><span class="p">,</span> <span class="n">bigintAsBlob</span><span class="p">(</span><span class="mf">123456</span><span class="p">));</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">into</span> <span class="n">keyspace1</span><span class="mf">.</span><span class="n">standard1</span> <span class="p">(</span><span class="k">key</span><span class="p">,</span> <span class="s s-Name">"C0"</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="m">0x12345679</span><span class="p">,</span> <span class="n">bigintAsBlob</span><span class="p">(</span><span class="mf">123456</span><span class="p">));</span>
 </pre></div>
 </div>
 <p>Returns</p>
@@ -441,7 +441,7 @@ of nodes in that datacenter. Alternatively, you can use <code class="docutils li
 <p>Returns</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>session_id                            | client    | command | coordinator | duration | parameters                                                                                                                                                                                                                       | request            | started_at
 --------------------------------------+-----------+---------+-------------+----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------+---------------------------------
-227aff60-4f21-11e6-8835-000000000000  | 127.0.0.1 | QUERY   | 127.0.0.2   | 639      | {&#39;consistency_level&#39;: &#39;ONE&#39;, &#39;page_size&#39;: &#39;100&#39;, &#39;query&#39;: &#39;INSERT into keyspace1.standard1 (key, &quot;C0&quot;) VALUES (0x12345679, bigintAsBlob(123456));&#39;, &#39;serial_consistency_level&#39;: &#39;SERIAL&#39;, &#39;user_timestamp&#39;: &#39;1469091441238107&#39;}  | Execute CQL3 query | 2016-07-21 08:57:21.238000+0000
+227aff60-4f21-11e6-8835-000000000000  | 127.0.0.1 | QUERY   | 127.0.0.2   | 639      | {'consistency_level': 'ONE', 'page_size': '100', 'query': 'INSERT into keyspace1.standard1 (key, "C0") VALUES (0x12345679, bigintAsBlob(123456));', 'serial_consistency_level': 'SERIAL', 'user_timestamp': '1469091441238107'}  | Execute CQL3 query | 2016-07-21 08:57:21.238000+0000
 
 (1 rows)
 cqlsh&gt; select * from system_traces.events where session_id=227aff60-4f21-11e6-8835-000000000000;
@@ -535,20 +535,20 @@ session_id                            | event_id                             | a
 <h3>Enabling and configuring<a class="headerlink" href="#enabling-and-configuring" title="Link to this heading">¶</a></h3>
 <p>Slow query logging is disabled by default. A REST API allows configuring and querying the configuration of the feature.</p>
 <p>To set the parameters, run:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X POST --header &quot;Content-Type: application/json&quot; --header &quot;Accept: application/json&quot; &quot;http://&lt;Node&#39;s address&gt;:10000/storage_service/slow_query?enable=&lt;true|false&gt;&amp;ttl=&lt;in seconds&gt;&amp;threshold=&lt;threshold in microseconds&gt;&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" "http://&lt;Node's address&gt;:10000/storage_service/slow_query?enable=&lt;true|false&gt;&amp;ttl=&lt;in seconds&gt;&amp;threshold=&lt;threshold in microseconds&gt;"</span>
 </pre></div>
 </div>
 <p>For example, to disable the feature on a node with the address <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>, set the <code class="docutils literal notranslate"><span class="pre">ttl</span></code> to <code class="docutils literal notranslate"><span class="pre">8600</span></code> and the threshold to <code class="docutils literal notranslate"><span class="pre">10000</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X POST --header &quot;Content-Type: application/json&quot; --header &quot;Accept: application/json&quot; &quot;http://127.0.0.1:10000/storage_service/slow_query?enable=false&amp;ttl=8600&amp;threshold=10000&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" "http://127.0.0.1:10000/storage_service/slow_query?enable=false&amp;ttl=8600&amp;threshold=10000"</span>
 </pre></div>
 </div>
 <p>To get the current configuration, run:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X GET --header &quot;Content-Type: application/json&quot; --header &quot;Accept: application/json&quot; &quot;http://&lt;Node&#39;s address&gt;:10000/storage_service/slow_query&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X GET --header "Content-Type: application/json" --header "Accept: application/json" "http://&lt;Node's address&gt;:10000/storage_service/slow_query"</span>
 </pre></div>
 </div>
 <p>After the <code class="docutils literal notranslate"><span class="pre">POST</span></code> command above, the query and result will look as below:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X GET --header &quot;Content-Type: application/json&quot; --header &quot;Accept: application/json&quot; &quot;http://127.0.0.1:10000/storage_service/slow_query&quot;</span>
-<span class="go">{&quot;threshold&quot;: 10000, &quot;enable&quot;: false, &quot;ttl&quot;: 8600}</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">curl -X GET --header "Content-Type: application/json" --header "Accept: application/json" "http://127.0.0.1:10000/storage_service/slow_query"</span>
+<span class="go">{"threshold": 10000, "enable": false, "ttl": 8600}</span>
 </pre></div>
 </div>
 </section>
@@ -567,7 +567,7 @@ session_id                            | event_id                             | a
 <li><p><code class="docutils literal notranslate"><span class="pre">shard</span></code>: shard ID on a coordinator, where the query has been handled.</p></li>
 </ul>
 <p>With these tables, one may get the relevant traces using a query like the one below:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">from</span> <span class="n">system_traces</span><span class="mf">.</span><span class="n">sessions_time_idx</span> <span class="k">where</span> <span class="n">minutes</span> <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;2016-09-07 16:56:00-0700&#39;</span><span class="p">)</span> <span class="k">and</span> <span class="n">started_at</span> <span class="o">&gt;</span> <span class="s1">&#39;2016-09-07 16:56:30-0700&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">from</span> <span class="n">system_traces</span><span class="mf">.</span><span class="n">sessions_time_idx</span> <span class="k">where</span> <span class="n">minutes</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'2016-09-07 16:56:00-0700'</span><span class="p">)</span> <span class="k">and</span> <span class="n">started_at</span> <span class="o">&gt;</span> <span class="s1">'2016-09-07 16:56:30-0700'</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -624,15 +624,15 @@ configuration of this feature.</p>
 <p>To request current state of the tracing run:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>http://&lt;node<span class="w"> </span>address&gt;:10000/storage_service/slow_query
 
-<span class="go">{&quot;enable&quot;: false, &quot;ttl&quot;: 86400, &quot;threshold&quot;: 500000, &quot;fast&quot;: false}</span>
+<span class="go">{"enable": false, "ttl": 86400, "threshold": 500000, "fast": false}</span>
 </pre></div>
 </div>
 <p>To enable lightweight slow-queries tracing run:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span><span class="s2">&quot;http://&lt;node address&gt;:10000/storage_service/slow_query?enable=true&amp;fast=true&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span>--header<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>--header<span class="w"> </span><span class="s2">"Accept: application/json"</span><span class="w"> </span><span class="s2">"http://&lt;node address&gt;:10000/storage_service/slow_query?enable=true&amp;fast=true"</span>
 </pre></div>
 </div>
 <p>Normal slow query tracing can be enabled with:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span><span class="s2">&quot;http://&lt;node address&gt;:10000/storage_service/slow_query?enable=true&amp;fast=false&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span>--header<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>--header<span class="w"> </span><span class="s2">"Accept: application/json"</span><span class="w"> </span><span class="s2">"http://&lt;node address&gt;:10000/storage_service/slow_query?enable=true&amp;fast=false"</span>
 </pre></div>
 </div>
 </section>
@@ -697,14 +697,14 @@ HEADER=true
 </li>
 <li><p>Dump the contents of the system_traces.sessions and events tables to a file on disk. The file will be in the directory you are currently in.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CONSISTENCY LOCAL_ONE;
-COPY system_traces.sessions TO &#39;sessions.out&#39; WITH HEADER = TRUE;
-COPY system_traces.events TO &#39;events.out&#39; WITH HEADER = TRUE;
+COPY system_traces.sessions TO 'sessions.out' WITH HEADER = TRUE;
+COPY system_traces.events TO 'events.out' WITH HEADER = TRUE;
 </pre></div>
 </div>
 <p>Alternatively, specify the location to send the dump file to. Change the path below to suit your needs.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CONSISTENCY LOCAL_ONE;
-COPY system_traces.sessions TO &#39;/tmp/tracing/sessions.out&#39; WITH HEADER = TRUE;
-COPY system_traces.events TO &#39;/tmp/tracing/events.out&#39; WITH HEADER = TRUE;
+COPY system_traces.sessions TO '/tmp/tracing/sessions.out' WITH HEADER = TRUE;
+COPY system_traces.events TO '/tmp/tracing/events.out' WITH HEADER = TRUE;
 </pre></div>
 </div>
 </li>
@@ -1378,7 +1378,7 @@ COPY system_traces.events TO &#39;/tmp/tracing/events.out&#39; WITH HEADER = TRU
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

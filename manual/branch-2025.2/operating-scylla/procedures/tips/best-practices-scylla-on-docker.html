@@ -408,7 +408,7 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker ps</span>
 
 <span class="go">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                          NAMES</span>
-<span class="go">616ee646cb9d        scylladb/scylla     &quot;/docker-entrypoint.p&quot;   4 seconds ago       Up 4 seconds        7000-7001/tcp, 9042/tcp, 9160/tcp, 10000/tcp   some-scylla</span>
+<span class="go">616ee646cb9d        scylladb/scylla     "/docker-entrypoint.p"   4 seconds ago       Up 4 seconds        7000-7001/tcp, 9042/tcp, 9160/tcp, 10000/tcp   some-scylla</span>
 </pre></div>
 </div>
 <p>As seen from the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">ps</span></code> output, the image exposes ports <strong>7000-7001</strong> (Inter-node RPC), <strong>9042</strong> (CQL), and <strong>10000</strong> (REST API).</p>
@@ -462,11 +462,11 @@
 <section id="starting-a-cluster">
 <h3>Starting a Cluster<a class="headerlink" href="#starting-a-cluster" title="Link to this heading">¶</a></h3>
 <p>With a single <code class="docutils literal notranslate"><span class="pre">some-scylla</span></code> instance running,  joining new nodes to form a cluster is easy:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run --name some-scylla2 -d scylladb/scylla --seeds=&quot;$(docker inspect --format=&#39;{{ .NetworkSettings.IPAddress }}&#39; some-scylla)&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run --name some-scylla2 -d scylladb/scylla --seeds="$(docker inspect --format='{{ .NetworkSettings.IPAddress }}' some-scylla)"</span>
 </pre></div>
 </div>
 <p>If you’re on macOS, ensure to add the <code class="docutils literal notranslate"><span class="pre">–reactor-backend=epoll</span></code> option when adding new nodes:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run --name some-scylla2 -d scylladb/scylla --reactor-backend=epoll --seeds=&quot;$(docker inspect --format=&#39;{{ .NetworkSettings.IPAddress }}&#39; some-scylla)&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run --name some-scylla2 -d scylladb/scylla --reactor-backend=epoll --seeds="$(docker inspect --format='{{ .NetworkSettings.IPAddress }}' some-scylla)"</span>
 </pre></div>
 </div>
 <p>To query when the node is up and running (and view the status of the entire cluster) use the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">status</span></code> command:</p>
@@ -645,14 +645,14 @@
 </div>
 <p>Once you have the <code class="docutils literal notranslate"><span class="pre">.csv</span></code> downloaded, you can use the CQL <code class="docutils literal notranslate"><span class="pre">COPY</span> <span class="pre">FROM</span></code> command as explained <a class="reference internal" href="../../../cql/cqlsh.html"><span class="doc">here</span></a> to load the data into ScyllaDB.</p>
 <p>Such a copy command might look like this:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="p">:</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="n">COPY</span> <span class="o">&lt;</span><span class="n">table_name</span><span class="o">&gt;</span> <span class="k">FROM</span> <span class="s1">&#39;file.csv&#39;</span> <span class="k">WITH</span> <span class="n">HEADER</span><span class="o">=</span><span class="n">true</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="p">:</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="n">COPY</span> <span class="o">&lt;</span><span class="n">table_name</span><span class="o">&gt;</span> <span class="k">FROM</span> <span class="s1">'file.csv'</span> <span class="k">WITH</span> <span class="n">HEADER</span><span class="o">=</span><span class="n">true</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
 <section id="searching-for-a-setting-in-scylla-yaml">
 <h3>Searching for a setting in scylla.yaml<a class="headerlink" href="#searching-for-a-setting-in-scylla-yaml" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> can be found at <code class="docutils literal notranslate"><span class="pre">/etc/scylla/scylla.yaml</span></code>.  In this case, you can search for a specific entry in the file.   For example, if you wanted to determine if a setup was experimental and were to search for <code class="docutils literal notranslate"><span class="pre">experimental</span></code> in the file, you could try:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker exec -it some-scylla grep -H &#39;experimental&#39; /etc/scylla/scylla.yaml</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker exec -it some-scylla grep -H 'experimental' /etc/scylla/scylla.yaml</span>
 </pre></div>
 </div>
 <p>Copyright</p>
@@ -1303,7 +1303,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

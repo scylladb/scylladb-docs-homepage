@@ -521,7 +521,7 @@ See <a class="reference external" href="https://stackoverflow.com/questions/7216
 <p>ScyllaDB comes with its own version of the Apache Cassandra client tools, in the package <code class="code docutils literal notranslate"><span class="pre">scylla-tools</span></code>. Trying to install it on a server with Cassandra already installed may result in something like:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Unpacking scylla-tools (1.0.1-20160411.b9fe89b-ubuntu1) ...</span>
 <span class="go">dpkg: error processing archive /var/cache/apt/archives/scylla-tools_1.0.1-20160411.b9fe89b-ubuntu1_all.deb (--unpack):</span>
-<span class="go">trying to overwrite &#39;/usr/bin/nodetool&#39;, which is also in package cassandra 2.1.4</span>
+<span class="go">trying to overwrite '/usr/bin/nodetool', which is also in package cassandra 2.1.4</span>
 </pre></div>
 </div>
 <p>We recommend uninstalling Apache Cassandra before installing <code class="code docutils literal notranslate"><span class="pre">scylla-tools</span></code>.</p>
@@ -557,7 +557,7 @@ available version. See <a class="reference external" href="https://help.ubuntu.c
 <p>Note: trying to mix a <code class="code docutils literal notranslate"><span class="pre">SimpleSnitch</span></code> with a <code class="code docutils literal notranslate"><span class="pre">DC-aware</span> <span class="pre">strategy</span></code> or a <code class="code docutils literal notranslate"><span class="pre">DC-aware</span> <span class="pre">snitch</span></code> with a <code class="code docutils literal notranslate"><span class="pre">SimpleStrategy</span></code> may cause your cluster not to work as intended therefore we <strong>strongly discourage</strong> these types of configurations in general.</p>
 <p>Not using a proper snitch-strategy combination may cause different types of errors.</p>
 <p>For instance:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Unavailable: code=1000 [Unavailable exception] message=&quot;Cannot achieve consistency level for cl LOCAL_ONE. Requires 1, alive 0&quot; info={&#39;required_replicas&#39;: 1, &#39;alive_replicas&#39;: 0, &#39;consistency&#39;: &#39;LOCAL_ONE&#39;}</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Unavailable: code=1000 [Unavailable exception] message="Cannot achieve consistency level for cl LOCAL_ONE. Requires 1, alive 0" info={'required_replicas': 1, 'alive_replicas': 0, 'consistency': 'LOCAL_ONE'}</span>
 </pre></div>
 </div>
 <p>If you see this error you should always check that you are not using a <code class="code docutils literal notranslate"><span class="pre">SimpleSnitch</span></code> in your cluster configuration in conjunction with some <code class="code docutils literal notranslate"><span class="pre">DC-aware</span> <span class="pre">replication</span> <span class="pre">strategy</span></code> for a keyspace of a table you are failing to query.</p>
@@ -712,7 +712,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
 <li><p>Add the following line <code class="docutils literal notranslate"><span class="pre">kernel.core_pattern=|/&lt;path&gt;/&lt;coredump_directory&gt;</span> <span class="pre">%p</span> <span class="pre">%u</span> <span class="pre">%g</span> <span class="pre">%s</span> <span class="pre">%t</span> <span class="pre">%e&quot;</span></code></p></li>
 </ol>
 <p>For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kernel.core_pattern<span class="o">=</span><span class="p">|</span>/home/centos/core/<span class="w"> </span>%p<span class="w"> </span>%u<span class="w"> </span>%g<span class="w"> </span>%s<span class="w"> </span>%t<span class="w"> </span>%e<span class="s2">&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kernel.core_pattern<span class="o">=</span><span class="p">|</span>/home/centos/core/<span class="w"> </span>%p<span class="w"> </span>%u<span class="w"> </span>%g<span class="w"> </span>%s<span class="w"> </span>%t<span class="w"> </span>%e<span class="s2">"</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -1388,7 +1388,7 @@ or added to your <code class="docutils literal notranslate"><span class="pre">sc
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

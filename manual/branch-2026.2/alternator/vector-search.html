@@ -487,14 +487,14 @@ equivalent to specifying <code class="docutils literal notranslate"><span class=
 </div></blockquote>
 <p>Example (using boto3):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span>
-    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
-    <span class="n">KeySchema</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;KeyType&#39;</span><span class="p">:</span> <span class="s1">&#39;HASH&#39;</span><span class="p">}],</span>
-    <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;AttributeType&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span><span class="p">}],</span>
-    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">&#39;PAY_PER_REQUEST&#39;</span><span class="p">,</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">'my-table'</span><span class="p">,</span>
+    <span class="n">KeySchema</span><span class="o">=</span><span class="p">[{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'KeyType'</span><span class="p">:</span> <span class="s1">'HASH'</span><span class="p">}],</span>
+    <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'AttributeType'</span><span class="p">:</span> <span class="s1">'S'</span><span class="p">}],</span>
+    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">'PAY_PER_REQUEST'</span><span class="p">,</span>
     <span class="n">VectorIndexes</span><span class="o">=</span><span class="p">[</span>
         <span class="p">{</span>
-            <span class="s1">&#39;IndexName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;VectorAttribute&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="s1">&#39;Dimensions&#39;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">},</span>
+            <span class="s1">'IndexName'</span><span class="p">:</span> <span class="s1">'embedding-index'</span><span class="p">,</span>
+            <span class="s1">'VectorAttribute'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'Dimensions'</span><span class="p">:</span> <span class="mi">1536</span><span class="p">},</span>
         <span class="p">}</span>
     <span class="p">],</span>
 <span class="p">)</span>
@@ -518,10 +518,10 @@ index operation (Create or Delete) may be requested per call.</p>
 <p>Each element of the list is an object with exactly one of the following keys:</p>
 <p><strong>Create:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Create&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;VectorAttribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;AttributeName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"Create"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"IndexName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-vector-index"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"VectorAttribute"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"AttributeName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"embedding"</span><span class="p">,</span><span class="w"> </span><span class="nt">"Dimensions"</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"Projection"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"ProjectionType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KEYS_ONLY"</span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -532,8 +532,8 @@ Currently only <code class="docutils literal notranslate"><span class="pre">Proj
 when <code class="docutils literal notranslate"><span class="pre">Projection</span></code> is omitted.</p>
 <p><strong>Delete:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Delete&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span>
+<span class="w">  </span><span class="nt">"Delete"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"IndexName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-vector-index"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -623,10 +623,10 @@ vector search rather than a standard key-condition query.</p>
 </table>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">'embedding-index'</span><span class="p">,</span>
     <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.1&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;-0.3&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.7&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">]},</span>
+        <span class="s1">'QueryVector'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'L'</span><span class="p">:</span> <span class="p">[{</span><span class="s1">'N'</span><span class="p">:</span> <span class="s1">'0.1'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'N'</span><span class="p">:</span> <span class="s1">'-0.3'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'N'</span><span class="p">:</span> <span class="s1">'0.7'</span><span class="p">},</span> <span class="o">...</span><span class="p">]},</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -1410,7 +1410,7 @@ supported for vector search queries and will be rejected with a
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

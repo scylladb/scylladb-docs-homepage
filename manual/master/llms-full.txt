@@ -7306,6 +7306,9 @@ First, if you enabled CDC on any table (using `with cdc = { ... }`), you should 
 alter table ks.t with cdc = {'enabled': false};
 ```
 
+#### CAUTION
+This will delete the CDC log table associated with this table - in this example, `ks.t_scylla_cdc_log`.
+
 This should work even if you already upgraded, but preferably disable CDC on all tables before the upgrade.
 
 After disabling CDC and finishing the upgrade you can safely re-enable it.
@@ -7833,6 +7836,9 @@ The purpose of delta rows is to describe the write itself — the mutation perfo
 **Preimage rows** exist to show what the state of the row affected by the write was prior to the write. The amount of information shown by preimage rows can be configured: the user can choose that the preimage contains the entire row (how it was before the write was made) by passing the `'full'` value to the `'preimage'` parameter when enabling CDC on a table, or that the preimage contains only the columns that were changed by the write by passing the `true` value to the `'preimage'` parameter. We will see examples of this.
 
 **Postimage rows** exist to show what the state of the row affected by the write is after the write. Postimages always describe the state of the entire row. They are constructed by combining the delta row with the full preimage row (including columns not affected by the write).
+
+#### CAUTION
+in order to generate preimage rows for a given write, ScyllaDB must perform a read before making the write. This increases latencies significantly. Furthermore, the read-then-write procedure is not atomic; between the read and the write a concurrent write may be performed. If the concurrent write modifies the same row and column that the preimage had read, the preimage’s value will not be consistent with the order of writes as they appear in the CDC log. Preimages will only give “sensible” results if no concurrent writes are performed to the same row. They also heavily depend on monotonicity of clocks used to generate write timestamps. We will see some examples of what can go wrong in a later section. These remarks also apply to postimages, since they are computed from preimages.
 
 ## Preimage rows
 
@@ -9018,6 +9024,13 @@ what to do based on whether a certificate was presented.
      truststore: <CA cert that signed the client certificates>
      require_client_auth: optional
    ```
+
+   #### TIP
+   Setting all four port options explicitly is only necessary when you want
+   to keep a plain (non-TLS) CQL port alongside a dedicated TLS port.
+   Without explicit values, enabling TLS makes all CQL ports TLS-only, which
+   prevents plain drivers (such as the management framework) from connecting.
+   If TLS-only CQL is acceptable, you can omit the explicit port assignments.
 3. Configure the authenticator and role-extraction rules on each node:
    ```yaml
    authenticator: com.scylladb.auth.CertificateOrPasswordAuthenticator
@@ -10020,6 +10033,11 @@ methods can be used:
 
    All other cluster-wide settings (tablets configuration, encryption settings,
    experimental features, etc.) must match the existing nodes.
+
+   #### CAUTION
+   Make sure that the ScyllaDB version on the new node is identical to the
+   version on the other nodes in the cluster. Running nodes with different
+   versions is not supported.
 3. If using `GossipingPropertyFileSnitch`, configure
    `/etc/scylla/cassandra-rackdc.properties` with the correct datacenter
    and rack assignment for this node:
@@ -10325,6 +10343,9 @@ By default, major compaction runs on all the `keyspaces` and tables.
 Major compactions will take all the SSTables for a column family and merge them into a **single SSTable per shard**.
 If a keyspace is provided, the compaction will run on all of the tables within that keyspace. If one or more tables are provided as command-line arguments, the compaction will run only on those tables.
 
+#### CAUTION
+It is always best to allow ScyllaDB to automatically run minor compactions using a [compaction strategy](https://docs.scylladb.com/manual/master/kb/compaction.md). Using Nodetool to run compaction can quickly exhaust all resources, increase operational costs, and take up valuable disk space. For this reason, major compactions should be avoided and are not recommended for any production system.
+
 ## Syntax
 
 ```console
@@ -10464,6 +10485,15 @@ For more information, see the [Compaction KB Article](https://docs.scylladb.com/
 
 Time-Window Compaction Strategy compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)]().
 SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
+
+#### CAUTION
+* We strongly recommend using a single TTL value for any given table.
+* This means sticking to the default time to live as specified in the table’s schema.
+* Using multiple TTL values for a given table may lead to inefficiency when purging expired data, because an SSTable will remain until **all** of its data is expired.
+* Tombstone compaction can be enabled to remove data from partially expired SSTables, but this creates additional WA (write amplification).
+
+#### CAUTION
+Avoid overwriting data and deleting data explicitly at all costs, as this can potentially block an expired SSTable from being purged, due to the checks that are performed to avoid data resurrection.
 
 ### Time-window Compaction benefits
 
@@ -10823,6 +10853,15 @@ compaction = {
 
 The basic concept is that TimeWindowCompactionStrategy will create 1 SSTable per file for a given time window.
 
+#### CAUTION
+* We strongly recommend using a single TTL value for any given table.
+* This means sticking to the default time to live as specified in the table’s schema.
+* Using multiple TTL values for a given table may lead to inefficiency when purging expired data, because an SSTable will remain until **all** of its data is expired.
+* Tombstone compaction can be enabled to remove data from partially expired SSTables, but this creates additional WA (write amplification).
+
+#### CAUTION
+Avoid overwriting data and deleting data explicitly at all costs, as this can potentially block an expired SSTable from being purged, due to the checks that are performed to avoid data resurrection.
+
 <a id="twcs-options"></a>
 
 ### TWCS options
@@ -10920,6 +10959,9 @@ There are two types of compactions:
 * Major Compaction
   : A user triggers (using nodetool) a compaction over all SSTables, merging the individual tables according to the selected compaction strategy.
 
+#### CAUTION
+It is always best to allow ScyllaDB to automatically run minor compactions. Major compactions can exhaust resources, increase operational costs, and take up valuable disk space. This requires you to have 50% more disk space than your data unless you are using [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics).
+
 ## View Compaction Statistics
 
 ScyllaDB has tools you can use to see the status of your compactions. These include nodetool ([compactionhistory](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/compactionhistory.md)  and [compactionstats](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/compactionstats.md))  and the Grafana dashboards which are part of the [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/) which display the compaction statistics on a per cluster and per node basis.  Compaction errors can be seen in the [logs](https://manager.docs.scylladb.com/stable/config/scylla-manager-config.html).
@@ -10936,6 +10978,9 @@ A compaction strategy is what determines which of the SSTables will be compacted
 ### How to Set a Compaction Strategy
 
 Compaction strategies are set as part of the `CREATE` or `ALTER` statement when creating or altering tables. Refer to the [CQL syntax](https://docs.scylladb.com/manual/master/cql/compaction.md) for details.
+
+#### CAUTION
+Changing the parameters for compaction strategies or changing from one strategy to another (using the `ALTER` statement) can create issues. See [Changing Compaction Strategies or Properties]() for more information.
 
 <a id="size-tiered-compaction-strategy-stcs"></a>
 
@@ -11037,6 +11082,15 @@ For example, when compacting two SSTables (or SSTable runs) holding 7GB each: in
 ## Time-window Compaction Strategy (TWCS)
 
 Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)](). SSTables from different time windows are never compacted together.
+
+#### CAUTION
+* We strongly recommend using a single TTL value for any given table.
+* This means sticking to the default time to live as specified in the table’s schema.
+* Using multiple TTL values for a given table may lead to inefficiency when purging expired data, because an SSTable will remain until **all** of its data is expired.
+* Tombstone compaction can be enabled to remove data from partially expired SSTables, but this creates additional WA (write amplification).
+
+#### CAUTION
+Avoid overwriting data and deleting data explicitly at all costs, as this can potentially block an expired SSTable from being purged, due to the checks that are performed to avoid data resurrection.
 
 The strategy works as follows:
 
@@ -11826,6 +11880,9 @@ Apply any recommended `ALTER TABLE` statement yourself after reviewing it.
 
 This guide describes the commands that you can use to configure your ScyllaDB clusters.
 The commands are all sent via the command line in a terminal and sudo or root access is not required as long as you have permission to execute in the directory.
+
+#### CAUTION
+You should **only** use configuration settings which are officially supported.
 
 A list of all ScyllaDB commands can be obtained by running
 
@@ -19353,6 +19410,9 @@ In a prepared statement, the timeout can be given as a bind marker:
 TRUNCATE TABLE users USING TIMEOUT ?;
 ```
 
+#### CAUTION
+Do not run any operation on a table that is being truncated. Truncate operation is an administrative operation, and running any other operation on the same table in parallel may cause the truncating table’s data to end up in an undefined state.
+
 * [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/master/cql/index.md)
 
 Copyright
@@ -21282,6 +21342,12 @@ It stores the encryption keys locally on disk in a text file.
 The location of this file is specified in `scylla.yaml`, or in the table schema.
 The user has the option to generate the key(s) themselves, or let ScyllaDB
 generate the key(s) for them.
+
+#### CAUTION
+Care should be taken so that no unauthorized person can access the key data
+from the file system. Make sure that the owner of this file is the `scylla`
+user and that the file is **not** readable by **other users**, or accessible
+by **other roles**.
 
 You should also consider keeping the key directory on a network drive (using TLS
 for the file sharing) to avoid having keys and data on the same storage media,
@@ -28836,6 +28902,9 @@ Try to adjust ldapsearch parameters until it returns the correct role entries fo
 
 Once that works as expected, you can use the [ldapurl](https://linux.die.net/man/1/ldapurl) utility to transform the parameters into a URL providing a basis for the ldap_url_template.
 
+#### TIP
+Always provide an explicit `-s` flag to both `ldapsearch` and `ldapurl`; the default `-s` value differs among the two tools.
+
 Remember to replace the specific user name with `{USER}` in the URL template.
 You can turn on debug logging in the LDAP role manager by passing the following argument to the Scylla executable: `--logger-log-level ldap_role_manager=debug`.
 This will make Scylla log useful additional details about the LDAP responses it receives.
@@ -30519,6 +30588,12 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       This is a node-local operation. Use the IP address of the node that
       you are upgrading.
 
+      #### CAUTION
+      Do not mark more than one node for upgrade at the same time. Even if
+      you restart them serially, unexpected restarts can happen for various
+      reasons (crashes, power failures, etc.) leading to parallel node
+      upgrades which can reduce availability.
+
       ```console
       scylla nodetool -h <node-ip> migrate-to-tablets upgrade
       ```
@@ -32183,6 +32258,9 @@ usually asks for your monitoring metrics when you open a ticket.
 See [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/stable/) for details.
 
 ### Configuration Management
+
+#### CAUTION
+**All** configuration settings for **all** nodes in the **same cluster** should be **identical or coherent**.
 
 Using tools such as Ansible, Chef, Puppet, Salt, or Juju are recommended.
 
@@ -36675,6 +36753,12 @@ scylla sstable <operation> <path to SStable>
 
 You can specify more than one SSTable.
 
+A single directory can be passed in place of the individual SSTables in it –
+typically the table directory – in which case all the SSTables found in it are
+processed. Note that the data directory of a running node is a moving target:
+SSTables which are not sealed yet are left out, and ones deleted while being
+loaded are reported and skipped.
+
 Additionally, the path to SSTable can point to an object storage fully qualified
 path in the form of `s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt`
 or `gs://bucket-name/prefix/of/your/sstable/sstable-TOC.txt`. This also
@@ -37660,6 +37744,100 @@ scylla sstable split --merge -t 100 -t 500 /path/to/md-123456-big-Data.db /path/
 ```
 
 This will merge both input SSTables first, then split the combined data, creating 3 output SSTables.
+
+### layout
+
+Describes how the SSTables of a table are organized by its compaction strategy.
+Incremental and size-tiered compaction organize SSTables into runs, leveled
+compaction into levels and time-window compaction into time windows. The
+SSTables are grouped accordingly, and each group is annotated with the aggregate
+of the SSTables in it.
+
+The compaction strategy, its options and the `tombstone_gc` mode are the ones
+of the schema. `--strategy` (one of `ics`, `stcs`, `lcs`, `twcs`, or a
+compaction strategy class name) and `--strategy-option` are shortcuts for
+describing the layout in the terms of another strategy, which is useful when the
+schema is not available – in which case the schema loader falls back to the
+default, incremental compaction. Everything the description depends on is a
+property of the schema, so overriding the schema itself, with `--schema-file`,
+customizes all of it.
+
+SSTables belonging to different compaction groups are described separately, as
+compaction only ever considers SSTables of the same compaction group. For a
+tablet-based table the compaction group is the tablet, which is looked up in
+`system.tablets`, located in the data dir. If `system.tablets` lives
+elsewhere, its directory can be provided with `--system-tablets-dir`, which
+only a tablet-based table has any use for. For a vnode-based table the
+compaction group is the shard, which is derived from the sharding parameters of
+the node, read from `system.topology`. `--shards` and `--ignore-msb-bits`
+provide them when they cannot be read; they describe the sharding of a
+vnode-based table, and are rejected for a tablet-based one, whose sharding is
+its tablet map.
+
+The columns to include are selected with `--columns`, which takes a
+comma-separated list of column names, or `all` for all of them. The order of
+the SSTables within each group is selected with `--sort`, which takes a
+comma-separated list of `column[:asc|desc]`, in decreasing order of relevance.
+Run `scylla sstable layout --help` for the list of supported columns.
+
+Whether a tombstone counts as expired depends on the `tombstone_gc` mode of
+the table, which is reported in the header. The mode is the one the table
+actually uses: a table created without a `tombstone_gc` option has the default
+of its keyspace resolved and recorded when it is created, which is `repair`
+unless the keyspace uses a local replication strategy. In the `timeout` mode
+the gc grace period of the schema is what decides it. In the `repair` mode it
+depends on when the token range
+of the SSTable was last repaired, less the propagation delay: the repair history
+is read from `system.tablets` for a tablet-based table and from
+`system.repair_history` for a vnode-based one. A range which was never
+repaired has nothing to purge.
+
+The layout of a table is what the operation is for, so with no SSTable arguments
+it describes the SSTables of the table `--keyspace` and `--table` name:
+
+```console
+scylla sstable layout --keyspace <keyspace> --table <table>
+```
+
+They are resolved through the storage options of the keyspace, which say whether
+they live in a directory of the data dir or in a bucket of an object store. The
+data dir is the one `--scylla-data-dir` names, or the one the scylla.yaml
+configures. The system tables the SSTables of a table are looked up in have to
+be on disk: `nodetool flush system_schema`, and for a table on object storage
+`nodetool flush system sstables` as well. SSTables named on the command line
+are the ones described, `--keyspace` and `--table` then only saying which
+schema to load.
+
+Supports both a text and a JSON output, selected with `--output-format`. The
+JSON output reports the raw, unformatted value of each column.
+
+**Examples:**
+
+Describe the layout of a table:
+
+```console
+scylla sstable layout --keyspace my_keyspace --table my_table
+```
+
+Describe the layout of the SSTables of a directory, which does not have to be
+the one the table of this node keeps its SSTables in:
+
+```console
+scylla sstable layout /var/lib/scylla/data/my_keyspace/my_table-8ff5d0a0a41411f0a8a1e2ba0e1e0b21
+```
+
+Describe it in the terms of time-window compaction, with 6 hour windows:
+
+```console
+scylla sstable layout --strategy twcs --strategy-option compaction_window_unit=HOURS \
+    --strategy-option compaction_window_size=6 /path/to/table_dir
+```
+
+Include all the columns, ordered by the share of expired tombstones:
+
+```console
+scylla sstable layout --columns all --sort expired-pctg:desc /path/to/table_dir
+```
 
 ## Examples
 
@@ -41027,6 +41205,9 @@ Snapshot information for tables or keyspaces which are present in the database a
 
 Snapshots are not removed automatically. On  active database nodes, old snapshots take up disk space and need to be removed manually to free up the storage space. Snapshots are only taking additional space on disk once the original data files have been changed.
 
+#### CAUTION
+Do not delete snapshots manually at the file system level, use the nodetool command.
+
 Use this procedure to remove snapshots or local backups.
 
 **Procedure**
@@ -41044,6 +41225,9 @@ To remove the named snapshot from all keyspaces, that is, if any of the keyspace
 To remove all existing snapshots without any warning:
 
 * Run `nodetool clearsnapshot`
+
+#### CAUTION
+use caution when running `nodetool clearsnapshot` without specifying a keyspace or snapshot as this command will remove not only snapshots listed by “nodetool listsnapshots” command but all other snapshots on the node’s storage as well, including those for previously dropped tables or keyspaces.
 
 When all else fails, and you need to remove the snapshot manually:
 
@@ -46907,6 +47091,10 @@ For each of the nodes in the cluster, serially (i.e., one node at a time), you w
 * Download and install new ScyllaDB packages
 * Start ScyllaDB
 * Validate that the upgrade was successful
+
+#### CAUTION
+Apply the procedure **serially** on each node. Do not move to the next node before
+validating that the node you upgraded is up and running the new version.
 
 **During** the rolling upgrade, it is highly recommended:
 

@@ -509,7 +509,7 @@ For Alternator operations, the format is:</p>
 </pre></div>
 </div>
 <p>For example:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PutItem|{&quot;TableName&quot;:&quot;my_table&quot;,&quot;Item&quot;:{&quot;p&quot;:{&quot;S&quot;:&quot;pk_val&quot;},&quot;c&quot;:{&quot;S&quot;:&quot;ck_val&quot;},&quot;v&quot;:{&quot;S&quot;:&quot;data&quot;}}}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PutItem|{"TableName":"my_table","Item":{"p":{"S":"pk_val"},"c":{"S":"ck_val"},"v":{"S":"data"}}}
 </pre></div>
 </div>
 <div class="admonition note">
@@ -525,11 +525,11 @@ The <code class="docutils literal notranslate"><span class="pre">audit_tables</s
 tables – the parser expands it to the real keyspace name automatically.
 For <code class="docutils literal notranslate"><span class="pre">audit_keyspaces</span></code>, use the real keyspace name directly.</p>
 <p>For example, to audit an Alternator table called <code class="docutils literal notranslate"><span class="pre">my_table_name</span></code> use either of the below:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using audit_tables - use &#39;alternator&#39; as the keyspace name:</span>
-<span class="nt">audit_tables</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alternator.my_table_name&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using audit_tables - use 'alternator' as the keyspace name:</span>
+<span class="nt">audit_tables</span><span class="p">:</span><span class="w"> </span><span class="s">"alternator.my_table_name"</span>
 
 <span class="c1"># Using audit_keyspaces - use the real keyspace name:</span>
-<span class="nt">audit_keyspaces</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alternator_my_table_name&quot;</span>
+<span class="nt">audit_keyspaces</span><span class="p">:</span><span class="w"> </span><span class="s">"alternator_my_table_name"</span>
 </pre></div>
 </div>
 <p><strong>Global and batch operations</strong>: Some Alternator operations are not scoped to a single table:</p>
@@ -561,7 +561,7 @@ separated by a pipe (e.g., <code class="docutils literal notranslate"><span clas
 <section id="alternator-audit-log-examples">
 <h4>Alternator Audit Log Examples<a class="headerlink" href="#alternator-audit-log-examples" title="Link to this heading">¶</a></h4>
 <p>Syslog output example (PutItem):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">10</span>:15:03<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="nv">node</span><span class="o">=</span><span class="s2">&quot;10.143.2.108&quot;</span>,<span class="w"> </span><span class="nv">category</span><span class="o">=</span><span class="s2">&quot;DML&quot;</span>,<span class="w"> </span><span class="nv">cl</span><span class="o">=</span><span class="s2">&quot;LOCAL_QUORUM&quot;</span>,<span class="w"> </span><span class="nv">error</span><span class="o">=</span><span class="s2">&quot;false&quot;</span>,<span class="w"> </span><span class="nv">keyspace</span><span class="o">=</span><span class="s2">&quot;alternator_my_table&quot;</span>,<span class="w"> </span><span class="nv">query</span><span class="o">=</span><span class="s2">&quot;PutItem|{\&quot;TableName\&quot;:\&quot;my_table\&quot;,\&quot;Item\&quot;:{\&quot;p\&quot;:{\&quot;S\&quot;:\&quot;pk_val\&quot;}}}&quot;</span>,<span class="w"> </span><span class="nv">client_ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span>,<span class="w"> </span><span class="nv">table</span><span class="o">=</span><span class="s2">&quot;my_table&quot;</span>,<span class="w"> </span><span class="nv">username</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">10</span>:15:03<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="nv">node</span><span class="o">=</span><span class="s2">"10.143.2.108"</span>,<span class="w"> </span><span class="nv">category</span><span class="o">=</span><span class="s2">"DML"</span>,<span class="w"> </span><span class="nv">cl</span><span class="o">=</span><span class="s2">"LOCAL_QUORUM"</span>,<span class="w"> </span><span class="nv">error</span><span class="o">=</span><span class="s2">"false"</span>,<span class="w"> </span><span class="nv">keyspace</span><span class="o">=</span><span class="s2">"alternator_my_table"</span>,<span class="w"> </span><span class="nv">query</span><span class="o">=</span><span class="s2">"PutItem|{\"TableName\":\"my_table\",\"Item\":{\"p\":{\"S\":\"pk_val\"}}}"</span>,<span class="w"> </span><span class="nv">client_ip</span><span class="o">=</span><span class="s2">"127.0.0.1"</span>,<span class="w"> </span><span class="nv">table</span><span class="o">=</span><span class="s2">"my_table"</span>,<span class="w"> </span><span class="nv">username</span><span class="o">=</span><span class="s2">"anonymous"</span>
 </pre></div>
 </div>
 <p>Table output example (PutItem):</p>
@@ -571,7 +571,7 @@ separated by a pipe (e.g., <code class="docutils literal notranslate"><span clas
 <p>returns:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> date                    | node         | event_time                           | category | consistency  | error | keyspace_name         | operation                                                                        | source    | table_name | username  |
 -------------------------+--------------+--------------------------------------+----------+--------------+-------+-----------------------+----------------------------------------------------------------------------------+-----------+------------+-----------+
-2026-03-18 00:00:00+0000 | 10.143.2.108 | 3429b1a5-2a94-11e8-8f4e-000000000001 |      DML | LOCAL_QUORUM | False | alternator_my_table   | PutItem|{&quot;TableName&quot;:&quot;my_table&quot;,&quot;Item&quot;:{&quot;p&quot;:{&quot;S&quot;:&quot;pk_val&quot;}}}                     | 127.0.0.1 |   my_table | anonymous |
+2026-03-18 00:00:00+0000 | 10.143.2.108 | 3429b1a5-2a94-11e8-8f4e-000000000001 |      DML | LOCAL_QUORUM | False | alternator_my_table   | PutItem|{"TableName":"my_table","Item":{"p":{"S":"pk_val"}}}                     | 127.0.0.1 |   my_table | anonymous |
 (1 row)
 </pre></div>
 </div>
@@ -613,12 +613,12 @@ configuration precedence.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">audit_rules</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">sinks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">table</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">categories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">DML</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">DDL</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">qualified_table_names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;prod_ks.*&quot;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;admin_*&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">qualified_table_names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"prod_ks.*"</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"admin_*"</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">sinks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">syslog</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">categories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">AUTH</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">qualified_table_names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="w">    </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"*"</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 </section>
@@ -633,18 +633,18 @@ configuration precedence.</p>
 <li><p>Set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to <code class="docutils literal notranslate"><span class="pre">syslog</span></code>.</p>
 <p>For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># audit setting</span>
-<span class="c1"># &#39;audit&#39; config option controls if and where to output audited events:</span>
-audit:<span class="w"> </span><span class="s2">&quot;syslog&quot;</span>
+<span class="c1"># 'audit' config option controls if and where to output audited events:</span>
+audit:<span class="w"> </span><span class="s2">"syslog"</span>
 <span class="c1">#</span>
 <span class="c1"># List of statement categories that should be audited.</span>
-audit_categories:<span class="w"> </span><span class="s2">&quot;DCL,DDL,AUTH&quot;</span>
+audit_categories:<span class="w"> </span><span class="s2">"DCL,DDL,AUTH"</span>
 <span class="c1">#</span>
 <span class="c1"># List of tables that should be audited.</span>
-audit_tables:<span class="w"> </span><span class="s2">&quot;mykespace.mytable&quot;</span>
+audit_tables:<span class="w"> </span><span class="s2">"mykespace.mytable"</span>
 <span class="c1">#</span>
 <span class="c1"># List of keyspaces that should be fully audited.</span>
 <span class="c1"># All tables in those keyspaces will be audited</span>
-audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</span>
+audit_keyspaces:<span class="w"> </span><span class="s2">"mykespace"</span>
 </pre></div>
 </div>
 </li>
@@ -661,7 +661,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 </div></div>
 <p>By default, audit messages are written to the same destination as ScyllaDB <a class="reference internal" href="../../getting-started/logging.html"><span class="doc">logging</span></a>, with <code class="docutils literal notranslate"><span class="pre">scylla-audit</span></code> as the process name.</p>
 <p>Logging output example (CQL drop table):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">09</span>:53:52<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="nv">node</span><span class="o">=</span><span class="s2">&quot;10.143.2.108&quot;</span>,<span class="w"> </span><span class="nv">category</span><span class="o">=</span><span class="s2">&quot;DDL&quot;</span>,<span class="w"> </span><span class="nv">cl</span><span class="o">=</span><span class="s2">&quot;ONE&quot;</span>,<span class="w"> </span><span class="nv">error</span><span class="o">=</span><span class="s2">&quot;false&quot;</span>,<span class="w"> </span><span class="nv">keyspace</span><span class="o">=</span><span class="s2">&quot;nba&quot;</span>,<span class="w"> </span><span class="nv">query</span><span class="o">=</span><span class="s2">&quot;DROP TABLE nba.team_roster ;&quot;</span>,<span class="w"> </span><span class="nv">client_ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span>,<span class="w"> </span><span class="nv">table</span><span class="o">=</span><span class="s2">&quot;team_roster&quot;</span>,<span class="w"> </span><span class="nv">username</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Mar<span class="w"> </span><span class="m">18</span><span class="w"> </span><span class="m">09</span>:53:52<span class="w"> </span>ip-10-143-2-108<span class="w"> </span>scylla-audit<span class="o">[</span><span class="m">28387</span><span class="o">]</span>:<span class="w"> </span><span class="nv">node</span><span class="o">=</span><span class="s2">"10.143.2.108"</span>,<span class="w"> </span><span class="nv">category</span><span class="o">=</span><span class="s2">"DDL"</span>,<span class="w"> </span><span class="nv">cl</span><span class="o">=</span><span class="s2">"ONE"</span>,<span class="w"> </span><span class="nv">error</span><span class="o">=</span><span class="s2">"false"</span>,<span class="w"> </span><span class="nv">keyspace</span><span class="o">=</span><span class="s2">"nba"</span>,<span class="w"> </span><span class="nv">query</span><span class="o">=</span><span class="s2">"DROP TABLE nba.team_roster ;"</span>,<span class="w"> </span><span class="nv">client_ip</span><span class="o">=</span><span class="s2">"127.0.0.1"</span>,<span class="w"> </span><span class="nv">table</span><span class="o">=</span><span class="s2">"team_roster"</span>,<span class="w"> </span><span class="nv">username</span><span class="o">=</span><span class="s2">"anonymous"</span>
 </pre></div>
 </div>
 <p>To redirect the Syslog output to a file, follow the steps below (available only for CentOS) :</p>
@@ -704,18 +704,18 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <li><p>Set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to <code class="docutils literal notranslate"><span class="pre">table</span></code>.</p>
 <p>For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># audit setting</span>
-<span class="c1"># &#39;audit&#39; config option controls if and where to output audited events:</span>
-audit:<span class="w"> </span><span class="s2">&quot;table&quot;</span>
+<span class="c1"># 'audit' config option controls if and where to output audited events:</span>
+audit:<span class="w"> </span><span class="s2">"table"</span>
 <span class="c1">#</span>
 <span class="c1"># List of statement categories that should be audited.</span>
-audit_categories:<span class="w"> </span><span class="s2">&quot;DCL,DDL,AUTH&quot;</span>
+audit_categories:<span class="w"> </span><span class="s2">"DCL,DDL,AUTH"</span>
 <span class="c1">#</span>
 <span class="c1"># List of tables that should be audited.</span>
-audit_tables:<span class="w"> </span><span class="s2">&quot;mykespace.mytable&quot;</span>
+audit_tables:<span class="w"> </span><span class="s2">"mykespace.mytable"</span>
 <span class="c1">#</span>
 <span class="c1"># List of keyspaces that should be fully audited.</span>
 <span class="c1"># All tables in those keyspaces will be audited</span>
-audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</span>
+audit_keyspaces:<span class="w"> </span><span class="s2">"mykespace"</span>
 </pre></div>
 </div>
 </li>
@@ -749,7 +749,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
 <ol class="arabic">
 <li><p>Follow both procedures from above, and set the <code class="docutils literal notranslate"><span class="pre">audit</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> file to both <code class="docutils literal notranslate"><span class="pre">syslog</span></code> and <code class="docutils literal notranslate"><span class="pre">table</span></code>. You need to restart ScyllaDB only once.</p>
 <p>To have both syslog and table you need to specify both backends separated by a comma:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>audit:<span class="w"> </span><span class="s2">&quot;syslog,table&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>audit:<span class="w"> </span><span class="s2">"syslog,table"</span>
 </pre></div>
 </div>
 </li>
@@ -1431,7 +1431,7 @@ audit_keyspaces:<span class="w"> </span><span class="s2">&quot;mykespace&quot;</
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

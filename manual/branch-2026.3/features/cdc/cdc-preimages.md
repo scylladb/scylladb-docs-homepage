@@ -16,6 +16,9 @@ The purpose of delta rows is to describe the write itself — the mutation perfo
 
 **Postimage rows** exist to show what the state of the row affected by the write is after the write. Postimages always describe the state of the entire row. They are constructed by combining the delta row with the full preimage row (including columns not affected by the write).
 
+#### CAUTION
+in order to generate preimage rows for a given write, ScyllaDB must perform a read before making the write. This increases latencies significantly. Furthermore, the read-then-write procedure is not atomic; between the read and the write a concurrent write may be performed. If the concurrent write modifies the same row and column that the preimage had read, the preimage’s value will not be consistent with the order of writes as they appear in the CDC log. Preimages will only give “sensible” results if no concurrent writes are performed to the same row. They also heavily depend on monotonicity of clocks used to generate write timestamps. We will see some examples of what can go wrong in a later section. These remarks also apply to postimages, since they are computed from preimages.
+
 ## Preimage rows
 
 As mentioned in the [CDC log table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md) document, each non-primary-key column of the base table has a corresponding column in the CDC log table with the same name, called the value column. The value column is used by delta rows to describe the change. Preimage rows use it to describe the previous values of the base table column in the corresponding base table rows.

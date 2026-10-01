@@ -46,6 +46,13 @@ what to do based on whether a certificate was presented.
      truststore: <CA cert that signed the client certificates>
      require_client_auth: optional
    ```
+
+   #### TIP
+   Setting all four port options explicitly is only necessary when you want
+   to keep a plain (non-TLS) CQL port alongside a dedicated TLS port.
+   Without explicit values, enabling TLS makes all CQL ports TLS-only, which
+   prevents plain drivers (such as the management framework) from connecting.
+   If TLS-only CQL is acceptable, you can omit the explicit port assignments.
 3. Configure the authenticator and role-extraction rules on each node:
    ```yaml
    authenticator: com.scylladb.auth.CertificateOrPasswordAuthenticator

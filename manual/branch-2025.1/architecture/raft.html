@@ -480,13 +480,13 @@ Network issues may cause the procedure to take longer, but if all nodes are aliv
 <span class="go">raft_group0_upgrade - wait_for_peers_to_enter_synchronize_state: node 127.90.69.1 not in synchronize state yet...</span>
 <span class="go">raft_group0_upgrade - wait_for_peers_to_enter_synchronize_state: retrying in a while...</span>
 <span class="go">...</span>
-<span class="go">raft_group0_upgrade - Raft upgrade procedure taking longer than expected. Please check if all nodes are live and the network is healthy. If the upgrade procedure does not progress even though the cluster is healthy, try performing a rolling restart of the cluster. If that doesn &#39;t help or some nodes are dead and irrecoverable, manual recovery may be required. Consult the relevant documentation.</span>
+<span class="go">raft_group0_upgrade - Raft upgrade procedure taking longer than expected. Please check if all nodes are live and the network is healthy. If the upgrade procedure does not progress even though the cluster is healthy, try performing a rolling restart of the cluster. If that doesn 't help or some nodes are dead and irrecoverable, manual recovery may be required. Consult the relevant documentation.</span>
 <span class="go">raft_group0_upgrade - wait_for_peers_to_enter_synchronize_state: node 127.90.69.1 not in synchronize state yet...</span>
 <span class="go">raft_group0_upgrade - wait_for_peers_to_enter_synchronize_state: retrying in a while...</span>
 </pre></div>
 </div>
 <p>Note the following message:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">raft_group0_upgrade - Raft upgrade procedure taking longer than expected. Please check if all nodes are live and the network is healthy. If the upgrade procedure does not progress even though the cluster is healthy, try performing a rolling restart of the cluster. If that doesn &#39;t help or some nodes are dead and irrecoverable, manual recovery may be required. Consult the relevant documentation.</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">raft_group0_upgrade - Raft upgrade procedure taking longer than expected. Please check if all nodes are live and the network is healthy. If the upgrade procedure does not progress even though the cluster is healthy, try performing a rolling restart of the cluster. If that doesn 't help or some nodes are dead and irrecoverable, manual recovery may be required. Consult the relevant documentation.</span>
 </pre></div>
 </div>
 <p>If the Raft upgrade procedure is stuck, this message will appear periodically in each node’s logs.</p>
@@ -519,7 +519,7 @@ gossip-based topology.</p>
 <h2>Verifying that Raft is Enabled<a class="headerlink" href="#verifying-that-raft-is-enabled" title="Link to this heading">¶</a></h2>
 <p id="schema-on-raft-enabled"><strong>Schema on Raft</strong></p>
 <p>You can verify that Raft is enabled on your cluster by performing the following query on each node:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">system</span><span class="p">.</span><span class="n">scylla_local</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;group0_upgrade_state&#39;</span><span class="p">;</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">system</span><span class="p">.</span><span class="n">scylla_local</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'group0_upgrade_state'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The query should return:</p>
@@ -559,7 +559,7 @@ gossip-based topology.</p>
 </li>
 <li><p>By sending a GET HTTP request to the <cite>/`storage_service/raft_topology/upgrade`</cite> endpoint. For example, you can do it with <code class="docutils literal notranslate"><span class="pre">curl</span></code> like this:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://127.0.0.1:10000/storage_service/raft_topology/upgrade&quot;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">"http://127.0.0.1:10000/storage_service/raft_topology/upgrade"</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1198,7 +1198,7 @@ gossip-based topology.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

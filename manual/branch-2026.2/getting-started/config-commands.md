@@ -3,6 +3,9 @@
 This guide describes the commands that you can use to configure your ScyllaDB clusters.
 The commands are all sent via the command line in a terminal and sudo or root access is not required as long as you have permission to execute in the directory.
 
+#### CAUTION
+You should **only** use configuration settings which are officially supported.
+
 A list of all ScyllaDB commands can be obtained by running
 
 ```none

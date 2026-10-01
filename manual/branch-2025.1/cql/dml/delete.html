@@ -382,7 +382,7 @@
                     <section id="delete">
 <span id="delete-statement"></span><h1>DELETE<a class="headerlink" href="#delete" title="Link to this heading">¶</a></h1>
 <p>Deleting rows or parts of rows uses the <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statement:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">delete_statement</span><span class="p">:</span> <span class="k">DELETE</span> <span class="p">[</span> <span class="o">`</span><span class="n">simple_selection</span><span class="o">`</span> <span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="o">`</span><span class="n">simple_selection</span><span class="o">`</span> <span class="p">)</span> <span class="p">]</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">delete_statement</span><span class="p">:</span> <span class="k">DELETE</span> <span class="p">[</span> <span class="o">`</span><span class="n">simple_selection</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">simple_selection</span><span class="o">`</span> <span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">USING</span> <span class="o">`</span><span class="n">update_parameter</span><span class="o">`</span> <span class="p">(</span> <span class="k">AND</span> <span class="o">`</span><span class="n">update_parameter</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="k">WHERE</span> <span class="o">`</span><span class="n">where_clause</span><span class="o">`</span>
@@ -391,7 +391,7 @@
 </div>
 <p>For instance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">NerdMovies</span> <span class="k">USING</span> <span class="nb">TIMESTAMP</span> <span class="mf">1240003134000000</span>
-  <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">&#39;Serenity&#39;</span><span class="p">;</span>
+  <span class="k">WHERE</span> <span class="n">movie</span> <span class="o">=</span> <span class="s1">'Serenity'</span><span class="p">;</span>
 
 <span class="k">DELETE</span> <span class="n">phone</span> <span class="k">FROM</span> <span class="k">Users</span>
   <span class="k">WHERE</span> <span class="n">userid</span> <span class="k">IN</span> <span class="p">(</span><span class="m">C73DE1D3-AF08-40F3-B124-3FF3E5109F22</span><span class="p">,</span> <span class="m">B70DE1D0-9908-4AE3-BE34-5573E5B09F14</span><span class="p">);</span>
@@ -422,16 +422,16 @@ However, as with <code class="docutils literal notranslate"><span class="pre">IN
 <span id="id1"></span><h2>Open range deletions<a class="headerlink" href="#open-range-deletions" title="Link to this heading">¶</a></h2>
 <p>Open range deletions delete rows based on an open-ended request (&gt;, &lt;, &gt;=, =&lt;, etc.)</p>
 <p>For example, suppose your data set for events at Madison Square Garden includes:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CREATE KEYSPACE mykeyspace WITH replication = {&#39;class&#39;: &#39;NetworkTopologyStrategy&#39;, &#39;replication_factor&#39;: &#39;3&#39;}  AND durable_writes = true;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CREATE KEYSPACE mykeyspace WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': '3'}  AND durable_writes = true;
 use mykeyspace ;
 CREATE TABLE events ( id text, created_at date, content text, PRIMARY KEY (id, created_at) );
 
-INSERT into events (id, created_at, content) VALUES (&#39;concert&#39;, &#39;2019-11-19&#39;, &#39;SuperM&#39;);
-INSERT into events (id, created_at, content) VALUES (&#39;concert&#39;, &#39;2019-11-15&#39;, &#39;Billy Joel&#39;);
-INSERT into events (id, created_at, content) VALUES (&#39;game&#39;, &#39;2019-11-03&#39;, &#39;Knicks v Sacramento&#39;);
-INSERT into events (id, created_at, content) VALUES (&#39;concert&#39;, &#39;2019-10-31&#39;, &#39;Dead &amp; Company&#39;);
-INSERT into events (id, created_at, content) VALUES (&#39;game&#39;, &#39;2019-10-28&#39;, &#39;Knicks v Chicago&#39;);
-INSERT into events (id, created_at, content) VALUES (&#39;concert&#39;, &#39;2019-10-25&#39;, &#39;Billy Joel&#39;);
+INSERT into events (id, created_at, content) VALUES ('concert', '2019-11-19', 'SuperM');
+INSERT into events (id, created_at, content) VALUES ('concert', '2019-11-15', 'Billy Joel');
+INSERT into events (id, created_at, content) VALUES ('game', '2019-11-03', 'Knicks v Sacramento');
+INSERT into events (id, created_at, content) VALUES ('concert', '2019-10-31', 'Dead &amp; Company');
+INSERT into events (id, created_at, content) VALUES ('game', '2019-10-28', 'Knicks v Chicago');
+INSERT into events (id, created_at, content) VALUES ('concert', '2019-10-25', 'Billy Joel');
 
 
 SELECT * from events;
@@ -449,7 +449,7 @@ SELECT * from events;
 </pre></div>
 </div>
 <p>And you wanted to delete all of the concerts from the month of October using an open-ended range delete. You would run:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DELETE FROM events WHERE id=&#39;concert&#39; AND created_at &lt;= &#39;2019-10-31&#39;;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DELETE FROM events WHERE id='concert' AND created_at &lt;= '2019-10-31';
 
 SELECT * from events;
 
@@ -1078,7 +1078,7 @@ SELECT * from events;
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

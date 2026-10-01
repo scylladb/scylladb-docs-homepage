@@ -380,11 +380,11 @@
 <h2>Issue description<a class="headerlink" href="#issue-description" title="Link to this heading">¶</a></h2>
 <p>I have started a local repair using <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code></p>
 <p>I have decided to stop the repair by issuing</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>--header<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>--header<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span><span class="s1">&#39;http://localhost:10000/storage_service/force_terminate_repair&#39;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>--header<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span>--header<span class="w"> </span><span class="s1">'Accept: application/json'</span><span class="w"> </span><span class="s1">'http://localhost:10000/storage_service/force_terminate_repair'</span>
 </pre></div>
 </div>
 <p>Checking the repair status, I still see the repair running:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>--header<span class="w"> </span><span class="s1">&#39;Accept: application/json&#39;</span><span class="w"> </span><span class="s1">&#39;http://localhost:10000/storage_service/active_repair/&#39;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>--header<span class="w"> </span><span class="s1">'Accept: application/json'</span><span class="w"> </span><span class="s1">'http://localhost:10000/storage_service/active_repair/'</span>
 <span class="o">[</span><span class="m">1</span><span class="o">]</span>
 </pre></div>
 </div>
@@ -395,7 +395,7 @@
 <p>Each step might take a while, so if you abort and check again immediately, the repair in question might still be in RUNNING state.</p>
 <p>Please check if the aborted repair stays in RUNNING forever before forcing a stop.</p>
 <p><em>Force a repair stop:</em></p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://127.0.0.2:10000/storage_service/force_terminate_repair&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://127.0.0.2:10000/storage_service/force_terminate_repair"</span>
 </pre></div>
 </div>
 <p><strong>NOTE:</strong> If you are using <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a> for repairs, a simple stop command via sctool already implements all the needed logic to gracefully stop a repair.</p>
@@ -1035,7 +1035,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

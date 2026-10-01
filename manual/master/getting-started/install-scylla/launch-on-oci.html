@@ -498,14 +498,14 @@ ones, make sure to run the <a class="reference internal" href="../system-configu
 </li>
 <li><p>Find the OCID of the ScyllaDB Marketplace listing:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oci marketplace listing list --region us-ashburn-1 --all \</span>
-<span class="go">  --query &#39;data[?contains(name, `Scylla`)].{name:name, id:id}&#39;</span>
+<span class="go">  --query 'data[?contains(name, `Scylla`)].{name:name, id:id}'</span>
 </pre></div>
 </div>
 <p>Example output:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ocid1.mktpublisting.oc1.iad.amaaaaaa433yp7qakrqk5u3zu6ekylon4xrrflma3xcjug52xts4svplmjna&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ScyllaDB 2026.2&quot;</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ocid1.mktpublisting.oc1.iad.amaaaaaa433yp7qakrqk5u3zu6ekylon4xrrflma3xcjug52xts4svplmjna"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ScyllaDB 2026.2"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
@@ -516,7 +516,7 @@ in the OCI Console.</p>
 <li><p>List the available package versions of that listing:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oci marketplace package list --region us-ashburn-1 \</span>
 <span class="go">  --listing-id &lt;listing OCID&gt; \</span>
-<span class="go">  --query &#39;data[].{version:&quot;package-version&quot;, created:&quot;time-created&quot;}&#39;</span>
+<span class="go">  --query 'data[].{version:"package-version", created:"time-created"}'</span>
 </pre></div>
 </div>
 <p>Note the version you want to deploy - usually the most recently created one.</p>
@@ -526,14 +526,14 @@ identifiers you need in the next steps:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oci marketplace package get --region us-ashburn-1 \</span>
 <span class="go">  --listing-id &lt;listing OCID&gt; \</span>
 <span class="go">  --package-version &lt;package version&gt; \</span>
-<span class="go">  --query &#39;data.{image:&quot;image-id&quot;, catalogListing:&quot;app-catalog-listing-id&quot;, catalogVersion:&quot;app-catalog-listing-resource-version&quot;}&#39;</span>
+<span class="go">  --query 'data.{image:"image-id", catalogListing:"app-catalog-listing-id", catalogVersion:"app-catalog-listing-resource-version"}'</span>
 </pre></div>
 </div>
 <p>Example output:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;catalogListing&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ocid1.appcataloglisting.oc1..aaaaaaaarw5vsfysh36clj4xasz5mhsemzs5wt4eea5tdywzbujopvjzsoxq&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;catalogVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026.2.5&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;image&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ocid1.image.oc1..aaaaaaaashyu5zg4s72zwanu73enkab4mitjkmifebglfvp4qwqdbalxmtgq&quot;</span>
+<span class="w">  </span><span class="nt">"catalogListing"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ocid1.appcataloglisting.oc1..aaaaaaaarw5vsfysh36clj4xasz5mhsemzs5wt4eea5tdywzbujopvjzsoxq"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"catalogVersion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026.2.5"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ocid1.image.oc1..aaaaaaaashyu5zg4s72zwanu73enkab4mitjkmifebglfvp4qwqdbalxmtgq"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -575,9 +575,9 @@ on the image, wait a few minutes and retry it - do not re-create the subscriptio
 <span class="go">  --compartment-id &lt;compartment OCID&gt; \</span>
 <span class="go">  --availability-domain &lt;availability domain&gt; \</span>
 <span class="go">  --shape &lt;shape&gt; \</span>
-<span class="go">  --shape-config &#39;{&quot;ocpus&quot;: &lt;number of OCPUs&gt;, &quot;memoryInGBs&quot;: &lt;memory in GB&gt;}&#39; \</span>
+<span class="go">  --shape-config '{"ocpus": &lt;number of OCPUs&gt;, "memoryInGBs": &lt;memory in GB&gt;}' \</span>
 <span class="go">  --subnet-id &lt;subnet OCID&gt; \</span>
-<span class="go">  --nsg-ids &#39;[&quot;&lt;NSG OCID&gt;&quot;]&#39; \</span>
+<span class="go">  --nsg-ids '["&lt;NSG OCID&gt;"]' \</span>
 <span class="go">  --assign-public-ip true \</span>
 <span class="go">  --image-id &lt;image OCID&gt; \</span>
 <span class="go">  --display-name scylla-node1 \</span>
@@ -591,9 +591,9 @@ on the image, wait a few minutes and retry it - do not re-create the subscriptio
 <span class="go">  --compartment-id ocid1.compartment.oc1..example \</span>
 <span class="go">  --availability-domain ewbj:US-ASHBURN-AD-1 \</span>
 <span class="go">  --shape VM.DenseIO.E5.Flex \</span>
-<span class="go">  --shape-config &#39;{&quot;ocpus&quot;: 8, &quot;memoryInGBs&quot;: 96}&#39; \</span>
+<span class="go">  --shape-config '{"ocpus": 8, "memoryInGBs": 96}' \</span>
 <span class="go">  --subnet-id ocid1.subnet.oc1.iad.example \</span>
-<span class="go">  --nsg-ids &#39;[&quot;ocid1.networksecuritygroup.oc1.iad.example&quot;]&#39; \</span>
+<span class="go">  --nsg-ids '["ocid1.networksecuritygroup.oc1.iad.example"]' \</span>
 <span class="go">  --assign-public-ip true \</span>
 <span class="go">  --image-id ocid1.image.oc1..aaaaaaaashyu5zg4s72zwanu73enkab4mitjkmifebglfvp4qwqdbalxmtgq \</span>
 <span class="go">  --display-name scylla-node1 \</span>
@@ -621,7 +621,7 @@ in the same command - they are convenience wrappers around the <code class="docu
 <li><p>Get the IP addresses of the instance:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oci compute instance list-vnics --region us-ashburn-1 \</span>
 <span class="go">  --instance-id &lt;instance OCID&gt; \</span>
-<span class="go">  --query &#39;data[].{public:&quot;public-ip&quot;, private:&quot;private-ip&quot;}&#39;</span>
+<span class="go">  --query 'data[].{public:"public-ip", private:"private-ip"}'</span>
 </pre></div>
 </div>
 </li>
@@ -644,13 +644,13 @@ not fail with <code class="docutils literal notranslate"><span class="pre">No</s
 </ul>
 <p>Example:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;scylla_yaml&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;cluster_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test-cluster&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;seed_provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;org.apache.cassandra.locator.SimpleSeedProvider&quot;</span><span class="p">,</span>
-<span class="w">                           </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;seeds&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10.0.219.209&quot;</span><span class="p">}]}]</span>
+<span class="w">    </span><span class="nt">"scylla_yaml"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"cluster_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test-cluster"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"seed_provider"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">"class_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.apache.cassandra.locator.SimpleSeedProvider"</span><span class="p">,</span>
+<span class="w">                           </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">"seeds"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10.0.219.209"</span><span class="p">}]}]</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;start_scylla_on_first_boot&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;device_wait_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span>
+<span class="w">    </span><span class="nt">"start_scylla_on_first_boot"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"device_wait_seconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1332,7 +1332,7 @@ a VPN.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

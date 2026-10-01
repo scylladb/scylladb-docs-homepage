@@ -442,11 +442,11 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
 <ol class="arabic">
 <li><p>Make sure there are no ongoing membership changes.</p></li>
 <li><p>Execute the following CQL query on one of your nodes to retrieve the Raft group 0 ID:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">value</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">where</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">select</span> <span class="n">value</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">where</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'raft_group0_id'</span>
 </pre></div>
 </div>
 <p>For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="n">value</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">where</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;raft_group0_id&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">cqlsh</span><span class="o">&gt;</span> <span class="k">select</span> <span class="n">value</span> <span class="k">from</span> <span class="n">system</span><span class="mf">.</span><span class="n">scylla_local</span> <span class="k">where</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'raft_group0_id'</span><span class="p">;</span>
 
  <span class="n">value</span>
 <span class="c1">--------------------------------------</span>
@@ -504,12 +504,12 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
 <h3>Step Two: Removing the Ghost Members<a class="headerlink" href="#step-two-removing-the-ghost-members" title="Link to this heading">¶</a></h3>
 <p>Given the host IDs of ghost members, you can remove them using <code class="docutils literal notranslate"><span class="pre">removenode</span></code>; follow the <a class="reference internal" href="../../nodetool-commands/removenode.html"><span class="doc">documentation for removenode operation</span></a>.</p>
 <p>If you’re executing <code class="docutils literal notranslate"><span class="pre">removenode</span></code> too quickly after a failed membership change, an error similar to the following might pop up:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool: ScyllaDB API server HTTP POST to URL &#39;/storage_service/remove_node&#39; failed: seastar::rpc::remote_verb_error (node_ops_cmd_check: Node 127.0.0.2 rejected node_ops_cmd=removenode_abort from node=127.0.0.1 with ops_uuid=0ba0a5ab-efbd-4801-a31c-034b5f55487c, pending_node_ops={b47523f2-de6a-4c38-8490-39127dba6b6a}, pending node ops is in progress)</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool: ScyllaDB API server HTTP POST to URL '/storage_service/remove_node' failed: seastar::rpc::remote_verb_error (node_ops_cmd_check: Node 127.0.0.2 rejected node_ops_cmd=removenode_abort from node=127.0.0.1 with ops_uuid=0ba0a5ab-efbd-4801-a31c-034b5f55487c, pending_node_ops={b47523f2-de6a-4c38-8490-39127dba6b6a}, pending node ops is in progress)</span>
 </pre></div>
 </div>
 <p>In that case simply wait for 2 minutes before trying <code class="docutils literal notranslate"><span class="pre">removenode</span></code> again.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">removenode</span></code> returns an error like:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool: ScyllaDB API server HTTP POST to URL &#39;/storage_service/remove_node&#39; failed: std::runtime_error (removenode[12e7e05b-d1ae-4978-b6a6-de0066aa80d8]: Host ID 42405b3b-487e-4759-8590-ddb9bdcebdc5 not found in the cluster)</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool: ScyllaDB API server HTTP POST to URL '/storage_service/remove_node' failed: std::runtime_error (removenode[12e7e05b-d1ae-4978-b6a6-de0066aa80d8]: Host ID 42405b3b-487e-4759-8590-ddb9bdcebdc5 not found in the cluster)</span>
 </pre></div>
 </div>
 <p>and you’re sure that you’re providing the correct Host ID, it means that the member was already removed and you don’t have to clean up after it.</p>
@@ -1132,7 +1132,7 @@ after upgrading to 6.0 or before upgrading to 6.1 (required).</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

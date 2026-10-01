@@ -414,7 +414,7 @@
 <span id="next-gen"></span><h3>Example: The Next Generation<a class="headerlink" href="#example-the-next-generation" title="Link to this heading">¶</a></h3>
 <ol class="arabic">
 <li><p>Start a new cluster. Query the <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> table to see the available generations:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'timestamps'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>returns:</p>
@@ -428,13 +428,13 @@
 <p>this is the timestamp of the first generation.</p>
 </li>
 <li><p>Create a table and insert a row:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span><span class="p">};</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'enabled'</span><span class="p">:</span> <span class="n">true</span><span class="p">};</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </li>
 <li><p>Bootstrap another node. After it finishes joining the cluster, query <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> again:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'timestamps'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>returns:</p>
@@ -467,7 +467,7 @@
 </div>
 </li>
 <li><p>Query the log table:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="s s-Name">&quot;cdc$stream_id&quot;</span><span class="p">,</span> <span class="n">pk</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="s s-Name">"cdc$stream_id"</span><span class="p">,</span> <span class="n">pk</span> <span class="k">FROM</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t_scylla_cdc_log</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>returns:</p>
@@ -496,7 +496,7 @@
 </pre></div>
 </div>
 <p>You immediately connected to the node using cqlsh and queried the <code class="docutils literal notranslate"><span class="pre">cdc_generation_timestamps</span></code> table:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">;</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nb">time</span> <span class="k">FROM</span> <span class="n">system_distributed</span><span class="mf">.</span><span class="n">cdc_generation_timestamps</span> <span class="k">WHERE</span> <span class="k">key</span> <span class="o">=</span> <span class="s1">'timestamps'</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The result was:</p>
@@ -509,8 +509,8 @@
 </div>
 <p>This generation’s timestamp is <code class="docutils literal notranslate"><span class="pre">17:00:43</span> <span class="pre">UTC</span> <span class="pre">time</span></code> (timestamp columns in ScyllaDB always show the timestamp as a UTC time-date), which is a little more than a minute later compared to the node’s startup time (which was <code class="docutils literal notranslate"><span class="pre">16:59:35</span> <span class="pre">UTC</span> <span class="pre">time</span></code>).</p>
 <p>If you then immediately create a CDC-enabled table and attempt to make an insert:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span><span class="p">:</span> <span class="mf">3</span><span class="p">};</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="n">true</span><span class="p">};</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">ks</span> <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span><span class="s1">'NetworkTopologyStrategy'</span><span class="p">,</span> <span class="s1">'replication_factor'</span><span class="p">:</span> <span class="mf">3</span><span class="p">};</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ck</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span> <span class="k">WITH</span> <span class="n">cdc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'enabled'</span><span class="p">:</span> <span class="n">true</span><span class="p">};</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">ks</span><span class="mf">.</span><span class="n">t</span> <span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">ck</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1148,7 +1148,7 @@ Make sure to upgrade all nodes <strong>before</strong> you start doing CDC write
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

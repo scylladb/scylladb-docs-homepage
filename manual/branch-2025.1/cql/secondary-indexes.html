@@ -377,17 +377,17 @@
 <span id="secondary-indexes"></span><h1>Global Secondary Indexes<a class="headerlink" href="#global-secondary-indexes" title="Link to this heading">¶</a></h1>
 <p>CQL supports creating secondary indexes on tables, allowing queries on the table to use those indexes. A secondary index
 is identified by a name defined by:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">index_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z_0-9]+&#39;</span><span class="p">)</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">index_name</span><span class="p">:</span> <span class="n">re</span><span class="p">(</span><span class="s1">'[a-zA-Z_0-9]+'</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="create-index">
 <span id="create-index-statement"></span><h2>CREATE INDEX<a class="headerlink" href="#create-index" title="Link to this heading">¶</a></h2>
 <p>Creating a secondary index on a table uses the <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">create_index_statement</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="p">[</span><span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">]</span> <span class="p">[</span> <span class="o">`</span><span class="n">index_name</span><span class="o">`</span> <span class="p">]</span>
-                      <span class="p">:</span>     <span class="k">ON</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">index_identifier</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+                      <span class="p">:</span>     <span class="k">ON</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">index_identifier</span><span class="o">`</span> <span class="s1">')'</span>
                       <span class="p">:</span>     <span class="p">[</span> <span class="k">USING</span> <span class="o">`</span><span class="n">string</span><span class="o">`</span> <span class="p">[</span> <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="o">`</span><span class="n">map_literal</span><span class="o">`</span> <span class="p">]</span> <span class="p">]</span>
 <span class="n">index_identifier</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span>
-                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">')'</span>
 </pre></div>
 </div>
 <p>For instance:</p>
@@ -404,7 +404,7 @@ automatically at insertion time.</p>
 <h2>Local Secondary Index<a class="headerlink" href="#local-secondary-index" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../features/local-secondary-indexes.html"><span class="doc">Local Secondary Indexes</span></a> is an enhancement of <a class="reference internal" href="../features/secondary-indexes.html"><span class="doc">Global Secondary Indexes</span></a>, which allows ScyllaDB to optimize the use case in which the partition key of the base table is also the partition key of the index. Local Secondary Index syntax is the same as above, with extra parentheses on the partition key.</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">index_identifier</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span>
-                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="n">PK</span> <span class="p">)</span> <span class="o">|</span> <span class="k">KEYS</span> <span class="o">|</span> <span class="k">VALUES</span> <span class="o">|</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">&#39;(&#39;</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">&#39;)&#39;</span>
+                <span class="p">:</span><span class="o">|</span> <span class="p">(</span> <span class="n">PK</span> <span class="p">)</span> <span class="o">|</span> <span class="k">KEYS</span> <span class="o">|</span> <span class="k">VALUES</span> <span class="o">|</span> <span class="k">FULL</span> <span class="p">)</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">')'</span>
 </pre></div>
 </div>
 <p>Example:</p>
@@ -1051,7 +1051,7 @@ name, which may optionally specify the keyspace of the index.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

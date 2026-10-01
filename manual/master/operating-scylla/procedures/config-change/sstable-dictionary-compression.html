@@ -410,7 +410,7 @@
 </ul>
 <p>For example, using CQL:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">keyspace</span><span class="o">.</span><span class="n">table</span>
-<span class="n">WITH</span> <span class="n">compression</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sstable_compression&#39;</span><span class="p">:</span> <span class="s1">&#39;ZstdWithDictsCompressor&#39;</span><span class="p">};</span>
+<span class="n">WITH</span> <span class="n">compression</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'sstable_compression'</span><span class="p">:</span> <span class="s1">'ZstdWithDictsCompressor'</span><span class="p">};</span>
 </pre></div>
 </div>
 <p>Once enabled, Scylla will automatically train a dictionary for the table when sufficient data is available.</p>
@@ -418,14 +418,14 @@
 <section id="manual-dictionary-training">
 <h3>Manual Dictionary Training<a class="headerlink" href="#manual-dictionary-training" title="Link to this heading">¶</a></h3>
 <p>You can manually trigger dictionary training using the REST API:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="s2">&quot;http://node-address:10000/storage_service/retrain_dict?keyspace=mykeyspace&amp;cf=mytable&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="s2">"http://node-address:10000/storage_service/retrain_dict?keyspace=mykeyspace&amp;cf=mytable"</span>
 </pre></div>
 </div>
 </section>
 <section id="estimating-compression-ratios">
 <h3>Estimating Compression Ratios<a class="headerlink" href="#estimating-compression-ratios" title="Link to this heading">¶</a></h3>
 <p>To choose the best compression configuration, you can estimate compression ratios using the REST API:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">GET</span> <span class="s2">&quot;http://node-address:10000/storage_service/estimate_compression_ratios?keyspace=mykeyspace&amp;cf=mytable&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">GET</span> <span class="s2">"http://node-address:10000/storage_service/estimate_compression_ratios?keyspace=mykeyspace&amp;cf=mytable"</span>
 </pre></div>
 </div>
 <p>This will return a report with estimated compression ratios for various combinations of compression
@@ -1094,7 +1094,7 @@ all SSTables.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

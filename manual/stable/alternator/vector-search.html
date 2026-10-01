@@ -503,14 +503,14 @@ equivalent to specifying <code class="docutils literal notranslate"><span class=
 </div></blockquote>
 <p>Example (using boto3):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span>
-    <span class="n">TableName</span><span class="o">=</span><span class="s1">&#39;my-table&#39;</span><span class="p">,</span>
-    <span class="n">KeySchema</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;KeyType&#39;</span><span class="p">:</span> <span class="s1">&#39;HASH&#39;</span><span class="p">}],</span>
-    <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;AttributeType&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span><span class="p">}],</span>
-    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">&#39;PAY_PER_REQUEST&#39;</span><span class="p">,</span>
+    <span class="n">TableName</span><span class="o">=</span><span class="s1">'my-table'</span><span class="p">,</span>
+    <span class="n">KeySchema</span><span class="o">=</span><span class="p">[{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'KeyType'</span><span class="p">:</span> <span class="s1">'HASH'</span><span class="p">}],</span>
+    <span class="n">AttributeDefinitions</span><span class="o">=</span><span class="p">[{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'AttributeType'</span><span class="p">:</span> <span class="s1">'S'</span><span class="p">}],</span>
+    <span class="n">BillingMode</span><span class="o">=</span><span class="s1">'PAY_PER_REQUEST'</span><span class="p">,</span>
     <span class="n">VectorIndexes</span><span class="o">=</span><span class="p">[</span>
         <span class="p">{</span>
-            <span class="s1">&#39;IndexName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;VectorAttribute&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;AttributeName&#39;</span><span class="p">:</span> <span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="s1">&#39;Dimensions&#39;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">},</span>
+            <span class="s1">'IndexName'</span><span class="p">:</span> <span class="s1">'embedding-index'</span><span class="p">,</span>
+            <span class="s1">'VectorAttribute'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'AttributeName'</span><span class="p">:</span> <span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'Dimensions'</span><span class="p">:</span> <span class="mi">1536</span><span class="p">},</span>
         <span class="p">}</span>
     <span class="p">],</span>
 <span class="p">)</span>
@@ -534,11 +534,11 @@ index operation (Create or Delete) may be requested per call.</p>
 <p>Each element of the list is an object with exactly one of the following keys:</p>
 <p><strong>Create:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Create&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;VectorAttribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;AttributeName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;embedding&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;Projection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ProjectionType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KEYS_ONLY&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;SimilarityFunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COSINE&quot;</span>
+<span class="w">  </span><span class="nt">"Create"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"IndexName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-vector-index"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"VectorAttribute"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"AttributeName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"embedding"</span><span class="p">,</span><span class="w"> </span><span class="nt">"Dimensions"</span><span class="p">:</span><span class="w"> </span><span class="mi">1536</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"Projection"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"ProjectionType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KEYS_ONLY"</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"SimilarityFunction"</span><span class="p">:</span><span class="w"> </span><span class="s2">"COSINE"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -551,8 +551,8 @@ when <code class="docutils literal notranslate"><span class="pre">Projection</sp
 in <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>’s <code class="docutils literal notranslate"><span class="pre">VectorIndexes</span></code> (see above). Defaults to <code class="docutils literal notranslate"><span class="pre">COSINE</span></code> when omitted.</p>
 <p><strong>Delete:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Delete&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;IndexName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-vector-index&quot;</span>
+<span class="w">  </span><span class="nt">"Delete"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"IndexName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-vector-index"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -617,10 +617,10 @@ allowed; such items simply are not indexed.</p></li>
 the <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type instead of the standard <code class="docutils literal notranslate"><span class="pre">L</span></code> type. With the <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code> type the value
 is a JSON array of plain floating-point numbers (not strings):</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="c1">// Standard DynamoDB list-of-numbers format:</span>
-<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-0.3&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;N&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7&quot;</span><span class="p">}]}}</span>
+<span class="p">{</span><span class="nt">"embedding"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"L"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"-0.3"</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.7"</span><span class="p">}]}}</span>
 
 <span class="c1">// Optimized FLOAT32VECTOR format (ScyllaDB extension):</span>
-<span class="p">{</span><span class="nt">&quot;embedding&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;FLOAT32VECTOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]}}</span>
+<span class="p">{</span><span class="nt">"embedding"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"FLOAT32VECTOR"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]}}</span>
 </pre></div>
 </div>
 <p>Both representations are accepted for writes and queries. The <code class="docutils literal notranslate"><span class="pre">FLOAT32VECTOR</span></code>
@@ -664,19 +664,19 @@ vector search rather than a standard key-condition query.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard DynamoDB format:</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">'embedding-index'</span><span class="p">,</span>
     <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.1&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;-0.3&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;0.7&#39;</span><span class="p">},</span> <span class="o">...</span><span class="p">]},</span>
+        <span class="s1">'QueryVector'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'L'</span><span class="p">:</span> <span class="p">[{</span><span class="s1">'N'</span><span class="p">:</span> <span class="s1">'0.1'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'N'</span><span class="p">:</span> <span class="s1">'-0.3'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'N'</span><span class="p">:</span> <span class="s1">'0.7'</span><span class="p">},</span> <span class="o">...</span><span class="p">]},</span>
     <span class="p">},</span>
 <span class="p">)</span>
 
 <span class="c1"># Optimized ScyllaDB FLOAT32VECTOR format:</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">'embedding-index'</span><span class="p">,</span>
     <span class="n">Limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FLOAT32VECTOR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span>
+        <span class="s1">'QueryVector'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'FLOAT32VECTOR'</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -874,12 +874,12 @@ depends on the similarity function:</p>
 since <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> returns no <code class="docutils literal notranslate"><span class="pre">Items</span></code> array.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-    <span class="n">IndexName</span><span class="o">=</span><span class="s1">&#39;embedding-index&#39;</span><span class="p">,</span>
+    <span class="n">IndexName</span><span class="o">=</span><span class="s1">'embedding-index'</span><span class="p">,</span>
     <span class="n">Limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;QueryVector&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FLOAT32VECTOR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span> <span class="s1">&#39;ReturnScores&#39;</span><span class="p">:</span> <span class="s1">&#39;SIMILARITY&#39;</span><span class="p">},</span>
+    <span class="n">VectorSearch</span><span class="o">=</span><span class="p">{</span><span class="s1">'QueryVector'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'FLOAT32VECTOR'</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="o">...</span><span class="p">]},</span> <span class="s1">'ReturnScores'</span><span class="p">:</span> <span class="s1">'SIMILARITY'</span><span class="p">},</span>
 <span class="p">)</span>
-<span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;Items&#39;</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;Scores&#39;</span><span class="p">]):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">  similarity=</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">'Items'</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="s1">'Scores'</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="si">}</span><span class="s2">  similarity=</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1551,7 +1551,7 @@ monitoring vector search activity:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

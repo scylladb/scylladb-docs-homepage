@@ -385,7 +385,7 @@ the database.</p>
 by the example application will be stored.</p>
 <p>Launch ScyllaDB and connect to it using cqlsh. The following commands will
 create a new keyspace for our tests and make it the current one.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CREATE</span> <span class="n">KEYSPACE</span> <span class="n">spark_example</span> <span class="n">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span> <span class="s1">&#39;replication_factor&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">};</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CREATE</span> <span class="n">KEYSPACE</span> <span class="n">spark_example</span> <span class="n">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'NetworkTopologyStrategy'</span><span class="p">,</span> <span class="s1">'replication_factor'</span><span class="p">:</span> <span class="mi">3</span><span class="p">};</span>
 <span class="n">USE</span> <span class="n">spark_example</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -396,13 +396,13 @@ create a new keyspace for our tests and make it the current one.</p>
 </div>
 <p>Lastly, the database needs to contain some input data for our
 application to process:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;Anne&#39;</span><span class="p">,</span> <span class="mi">34</span><span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="mi">47</span><span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;Elisabeth&#39;</span><span class="p">,</span> <span class="mi">89</span><span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;George&#39;</span><span class="p">,</span> <span class="mi">52</span><span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;Amy&#39;</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;Jack&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">);</span>
-<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">&#39;Treebeard&#39;</span><span class="p">,</span> <span class="mi">36421</span><span class="p">);</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'Anne'</span><span class="p">,</span> <span class="mi">34</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'John'</span><span class="p">,</span> <span class="mi">47</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'Elisabeth'</span><span class="p">,</span> <span class="mi">89</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'George'</span><span class="p">,</span> <span class="mi">52</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'Amy'</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'Jack'</span><span class="p">,</span> <span class="mi">16</span><span class="p">);</span>
+<span class="n">INSERT</span> <span class="n">INTO</span> <span class="n">persons</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="n">VALUES</span> <span class="p">(</span><span class="s1">'Treebeard'</span><span class="p">,</span> <span class="mi">36421</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -415,19 +415,19 @@ configuration.</p>
 <p>First, very important file is <code class="docutils literal notranslate"><span class="pre">build.sbt</span></code>, which should be created in
 the project main directory. It contains all the application metadata,
 including name, version, and dependencies.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">:=</span> <span class="s2">&quot;scylla-spark-example-simple&quot;</span>
-<span class="n">version</span> <span class="o">:=</span> <span class="s2">&quot;1.0&quot;</span>
-<span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s2">&quot;2.10.5&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">:=</span> <span class="s2">"scylla-spark-example-simple"</span>
+<span class="n">version</span> <span class="o">:=</span> <span class="s2">"1.0"</span>
+<span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s2">"2.10.5"</span>
 
 <span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="n">Seq</span><span class="p">(</span>
-        <span class="s2">&quot;com.datastax.spark&quot;</span> <span class="o">%%</span> <span class="s2">&quot;spark-cassandra-connector&quot;</span> <span class="o">%</span> <span class="s2">&quot;1.5.0-M1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;org.apache.spark&quot;</span> <span class="o">%%</span> <span class="s2">&quot;spark-catalyst&quot;</span> <span class="o">%</span> <span class="s2">&quot;1.5.0&quot;</span> <span class="o">%</span> <span class="s2">&quot;provided&quot;</span>
+        <span class="s2">"com.datastax.spark"</span> <span class="o">%%</span> <span class="s2">"spark-cassandra-connector"</span> <span class="o">%</span> <span class="s2">"1.5.0-M1"</span><span class="p">,</span>
+        <span class="s2">"org.apache.spark"</span> <span class="o">%%</span> <span class="s2">"spark-catalyst"</span> <span class="o">%</span> <span class="s2">"1.5.0"</span> <span class="o">%</span> <span class="s2">"provided"</span>
     <span class="p">)</span>
 </pre></div>
 </div>
 <p>Then, we need to enable <code class="docutils literal notranslate"><span class="pre">sbt-assembly</span></code> plugin. Create directory
 <code class="docutils literal notranslate"><span class="pre">project</span></code> and create file <code class="docutils literal notranslate"><span class="pre">plugins.sbt</span></code> with the following content:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">addSbtPlugin</span><span class="p">(</span><span class="s2">&quot;com.eed3si9n&quot;</span> <span class="o">%</span> <span class="s2">&quot;sbt-assembly&quot;</span> <span class="o">%</span> <span class="s2">&quot;0.14.0&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">addSbtPlugin</span><span class="p">(</span><span class="s2">"com.eed3si9n"</span> <span class="o">%</span> <span class="s2">"sbt-assembly"</span> <span class="o">%</span> <span class="s2">"0.14.0"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The steps above should cover all build configuration, what is left is
@@ -440,12 +440,12 @@ the actual logic of the application. Create file
 <span class="w">    </span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span><span class="w"> </span><span class="nc">Array</span><span class="p">[</span><span class="nc">String</span><span class="p">]):</span><span class="w"> </span><span class="nc">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="n">sc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">SparkContext</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="nc">SparkConf</span><span class="p">())</span>
 
-<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="n">persons</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">cassandraTable</span><span class="p">(</span><span class="s">&quot;spark_example&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;persons&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="n">persons</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">cassandraTable</span><span class="p">(</span><span class="s">"spark_example"</span><span class="p">,</span><span class="w"> </span><span class="s">"persons"</span><span class="p">)</span>
 
-<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="n">adults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">persons</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_</span><span class="p">.</span><span class="n">getInt</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nc">Tuple1</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">getString</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)))</span>
-<span class="w">        </span><span class="n">adults</span><span class="p">.</span><span class="n">saveToCassandra</span><span class="p">(</span><span class="s">&quot;spark_example&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;adults&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="n">adults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">persons</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_</span><span class="p">.</span><span class="n">getInt</span><span class="p">(</span><span class="s">"age"</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nc">Tuple1</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">getString</span><span class="p">(</span><span class="s">"name"</span><span class="p">)))</span>
+<span class="w">        </span><span class="n">adults</span><span class="p">.</span><span class="n">saveToCassandra</span><span class="p">(</span><span class="s">"spark_example"</span><span class="p">,</span><span class="w"> </span><span class="s">"adults"</span><span class="p">)</span>
 
-<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">s&quot;Adults: %d\nTotal: %d\n&quot;</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">adults</span><span class="p">.</span><span class="n">count</span><span class="p">(),</span><span class="w"> </span><span class="n">persons</span><span class="p">.</span><span class="n">count</span><span class="p">())</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">s"Adults: %d\nTotal: %d\n"</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="n">adults</span><span class="p">.</span><span class="n">count</span><span class="p">(),</span><span class="w"> </span><span class="n">persons</span><span class="p">.</span><span class="n">count</span><span class="p">())</span>
 <span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -561,7 +561,7 @@ applied, for example, using <code class="docutils literal notranslate"><span cla
 <span class="gd">-       EmbeddedCassandraServerHelper.startEmbeddedCassandra();</span>
 <span class="gi">+       //EmbeddedCassandraServerHelper.startEmbeddedCassandra();</span>
 <span class="w"> </span>       Thread.sleep(EMBEDDED_CASSANDRA_SERVER_WAITING_TIME);
-<span class="w"> </span>       Cluster cluster = new Cluster.Builder().addContactPoints(&quot;localhost&quot;)
+<span class="w"> </span>       Cluster cluster = new Cluster.Builder().addContactPoints("localhost")
 <span class="w"> </span>               .withPort(9142).build();
 </pre></div>
 </div>
@@ -622,15 +622,15 @@ patch:</p>
 <span class="gd">--- a/src/main/java/blog/hashmade/spark/DatastaxSparkTest.java</span>
 <span class="gi">+++ b/src/main/java/blog/hashmade/spark/DatastaxSparkTest.java</span>
 <span class="gu">@@ -43,8 +43,7 @@ public class DatastaxSparkTest {</span>
-<span class="w"> </span>               .setAppName(&quot;DatastaxTests&quot;)
-<span class="w"> </span>               .set(&quot;spark.executor.memory&quot;, &quot;1g&quot;)
-<span class="w"> </span>               .set(&quot;spark.cassandra.connection.host&quot;, &quot;localhost&quot;)
-<span class="gd">-               .set(&quot;spark.cassandra.connection.native.port&quot;, &quot;9142&quot;)</span>
-<span class="gd">-               .set(&quot;spark.cassandra.connection.rpc.port&quot;, &quot;9171&quot;);</span>
-<span class="gi">+               .set(&quot;spark.cassandra.connection.port&quot;, &quot;9142&quot;);</span>
+<span class="w"> </span>               .setAppName("DatastaxTests")
+<span class="w"> </span>               .set("spark.executor.memory", "1g")
+<span class="w"> </span>               .set("spark.cassandra.connection.host", "localhost")
+<span class="gd">-               .set("spark.cassandra.connection.native.port", "9142")</span>
+<span class="gd">-               .set("spark.cassandra.connection.rpc.port", "9171");</span>
+<span class="gi">+               .set("spark.cassandra.connection.port", "9142");</span>
 <span class="w"> </span>       SparkContext ctx = new SparkContext(conf);
 <span class="w"> </span>       SparkContextJavaFunctions functions = CassandraJavaUtil.javaFunctions(ctx);
-<span class="w"> </span>       CassandraJavaRDD&lt;CassandraRow&gt; rdd = functions.cassandraTable(&quot;roadtrips&quot;, &quot;roadtrip&quot;);
+<span class="w"> </span>       CassandraJavaRDD&lt;CassandraRow&gt; rdd = functions.cassandraTable("roadtrips", "roadtrip");
 </pre></div>
 </div>
 </section>
@@ -1324,7 +1324,7 @@ connector won’t be able to perform automatic split sizing optimally.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 30 Sep 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

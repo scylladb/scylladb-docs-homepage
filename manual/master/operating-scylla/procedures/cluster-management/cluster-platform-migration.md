@@ -117,6 +117,11 @@ methods can be used:
 
    All other cluster-wide settings (tablets configuration, encryption settings,
    experimental features, etc.) must match the existing nodes.
+
+   #### CAUTION
+   Make sure that the ScyllaDB version on the new node is identical to the
+   version on the other nodes in the cluster. Running nodes with different
+   versions is not supported.
 3. If using `GossipingPropertyFileSnitch`, configure
    `/etc/scylla/cassandra-rackdc.properties` with the correct datacenter
    and rack assignment for this node:
