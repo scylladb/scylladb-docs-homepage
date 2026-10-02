@@ -45,7 +45,7 @@ The primary language for communicating with the ScyllaDB database is the `Apache
 Language (CQL) <https://docs.scylladb.com/manual/stable/cql/>`_.
 
 In addition, ScyllaDB provides drivers in different programming languages, such as Java, Python, Rust,
-and more, to help you interact with your clusters more efficiently. The drives ensure that queries are 
+and more, to help you interact with your clusters more efficiently. The drivers ensure that queries are 
 distributed evenly and efficiently across the cluster for latencies and the highest overall throughput.
 
 See the `driver documentation <https://docs.scylladb.com/stable/drivers/>`_ and
