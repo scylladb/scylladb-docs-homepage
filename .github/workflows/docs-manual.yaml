@@ -34,24 +34,87 @@ jobs:
           git submodule sync
           git submodule update --init --remote
 
+      - name: Check whether a rebuild is needed
+        id: changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, subprocess
+
+          branches = json.load(open("docs/_static/data/manual_doc_versions.json"))["branches"]
+          state = {
+              "homepage": subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip(),
+              # Equals branches.master today; kept in case .gitmodules tracks another branch.
+              "submodule": subprocess.check_output(
+                  ["git", "-C", "submodules/scylladb", "rev-parse", "HEAD"]
+              ).decode().strip(),
+              "branches": {},
+          }
+          # One fetch for all branches; a missing branch then just resolves to "missing".
+          subprocess.run(["git", "-C", "submodules/scylladb", "fetch", "--quiet", "origin"], check=False)
+          for branch in branches:
+              sha = subprocess.run(
+                  ["git", "-C", "submodules/scylladb", "rev-parse", f"origin/{branch}"],
+                  capture_output=True,
+                  text=True,
+                  check=False,
+              ).stdout.strip() or "missing"
+              state["branches"][branch] = sha
+          with open("/tmp/manual-build-state.json", "w") as fp:
+              json.dump(state, fp, indent=2, sort_keys=True)
+              fp.write("\n")
+          print(json.dumps(state, indent=2, sort_keys=True))
+          PY
+
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          previous=""
+          if git ls-remote --exit-code --heads "$remote" gh-pages >/dev/null 2>&1; then
+            git fetch --quiet --depth 1 "$remote" gh-pages
+            previous=$(git show FETCH_HEAD:manual/.docs-build-state.json 2>/dev/null || true)
+          fi
+          current=$(cat /tmp/manual-build-state.json)
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch: forcing a rebuild."
+          elif [ -n "$previous" ] && [ "$current" = "$previous" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No tracked branch changed since the last build; skipping."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.12'
 
       - name: Install uv
+        if: steps.changes.outputs.changed == 'true'
         uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
 
       - name: Set up env
+        if: steps.changes.outputs.changed == 'true'
         run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" setupenv
 
       - name: Build docs
+        if: steps.changes.outputs.changed == 'true'
         run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" multiversion
 
       - name: Build redirects
+        if: steps.changes.outputs.changed == 'true'
         run: make -C submodules/scylladb/docs FLAG="${{ env.FLAG }}" redirects
 
+      - name: Stage build state
+        if: steps.changes.outputs.changed == 'true'
+        run: cp /tmp/manual-build-state.json submodules/scylladb/docs/_build/dirhtml/.docs-build-state.json
+
       - name: Deploy docs to GitHub Pages
+        if: steps.changes.outputs.changed == 'true'
         run: ./scripts/deploy_manual.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
