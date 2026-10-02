@@ -845,9 +845,25 @@ as <code class="docutils literal notranslate"><span class="pre">WHERE</span> <sp
 <p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> operator is not a reserved word. If a user-defined function named
 <code class="docutils literal notranslate"><span class="pre">bm25</span></code> exists in a keyspace, unqualified <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> becomes ambiguous; qualify
 the built-in operator as <code class="docutils literal notranslate"><span class="pre">system.bm25(...)</span></code> to disambiguate it.</p>
+</section>
+</section>
+<section id="selecting-an-excerpt">
+<h1>Selecting an excerpt<a class="headerlink" href="#selecting-an-excerpt" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT(column,</span> <span class="pre">term)</span></code> returns an excerpt of the searched text as HTML,
+with the matched terms wrapped in <code class="docutils literal notranslate"><span class="pre">&lt;b&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;/b&gt;</span></code> and the text around them
+escaped:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">BM25_HIGHLIGHT</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">excerpt</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It is accepted only in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause, under the same rules as <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>
+there. The result is of type <code class="docutils literal notranslate"><span class="pre">text</span></code> and is <code class="docutils literal notranslate"><span class="pre">null</span></code> for a row in which no
+fragment could be found; the row itself is still returned. See
+<a class="reference internal" href="../../features/fulltext-search.html#fulltext-highlighting"><span class="std std-ref">Highlighting</span></a> for the details.</p>
 <p>For the full list of query constraints and requirements, see
 <a class="reference internal" href="../../features/fulltext-search.html"><span class="doc">Full-Text Search</span></a>.</p>
-</section>
 <section id="limiting-results">
 <span id="limit-clause"></span><h2>Limiting results<a class="headerlink" href="#limiting-results" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> option to a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement limits the number of rows returned by a query, while the <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span>
@@ -1379,6 +1395,9 @@ columns.</p>
 <li><a class="reference internal" href="#ordering-results">Ordering results</a></li>
 <li><a class="reference internal" href="#vector-queries-scylladb-cloud">Vector queries <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#full-text-search-queries-bm25-scylladb-cloud">Full-Text Search queries (BM25) <span class="label label--note">ScyllaDB Cloud</span></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#selecting-an-excerpt">Selecting an excerpt</a><ul>
 <li><a class="reference internal" href="#limiting-results">Limiting results</a></li>
 <li><a class="reference internal" href="#allowing-filtering">Allowing filtering</a></li>
 <li><a class="reference internal" href="#evaluation-order-of-select-statement-clauses">Evaluation order of SELECT statement clauses</a></li>
@@ -1634,6 +1653,7 @@ columns.</p>
 <li class="toctree-l2"><a class="reference internal" href="../ddl.html">Data Definition</a></li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../dml.html">Data Manipulation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="delete.html">DELETE</a></li>
@@ -1896,7 +1916,7 @@ columns.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Oct 2026.
+                        Last updated on 02 Oct 2026.
                     
                 </div>
             

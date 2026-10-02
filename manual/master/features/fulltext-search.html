@@ -476,6 +476,29 @@ makes a single request.</p>
 that is no longer in the base table, that row’s rank is missing from the result and the ranks after
 it are not renumbered.</p>
 </section>
+<section id="highlighting">
+<span id="fulltext-highlighting"></span><h3>Highlighting<a class="headerlink" href="#highlighting" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT()</span></code> returns an excerpt of the searched text with the matched
+terms marked, for showing the reader why a row was returned:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="nb">id</span><span class="p">,</span> <span class="n">BM25_HIGHLIGHT</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'search term'</span><span class="p">)</span> <span class="n">AS</span> <span class="n">excerpt</span> <span class="n">FROM</span> <span class="n">ks</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'search term'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'search term'</span><span class="p">)</span>
+    <span class="n">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It is accepted only in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause, under the same rules as <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>
+there: the query must have the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses above, and
+the call must reference the same column and the same search term they do.</p>
+<p>The result is a single fragment of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, holding HTML: the matched
+terms are wrapped in <code class="docutils literal notranslate"><span class="pre">&lt;b&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;/b&gt;</span></code>, and the text around them is
+HTML-escaped, so the fragment can be inserted into an HTML document as returned.</p>
+<p>The value is <code class="docutils literal notranslate"><span class="pre">null</span></code> for a row in which no fragment could be found, as happens
+when the query consists only of stop words. Such a row is still returned.</p>
+<p>A query that asks for an excerpt costs one additional round trip to the
+full-text index, made after the matching rows have been read, carrying the text
+of the highlighted column of those rows. Queries that do not ask for an excerpt
+are unaffected.</p>
+</section>
 <section id="filtering-support">
 <h3>Filtering support<a class="headerlink" href="#filtering-support" title="Link to this heading">¶</a></h3>
 <p>Additional <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> restrictions (such as partition key equality) are not
@@ -555,15 +578,20 @@ Any of them may be used as a selector, but only in a query that already
 has the required <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses. Every occurrence
 must reference the same column and the same search term.</p></td>
 </tr>
-<tr class="row-even"><td><p>Single ordering only</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT()</span></code> is a selector only</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT()</span></code> is accepted in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause under the same
+rules as <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>, and rejected in every other clause. See
+<a class="reference internal" href="#fulltext-highlighting"><span class="std std-ref">Highlighting</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Single ordering only</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> cannot be combined with other <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> columns,
 a second <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> ordering, or with <code class="docutils literal notranslate"><span class="pre">ANN</span></code> ordering.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Paging not supported</p></td>
+<tr class="row-even"><td><p>Paging not supported</p></td>
 <td><p>FTS queries do not support paging; all matching rows up to <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>
 are returned in a single page.</p></td>
 </tr>
-<tr class="row-even"><td><p>Grouping not supported</p></td>
+<tr class="row-odd"><td><p>Grouping not supported</p></td>
 <td><p>FTS queries cannot include a <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> clause.</p></td>
 </tr>
 </tbody>
@@ -696,6 +724,7 @@ are returned in a single page.</p></td>
 <li><a class="reference internal" href="#creating-a-full-text-index">Creating a Full-Text Index</a></li>
 <li><a class="reference internal" href="#querying-with-bm25">Querying with BM25</a><ul>
 <li><a class="reference internal" href="#basic-query">Basic query</a></li>
+<li><a class="reference internal" href="#highlighting">Highlighting</a></li>
 <li><a class="reference internal" href="#filtering-support">Filtering support</a></li>
 <li><a class="reference internal" href="#using-bind-markers">Using bind markers</a></li>
 <li><a class="reference internal" href="#disambiguating-from-a-user-defined-function">Disambiguating from a user-defined function</a></li>
@@ -949,6 +978,7 @@ are returned in a single page.</p></td>
 <li class="toctree-l2"><a class="reference internal" href="../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/delete.html">DELETE</a></li>
@@ -1211,7 +1241,7 @@ are returned in a single page.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Oct 2026.
+                        Last updated on 02 Oct 2026.
                     
                 </div>
             

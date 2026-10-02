@@ -4,6 +4,7 @@ This following pages describes the statements supported by CQL to insert, update
 sections common to data updating statements.
 
 * [SELECT](https://docs.scylladb.com/manual/master/cql/dml/select.md)
+* [Selecting an excerpt](https://docs.scylladb.com/manual/master/cql/dml/select.md#selecting-an-excerpt)
 * [INSERT](https://docs.scylladb.com/manual/master/cql/dml/insert.md)
 * [UPDATE](https://docs.scylladb.com/manual/master/cql/dml/update.md)
 * [DELETE](https://docs.scylladb.com/manual/master/cql/dml/delete.md)

@@ -117,6 +117,36 @@ The rank is the position in the index’s result, not in the result set. If the 
 that is no longer in the base table, that row’s rank is missing from the result and the ranks after
 it are not renumbered.
 
+<a id="fulltext-highlighting"></a>
+
+### Highlighting
+
+`BM25_HIGHLIGHT()` returns an excerpt of the searched text with the matched
+terms marked, for showing the reader why a row was returned:
+
+```default
+SELECT id, BM25_HIGHLIGHT(v, 'search term') AS excerpt FROM ks.t
+    WHERE BM25(v, 'search term') > 0
+    ORDER BY BM25(v, 'search term')
+    LIMIT 10;
+```
+
+It is accepted only in the `SELECT` clause, under the same rules as `BM25()`
+there: the query must have the `WHERE` and `ORDER BY` clauses above, and
+the call must reference the same column and the same search term they do.
+
+The result is a single fragment of type `text`, holding HTML: the matched
+terms are wrapped in `<b>` and `</b>`, and the text around them is
+HTML-escaped, so the fragment can be inserted into an HTML document as returned.
+
+The value is `null` for a row in which no fragment could be found, as happens
+when the query consists only of stop words. Such a row is still returned.
+
+A query that asks for an excerpt costs one additional round trip to the
+full-text index, made after the matching rows have been read, carrying the text
+of the highlighted column of those rows. Queries that do not ask for an excerpt
+are unaffected.
+
 ### Filtering support
 
 Additional `WHERE` restrictions (such as partition key equality) are not
@@ -159,6 +189,7 @@ FTS queries enforce the following rules:
 | Aggregation not supported                               | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                                                                                                                                                                              |
 | Fulltext index required                                 | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                                                                                                                                                                            |
 | Selecting a score or a rank needs the other two clauses | `BM25()` returns a `tuple<float, int>`, the row’s relevance score and<br/>its rank; `BM25_SCORE()` and `BM25_RANK()` return one element each.<br/>Any of them may be used as a selector, but only in a query that already<br/>has the required `WHERE` and `ORDER BY` clauses. Every occurrence<br/>must reference the same column and the same search term. |
+| `BM25_HIGHLIGHT()` is a selector only                   | `BM25_HIGHLIGHT()` is accepted in the `SELECT` clause under the same<br/>rules as `BM25()`, and rejected in every other clause. See<br/>[Highlighting](#fulltext-highlighting).                                                                                                                                                                              |
 | Single ordering only                                    | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                                                                                                                                                                                  |
 | Paging not supported                                    | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                                                                                                                                        |
 | Grouping not supported                                  | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                                                                                                                              |
