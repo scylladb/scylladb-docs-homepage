@@ -486,6 +486,10 @@ configuration error.</p>
 </div>
 <p>The storage type of a keyspace cannot be changed after it is created;
 <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> cannot move a keyspace between local and object storage.</p>
+<p>A cluster keeps all of its user keyspaces on one kind of storage. <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> is rejected when the storage it asks for differs from the storage the
+cluster’s existing user keyspaces use, so object-storage and local keyspaces
+cannot be mixed on one cluster. Set <code class="docutils literal notranslate"><span class="pre">restrict_mixed_storage_clusters</span></code> to <code class="docutils literal notranslate"><span class="pre">warn</span></code>
+or <code class="docutils literal notranslate"><span class="pre">false</span></code> to relax that.</p>
 <p><strong>Example</strong></p>
 <p>Given this endpoint in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">object_storage_endpoints</span><span class="p">:</span>
@@ -1560,7 +1564,7 @@ both features in the same table, or even the same row.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Oct 2026.
+                        Last updated on 03 Oct 2026.
                     
                 </div>
             

@@ -2324,16 +2324,16 @@ the cost of a read scales with the number of SSTables it touches.
 
 ### Not supported
 
-| Capability                               | Status                                                                                                                                                                                                                                                          |
-|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Snapshots, backup and restore            | Not available. `nodetool snapshot` fails for object-storage keyspaces<br/>with `Snapshotting non-local tables is not implemented`, and every<br/>backup path is built on snapshots. Restoring **into** an object-storage<br/>keyspace is likewise unavailable.  |
-| Vnode keyspaces                          | Not supported. An object-storage keyspace must use tablets, which is the<br/>default for new keyspaces.                                                                                                                                                         |
-| Mixed-storage clusters                   | Not supported. A cluster must use either local storage or object storage<br/>for its user keyspaces, not both.                                                                                                                                                  |
-| Materialized views and secondary indexes | Not supported.                                                                                                                                                                                                                                                  |
-| LWT, counters, CDC, Alternator           | Not supported.                                                                                                                                                                                                                                                  |
-| Size based tablet load balancing         | The load balancer’s size based mode treats SSTable sizes as local disk<br/>usage, which does not hold for object storage. Set<br/>`force_capacity_based_balancing: true` as described in<br/>[Required configuration](#admin-object-storage-config).            |
-| Changing a keyspace’s storage type       | Not possible. `ALTER KEYSPACE` cannot move a keyspace between local and<br/>object storage. Moving existing data means creating a second keyspace<br/>with the desired storage and copying the data through CQL, reading from<br/>one and writing to the other. |
-| Google Cloud Storage backend             | Experimental. ScyllaDB exposes no per-request metrics for the GCS<br/>backend, so object-storage request rate, latency, retries and errors<br/>cannot be observed. Use S3 for production deployments.                                                           |
+| Capability                               | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Snapshots, backup and restore            | Not available. `nodetool snapshot` fails for object-storage keyspaces<br/>with `Snapshotting non-local tables is not implemented`, and every<br/>backup path is built on snapshots. Restoring **into** an object-storage<br/>keyspace is likewise unavailable.                                                                                                                                                                                                                                                                                 |
+| Vnode keyspaces                          | Not supported. An object-storage keyspace must use tablets, which is the<br/>default for new keyspaces.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Mixed-storage clusters                   | Not supported, and refused. A cluster must use either local storage or<br/>object storage for its user keyspaces, not both. `CREATE KEYSPACE` is<br/>rejected when the storage it asks for differs from the storage the<br/>cluster’s existing user keyspaces use. A cluster that already holds<br/>keyspaces of both kinds keeps working, and is only warned about. The<br/>`restrict_mixed_storage_clusters` option relaxes the refusal to a<br/>warning (`warn`) or removes it (`false`); it is live-updateable and<br/>defaults to `true`. |
+| Materialized views and secondary indexes | Not supported.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| LWT, counters, CDC, Alternator           | Not supported. An Alternator table is stored locally, so `CreateTable`<br/>is rejected with a `ValidationException` on a cluster whose user<br/>keyspaces are in object storage. That refusal follows<br/>`restrict_mixed_storage_clusters` as well.                                                                                                                                                                                                                                                                                           |
+| Size based tablet load balancing         | The load balancer’s size based mode treats SSTable sizes as local disk<br/>usage, which does not hold for object storage. Set<br/>`force_capacity_based_balancing: true` as described in<br/>[Required configuration](#admin-object-storage-config).                                                                                                                                                                                                                                                                                           |
+| Changing a keyspace’s storage type       | Not possible. `ALTER KEYSPACE` cannot move a keyspace between local and<br/>object storage. Moving existing data means creating a second keyspace<br/>with the desired storage and copying the data through CQL, reading from<br/>one and writing to the other.                                                                                                                                                                                                                                                                                |
+| Google Cloud Storage backend             | Experimental. ScyllaDB exposes no per-request metrics for the GCS<br/>backend, so object-storage request rate, latency, retries and errors<br/>cannot be observed. Use S3 for production deployments.                                                                                                                                                                                                                                                                                                                                          |
 
 ### Backup and ScyllaDB Manager
 
@@ -14109,6 +14109,16 @@ having the highest priority:
 > * **Default value:** `db::tri_mode_restriction_t::mode::WARN`
 > * Liveness: `True`
 
+<a id="confprop-restrict-mixed-storage-clusters"></a>
+
+### restrict_mixed_storage_clusters
+
+> Controls whether to prevent creating a keyspace whose storage differs from the storage the cluster’s other user keyspaces use. Can be true, false, or warn.
+
+> * **Type:** `tri_mode_restriction`
+> * **Default value:** `db::tri_mode_restriction_t::mode::TRUE`
+> * Liveness: `True`
+
 <a id="confprop-restrict-future-timestamp"></a>
 
 ### restrict_future_timestamp
@@ -15693,6 +15703,11 @@ configuration error.
 
 The storage type of a keyspace cannot be changed after it is created;
 `ALTER KEYSPACE` cannot move a keyspace between local and object storage.
+
+A cluster keeps all of its user keyspaces on one kind of storage. `CREATE KEYSPACE` is rejected when the storage it asks for differs from the storage the
+cluster’s existing user keyspaces use, so object-storage and local keyspaces
+cannot be mixed on one cluster. Set `restrict_mixed_storage_clusters` to `warn`
+or `false` to relax that.
 
 **Example**
 

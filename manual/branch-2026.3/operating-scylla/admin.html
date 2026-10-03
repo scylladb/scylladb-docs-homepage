@@ -1022,14 +1022,23 @@ keyspace is likewise unavailable.</p></td>
 default for new keyspaces.</p></td>
 </tr>
 <tr class="row-even"><td><p>Mixed-storage clusters</p></td>
-<td><p>Not supported. A cluster must use either local storage or object storage
-for its user keyspaces, not both.</p></td>
+<td><p>Not supported, and refused. A cluster must use either local storage or
+object storage for its user keyspaces, not both. <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> is
+rejected when the storage it asks for differs from the storage the
+cluster’s existing user keyspaces use. A cluster that already holds
+keyspaces of both kinds keeps working, and is only warned about. The
+<code class="docutils literal notranslate"><span class="pre">restrict_mixed_storage_clusters</span></code> option relaxes the refusal to a
+warning (<code class="docutils literal notranslate"><span class="pre">warn</span></code>) or removes it (<code class="docutils literal notranslate"><span class="pre">false</span></code>); it is live-updateable and
+defaults to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Materialized views and secondary indexes</p></td>
 <td><p>Not supported.</p></td>
 </tr>
 <tr class="row-even"><td><p>LWT, counters, CDC, Alternator</p></td>
-<td><p>Not supported.</p></td>
+<td><p>Not supported. An Alternator table is stored locally, so <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code>
+is rejected with a <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code> on a cluster whose user
+keyspaces are in object storage. That refusal follows
+<code class="docutils literal notranslate"><span class="pre">restrict_mixed_storage_clusters</span></code> as well.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Size based tablet load balancing</p></td>
 <td><p>The load balancer’s size based mode treats SSTable sizes as local disk
@@ -1883,7 +1892,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Oct 2026.
+                        Last updated on 03 Oct 2026.
                     
                 </div>
             

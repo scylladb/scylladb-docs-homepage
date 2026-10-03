@@ -2720,6 +2720,16 @@ having the highest priority:
 > * **Default value:** `db::tri_mode_restriction_t::mode::WARN`
 > * Liveness: `True`
 
+<a id="confprop-restrict-mixed-storage-clusters"></a>
+
+### restrict_mixed_storage_clusters
+
+> Controls whether to prevent creating a keyspace whose storage differs from the storage the cluster’s other user keyspaces use. Can be true, false, or warn.
+
+> * **Type:** `tri_mode_restriction`
+> * **Default value:** `db::tri_mode_restriction_t::mode::TRUE`
+> * Liveness: `True`
+
 <a id="confprop-restrict-future-timestamp"></a>
 
 ### restrict_future_timestamp
