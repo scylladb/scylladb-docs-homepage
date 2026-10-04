@@ -2519,6 +2519,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-test-clocks-offset-seconds">
+<dt class="sig sig-object std" id="confval-test_clocks_offset_seconds">
+<span class="sig-name descname"><span class="pre">test_clocks_offset_seconds</span></span><a class="headerlink" href="#confval-test_clocks_offset_seconds" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of seconds to add to this node’s clocks - db_clock, gc_clock, and the timestamps generated for writes. For tests only! It lets a test make a TTL expire, or data become expired or collectable, without really waiting for that long. Because it is live-updatable, a test can set it and then reset it back to 0 when it is done. This option only exists in builds which enable error injection (dev, debug, sanitize), not in release builds - so a test which needs it should check whether it exists, and skip itself if it doesn’t.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int64_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-api-port">
 <dt class="sig sig-object std" id="confval-api_port">
 <span class="sig-name descname"><span class="pre">api_port</span></span><a class="headerlink" href="#confval-api_port" title="Link to this definition">¶</a></dt>
@@ -5989,7 +6003,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Oct 2026.
+                        Last updated on 04 Oct 2026.
                     
                 </div>
             

@@ -1546,6 +1546,16 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > * **Default value:** `false`
 > * Liveness: `False`
 
+<a id="confprop-test-clocks-offset-seconds"></a>
+
+### test_clocks_offset_seconds
+
+> Number of seconds to add to this node’s clocks - db_clock, gc_clock, and the timestamps generated for writes. For tests only! It lets a test make a TTL expire, or data become expired or collectable, without really waiting for that long. Because it is live-updatable, a test can set it and then reset it back to 0 when it is done. This option only exists in builds which enable error injection (dev, debug, sanitize), not in release builds - so a test which needs it should check whether it exists, and skip itself if it doesn’t.
+
+> * **Type:** `int64_t`
+> * **Default value:** `0`
+> * Liveness: `True`
+
 <a id="confprop-api-port"></a>
 
 ### api_port
