@@ -42,8 +42,8 @@ versions.
         * 3.11
         * 3.10
     * - `Go Driver <https://github.com/scylladb/gocql>`_
-      - * 1.19
-        * 1.18
+      - * 1.20
+        * 1.19
     * - `Rust Driver <https://rust-driver.docs.scylladb.com/>`_
       - * 1.9
         * 1.8
@@ -55,5 +55,5 @@ versions.
     * - `C++ Driver <https://cpp-driver.docs.scylladb.com/>`_
       - Deprecated. Migrate to `CPP RS Driver <https://cpp-rs-driver.docs.scylladb.com/>`_.
     * - `Node.js RS Driver <https://nodejs-rs-driver.docs.scylladb.com/>`_
-      - * 0.6
+      - * 0.7
 
