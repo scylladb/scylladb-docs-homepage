@@ -943,7 +943,9 @@ option naming that endpoint - see
 syntax.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Review <a class="reference internal" href="#object-storage-limitations"><span class="std std-ref">Object storage keyspaces: status and limitations</span></a> before using this feature. In particular,
+<p>Object-storage keyspaces are a <strong>Preview</strong> feature: they are available for
+evaluation, but are not generally available and are not recommended for
+production data. Review <a class="reference internal" href="#object-storage-limitations"><span class="std std-ref">Object storage keyspaces: status and limitations</span></a> before using this feature. In particular,
 snapshots and backup are <strong>not available</strong> for object-storage keyspaces.</p>
 </div>
 <section id="required-configuration">
@@ -990,6 +992,10 @@ all keyspaces.</p>
 </section>
 <section id="object-storage-keyspaces-status-and-limitations">
 <span id="object-storage-limitations"></span><h2>Object storage keyspaces: status and limitations<a class="headerlink" href="#object-storage-keyspaces-status-and-limitations" title="Link to this heading">¶</a></h2>
+<p>Object-storage keyspaces are a <strong>Preview</strong> feature in this release.</p>
+<p>Not every limitation listed below is enforced. Materialized views, secondary
+indexes, LWT, counters and CDC are accepted on an object-storage keyspace
+without an error, and their behavior there is undefined and untested.</p>
 <p>Object-storage keyspaces target archival workloads: data that is queried
 infrequently and benefits from object-storage pricing. Read latency is
 substantially higher than on local disks, and there is no local disk cache, so
@@ -1904,7 +1910,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 08 Oct 2026.
+                        Last updated on 09 Oct 2026.
                     
                 </div>
             

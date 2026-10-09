@@ -386,13 +386,40 @@ validating the content of SStables, and more. See <a class="reference internal" 
 </pre></div>
 </div>
 <p>You can specify more than one SSTable.</p>
-<p>Additionally, the path to SSTable can point to an S3 fully qualified path in
-the form of s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt. To use
-this feature, you need to have AWS credentials set up in your environment.
-For more information, see <a class="reference internal" href="../admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a>.</p>
+<p>Additionally, the path to SSTable can point to an object storage fully qualified
+path in the form of <code class="docutils literal notranslate"><span class="pre">s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt</span></code>
+or <code class="docutils literal notranslate"><span class="pre">gs://bucket-name/prefix/of/your/sstable/sstable-TOC.txt</span></code>. This also
+supports live object-storage SSTables; see <a class="reference internal" href="#sstables-on-object-storage">SSTables on Object Storage</a>.
+To use this feature, you need to have object-storage credentials set up in your
+environment. For more information, see <a class="reference internal" href="../admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a>.</p>
 <p>Additionally, you must ensure the tool is able to load the correct scylla.yaml
 file, which can be done using the <code class="docutils literal notranslate"><span class="pre">--scylla-yaml-file</span></code> parameter or by
 placing the YAML file in one of the default locations the tool checks.</p>
+</section>
+<section id="sstables-on-object-storage">
+<h2>SSTables on Object Storage<a class="headerlink" href="#sstables-on-object-storage" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span></code> can read SSTables from S3 and Google Cloud Storage using
+fully qualified paths with the <code class="docutils literal notranslate"><span class="pre">s3://</span></code> or <code class="docutils literal notranslate"><span class="pre">gs://</span></code> scheme.</p>
+<p>Snapshot and backup layouts use regular SSTable component names that include
+the SSTable version, generation, and format, for example
+<code class="docutils literal notranslate"><span class="pre">me-3gqe_1lnj_4sbpc2ezoscu9hhtor-big-Data.db</span></code>. For these layouts, point the
+tool at any component path in that SSTable.</p>
+<p>Live object-storage keyspaces use a different layout. SSTable components are
+stored under <code class="docutils literal notranslate"><span class="pre">sstables/&lt;sstable-id&gt;/</span></code> and the component object names do not
+include the version, generation, or format:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>s3://bucket/sstables/&lt;sstable-id&gt;/Data.db
+s3://bucket/sstables/&lt;sstable-id&gt;/Index.db
+s3://bucket/sstables/&lt;sstable-id&gt;/TOC.txt
+</pre></div>
+</div>
+<p>The same layout is used with <code class="docutils literal notranslate"><span class="pre">gs://</span></code> paths. In this layout, Scylla stores the
+SSTable version and format as object attributes named <code class="docutils literal notranslate"><span class="pre">version</span></code> and
+<code class="docutils literal notranslate"><span class="pre">format</span></code> on the <code class="docutils literal notranslate"><span class="pre">TOC.txt</span></code> object. <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span></code> uses these attributes
+to open the SSTable because the component name itself only contains the
+component suffix.</p>
+<p>The tool reads live object-storage SSTables in place; it does not download the
+full SSTable first. The <code class="docutils literal notranslate"><span class="pre">--scylla-yaml-file</span></code> configuration must contain a
+matching object-storage endpoint for the path scheme.</p>
 </section>
 <section id="schema">
 <span id="scylla-sstable-schema"></span><h2>Schema<a class="headerlink" href="#schema" title="Link to this heading">¶</a></h2>
@@ -1334,6 +1361,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li><a class="reference internal" href="#">ScyllaDB SStable</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#sstables-on-object-storage">SSTables on Object Storage</a></li>
 <li><a class="reference internal" href="#schema">Schema</a><ul>
 <li><a class="reference internal" href="#schema-file">Schema file</a><ul>
 <li><a class="reference internal" href="#dropped-columns">Dropped columns</a></li>
@@ -1886,7 +1914,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 08 Oct 2026.
+                        Last updated on 09 Oct 2026.
                     
                 </div>
             

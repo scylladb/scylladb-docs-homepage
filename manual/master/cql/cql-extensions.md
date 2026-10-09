@@ -120,7 +120,8 @@ S3-compatible object store, you first configure the storage endpoints.
 See [Configuring Object Storage](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#object-storage-configuration) for instructions.
 
 #### NOTE
-Object-storage keyspaces are supported for tablets only, and a number of features
+Object-storage keyspaces are a **Preview** feature and are not generally
+available. They are supported for tablets only, and a number of features
 are not available for them. Review
 [Object storage keyspaces: status and limitations](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#object-storage-limitations)
 before using this feature.
