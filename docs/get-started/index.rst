@@ -14,3 +14,4 @@ and use it as the database for your application.
    data-modeling/index
    learn-resources/index
    build-with-ai/index
+   gui-clients/index
