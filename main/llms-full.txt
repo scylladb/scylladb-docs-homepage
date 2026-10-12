@@ -313,6 +313,7 @@ and use it as the database for your application.
 * [Data Modeling](https://docs.scylladb.com/stable/get-started/data-modeling/index.md)
 * [Learn to Use ScyllaDB](https://docs.scylladb.com/stable/get-started/learn-resources/index.md)
 * [Build with AI](https://docs.scylladb.com/stable/get-started/build-with-ai/index.md)
+* [GUI Clients](https://docs.scylladb.com/stable/get-started/gui-clients/index.md)
 
 
 # index.md
@@ -407,6 +408,18 @@ to execute.
 * [Query Design](https://docs.scylladb.com/stable/get-started/data-modeling/query-design.md)
 * [Schema Design](https://docs.scylladb.com/stable/get-started/data-modeling/schema-design.md)
 * [Data Modeling Best Practices](https://docs.scylladb.com/stable/get-started/data-modeling/best-practices.md)
+
+
+# index.md
+
+# GUI Clients
+
+GUI clients let you browse keyspaces and tables, and run CQL queries against
+ScyllaDB from a graphical interface.
+
+* [DBeaver](https://docs.scylladb.com/stable/get-started/gui-clients/dbeaver.md)
+* [DbSchema](https://docs.scylladb.com/stable/get-started/gui-clients/dbschema.md)
+* [LibreDB Studio](https://docs.scylladb.com/stable/get-started/gui-clients/libredb-studio.md)
 
 
 # index.md
@@ -745,6 +758,89 @@ cqlsh>
 
 See [CQLSh: the CQL shell](https://docs.scylladb.com/manual/stable/cql/cqlsh.html)
 for details.
+
+
+# dbeaver.md
+
+# DBeaver
+
+[DBeaver](https://dbeaver.com/) is a universal database manager for SQL and
+NoSQL databases. It has a built-in ScyllaDB connection in the paid editions
+(DBeaver Lite, Enterprise, and Ultimate), so you can browse tables and run CQL
+queries with syntax highlighting.
+
+## Prerequisites
+
+* [DBeaver Lite, Enterprise, or Ultimate](https://dbeaver.com/download/)
+* A self-hosted ScyllaDB cluster or a [ScyllaDB Cloud](https://cloud.scylladb.com/) cluster
+
+## Connect to ScyllaDB
+
+1. Click **New Database Connection**.
+2. Search for **ScyllaDB**.
+3. Select **ScyllaDB**.
+4. Click **Next**.
+5. Enter the connection details:
+   * **Host**: the address of a ScyllaDB node.
+   * **Port**: `9042` by default.
+   * **Keyspace**: optional.
+   * **Username** and **Password**: if authentication is enabled on the cluster.
+6. Click **Test Connection** to verify the connection.
+7. Click **Finish**.
+
+You can now browse your keyspaces and tables in the **Database Navigator**
+and open a SQL editor to run CQL queries. Results appear below the query.
+
+## ScyllaDB Cloud
+
+Find the node addresses and credentials on the **Connect** tab of your cluster
+in the [ScyllaDB Cloud Console](https://cloud.scylladb.com/). Make sure your
+IP address is on the cluster’s allowed IP list.
+
+
+# dbschema.md
+
+# DbSchema
+
+[DbSchema](https://dbschema.com/) is a visual database design and management
+tool. After connecting, DbSchema shows your keyspaces, tables, columns, and
+column types on a diagram, and lets you run CQL queries.
+
+## Prerequisites
+
+* [DbSchema](https://dbschema.com/download.html)
+* A self-hosted ScyllaDB cluster or a [ScyllaDB Cloud](https://cloud.scylladb.com/) cluster
+
+## Connect to ScyllaDB
+
+1. Click **Connect to Database**.
+2. Search for **ScyllaDB**.
+3. Select **ScyllaDB**.
+4. Click **Next**.
+5. Enter the connection details:
+   * The host and port of a ScyllaDB node (`9042` by default).
+   * The datacenter name, as shown by `nodetool status`. For example,
+     `datacenter1` on a default single-node cluster.
+   * A username and password, if authentication is enabled on the cluster.
+6. Click **Connect**.
+7. Select the keyspaces you want to work with.
+8. Click **OK**.
+
+DbSchema shows the tables in the selected keyspaces on a diagram.
+
+## Run CQL queries
+
+1. Click **Editors** > **SQL Editor**.
+2. Write a CQL query.
+3. Run the query.
+
+The results appear below the query.
+
+## ScyllaDB Cloud
+
+Find the node addresses, datacenter name, and credentials on the **Connect**
+tab of your cluster in the [ScyllaDB Cloud Console](https://cloud.scylladb.com/).
+Make sure your IP address is on the cluster’s allowed IP list.
 
 
 # delete-data.md
@@ -1283,6 +1379,44 @@ needed.
 * [LangGraph persistence documentation](https://langchain-ai.github.io/langgraph/concepts/persistence/)
 * [ScyllaDB Cloud](https://cloud.scylladb.com/)
 * [ScyllaDB documentation](https://docs.scylladb.com/)
+
+
+# libredb-studio.md
+
+# LibreDB Studio
+
+[LibreDB Studio](https://github.com/libredb/libredb-studio) is an open
+source, web-based SQL IDE that you run yourself.
+
+## Prerequisites
+
+* [LibreDB Studio](https://libredb.org/#deploy)
+* A self-hosted ScyllaDB cluster or a [ScyllaDB Cloud](https://cloud.scylladb.com/) cluster
+
+## Connect to ScyllaDB
+
+1. Open the connection dialog.
+2. Select **Apache Cassandra**.
+3. Enter the connection details:
+   * **Host** and **Port**: the address of a ScyllaDB node and `9042` by default.
+   * **Local Data Center**: required by the driver. Use the datacenter name
+     that `nodetool status` shows, for example `datacenter1` on a default
+     single-node cluster.
+   * **Keyspace**: optional. Without a keyspace, the object browser doesn’t
+     show a schema tree.
+   * A username and password, if authentication is enabled on the cluster.
+4. Click **Test Connection** to verify the connection.
+5. Click **Establish Connection**.
+
+You can now run CQL statements in the editor and browse keyspaces, tables,
+materialized views, columns, and secondary indexes in the object browser.
+
+## ScyllaDB Cloud
+
+Find the node addresses, datacenter name, and credentials on the **Connect**
+tab of your cluster in the [ScyllaDB Cloud Console](https://cloud.scylladb.com/).
+Make sure the IP address of the machine running LibreDB Studio is on the
+cluster’s allowed IP list.
 
 
 # mcp-toolbox.md
