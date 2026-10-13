@@ -99,7 +99,7 @@ Click the documentation link to view the documentation for each driver.
           the CPP RS Driver for improved performance and full support
           for the latest ScyllaDB features.
 
-        `C++ Driver documentation <https://cpp-driver.docs.scylladb.com/>`_
+        `C++ Driver project (deprecated) <https://github.com/scylladb/cpp-driver/>`_
 
 Support for Tablets
 -------------------------
@@ -141,10 +141,6 @@ and since which version.
    * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
      - |v|
      - All versions
-   * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
-     - |x| 
-     - N/A. This driver is no longer actively maintained.
-
 
 .. _cql-drivers-vector-support:
 
@@ -189,9 +185,6 @@ and since which version.
    * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
      - |v|
      - All versions
-   * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
-     - |x| 
-     - N/A. This driver is no longer actively maintained.
 
 CDC Integration with ScyllaDB Drivers
 -------------------------------------------
@@ -221,5 +214,3 @@ The following table specifies which ScyllaDB drivers include a library for
      - |x|
    * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
      - |x|
-   * - `C++ <https://cpp-driver.docs.scylladb.com/>`_
-     - |x| 
