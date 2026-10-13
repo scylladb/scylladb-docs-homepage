@@ -171,5 +171,7 @@
    :hidden:
 
    get-started/index
+   ScyllaDB Cloud <https://cloud.docs.scylladb.com/>
+   ScyllaDB <https://docs.scylladb.com/manual/>
    drivers/index
    versioning/index 
