@@ -58,7 +58,7 @@ Click the documentation link to view the documentation for each driver.
         | An extension, **gocqlx**, adds higher‑level abstractions, such as
           query builders and struct binding, to improve developer productivity.
 
-        * `Go Driver documentation <https://github.com/scylladb/gocql>`_
+        * `Go Driver documentation <https://gocql-driver.docs.scylladb.com/>`_
         * `Gocql extension documentation <https://github.com/scylladb/gocqlx>`_
     * - Rust Driver
       - | A native Rust client for interacting with ScyllaDB and Cassandra
@@ -123,7 +123,7 @@ and since which version.
      - 4.18.0 (Java Driver 4.x)
 
        3.11.5.2 (Java Driver 3.x)
-   * - `Go <https://github.com/scylladb/gocql>`_
+   * - `Go <https://gocql-driver.docs.scylladb.com/>`_
      - |v|
      - 1.13.0
    * - `Gocql extension <https://github.com/scylladb/gocqlx>`_
@@ -138,7 +138,7 @@ and since which version.
    * - `CPP RS <https://cpp-rs-driver.docs.scylladb.com/>`_
      - |v|
      - All versions
-   * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
+   * - `Node.js RS <https://nodejs-rs-driver.docs.scylladb.com/>`_
      - |v|
      - All versions
 
@@ -167,7 +167,7 @@ and since which version.
      - Java Driver 4.x: 4.16.0 (recommended 4.19.0 or later)
 
        Java Driver 3.x: not supported
-   * - `Go <https://github.com/scylladb/gocql>`_
+   * - `Go <https://gocql-driver.docs.scylladb.com/>`_
      - |v|
      - 1.17.0
    * - `Gocql extension <https://github.com/scylladb/gocqlx>`_
@@ -182,7 +182,7 @@ and since which version.
    * - `CPP RS <https://cpp-rs-driver.docs.scylladb.com/>`_
      - |v|
      - 0.5.1
-   * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
+   * - `Node.js RS <https://nodejs-rs-driver.docs.scylladb.com/>`_
      - |v|
      - All versions
 
@@ -202,7 +202,7 @@ The following table specifies which ScyllaDB drivers include a library for
      - |x| 
    * - `Java <https://java-driver.docs.scylladb.com/>`_
      - |v|
-   * - `Go <https://github.com/scylladb/gocql>`_
+   * - `Go <https://gocql-driver.docs.scylladb.com/>`_
      - |v|
    * - `Gocql extension <https://github.com/scylladb/gocqlx>`_
      - |x| 
@@ -212,5 +212,5 @@ The following table specifies which ScyllaDB drivers include a library for
      - |x|
    * - `CPP RS Driver <https://cpp-rust-driver.docs.scylladb.com/>`_
      - |x|
-   * - `Node.js RS <https://github.com/scylladb/nodejs-rs-driver/>`_
+   * - `Node.js RS <https://nodejs-rs-driver.docs.scylladb.com/>`_
      - |x|
