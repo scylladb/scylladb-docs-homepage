@@ -437,6 +437,9 @@ their BM25 relevance score (highest first).</p></li>
 <p>Neither clause works on its own - a query with only <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25()</span></code> or only
 <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected, and both must reference the <strong>same column</strong> and
 the <strong>same search term</strong>. Every FTS query also requires a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>.</p>
+<p>The exception is a <a class="reference internal" href="../cql/dml/select.html#hybrid-queries"><span class="std std-ref">hybrid query</span></a>, which ranks the rows by a
+full-text search together with other searches, such as a vector search, and takes
+no <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p>
 <p>For the full syntax reference, see <a class="reference internal" href="../cql/dml/select.html#fulltext-queries"><span class="std std-ref">Full-Text Search queries (BM25)</span></a>.</p>
 <section id="basic-query">
 <h3>Basic query<a class="headerlink" href="#basic-query" title="Link to this heading">¶</a></h3>
@@ -469,9 +472,9 @@ query wants:</p>
     <span class="n">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>All three describe the search the rows are ranked by, so each needs the two clauses above and has
-to reference the same column and the same search term they do. A query using several of them still
-makes a single request.</p>
+<p>All three describe the search the rows are ranked by, so each needs a BM25 search on the same
+column in the <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause, and has to use the same search term as that search. A query using
+several of them still makes a single request.</p>
 <p>The rank is the position in the index’s result, not in the result set. If the index returns a row
 that is no longer in the base table, that row’s rank is missing from the result and the ranks after
 it are not renumbered.</p>
@@ -487,8 +490,8 @@ terms marked, for showing the reader why a row was returned:</p>
 </pre></div>
 </div>
 <p>It is accepted only in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause, under the same rules as <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>
-there: the query must have the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses above, and
-the call must reference the same column and the same search term they do.</p>
+there: the <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause must have a BM25 search on the same column, and
+the call must use the same search term as that search.</p>
 <p>The result is a single fragment of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, holding HTML: the matched
 terms are wrapped in <code class="docutils literal notranslate"><span class="pre">&lt;b&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;/b&gt;</span></code>, and the text around them is
 HTML-escaped, so the fragment can be inserted into an HTML document as returned.</p>
@@ -496,8 +499,10 @@ HTML-escaped, so the fragment can be inserted into an HTML document as returned.
 when the query consists only of stop words. Such a row is still returned.</p>
 <p>A query that asks for an excerpt costs one additional round trip to the
 full-text index, made after the matching rows have been read, carrying the text
-of the highlighted column of those rows. Queries that do not ask for an excerpt
-are unaffected.</p>
+of the highlighted column of those rows. In a query that ranks the rows by
+several searches, only the rows the full-text search returned are sent, and the
+others get a <code class="docutils literal notranslate"><span class="pre">null</span></code> excerpt. Queries that do not ask for an excerpt are
+unaffected.</p>
 </section>
 <section id="filtering-support">
 <h3>Filtering support<a class="headerlink" href="#filtering-support" title="Link to this heading">¶</a></h3>
@@ -543,7 +548,9 @@ built-in operator as <code class="docutils literal notranslate"><span class="pre
 <tr class="row-even"><td><p>Both clauses required</p></td>
 <td><p>A query must include both a <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25()</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> filter and an
 <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> ranking. Both must reference the same column and
-the same search term. Neither clause is accepted on its own.</p></td>
+the same search term. Neither clause is accepted on its own. The
+exception is a <a class="reference internal" href="../cql/dml/select.html#hybrid-queries"><span class="std std-ref">hybrid query</span></a>, which takes no
+<code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&gt;</span></code> and literal <code class="docutils literal notranslate"><span class="pre">0</span></code> only</p></td>
 <td><p>In <code class="docutils literal notranslate"><span class="pre">WHERE</span></code>, the only accepted form is <code class="docutils literal notranslate"><span class="pre">BM25(column,</span> <span class="pre">'term')</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.
@@ -571,12 +578,12 @@ are rejected.</p></td>
 <td><p>The queried column must have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>. A regular secondary
 index does not satisfy this requirement.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Selecting a score or a rank needs the other two clauses</p></td>
+<tr class="row-odd"><td><p>Selecting a score or a rank needs a BM25 search in <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>, the row’s relevance score and
 its rank; <code class="docutils literal notranslate"><span class="pre">BM25_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code> return one element each.
-Any of them may be used as a selector, but only in a query that already
-has the required <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses. Every occurrence
-must reference the same column and the same search term.</p></td>
+Any of them may be used as a selector, but only in a query whose
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause has a BM25 search on the same column, and every
+occurrence must use the same search term as that search.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT()</span></code> is a selector only</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT()</span></code> is accepted in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause under the same
@@ -584,8 +591,9 @@ rules as <code class="docutils literal notranslate"><span class="pre">BM25()</sp
 <a class="reference internal" href="#fulltext-highlighting"><span class="std std-ref">Highlighting</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Single ordering only</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> cannot be combined with other <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> columns,
-a second <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> ordering, or with <code class="docutils literal notranslate"><span class="pre">ANN</span></code> ordering.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> cannot be combined with other <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> columns.
+To rank the rows by several searches, fuse them in a
+<a class="reference internal" href="../cql/dml/select.html#hybrid-queries"><span class="std std-ref">hybrid query</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p>Paging not supported</p></td>
 <td><p>FTS queries do not support paging; all matching rows up to <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>
@@ -1241,7 +1249,7 @@ are returned in a single page.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Oct 2026.
+                        Last updated on 14 Oct 2026.
                     
                 </div>
             

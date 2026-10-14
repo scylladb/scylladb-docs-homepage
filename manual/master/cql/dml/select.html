@@ -389,6 +389,7 @@
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">ordering_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="p">(</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="o">|</span> <span class="n">ANN</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="s1">')'</span> <span class="p">)</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">WHERE</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span> <span class="s1">'&gt;'</span> <span class="mf">0</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
+                <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">fusion_function</span><span class="o">`</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">)</span><span class="o">+</span> <span class="s1">')'</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">PER</span> <span class="k">PARTITION</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span> <span class="p">]</span>
@@ -747,9 +748,10 @@ index gave the row, and the row’s <strong>rank</strong>, its position in the i
   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>All three describe the search the rows are ranked by, so each is only accepted in a query that
-already orders by an ANN clause, and every occurrence must name the same column and the same query
-vector as that clause. A query using several of them still makes a single request.</p>
+<p>All three describe the search the rows are ranked by, so each is only accepted in a query whose
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause has an ANN search, in either form, on the same column, and every occurrence must
+use the same query vector as that search. A query using several of them still makes a single
+request.</p>
 <p>An index configured for <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">rescoring</span></a> recomputes the similarity
 on the coordinator and reorders the rows by it, so the rank the Vector Store gave them no longer
 applies. <code class="docutils literal notranslate"><span class="pre">ANN_RANK()</span></code> and <code class="docutils literal notranslate"><span class="pre">ANN()</span></code> are rejected in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause of such a query;
@@ -796,7 +798,8 @@ referencing the <strong>same</strong> column and the <strong>same</strong> searc
 <li><p>An <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25(column,</span> <span class="pre">'term')</span></code> clause that ranks the matching rows.</p></li>
 </ul>
 <p>Neither clause is accepted on its own. A query that has only <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25()</span></code> or
-only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected.</p>
+only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected. The exception is a <a class="reference internal" href="#hybrid-queries"><span class="std std-ref">hybrid query</span></a>,
+which ranks the rows by several searches at once and takes no <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p>
 <p><strong>Syntax:</strong></p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">fts_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
          <span class="p">:</span>   <span class="k">WHERE</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span> <span class="s1">'&gt;'</span> <span class="mf">0</span>
@@ -809,8 +812,9 @@ the literal <code class="docutils literal notranslate"><span class="pre">0</span
 and have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>; it may be a regular or clustering-key column, but
 not a partition-key column.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> must be the only ordering in the query - it cannot be combined
-with another <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> column, a second <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> ordering, or an <code class="docutils literal notranslate"><span class="pre">ANN</span></code>
-ordering.</p>
+with another <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> column. To rank the rows by several searches, such as a
+full-text and a vector search, fuse them into one ordering in a
+<a class="reference internal" href="#hybrid-queries"><span class="std std-ref">hybrid query</span></a>.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause is mandatory; queries without <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> are rejected. The
 specified value must not exceed 1000.</p>
 <p><strong>Examples:</strong></p>
@@ -838,10 +842,10 @@ specified value must not exceed 1000.</p>
 <p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>: the <strong>score</strong> the index gave the row, and the row’s
 <strong>rank</strong>, its position in the index’s result counted from 1. <code class="docutils literal notranslate"><span class="pre">BM25_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code>
 return the two values on their own.</p>
-<p>All three describe the search the rows are ranked by, so each is only accepted in a query that
-already has the required <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses, and every occurrence must reference the
-same column and the same search term. <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> compares the score, and is the same
-as <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25_SCORE(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code> cannot be used in the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p>
+<p>All three describe the search the rows are ranked by, so each is only accepted in a query whose
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause has a BM25 search on the same column, and every occurrence must use the same
+search term as that search. <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> compares the score, and is the same as
+<code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25_SCORE(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code> cannot be used in the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> operator is not a reserved word. If a user-defined function named
 <code class="docutils literal notranslate"><span class="pre">bm25</span></code> exists in a keyspace, unqualified <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> becomes ambiguous; qualify
 the built-in operator as <code class="docutils literal notranslate"><span class="pre">system.bm25(...)</span></code> to disambiguate it.</p>
@@ -864,6 +868,76 @@ fragment could be found; the row itself is still returned. See
 <a class="reference internal" href="../../features/fulltext-search.html#fulltext-highlighting"><span class="std std-ref">Highlighting</span></a> for the details.</p>
 <p>For the full list of query constraints and requirements, see
 <a class="reference internal" href="../../features/fulltext-search.html"><span class="doc">Full-Text Search</span></a>.</p>
+<section id="hybrid-search-queries-scylladb-cloud">
+<span id="hybrid-queries"></span><h2>Hybrid search queries <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#hybrid-search-queries-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<p>A hybrid query ranks the rows by several searches at once, typically a <a class="reference internal" href="#vector-queries"><span class="std std-ref">vector search</span></a> and a <a class="reference internal" href="#fulltext-queries"><span class="std std-ref">full-text search</span></a> over the same table. Its
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause fuses the searches into one score:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">hybrid_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
+            <span class="p">:</span>   <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">fusion_function</span><span class="o">`</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">)</span><span class="o">+</span> <span class="s1">')'</span>
+            <span class="p">:</span>   <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
+<span class="n">search</span><span class="p">:</span> <span class="n">ANN</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="s1">')'</span>
+      <span class="p">:</span> <span class="o">|</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span>
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">RRF</span><span class="p">(</span><span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">))</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The searches are sent to their indexes in parallel. A row is a candidate if any of them returned
+it. The candidates are read, scored by the fusion function, sorted by that score, highest first,
+and only then cut to the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>.</p>
+<p>Each search passes the fusion function a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>: the score the index gave the row
+and the row’s rank, its position in the index’s result counted from 1. Where a search did not
+return the row, both are null. Scores of different searches are on different scales, so a BM25
+relevance and a vector similarity cannot be meaningfully added; ranks can be compared, so fusion
+usually goes by rank.</p>
+<p><code class="docutils literal notranslate"><span class="pre">RRF()</span></code> is reciprocal rank fusion. A row scores <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">(60</span> <span class="pre">+</span> <span class="pre">rank)</span></code> for each search that returned
+it, summed over the searches. It takes any number of searches, at least two.</p>
+<p>A user-defined function can fuse the searches instead. It takes one <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code> argument
+per search and returns a <code class="docutils literal notranslate"><span class="pre">float</span></code>. For example, to weigh the vector search three times as much as
+the full-text one:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">ks</span><span class="mf">.</span><span class="n">weighted</span><span class="p">(</span><span class="n">a</span> <span class="k">tuple</span><span class="o">&lt;</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">b</span> <span class="k">tuple</span><span class="o">&lt;</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+    <span class="k">CALLED</span> <span class="k">ON</span> <span class="k">NULL</span> <span class="k">INPUT</span> <span class="k">RETURNS</span> <span class="nb">float</span> <span class="k">LANGUAGE</span> <span class="n">lua</span> <span class="k">AS</span>
+    <span class="s1">'local function w(hit) if hit[2] == nil then return 0 end return 1 / hit[2] end</span>
+<span class="s1">     return 3 * w(a) + w(b)'</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ks</span><span class="mf">.</span><span class="n">weighted</span><span class="p">(</span><span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">))</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>A search is identified by its kind and its column. Two calls on the same column are the same search
+and must use the same query vector or search term; several columns of one kind are several
+searches, so <code class="docutils literal notranslate"><span class="pre">RRF(BM25(title,</span> <span class="pre">'database'),</span> <span class="pre">BM25(body,</span> <span class="pre">'database'))</span></code> fuses two full-text searches.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ANN()</span></code>, <code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code>, <code class="docutils literal notranslate"><span class="pre">ANN_RANK()</span></code>, <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>, <code class="docutils literal notranslate"><span class="pre">BM25_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code> may be
+selected to report what each search said about a row, provided the <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause searches
+their column with the same query value. They return null for a row that search did not return:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">ANN_RANK</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">vector_rank</span><span class="p">,</span>
+           <span class="n">BM25_RANK</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">text_rank</span>
+    <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">RRF</span><span class="p">(</span><span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">))</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../../features/fulltext-search.html#fulltext-highlighting"><span class="std std-ref">BM25_HIGHLIGHT()</span></a> may be selected too, and is null in the same way: only
+the text of the rows the full-text search returned is sent to the index for an excerpt.</p>
+<p>Hybrid queries have the following limitations:</p>
+<ul class="simple">
+<li><p>A hybrid query takes no <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause is mandatory, and must not exceed 1000. Only the first <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> rows of each
+search’s answer are fused: a vector index with <code class="docutils literal notranslate"><span class="pre">oversampling</span></code> is asked for the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> times
+the oversampling factor, but its answer is cut to the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> before the fusion.</p></li>
+<li><p>A vector index configured for <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">rescoring</span></a> cannot take part in
+a hybrid query: the rescored order has no rank to fuse by. On such an index, <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> accepts
+only <code class="docutils literal notranslate"><span class="pre">ANN()</span></code> or <code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code> called directly.</p></li>
+<li><p>The rank is the position in the index’s result, not in the result set. If an index returns a row
+that is no longer in the base table, the ranks after it are not renumbered.</p></li>
+<li><p>Paging is not supported: the whole result is returned at once, with a warning if a page size
+smaller than the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> was requested.</p></li>
+</ul>
+</section>
 <section id="limiting-results">
 <span id="limit-clause"></span><h2>Limiting results<a class="headerlink" href="#limiting-results" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> option to a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement limits the number of rows returned by a query, while the <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span>
@@ -1398,6 +1472,7 @@ columns.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#selecting-an-excerpt">Selecting an excerpt</a><ul>
+<li><a class="reference internal" href="#hybrid-search-queries-scylladb-cloud">Hybrid search queries <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#limiting-results">Limiting results</a></li>
 <li><a class="reference internal" href="#allowing-filtering">Allowing filtering</a></li>
 <li><a class="reference internal" href="#evaluation-order-of-select-statement-clauses">Evaluation order of SELECT statement clauses</a></li>
@@ -1916,7 +1991,7 @@ columns.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Oct 2026.
+                        Last updated on 14 Oct 2026.
                     
                 </div>
             
