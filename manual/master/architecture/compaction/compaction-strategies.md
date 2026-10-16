@@ -2,36 +2,14 @@
 
 ScyllaDB implements the following compaction strategies in order to reduce [read amplification](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Read-Amplification), [write amplification](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Write-Amplification), and [space amplification](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Space-amplification), which causes bottlenecks and poor performance. These strategies include:
 
-* [Size-tiered compaction strategy (STCS)]() - triggered when the system has enough (four by default) similarly sized SSTables.
+* [Incremental Compaction Strategy (ICS)]() - the default strategy. Triggered when there are two or more similarly sized SSTable runs - or `min_threshold` of them, four by default, if `compaction_enforce_min_threshold` is enabled. A run is a sorted set of smaller (1 GB by default), non-overlapping SSTables.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables distributed across different levels.
-* [Incremental Compaction Strategy (ICS)]() - shares the same read and write amplification factors as STCS, but it fixes its 2x temporary space amplification issue by breaking huge sstables into SSTable runs, which are comprised of a sorted set of smaller (1 GB by default), non-overlapping SSTables.
 * [Time-window compaction strategy (TWCS)]() - designed for time series data.
+* [Size-tiered compaction strategy (STCS)]() - deprecated. It is now an alias of ICS.
 
 This document covers how to choose a compaction strategy and presents the benefits and disadvantages of each one. If you want more information on compaction in general or on any of these strategies, refer to the [Compaction Overview](https://docs.scylladb.com/manual/master/kb/compaction.md). If you want an explanation of the CQL commands used to create a compaction strategy, refer to [Compaction CQL Reference](https://docs.scylladb.com/manual/master/cql/compaction.md) .
 
 Learn more in the [Compaction Strategies lesson](https://university.scylladb.com/courses/scylla-operations/lessons/compaction-strategies/) on ScyllaDB University
-
-<a id="stcs1"></a>
-
-## Size-tiered Compaction Strategy (STCS)
-
-The premise of [Size-tiered Compaction Strategy (STCS)](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Size-tiered-compaction-strategy) is to merge SSTables of approximately the same size.
-
-### Size-tiered compaction benefits
-
-This is a popular strategy for LSM workloads.  It results in a low and logarithmic (in size of data) number of SSTables, and the same data is copied during compaction a fairly low number of times. Use the table in [Which strategy is best]() to determine if this is the right strategy for your needs.
-
-### Size-tiered compaction disadvantages
-
-This strategy has the following drawbacks (particularly with writes):
-
-* Continuously modifying existing rows results in each row being split across several SSTables, making reads slow, which doesn’t happen in [Leveled compaction](#lcs1).
-* Obsolete data (overwritten or deleted columns) in a very large SSTable remains, wasting space, for a long time, until it is finally merged.  In overwrite-intensive loads for example, the overhead can be as much as 400%, as data will be duplicated 4X within a tier. On the other hand, the output SSTable will be the size of a single input SSTable. As a result, you will need 5X the amount of space (4 input SSTables plus one output SSTable), so 400% over the amount of data currently being stored. The allocated space will have to be checked and evaluated as your data set increases in size.
-* Compaction requires a lot of temporary space as the new larger SSTable is written before the duplicates are purged. In the worst case up to half the disk space needs to be empty to allow this to happen.
-
-**To implement this strategy**
-
-Set the parameters for [Size-tiered compaction](https://docs.scylladb.com/manual/master/kb/compaction.md#size-tiered-compaction-strategy-stcs).
 
 <a id="lcs1"></a>
 
@@ -62,13 +40,14 @@ Set the parameters for [Leveled Compaction](https://docs.scylladb.com/manual/mas
 
 ## Incremental Compaction Strategy (ICS)
 
-ICS principles of operation are similar to those of STCS, merely replacing the increasingly larger SSTables in each tier, by increasingly longer SSTable runs, modeled after LCS runs, but using larger fragment size of 1 GB, by default.
+ICS merges SSTables of approximately the same size, like the deprecated
+[Size-tiered Compaction Strategy](#stcs1), but it replaces the increasingly larger SSTables in each tier by increasingly longer SSTable runs, modeled after LCS runs, but using a larger fragment size of 1 GB, by default.
 
 Compaction is triggered when there are two or more runs of roughly the same size. These runs are incrementally compacted with each other, producing a new SSTable run, while incrementally releasing space as soon as each SSTable in the input run is processed and compacted. This method eliminates the high temporary space amplification problem of STCS by limiting the overhead to twice the (constant) fragment size, per shard.
 
 ### Incremental Compaction Strategy benefits
 
-* Greatly reduces the temporary space amplification which is typical of STCS,  resulting in more disk space being available for storing user data.
+* Greatly reduces the temporary space amplification which is typical of size-tiered compaction, resulting in more disk space being available for storing user data.
 * The space requirement for a major compaction with ICS is almost non-existent given that the operation can release fragments at roughly same rate it produces new ones.
 
 If you look at the following screenshot the green line shows how disk usage behaves under ICS when major compaction is issued.
@@ -76,10 +55,6 @@ If you look at the following screenshot the green line shows how disk usage beha
 ![image](architecture/compaction/screenshot.png)
 
 ### Incremental Compaction Strategy disadvantages
-
-* Since ICS principles of operation are the same as STCS, its disadvantages are similar to STCS’s, except for the temporary space amplification issue.
-
-Namely:
 
 * Continuously modifying existing rows results in each row being split across several SSTables, making reads slow, which doesn’t happen in Leveled compaction.
 * Obsolete data (overwritten or deleted columns) may accumulate across tiers, wasting space, for a long time, until it is finally merged. This can be mitigated by running major compaction from time to time.
@@ -94,7 +69,7 @@ For more information, see the [Compaction KB Article](https://docs.scylladb.com/
 
 ## Time-window Compaction Strategy (TWCS)
 
-Time-Window Compaction Strategy compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)]().
+Time-Window Compaction Strategy compacts SSTables within each time window using size-tiered compaction.
 SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
 
 #### CAUTION
@@ -121,6 +96,36 @@ Set the parameters for [Time-window Compaction](https://docs.scylladb.com/manual
 
 Use the table in [Which strategy is best]() to determine if this is the right strategy for your needs.
 
+<a id="stcs1"></a>
+
+## Size-tiered Compaction Strategy (STCS)
+
+#### NOTE
+Size-tiered Compaction Strategy is deprecated. `SizeTieredCompactionStrategy`
+is an alias of [Incremental Compaction Strategy (ICS)](): a table configured
+with `SizeTieredCompactionStrategy` is compacted by ICS.
+
+Naming it in `CREATE TABLE`, `ALTER TABLE`, `CREATE MATERIALIZED VIEW`
+or `ALTER MATERIALIZED VIEW` is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the `allow_deprecated_size_tiered_compaction_strategy` configuration
+option to `false` to make it an error instead. That option defaults to
+`true` for backward compatibility, and will default to `false` in a
+future version.
+
+ICS follows the same principles of operation as STCS - merging SSTables of
+approximately the same size - while eliminating the temporary space
+amplification that STCS suffers from. There is therefore no reason to prefer
+STCS over ICS. See [Incremental Compaction Strategy (ICS)]() for the principles
+of operation, the benefits and the disadvantages, and
+[Incremental Compaction](https://docs.scylladb.com/manual/master/kb/compaction.md#incremental-compaction-strategy-ics) for the
+parameters to set.
+
+Note that size-tiered compaction is still used internally, per time window, by
+[Time-window Compaction Strategy (TWCS)]() and for level 0 by
+[Leveled Compaction Strategy (LCS)](). That use is unrelated to the deprecated
+`SizeTieredCompactionStrategy` class name.
+
 <a id="which-strategy-is-best"></a>
 
 ## Which strategy is best
@@ -131,15 +136,16 @@ Every workload type may not work well with every compaction strategy. Unfortunat
 
 ### Compaction Strategy Matrix
 
-The table presents which workload works best with which compaction strategy. In cases where you have the ability to use either STCS or ICS, always choose ICS.
+The table presents which workload works best with which compaction strategy.
+The deprecated Size-tiered strategy is not listed, as it is an alias of Incremental.
 
-| Workload/Compaction Strategy   | Size-tiered                                                | Leveled                                                    | Incremental                                                | Time-Window                                                | Comments                                        |
-|--------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|-------------------------------------------------|
-| Write-only                     | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[1](#id10)</sup> and <sup>[2](#id11)</sup> |
-|                                | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[3](#id12)</sup> and <sup>[4](#id13)</sup> |
-| Read-mostly, with few updates  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[5](#id14)</sup>                           |
-| Read-mostly, with many updates | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[6](#id15)</sup>                           |
-| Time Series                    | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <sup>[7](#id16)</sup> and <sup>[8](#id17)</sup> |
+| Workload/Compaction Strategy   | Incremental                                                | Leveled                                                    | Time-Window                                                | Comments                                        |
+|--------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|-------------------------------------------------|
+| Write-only                     | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[1](#id10)</sup> and <sup>[2](#id11)</sup> |
+|                                | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[3](#id12)</sup> and <sup>[4](#id13)</sup> |
+| Read-mostly, with few updates  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[5](#id14)</sup>                           |
+| Read-mostly, with many updates | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[6](#id15)</sup>                           |
+| Time Series                    | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <sup>[7](#id16)</sup> and <sup>[8](#id17)</sup> |
 
 The comments below describe the type of amplification each compaction strategy create on each use case, using the following abbreviations:
 
@@ -149,7 +155,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id10"></a>
 
-<sub>1</sub> When using Size-tiered with write-only loads it will use approximately 2x peak space -  with Incremental, the SA is much less
+<sub>1</sub> When using Incremental with write-only loads, the peak  is limited to twice the (constant) fragment size, per shard
 
 <a id="id11"></a>
 
@@ -157,7 +163,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id12"></a>
 
-<sub>3</sub> When using Size-tired or Incremental with Overwrite loads,  occurs
+<sub>3</sub> When using Incremental with Overwrite loads,  occurs
 
 <a id="id13"></a>
 
@@ -165,7 +171,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id14"></a>
 
-<sub>5</sub> When using Size-tiered with mostly read loads with little updates,  and  occurs
+<sub>5</sub> When using Incremental with mostly read loads with little updates,  and  occurs
 
 <a id="id15"></a>
 
@@ -173,7 +179,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id16"></a>
 
-<sub>7</sub> When using Size-tiered or Incremental with Time Series workloads, , , and   occurs.
+<sub>7</sub> When using Incremental with Time Series workloads, , , and   occurs.
 
 <a id="id17"></a>
 

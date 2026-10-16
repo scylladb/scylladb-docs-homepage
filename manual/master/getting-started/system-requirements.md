@@ -79,10 +79,9 @@ Use the following table as a guidelines for the minimum disk space requirements 
 
 | Compaction Strategy                    | Recommended   | Minimum   |
 |----------------------------------------|---------------|-----------|
-| Size Tiered Compaction Strategy (STCS) | 50%           | 70%       |
+| Incremental Compaction Strategy (ICS)  | 70%           | 80%       |
 | Leveled Compaction Strategy (LCS)      | 50%           | 80%       |
 | Time-window Compaction Strategy (TWCS) | 50%           | 70%       |
-| Incremental Compaction Strategy (ICS)  | 70%           | 80%       |
 
 Use the default ICS unless you’ll have a clear understanding that another strategy is better for your use case. More on [choosing a Compaction Strategy](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md).
 In order to maintain a high level of service availability, keep 50% to 20% free disk space at all times!

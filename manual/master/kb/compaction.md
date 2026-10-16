@@ -34,10 +34,10 @@ ScyllaDB has tools you can use to see the status of your compactions. These incl
 
 A compaction strategy is what determines which of the SSTables will be compacted, and when. The following compaction strategies are available and are described in greater detail below. For a matrix which compares each strategy to its workload, refer to [Compaction Strategy Matrix](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md)
 
-* [Size-tiered compaction strategy (STCS)]() - (default setting) triggered when the system has enough similarly sized SSTables.
+* [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics) - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.
-* [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics) - Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers, similar to STCS size-tiers. ICS is an updated strategy meant to replace STCS. It has the same read and write amplification, but has lower space amplification due to the reduction of temporary space overhead is reduced to a constant manageable level.
-* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses STCS to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.
+* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses size-tiered compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.
+* [Size-tiered compaction strategy (STCS)]() - deprecated. `SizeTieredCompactionStrategy` is now an alias of ICS.
 
 ### How to Set a Compaction Strategy
 
@@ -50,9 +50,24 @@ Changing the parameters for compaction strategies or changing from one strategy 
 
 ## Size-tiered Compaction Strategy (STCS)
 
-The premise of `SizeTieredCompactionStrategy` (STCS) is to merge SSTables of approximately the same size.
+#### NOTE
+`SizeTieredCompactionStrategy` is deprecated. It is an alias of
+[IncrementalCompactionStrategy](#incremental-compaction-strategy-ics):
+a table configured with `SizeTieredCompactionStrategy` is compacted by ICS.
+Naming it in `CREATE TABLE`, `ALTER TABLE`, `CREATE MATERIALIZED VIEW`
+or `ALTER MATERIALIZED VIEW` is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the `allow_deprecated_size_tiered_compaction_strategy` configuration
+option to `false` to make it an error instead. That option defaults to
+`true` for backward compatibility, and will default to `false` in a
+future version.
+Size-tiered compaction as described below is still used internally, per time
+window by [Time-window compaction strategy (TWCS)]() and for level 0 by
+[Leveled compaction strategy (LCS)](), and it is the basis for ICS.
+
+The premise of size-tiered compaction (STCS) is to merge SSTables of approximately the same size.
 All SSTables are put into different buckets depending on their size.
-An SSTable is added to an existing bucket if size of the SSTable is within the parameters: [bucket_low](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options) and [bucket_high](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options), which is based on calculating the current average size of the SSTables already in the bucket.
+An SSTable is added to an existing bucket if size of the SSTable is within the parameters: [bucket_low](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options) and [bucket_high](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options), which is based on calculating the current average size of the SSTables already in the bucket.
 
 This will create several buckets and when the threshold number of tables(`min_threshold`) within a bucket is reached, the tables in that bucket are compacted.
 Following the compaction, the tables are merged, resulting in one larger SSTable. As time progresses and several large SSTables have accumulated, they will be merged to form one even-larger SSTable and so on.

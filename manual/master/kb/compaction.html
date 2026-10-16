@@ -412,10 +412,10 @@
 <h2>Compaction strategy<a class="headerlink" href="#compaction-strategy" title="Link to this heading">¶</a></h2>
 <p>A compaction strategy is what determines which of the SSTables will be compacted, and when. The following compaction strategies are available and are described in greater detail below. For a matrix which compares each strategy to its workload, refer to <a class="reference internal" href="../architecture/compaction/compaction-strategies.html"><span class="doc">Compaction Strategy Matrix</span></a></p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1">Size-tiered compaction strategy (STCS)</a> - (default setting) triggered when the system has enough similarly sized SSTables.</p></li>
+<li><p><a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental compaction strategy (ICS)</span></a> - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.</p></li>
 <li><p><a class="reference internal" href="#id2">Leveled compaction strategy (LCS)</a> - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.</p></li>
-<li><p><a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental compaction strategy (ICS)</span></a> - Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers, similar to STCS size-tiers. ICS is an updated strategy meant to replace STCS. It has the same read and write amplification, but has lower space amplification due to the reduction of temporary space overhead is reduced to a constant manageable level.</p></li>
-<li><p><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> - designed for time series data and puts data in time order. TWCS uses STCS to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.</p></li>
+<li><p><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> - designed for time series data and puts data in time order. TWCS uses size-tiered compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.</p></li>
+<li><p><a class="reference internal" href="#id1">Size-tiered compaction strategy (STCS)</a> - deprecated. <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is now an alias of ICS.</p></li>
 </ul>
 <section id="how-to-set-a-compaction-strategy">
 <h3>How to Set a Compaction Strategy<a class="headerlink" href="#how-to-set-a-compaction-strategy" title="Link to this heading">¶</a></h3>
@@ -428,9 +428,25 @@
 </section>
 <section id="size-tiered-compaction-strategy-stcs">
 <span id="id1"></span><h2>Size-tiered Compaction Strategy (STCS)<a class="headerlink" href="#size-tiered-compaction-strategy-stcs" title="Link to this heading">¶</a></h2>
-<p>The premise of <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> (STCS) is to merge SSTables of approximately the same size.
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is deprecated. It is an alias of
+<a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">IncrementalCompactionStrategy</span></a>:
+a table configured with <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is compacted by ICS.
+Naming it in <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code>
+or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code> is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the <code class="docutils literal notranslate"><span class="pre">allow_deprecated_size_tiered_compaction_strategy</span></code> configuration
+option to <code class="docutils literal notranslate"><span class="pre">false</span></code> to make it an error instead. That option defaults to
+<code class="docutils literal notranslate"><span class="pre">true</span></code> for backward compatibility, and will default to <code class="docutils literal notranslate"><span class="pre">false</span></code> in a
+future version.
+Size-tiered compaction as described below is still used internally, per time
+window by <a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> and for level 0 by
+<a class="reference internal" href="#id2">Leveled compaction strategy (LCS)</a>, and it is the basis for ICS.</p>
+</div>
+<p>The premise of size-tiered compaction (STCS) is to merge SSTables of approximately the same size.
 All SSTables are put into different buckets depending on their size.
-An SSTable is added to an existing bucket if size of the SSTable is within the parameters: <a class="reference internal" href="../cql/compaction.html#stcs-options"><span class="std std-ref">bucket_low</span></a> and <a class="reference internal" href="../cql/compaction.html#stcs-options"><span class="std std-ref">bucket_high</span></a>, which is based on calculating the current average size of the SSTables already in the bucket.</p>
+An SSTable is added to an existing bucket if size of the SSTable is within the parameters: <a class="reference internal" href="../cql/compaction.html#ics-options"><span class="std std-ref">bucket_low</span></a> and <a class="reference internal" href="../cql/compaction.html#ics-options"><span class="std std-ref">bucket_high</span></a>, which is based on calculating the current average size of the SSTables already in the bucket.</p>
 <p>This will create several buckets and when the threshold number of tables(<code class="docutils literal notranslate"><span class="pre">min_threshold</span></code>) within a bucket is reached, the tables in that bucket are compacted.
 Following the compaction, the tables are merged, resulting in one larger SSTable. As time progresses and several large SSTables have accumulated, they will be merged to form one even-larger SSTable and so on.</p>
 <p>This means that the system has several size tiers/buckets (small SSTables, large SSTables, even-larger SSTables) and in each tier, there is roughly the same number of SSTables. When one tier is full (the threshold has been reached), the system merges all its tables to create one SSTable which falls roughly  into the next size tier.</p>
@@ -1246,7 +1262,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Oct 2026.
+                        Last updated on 16 Oct 2026.
                     
                 </div>
             

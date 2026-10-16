@@ -5677,14 +5677,16 @@ SAI on `ENTRIES(map)` is rewritten to a regular secondary index
 
 #### Create Table Compaction
 
-| Feature                                                                                               | Support                                                                      |
-|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| DateTieredCompactionStrategy (DTCS)                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub> |
-| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
+| Feature                                                                                               | Support                                                                       |
+|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>     <sub>\*\*</sub> |
+| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                     |
+| DateTieredCompactionStrategy (DTCS)                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub>  |
+| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                     |
 
 <sub>\*</sub> No longer supported. Use TimeWindowCompactionStrategy (TWCS) instead.
+
+<sub>\*\*</sub> Deprecated. It is accepted, but it is an alias of [IncrementalCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#ics) (ICS).
 
 #### Create Table Compression
 
@@ -9183,7 +9185,7 @@ CREATE TABLE nba.team_roster (
     player_jersy_number int,
     player_position text,
     team text
-) AND compaction = {'class': 'SizeTieredCompactionStrategy'};
+) WITH compaction = {'class': 'IncrementalCompactionStrategy'};
 ```
 
 1. Change the compaction strategy to a new one. If you are unsure of which strategy to use, refer to [Choose a Compaction Strategy](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md#which-strategy-is-best) for more information.
@@ -10435,36 +10437,14 @@ nodetool compact keyspace1 standard1
 
 ScyllaDB implements the following compaction strategies in order to reduce [read amplification](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Read-Amplification), [write amplification](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Write-Amplification), and [space amplification](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Space-amplification), which causes bottlenecks and poor performance. These strategies include:
 
-* [Size-tiered compaction strategy (STCS)]() - triggered when the system has enough (four by default) similarly sized SSTables.
+* [Incremental Compaction Strategy (ICS)]() - the default strategy. Triggered when there are two or more similarly sized SSTable runs - or `min_threshold` of them, four by default, if `compaction_enforce_min_threshold` is enabled. A run is a sorted set of smaller (1 GB by default), non-overlapping SSTables.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables distributed across different levels.
-* [Incremental Compaction Strategy (ICS)]() - shares the same read and write amplification factors as STCS, but it fixes its 2x temporary space amplification issue by breaking huge sstables into SSTable runs, which are comprised of a sorted set of smaller (1 GB by default), non-overlapping SSTables.
 * [Time-window compaction strategy (TWCS)]() - designed for time series data.
+* [Size-tiered compaction strategy (STCS)]() - deprecated. It is now an alias of ICS.
 
 This document covers how to choose a compaction strategy and presents the benefits and disadvantages of each one. If you want more information on compaction in general or on any of these strategies, refer to the [Compaction Overview](https://docs.scylladb.com/manual/master/kb/compaction.md). If you want an explanation of the CQL commands used to create a compaction strategy, refer to [Compaction CQL Reference](https://docs.scylladb.com/manual/master/cql/compaction.md) .
 
 Learn more in the [Compaction Strategies lesson](https://university.scylladb.com/courses/scylla-operations/lessons/compaction-strategies/) on ScyllaDB University
-
-<a id="stcs1"></a>
-
-## Size-tiered Compaction Strategy (STCS)
-
-The premise of [Size-tiered Compaction Strategy (STCS)](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Size-tiered-compaction-strategy) is to merge SSTables of approximately the same size.
-
-### Size-tiered compaction benefits
-
-This is a popular strategy for LSM workloads.  It results in a low and logarithmic (in size of data) number of SSTables, and the same data is copied during compaction a fairly low number of times. Use the table in [Which strategy is best]() to determine if this is the right strategy for your needs.
-
-### Size-tiered compaction disadvantages
-
-This strategy has the following drawbacks (particularly with writes):
-
-* Continuously modifying existing rows results in each row being split across several SSTables, making reads slow, which doesn’t happen in [Leveled compaction](#lcs1).
-* Obsolete data (overwritten or deleted columns) in a very large SSTable remains, wasting space, for a long time, until it is finally merged.  In overwrite-intensive loads for example, the overhead can be as much as 400%, as data will be duplicated 4X within a tier. On the other hand, the output SSTable will be the size of a single input SSTable. As a result, you will need 5X the amount of space (4 input SSTables plus one output SSTable), so 400% over the amount of data currently being stored. The allocated space will have to be checked and evaluated as your data set increases in size.
-* Compaction requires a lot of temporary space as the new larger SSTable is written before the duplicates are purged. In the worst case up to half the disk space needs to be empty to allow this to happen.
-
-**To implement this strategy**
-
-Set the parameters for [Size-tiered compaction](https://docs.scylladb.com/manual/master/kb/compaction.md#size-tiered-compaction-strategy-stcs).
 
 <a id="lcs1"></a>
 
@@ -10495,13 +10475,14 @@ Set the parameters for [Leveled Compaction](https://docs.scylladb.com/manual/mas
 
 ## Incremental Compaction Strategy (ICS)
 
-ICS principles of operation are similar to those of STCS, merely replacing the increasingly larger SSTables in each tier, by increasingly longer SSTable runs, modeled after LCS runs, but using larger fragment size of 1 GB, by default.
+ICS merges SSTables of approximately the same size, like the deprecated
+[Size-tiered Compaction Strategy](#stcs1), but it replaces the increasingly larger SSTables in each tier by increasingly longer SSTable runs, modeled after LCS runs, but using a larger fragment size of 1 GB, by default.
 
 Compaction is triggered when there are two or more runs of roughly the same size. These runs are incrementally compacted with each other, producing a new SSTable run, while incrementally releasing space as soon as each SSTable in the input run is processed and compacted. This method eliminates the high temporary space amplification problem of STCS by limiting the overhead to twice the (constant) fragment size, per shard.
 
 ### Incremental Compaction Strategy benefits
 
-* Greatly reduces the temporary space amplification which is typical of STCS,  resulting in more disk space being available for storing user data.
+* Greatly reduces the temporary space amplification which is typical of size-tiered compaction, resulting in more disk space being available for storing user data.
 * The space requirement for a major compaction with ICS is almost non-existent given that the operation can release fragments at roughly same rate it produces new ones.
 
 If you look at the following screenshot the green line shows how disk usage behaves under ICS when major compaction is issued.
@@ -10509,10 +10490,6 @@ If you look at the following screenshot the green line shows how disk usage beha
 ![image](architecture/compaction/screenshot.png)
 
 ### Incremental Compaction Strategy disadvantages
-
-* Since ICS principles of operation are the same as STCS, its disadvantages are similar to STCS’s, except for the temporary space amplification issue.
-
-Namely:
 
 * Continuously modifying existing rows results in each row being split across several SSTables, making reads slow, which doesn’t happen in Leveled compaction.
 * Obsolete data (overwritten or deleted columns) may accumulate across tiers, wasting space, for a long time, until it is finally merged. This can be mitigated by running major compaction from time to time.
@@ -10527,7 +10504,7 @@ For more information, see the [Compaction KB Article](https://docs.scylladb.com/
 
 ## Time-window Compaction Strategy (TWCS)
 
-Time-Window Compaction Strategy compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)]().
+Time-Window Compaction Strategy compacts SSTables within each time window using size-tiered compaction.
 SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
 
 #### CAUTION
@@ -10554,6 +10531,36 @@ Set the parameters for [Time-window Compaction](https://docs.scylladb.com/manual
 
 Use the table in [Which strategy is best]() to determine if this is the right strategy for your needs.
 
+<a id="stcs1"></a>
+
+## Size-tiered Compaction Strategy (STCS)
+
+#### NOTE
+Size-tiered Compaction Strategy is deprecated. `SizeTieredCompactionStrategy`
+is an alias of [Incremental Compaction Strategy (ICS)](): a table configured
+with `SizeTieredCompactionStrategy` is compacted by ICS.
+
+Naming it in `CREATE TABLE`, `ALTER TABLE`, `CREATE MATERIALIZED VIEW`
+or `ALTER MATERIALIZED VIEW` is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the `allow_deprecated_size_tiered_compaction_strategy` configuration
+option to `false` to make it an error instead. That option defaults to
+`true` for backward compatibility, and will default to `false` in a
+future version.
+
+ICS follows the same principles of operation as STCS - merging SSTables of
+approximately the same size - while eliminating the temporary space
+amplification that STCS suffers from. There is therefore no reason to prefer
+STCS over ICS. See [Incremental Compaction Strategy (ICS)]() for the principles
+of operation, the benefits and the disadvantages, and
+[Incremental Compaction](https://docs.scylladb.com/manual/master/kb/compaction.md#incremental-compaction-strategy-ics) for the
+parameters to set.
+
+Note that size-tiered compaction is still used internally, per time window, by
+[Time-window Compaction Strategy (TWCS)]() and for level 0 by
+[Leveled Compaction Strategy (LCS)](). That use is unrelated to the deprecated
+`SizeTieredCompactionStrategy` class name.
+
 <a id="which-strategy-is-best"></a>
 
 ## Which strategy is best
@@ -10564,15 +10571,16 @@ Every workload type may not work well with every compaction strategy. Unfortunat
 
 ### Compaction Strategy Matrix
 
-The table presents which workload works best with which compaction strategy. In cases where you have the ability to use either STCS or ICS, always choose ICS.
+The table presents which workload works best with which compaction strategy.
+The deprecated Size-tiered strategy is not listed, as it is an alias of Incremental.
 
-| Workload/Compaction Strategy   | Size-tiered                                                | Leveled                                                    | Incremental                                                | Time-Window                                                | Comments                                        |
-|--------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|-------------------------------------------------|
-| Write-only                     | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[1](#id10)</sup> and <sup>[2](#id11)</sup> |
-|                                | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[3](#id12)</sup> and <sup>[4](#id13)</sup> |
-| Read-mostly, with few updates  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[5](#id14)</sup>                           |
-| Read-mostly, with many updates | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[6](#id15)</sup>                           |
-| Time Series                    | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <sup>[7](#id16)</sup> and <sup>[8](#id17)</sup> |
+| Workload/Compaction Strategy   | Incremental                                                | Leveled                                                    | Time-Window                                                | Comments                                        |
+|--------------------------------|------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|-------------------------------------------------|
+| Write-only                     | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[1](#id10)</sup> and <sup>[2](#id11)</sup> |
+|                                | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[3](#id12)</sup> and <sup>[4](#id13)</sup> |
+| Read-mostly, with few updates  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[5](#id14)</sup>                           |
+| Read-mostly, with many updates | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <sup>[6](#id15)</sup>                           |
+| Time Series                    | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-cancel" aria-hidden="true"></i> | <i class="inline-icon icon-check" aria-hidden="true"></i>  | <sup>[7](#id16)</sup> and <sup>[8](#id17)</sup> |
 
 The comments below describe the type of amplification each compaction strategy create on each use case, using the following abbreviations:
 
@@ -10582,7 +10590,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id10"></a>
 
-<sub>1</sub> When using Size-tiered with write-only loads it will use approximately 2x peak space -  with Incremental, the SA is much less
+<sub>1</sub> When using Incremental with write-only loads, the peak  is limited to twice the (constant) fragment size, per shard
 
 <a id="id11"></a>
 
@@ -10590,7 +10598,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id12"></a>
 
-<sub>3</sub> When using Size-tired or Incremental with Overwrite loads,  occurs
+<sub>3</sub> When using Incremental with Overwrite loads,  occurs
 
 <a id="id13"></a>
 
@@ -10598,7 +10606,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id14"></a>
 
-<sub>5</sub> When using Size-tiered with mostly read loads with little updates,  and  occurs
+<sub>5</sub> When using Incremental with mostly read loads with little updates,  and  occurs
 
 <a id="id15"></a>
 
@@ -10606,7 +10614,7 @@ The comments below describe the type of amplification each compaction strategy 
 
 <a id="id16"></a>
 
-<sub>7</sub> When using Size-tiered or Incremental with Time Series workloads, , , and   occurs.
+<sub>7</sub> When using Incremental with Time Series workloads, , , and   occurs.
 
 <a id="id17"></a>
 
@@ -10631,10 +10639,10 @@ By default, ScyllaDB starts a compaction task whenever a new SSTable is written.
 
 The following compaction strategies are supported by ScyllaDB:
 
-* Size-tiered Compaction Strategy ([STCS]())
+* Incremental Compaction Strategy ([ICS]()) - the default strategy
 * Leveled Compaction Strategy ([LCS]())
-* Incremental Compaction Strategy ([ICS]())
 * Time-window Compaction Strategy ([TWCS]())
+* Size-tiered Compaction Strategy ([STCS]()) - deprecated, an alias of [ICS]()
 
 This page concentrates on the parameters to use when creating a table with a compaction strategy. If you are unsure which strategy to use or want general information on the compaction strategies which are available to ScyllaDB, refer to [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md).
 
@@ -10651,14 +10659,15 @@ compaction = {
   'unchecked_tombstone_compaction' : (true | false)}
 ```
 
-`class` (default: SizeTieredCompactionStrategy)
+`class` (default: IncrementalCompactionStrategy)
 : Selects the compaction strategy.
   <br/>
   It can be one of the following. If you are unsure which one to choose, refer to [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md) :
   <br/>
-  * SizeTieredCompactionStrategy
-  * TimeWindowCompactionStrategy
+  * IncrementalCompactionStrategy
   * LeveledCompactionStrategy
+  * TimeWindowCompactionStrategy
+  * SizeTieredCompactionStrategy - deprecated, an alias of IncrementalCompactionStrategy
 
 ---
 
@@ -10684,82 +10693,6 @@ compaction = {
 : If unchecked_tombstone_compaction is set to true, tombstone_threshold will be ignored, and an SSTable will be compacted according to tombstone_compaction_interval.
 
 ---
-
-<a id="stcs"></a>
-
-## Size Tiered Compaction Strategy (STCS)
-
-When using STCS, SSTables are put in different buckets depending on their size. When an SSTable is bucketed, the average size of the tables is compared to the new table as well as the high and low threshold levels.
-
-The database compares each SSTable size to the average of all SSTable sizes on the node. It calculates `bucket_low * avg_bucket_size` and `bucket_high * avg_bucket_size` and then compares the result with the average SSTable size. The conditions set for `bucket_high` and `bucket_low` dictate if successive tables will be added to the same bucket. When compaction begins it merges SSTables whose size in KB are within `[average-size * bucket_low]` and `[average-size * bucket_high]`.
-
-Once the `min_threashold` is reached, minor compaction begins.
-
-<a id="stcs-options"></a>
-
-### STCS options
-
-The following options only apply to SizeTieredCompactionStrategy:
-
-```cql
-compaction = {
-  'class' : 'SizeTieredCompactionStrategy',
-  'bucket_high' : factor,
-  'bucket_low' : factor,
-  'min_sstable_size' : int,
-  'min_sstable_age' : sec,
-  'min_threshold' : num_sstables,
-  'max_threshold' : num_sstables}
-```
-
-`bucket_high` (default: 1.5)
-: A new SSTable is added to the bucket if the SSTable size is less than bucket_high \* the average size of that bucket (and if the bucket_low condition also holds).
-  <br/>
-  For example, if **‘bucket_high = 1.5’** and the **SSTable size = 14MB**, does it belong to a bucket with an average size of 10MB?
-  <br/>
-  Yes, because the **SSTable size = 14\`**, which is **less** than **‘bucket_high’ \* average bucket size = 15**.
-  <br/>
-  So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.
-
----
-
-`bucket_low` (default: 0.5)
-: A new SSTable is added to the bucket if the SSTable size is more than bucket_low\* the average size of that bucket (and if the bucket_high condition also holds).
-  <br/>
-  For example, if **‘bucket_high = 0.5’** and the **SSTable size is 10MB**, does it belong to a bucket with an average size is 15MB?
-  <br/>
-  Yes, because the **SSTable size = 10** which is **more** than **‘bucket_low’ \* average bucket size = 7.5**.
-  <br/>
-  So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.
-
----
-
-`min_sstable_size` (default: 52,428,800)
-: All SSTables smaller than this number of bytes are eligible to be put into the same bucket, provided they are at least `min_sstable_age` old.
-
----
-
-`min_sstable_age` (default: 3600)
-: The minimum age, in seconds, an SSTable must have before it is eligible to be put into the same bucket as other SSTables smaller than `min_sstable_size`.
-  SSTables smaller than `min_sstable_size` that were written more recently than this are kept in their own size tier, so that similarly sized SSTables
-  are compacted together while they are still being actively written, avoiding excessive write amplification.
-
----
-
-`min_threshold` (default: 4)
-: Minimum number of SSTables that need to belong to the same size bucket before compaction is triggered on that bucket.
-  If your SSTables are small, use *min_sstable_size* to define a size threshold (in bytes) below which all SSTables belong to one unique bucket.
-  <br/>
-  #### NOTE
-  Enforcement of `min_threshold` is controlled by the `compaction_enforce_min_threshold` configuration option in the scylla.yaml configuration settings.
-  By default, `compaction_enforce_min_threshold: false`, meaning the Size-Tiered Compaction Strategy will compact any bucket containing 2 or more SSTables.
-  Otherwise, if `compaction_enforce_min_threshold: true`, the value of `min_threshold` is considered and only those buckets that contain at
-  least `min_threshold` SSTables will be compacted.
-
----
-
-`max_threshold` (default: 32)
-: Maximum number of SSTables that will be compacted together in one compaction step.
 
 <a id="lcs"></a>
 
@@ -10949,6 +10882,36 @@ compaction = {
 
 ---
 
+<a id="stcs"></a>
+
+## Size Tiered Compaction Strategy (STCS)
+
+#### NOTE
+Size Tiered Compaction Strategy is deprecated. `SizeTieredCompactionStrategy`
+is an alias of [Incremental Compaction Strategy (ICS)](): a table configured
+with `SizeTieredCompactionStrategy` is compacted by ICS.
+
+Naming it in `CREATE TABLE`, `ALTER TABLE`, `CREATE MATERIALIZED VIEW`
+or `ALTER MATERIALIZED VIEW` is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the `allow_deprecated_size_tiered_compaction_strategy` configuration
+option to `false` to make it an error instead. That option defaults to
+`true` for backward compatibility, and will default to `false` in a
+future version.
+
+<a id="stcs-options"></a>
+
+### STCS options
+
+Since `SizeTieredCompactionStrategy` is an alias of
+`IncrementalCompactionStrategy`, it takes the same options, with the same
+defaults. See [ICS options]().
+
+The one exception is the `cold_reads_to_omit` option, which ICS does not have.
+It is accepted, and ignored.
+
+---
+
 ## See Also
 
 * [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/master/cql/index.md)
@@ -11014,10 +10977,10 @@ ScyllaDB has tools you can use to see the status of your compactions. These incl
 
 A compaction strategy is what determines which of the SSTables will be compacted, and when. The following compaction strategies are available and are described in greater detail below. For a matrix which compares each strategy to its workload, refer to [Compaction Strategy Matrix](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md)
 
-* [Size-tiered compaction strategy (STCS)]() - (default setting) triggered when the system has enough similarly sized SSTables.
+* [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics) - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.
-* [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics) - Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers, similar to STCS size-tiers. ICS is an updated strategy meant to replace STCS. It has the same read and write amplification, but has lower space amplification due to the reduction of temporary space overhead is reduced to a constant manageable level.
-* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses STCS to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.
+* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses size-tiered compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.
+* [Size-tiered compaction strategy (STCS)]() - deprecated. `SizeTieredCompactionStrategy` is now an alias of ICS.
 
 ### How to Set a Compaction Strategy
 
@@ -11030,9 +10993,24 @@ Changing the parameters for compaction strategies or changing from one strategy 
 
 ## Size-tiered Compaction Strategy (STCS)
 
-The premise of `SizeTieredCompactionStrategy` (STCS) is to merge SSTables of approximately the same size.
+#### NOTE
+`SizeTieredCompactionStrategy` is deprecated. It is an alias of
+[IncrementalCompactionStrategy](#incremental-compaction-strategy-ics):
+a table configured with `SizeTieredCompactionStrategy` is compacted by ICS.
+Naming it in `CREATE TABLE`, `ALTER TABLE`, `CREATE MATERIALIZED VIEW`
+or `ALTER MATERIALIZED VIEW` is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the `allow_deprecated_size_tiered_compaction_strategy` configuration
+option to `false` to make it an error instead. That option defaults to
+`true` for backward compatibility, and will default to `false` in a
+future version.
+Size-tiered compaction as described below is still used internally, per time
+window by [Time-window compaction strategy (TWCS)]() and for level 0 by
+[Leveled compaction strategy (LCS)](), and it is the basis for ICS.
+
+The premise of size-tiered compaction (STCS) is to merge SSTables of approximately the same size.
 All SSTables are put into different buckets depending on their size.
-An SSTable is added to an existing bucket if size of the SSTable is within the parameters: [bucket_low](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options) and [bucket_high](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options), which is based on calculating the current average size of the SSTables already in the bucket.
+An SSTable is added to an existing bucket if size of the SSTable is within the parameters: [bucket_low](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options) and [bucket_high](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options), which is based on calculating the current average size of the SSTables already in the bucket.
 
 This will create several buckets and when the threshold number of tables(`min_threshold`) within a bucket is reached, the tables in that bucket are compacted.
 Following the compaction, the tables are merged, resulting in one larger SSTable. As time progresses and several large SSTables have accumulated, they will be merged to form one even-larger SSTable and so on.
@@ -14995,6 +14973,16 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 > * **Type:** `bool`
 > * **Default value:** `false`
+> * Liveness: `True`
+
+<a id="confprop-allow-deprecated-size-tiered-compaction-strategy"></a>
+
+### allow_deprecated_size_tiered_compaction_strategy
+
+> Allow the deprecated SizeTieredCompactionStrategy to be named when creating or altering a table or a materialized view.  It is an alias of IncrementalCompactionStrategy, which the table is compacted with either way, so naming it returns a CQL warning.  When disabled, naming it is an error instead.  This option defaults to true for backward compatibility, and will default to false in a future version.
+
+> * **Type:** `bool`
+> * **Default value:** `true`
 > * Liveness: `True`
 
 <a id="confprop-minimum-replication-factor-fail-threshold"></a>
@@ -19128,12 +19116,14 @@ set identically on all nodes.
 ##### Compaction options
 
 The `compaction` options must at least define the `'class'` sub-option, which defines the compaction strategy class
-to use. The default supported class are `'SizeTieredCompactionStrategy'`,
-`'LeveledCompactionStrategy'`, and `'IncrementalCompactionStrategy'`.
+to use. The default supported class are `'IncrementalCompactionStrategy'`,
+`'LeveledCompactionStrategy'`, and `'TimeWindowCompactionStrategy'`.
+`'SizeTieredCompactionStrategy'` is deprecated and is an alias of
+`'IncrementalCompactionStrategy'`.
 Custom strategy can be provided by specifying the full class name as a [string constant](https://docs.scylladb.com/manual/master/cql/definitions.md#constants).
 
 All default strategies support a number of common options, as well as options specific to
-the strategy chosen (see the section corresponding to your strategy for details: [STCS](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options), [LCS](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs-options), [ICS](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options), and [TWCS](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options)).
+the strategy chosen (see the section corresponding to your strategy for details: [ICS](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options), [LCS](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs-options), [TWCS](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options), and [STCS](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options)).
 
 <a id="cql-compression-options"></a>
 
@@ -24323,6 +24313,7 @@ FTS queries enforce the following rules:
 | Single ordering only                                          | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns.<br/>To rank the rows by several searches, fuse them in a<br/>[hybrid query](https://docs.scylladb.com/manual/master/cql/dml/select.md#hybrid-queries).                                                                                                                               |
 | Paging not supported                                          | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                                                                                                                                    |
 | Grouping not supported                                        | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                                                                                                                          |
+| `DISTINCT` not supported                                      | `SELECT DISTINCT` is not supported in FTS queries. It is currently<br/>accepted, but does not remove duplicate partition keys: one row is<br/>returned per matching row.                                                                                                                                                                                 |
 
 
 # functions.md
@@ -25674,7 +25665,7 @@ Shedding
 <a id="term-Size-tiered-compaction-strategy"></a>
 
 Size-tiered compaction strategy
-: Triggers when the system has enough (four by default) similarly sized SSTables.  See [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md).
+: Merges SSTables of approximately the same size, triggered when the system has two or more of them - or `min_threshold`, four by default, if `compaction_enforce_min_threshold` is enabled. Deprecated as a table property: `SizeTieredCompactionStrategy` is now an alias of the incremental compaction strategy.  See [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md).
 
 <a id="term-Snapshot"></a>
 
@@ -30628,6 +30619,9 @@ The current migration procedure has the following limitations:
   replace, or rebuild nodes while a migration is in progress.
 * **No repair** operations during the migration. Do not run `nodetool repair`
   on the migrating keyspace while a migration is in progress.
+* **No backup and restore** for migrating tables during the migration.
+  Do not take snapshots, run backups, or restore into the migrating keyspace
+  while the migration is in progress.
 * **No TRUNCATE** on tables in the migrating keyspace during the migration.
 * Only **CQL base tables** can be migrated. Materialized views, secondary
   indexes, CDC tables, and Alternator tables are not supported.
@@ -30658,19 +30652,30 @@ vice versa. Do not confuse it with version upgrades/downgrades.
 
 ## Procedure
 
-1. Prepare the keyspace for migration:
+1. If the cluster is managed by [ScyllaDB Manager](https://manager.docs.scylladb.com/),
+   [suspend](https://manager.docs.scylladb.com/stable/sctool/suspend-resume.html)
+   its tasks. Backup, restore, and repair are not yet supported on migrating
+   keyspaces:
+   ```console
+   sctool suspend --cluster <cluster-id|name> --no-continue
+   ```
+
+   The `--no-continue` option deletes the local snapshots of backup tasks.
+   Otherwise, these snapshots would keep a copy of the pre-migration SSTables
+   on disk throughout the migration, as resharding rewrites all SSTables.
+2. Prepare the keyspace for migration:
    1. Create tablet maps for all tables in the keyspace:
       ```console
-      scylla nodetool migrate-to-tablets start <keyspace>
+      nodetool migrate-to-tablets start <keyspace>
       ```
    2. Verify that the keyspace is in `migrating_to_tablets` state and all nodes are still using vnodes:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -30682,13 +30687,11 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       ```
 
    <a id="upgrade-nodes"></a>
-2. Upgrade all nodes to tablets:
-   1. Pick a node.
-   2. Mark the node for upgrade to tablets:
+3. Upgrade all nodes to tablets:
 
-      #### NOTE
-      This is a node-local operation. Use the IP address of the node that
-      you are upgrading.
+   <a id="upgrade-node-start"></a>
+   1. Pick a node and open a shell on it to run the following commands.
+   2. Mark the node for upgrade to tablets:
 
       #### CAUTION
       Do not mark more than one node for upgrade at the same time. Even if
@@ -30697,16 +30700,16 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       upgrades which can reduce availability.
 
       ```console
-      scylla nodetool -h <node-ip> migrate-to-tablets upgrade
+      nodetool migrate-to-tablets upgrade
       ```
    3. Verify that the node status changed from `vnodes` to `migrating to tablets`:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -30718,7 +30721,7 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       ```
    4. Drain and stop the node:
       ```console
-      scylla nodetool -h <node-ip> drain
+      nodetool drain
       ```
 
       Supported OS
@@ -30736,8 +30739,12 @@ vice versa. Do not confuse it with version upgrades/downgrades.
 
       Supported OS
       ```shell
-      sudo systemctl start scylla-server
+      sudo systemctl start --no-block scylla-server
       ```
+
+      The `--no-block` option makes the command return immediately
+      instead of blocking until resharding completes, so that you can
+      monitor its progress as described in the next step.
 
       Docker
       ```shell
@@ -30749,16 +30756,63 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       This operation may take a long time due to resharding. To monitor
       resharding progress, use the task manager API:
       ```console
-      scylla nodetool tasks list compaction -h <node-ip> --keyspace <keyspace> | grep -i reshard
-      ```
-   7. Verify that the node status changed from `migrating to tablets` to `uses tablets`:
-      ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool tasks list compaction --keyspace <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool tasks list compaction --keyspace ks
+      task_id                                type                   kind scope state   sequence_number keyspace table entity shard start_time           end_time
+      ccf28999-d19c-4c94-8b61-592a5f10dba8   resharding compaction  node table running 730             ks       t1           0     2026-08-07T08:22:03Z
+      ```
+
+      The command should show one resharding task per migrating table.
+      To inspect the progress of one particular task, pass its task ID to
+      `nodetool tasks status` and compare the number of resharded bytes
+      (`progress_completed`) with the total number of bytes to be resharded
+      (`progress_total`):
+      ```console
+      nodetool tasks status <task-id>
+      ```
+
+      **Example:**
+      ```console
+      $ nodetool tasks status ccf28999-d19c-4c94-8b61-592a5f10dba8
+      id: ccf28999-d19c-4c94-8b61-592a5f10dba8
+      type: resharding compaction
+      kind: node
+      scope: table
+      state: running
+      is_abortable: false
+      start_time: 2026-08-07T08:22:03Z
+      end_time:
+      error:
+      parent_id: e85de42c-9bf0-3a0b-a3ce-6d481b093bc7
+      sequence_number: 730
+      shard: 0
+      keyspace: ks
+      table: t1
+      entity:
+      progress_units: bytes
+      progress_total: 5347926524519
+      progress_completed: 252509969840
+      children_ids: [{task_id: 22461a60-ae95-4356-a5cb-dceac72c75b5, node: 172.31.0.228 }, {task_id: e2f86734-6213-42b3-85ca-b86864a97dfb, node: 172.31.0.228 }, ...]
+      ```
+
+      #### NOTE
+      Resharding may be followed by a reshape compaction, which rewrites the
+      resharded SSTables into the layout expected by the table’s compaction
+      strategy. Both resharding and reshaping are part of the node’s boot
+      process and both appear in `nodetool tasks list compaction`. Wait for
+      both to complete before proceeding to the next step.
+   7. Verify that the node status changed from `migrating to tablets` to `uses tablets`:
+      ```console
+      nodetool migrate-to-tablets status <keyspace>
+      ```
+
+      **Example:**
+      ```console
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -30768,8 +30822,9 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
       017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
-   8. Move to the next node and repeat from step a until all nodes are upgraded.
-3. Finalize the migration:
+   8. Move to the next node and repeat from [step a](#upgrade-node-start)
+      until all nodes are upgraded.
+4. Finalize the migration:
 
    #### WARNING
    Finalization **cannot be undone**. Once the migration is finalized, the
@@ -30777,20 +30832,20 @@ vice versa. Do not confuse it with version upgrades/downgrades.
 
    1. Issue the finalization request:
       ```console
-      scylla nodetool migrate-to-tablets finalize <keyspace>
+      nodetool migrate-to-tablets finalize <keyspace>
       ```
    2. Verify that the keyspace status changed to `tablets`:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets finalize ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: tablets
       ```
-   3. Optionally, wait for tablet layout normalization to complete:
+   3. Wait for tablet layout normalization to complete:
 
       After finalization, a tablet normalization process takes place in the
       background which transforms the tablets of all migrated tables into a
@@ -30799,12 +30854,12 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       performance. Run the following command repeatedly to monitor the per-table
       status of this background work:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace> --with-tablet-status
+      nodetool migrate-to-tablets status <keyspace> --with-tablet-status
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks --with-tablet-status
+      $ nodetool migrate-to-tablets status ks --with-tablet-status
       Keyspace: ks
       Status: tablets
 
@@ -30817,6 +30872,35 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       t2      converging   2176      2048
       t3      converged    2048      -
       ```
+5. If you suspended ScyllaDB Manager in the first step, resume it:
+   ```console
+   sctool resume --cluster <cluster-id|name> --no-continue
+   ```
+
+   The `--no-continue` option makes interrupted tasks start from scratch,
+   instead of continuing from progress recorded before the migration.
+6. Run a full cluster repair to ensure that all nodes have the most up-to-date
+   data. As the storage upgrade process kept each node offline for an extended
+   period of time, its dataset might have become stale.
+
+   Either run the repair with `nodetool`, as described below, or let
+   [ScyllaDB Manager](https://manager.docs.scylladb.com/) run it for you.
+
+   For vnode-based keyspaces, run
+   [nodetool repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/repair.md) on
+   **every** node:
+   ```console
+   nodetool repair -pr
+   ```
+
+   For tablet-based keyspaces, including the one you just migrated, run
+   [nodetool cluster repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md)
+   on **any** single node:
+   ```console
+   nodetool cluster repair
+   ```
+
+   Run both if the cluster has keyspaces of both kinds.
 
 ## Rollback Procedure
 
@@ -30831,12 +30915,12 @@ following:
 1. Find all nodes that have been upgraded to tablets (status: `uses tablets`)
    or they are in the process of upgrading to tablets (status: `migrating to tablets`):
    ```console
-   scylla nodetool migrate-to-tablets status <keyspace>
+   nodetool migrate-to-tablets status <keyspace>
    ```
 
    **Example:**
    ```console
-   $ scylla nodetool migrate-to-tablets status ks
+   $ nodetool migrate-to-tablets status ks
    Keyspace: ks
    Status: migrating_to_tablets
 
@@ -30848,21 +30932,24 @@ following:
    ```
 2. For **each upgraded or upgrading node** in the cluster, perform a downgrade
    (one node at a time):
-   1. Mark the node for downgrade:
+
+   <a id="downgrade-node-start"></a>
+   1. Open a shell on the node to run the following commands.
+   2. Mark the node for downgrade:
       ```console
-      scylla nodetool -h <node-ip> migrate-to-tablets downgrade
+      nodetool migrate-to-tablets downgrade
       ```
-   2. Check the node status. The status for a previously upgraded node should
+   3. Check the node status. The status for a previously upgraded node should
       change from `uses tablets` to `migrating to vnodes`. The status for a
       previously upgrading node should change from `migrating to tablets` to
       `uses vnodes` or `migrating to vnodes`:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -30872,13 +30959,13 @@ following:
       0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
       017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
-   3. If the node status is `uses vnodes`, the downgrade is complete. Move to
-      the next node and repeat from step a.
-   4. If the node is `migrating to vnodes`, restart it to complete the
+   4. If the node status is `uses vnodes`, the downgrade is complete. Move to
+      the next node and repeat from [step a](#downgrade-node-start).
+   5. If the node is `migrating to vnodes`, restart it to complete the
       downgrade:
       1. Drain and stop the node:
          ```console
-         scylla nodetool -h <node-ip> drain
+         nodetool drain
          ```
 
          Supported OS
@@ -30896,8 +30983,12 @@ following:
 
          Supported OS
          ```shell
-         sudo systemctl start scylla-server
+         sudo systemctl start --no-block scylla-server
          ```
+
+         The `--no-block` option makes the command return immediately
+         instead of blocking until resharding completes, so that you can
+         monitor its progress as described in the next step.
 
          Docker
          ```shell
@@ -30909,16 +31000,63 @@ following:
          This operation may take a long time due to resharding. To monitor
          resharding progress, use the task manager API:
          ```console
-         scylla nodetool tasks list compaction -h <node-ip> --keyspace <keyspace> | grep -i reshard
-         ```
-      4. Verify that the node status changed from `migrating to vnodes` to `uses vnodes`:
-         ```console
-         scylla nodetool migrate-to-tablets status <keyspace>
+         nodetool tasks list compaction --keyspace <keyspace>
          ```
 
          **Example:**
          ```console
-         $ scylla nodetool migrate-to-tablets status ks
+         $ nodetool tasks list compaction --keyspace ks
+         task_id                                type                   kind scope state   sequence_number keyspace table entity shard start_time           end_time
+         ccf28999-d19c-4c94-8b61-592a5f10dba8   resharding compaction  node table running 730             ks       t1           0     2026-08-07T08:22:03Z
+         ```
+
+         The command should show one resharding task per migrating table.
+         To inspect the progress of one particular task, pass its task ID to
+         `nodetool tasks status` and compare the number of resharded bytes
+         (`progress_completed`) with the total number of bytes to be resharded
+         (`progress_total`):
+         ```console
+         nodetool tasks status <task-id>
+         ```
+
+         **Example:**
+         ```console
+         $ nodetool tasks status ccf28999-d19c-4c94-8b61-592a5f10dba8
+         id: ccf28999-d19c-4c94-8b61-592a5f10dba8
+         type: resharding compaction
+         kind: node
+         scope: table
+         state: running
+         is_abortable: false
+         start_time: 2026-08-07T08:22:03Z
+         end_time:
+         error:
+         parent_id: e85de42c-9bf0-3a0b-a3ce-6d481b093bc7
+         sequence_number: 730
+         shard: 0
+         keyspace: ks
+         table: t1
+         entity:
+         progress_units: bytes
+         progress_total: 5347926524519
+         progress_completed: 252509969840
+         children_ids: [{task_id: 22461a60-ae95-4356-a5cb-dceac72c75b5, node: 172.31.0.228 }, {task_id: e2f86734-6213-42b3-85ca-b86864a97dfb, node: 172.31.0.228 }, ...]
+         ```
+
+         #### NOTE
+         Resharding may be followed by a reshape compaction, which rewrites the
+         resharded SSTables into the layout expected by the table’s compaction
+         strategy. Both resharding and reshaping are part of the node’s boot
+         process and both appear in `nodetool tasks list compaction`. Wait for
+         both to complete before proceeding to the next node.
+      4. Verify that the node status changed from `migrating to vnodes` to `uses vnodes`:
+         ```console
+         nodetool migrate-to-tablets status <keyspace>
+         ```
+
+         **Example:**
+         ```console
+         $ nodetool migrate-to-tablets status ks
          Keyspace: ks
          Status: migrating_to_tablets
 
@@ -30928,12 +31066,41 @@ following:
          0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
          017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
          ```
-      5. Move to the next node and repeat from step a until all nodes are
-         downgraded.
+      5. Move to the next node and repeat from
+         [step a](#downgrade-node-start) until all nodes are downgraded.
 3. Once all nodes have been downgraded, finalize the rollback:
    ```console
-   scylla nodetool migrate-to-tablets finalize <keyspace>
+   nodetool migrate-to-tablets finalize <keyspace>
    ```
+4. If you suspended ScyllaDB Manager before starting the migration, resume it:
+   ```console
+   sctool resume --cluster <cluster-id|name> --no-continue
+   ```
+
+   The `--no-continue` option makes interrupted tasks start from scratch,
+   instead of continuing from progress recorded before the rollback.
+5. Run a full cluster repair to ensure that all nodes have the most up-to-date
+   data. As the storage downgrade process kept each node offline for an extended
+   period of time, its dataset might have become stale.
+
+   Either run the repair with `nodetool`, as described below, or let
+   [ScyllaDB Manager](https://manager.docs.scylladb.com/) run it for you.
+
+   For vnode-based keyspaces, including the one you just rolled back, run
+   [nodetool repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/repair.md) on
+   **every** node:
+   ```console
+   nodetool repair -pr
+   ```
+
+   For tablet-based keyspaces, run
+   [nodetool cluster repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md)
+   on **any** single node:
+   ```console
+   nodetool cluster repair
+   ```
+
+   Run both if the cluster has keyspaces of both kinds.
 
 ## Migrating multiple keyspaces
 
@@ -30947,16 +31114,16 @@ To migrate multiple keyspaces simultaneously, follow these steps:
 
 1. For **each keyspace**, prepare it for migration:
    ```console
-   scylla nodetool migrate-to-tablets start <keyspace1>
-   scylla nodetool migrate-to-tablets start <keyspace2>
+   nodetool migrate-to-tablets start <keyspace1>
+   nodetool migrate-to-tablets start <keyspace2>
    ...
    ```
 
    Verify that all keyspaces are in `migrating_to_tablets` state before
    proceeding:
    ```console
-   scylla nodetool migrate-to-tablets status <keyspace1>
-   scylla nodetool migrate-to-tablets status <keyspace2>
+   nodetool migrate-to-tablets status <keyspace1>
+   nodetool migrate-to-tablets status <keyspace2>
    ...
    ```
 2. Upgrade all nodes in the cluster following the same [procedure](#upgrade-nodes)
@@ -30964,8 +31131,8 @@ To migrate multiple keyspaces simultaneously, follow these steps:
    migration in one pass.
 3. For **each keyspace**, finalize the migration:
    ```console
-   scylla nodetool migrate-to-tablets finalize <keyspace1>
-   scylla nodetool migrate-to-tablets finalize <keyspace2>
+   nodetool migrate-to-tablets finalize <keyspace1>
+   nodetool migrate-to-tablets finalize <keyspace2>
    ...
    ```
 
@@ -38707,7 +38874,7 @@ More on [Local Secondary Indexes](https://docs.scylladb.com/manual/master/featur
 
 #### NOTE
 Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
+Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and `SELECT DISTINCT`). More information
 about Vector Search is available in the
 [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/vector-search/).
 
@@ -39900,8 +40067,9 @@ SELECT image_id FROM ImageEmbeddings
 
 #### NOTE
 Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
-about Vector Search is available in the
+Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and `SELECT DISTINCT`).
+`SELECT DISTINCT` is currently accepted in queries ordered by `ANN OF` or `ANN()`, but does not remove
+duplicate partition keys. More information about Vector Search is available in the
 [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/vector-search/).
 
 <a id="fulltext-queries"></a>
@@ -39948,6 +40116,9 @@ full-text and a vector search, fuse them into one ordering in a
 
 A `LIMIT` clause is mandatory; queries without `LIMIT` are rejected. The
 specified value must not exceed 1000.
+
+`SELECT DISTINCT` is not supported in queries ordered by `BM25()`. It is
+currently accepted, but does not remove duplicate partition keys.
 
 **Examples:**
 
@@ -44722,10 +44893,9 @@ Use the following table as a guidelines for the minimum disk space requirements 
 
 | Compaction Strategy                    | Recommended   | Minimum   |
 |----------------------------------------|---------------|-----------|
-| Size Tiered Compaction Strategy (STCS) | 50%           | 70%       |
+| Incremental Compaction Strategy (ICS)  | 70%           | 80%       |
 | Leveled Compaction Strategy (LCS)      | 50%           | 80%       |
 | Time-window Compaction Strategy (TWCS) | 50%           | 70%       |
-| Incremental Compaction Strategy (ICS)  | 70%           | 80%       |
 
 Use the default ICS unless you’ll have a clear understanding that another strategy is better for your use case. More on [choosing a Compaction Strategy](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md).
 In order to maintain a high level of service availability, keep 50% to 20% free disk space at all times!
@@ -46839,7 +47009,7 @@ frozen UDT in a vector, you need to explicitly wrap them using frozen keyword.
 #### NOTE
 The main application of vectors is to support vector search capabilities, which
 are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Note that Vector Search clusters do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
+Note that Vector Search clusters do not support all ScyllaDB features (e.g., tracing, paging, grouping, and `SELECT DISTINCT`). More information
 about Vector Search is available in the
 [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/vector-search/).
 

@@ -481,7 +481,7 @@ See <a class="reference external" href="https://www.scylladb.com/product/technol
 </dd>
 <dt id="term-Shedding">Shedding<a class="headerlink" href="#term-Shedding" title="Link to this term">¶</a></dt><dd><p>Dropping requests to protect the system. This will occur if the request is too large or exceeds the max number of concurrent requests per shard.</p>
 </dd>
-<dt id="term-Size-tiered-compaction-strategy">Size-tiered compaction strategy<a class="headerlink" href="#term-Size-tiered-compaction-strategy" title="Link to this term">¶</a></dt><dd><p>Triggers when the system has enough (four by default) similarly sized SSTables.  See <a class="reference internal" href="../architecture/compaction/compaction-strategies.html"><span class="doc">Compaction Strategies</span></a>.</p>
+<dt id="term-Size-tiered-compaction-strategy">Size-tiered compaction strategy<a class="headerlink" href="#term-Size-tiered-compaction-strategy" title="Link to this term">¶</a></dt><dd><p>Merges SSTables of approximately the same size, triggered when the system has two or more of them - or <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code>, four by default, if <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold</span></code> is enabled. Deprecated as a table property: <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is now an alias of the incremental compaction strategy.  See <a class="reference internal" href="../architecture/compaction/compaction-strategies.html"><span class="doc">Compaction Strategies</span></a>.</p>
 </dd>
 <dt id="term-Snapshot">Snapshot<a class="headerlink" href="#term-Snapshot" title="Link to this term">¶</a></dt><dd><p>Snapshots in ScyllaDB are an essential part of the backup and restore mechanism. Whereas in other databases a backup starts with creating a copy of a data file (cold backup, hot backup, shadow copy backup), in ScyllaDB the process starts with creating a table or keyspace snapshot.  See <a class="reference internal" href="../kb/snapshots.html"><span class="doc">ScyllaDB Snapshots</span></a>.</p>
 </dd>
@@ -1139,7 +1139,7 @@ ships with a feature that allows you to prioritize one workload over another (e.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Oct 2026.
+                        Last updated on 16 Oct 2026.
                     
                 </div>
             

@@ -3004,6 +3004,16 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > * **Default value:** `false`
 > * Liveness: `True`
 
+<a id="confprop-allow-deprecated-size-tiered-compaction-strategy"></a>
+
+### allow_deprecated_size_tiered_compaction_strategy
+
+> Allow the deprecated SizeTieredCompactionStrategy to be named when creating or altering a table or a materialized view.  It is an alias of IncrementalCompactionStrategy, which the table is compacted with either way, so naming it returns a CQL warning.  When disabled, naming it is an error instead.  This option defaults to true for backward compatibility, and will default to false in a future version.
+
+> * **Type:** `bool`
+> * **Default value:** `true`
+> * Liveness: `True`
+
 <a id="confprop-minimum-replication-factor-fail-threshold"></a>
 
 ### minimum_replication_factor_fail_threshold

@@ -379,10 +379,10 @@
 <p>By default, ScyllaDB starts a compaction task whenever a new SSTable is written. Compaction merges several SSTables into a new SSTable, which contains only the live data from the input SSTables. Merging several sorted files to get a sorted result is an efficient process, and this is the main reason why SSTables are kept sorted.</p>
 <p>The following compaction strategies are supported by ScyllaDB:</p>
 <ul class="simple">
-<li><p>Size-tiered Compaction Strategy (<a class="reference internal" href="#stcs">STCS</a>)</p></li>
+<li><p>Incremental Compaction Strategy (<a class="reference internal" href="#ics">ICS</a>) - the default strategy</p></li>
 <li><p>Leveled Compaction Strategy (<a class="reference internal" href="#lcs">LCS</a>)</p></li>
-<li><p>Incremental Compaction Strategy (<a class="reference internal" href="#ics">ICS</a>)</p></li>
 <li><p>Time-window Compaction Strategy (<a class="reference internal" href="#twcs">TWCS</a>)</p></li>
+<li><p>Size-tiered Compaction Strategy (<a class="reference internal" href="#stcs">STCS</a>) - deprecated, an alias of <a class="reference internal" href="#ics">ICS</a></p></li>
 </ul>
 <p>This page concentrates on the parameters to use when creating a table with a compaction strategy. If you are unsure which strategy to use or want general information on the compaction strategies which are available to ScyllaDB, refer to <a class="reference internal" href="../architecture/compaction/compaction-strategies.html"><span class="doc">Compaction Strategies</span></a>.</p>
 <section id="common-options">
@@ -397,12 +397,13 @@
 </pre></div>
 </div>
 <dl>
-<dt><code class="docutils literal notranslate"><span class="pre">class</span></code> (default: SizeTieredCompactionStrategy)</dt><dd><p>Selects the compaction strategy.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">class</span></code> (default: IncrementalCompactionStrategy)</dt><dd><p>Selects the compaction strategy.</p>
 <p>It can be one of the following. If you are unsure which one to choose, refer to <a class="reference internal" href="../architecture/compaction/compaction-strategies.html"><span class="doc">Compaction Strategies</span></a> :</p>
 <ul class="simple">
-<li><p>SizeTieredCompactionStrategy</p></li>
-<li><p>TimeWindowCompactionStrategy</p></li>
+<li><p>IncrementalCompactionStrategy</p></li>
 <li><p>LeveledCompactionStrategy</p></li>
+<li><p>TimeWindowCompactionStrategy</p></li>
+<li><p>SizeTieredCompactionStrategy - deprecated, an alias of IncrementalCompactionStrategy</p></li>
 </ul>
 </dd>
 </dl>
@@ -432,76 +433,11 @@
 </dl>
 <hr class="docutils" />
 </section>
-<section id="size-tiered-compaction-strategy-stcs">
-<span id="stcs"></span><h2>Size Tiered Compaction Strategy (STCS)<a class="headerlink" href="#size-tiered-compaction-strategy-stcs" title="Link to this heading">¶</a></h2>
-<p>When using STCS, SSTables are put in different buckets depending on their size. When an SSTable is bucketed, the average size of the tables is compared to the new table as well as the high and low threshold levels.</p>
-<p>The database compares each SSTable size to the average of all SSTable sizes on the node. It calculates <code class="docutils literal notranslate"><span class="pre">bucket_low</span> <span class="pre">*</span> <span class="pre">avg_bucket_size</span></code> and <code class="docutils literal notranslate"><span class="pre">bucket_high</span> <span class="pre">*</span> <span class="pre">avg_bucket_size</span></code> and then compares the result with the average SSTable size. The conditions set for <code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> and <code class="docutils literal notranslate"><span class="pre">bucket_low</span></code> dictate if successive tables will be added to the same bucket. When compaction begins it merges SSTables whose size in KB are within <code class="docutils literal notranslate"><span class="pre">[average-size</span> <span class="pre">*</span> <span class="pre">bucket_low]</span></code> and <code class="docutils literal notranslate"><span class="pre">[average-size</span> <span class="pre">*</span> <span class="pre">bucket_high]</span></code>.</p>
-<p>Once the <code class="docutils literal notranslate"><span class="pre">min_threashold</span></code> is reached, minor compaction begins.</p>
-<section id="stcs-options">
-<span id="id2"></span><h3>STCS options<a class="headerlink" href="#stcs-options" title="Link to this heading">¶</a></h3>
-<p>The following options only apply to SizeTieredCompactionStrategy:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'SizeTieredCompactionStrategy'</span><span class="p">,</span>
-  <span class="s1">'bucket_high'</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
-  <span class="s1">'bucket_low'</span> <span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
-  <span class="s1">'min_sstable_size'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-  <span class="s1">'min_sstable_age'</span> <span class="p">:</span> <span class="n">sec</span><span class="p">,</span>
-  <span class="s1">'min_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
-  <span class="s1">'max_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">}</span>
-</pre></div>
-</div>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> (default: 1.5)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is less than bucket_high * the average size of that bucket (and if the bucket_low condition also holds).</p>
-<p>For example, if <strong>‘bucket_high = 1.5’</strong> and the <strong>SSTable size = 14MB</strong>, does it belong to a bucket with an average size of 10MB?</p>
-<p>Yes, because the <strong>SSTable size = 14`</strong>, which is <strong>less</strong> than <strong>‘bucket_high’ * average bucket size = 15</strong>.</p>
-<p>So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.</p>
-</dd>
-</dl>
-<hr class="docutils" />
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">bucket_low</span></code> (default: 0.5)</dt><dd><p>A new SSTable is added to the bucket if the SSTable size is more than bucket_low* the average size of that bucket (and if the bucket_high condition also holds).</p>
-<p>For example, if <strong>‘bucket_high = 0.5’</strong> and the <strong>SSTable size is 10MB</strong>, does it belong to a bucket with an average size is 15MB?</p>
-<p>Yes, because the <strong>SSTable size = 10</strong> which is <strong>more</strong> than <strong>‘bucket_low’ * average bucket size = 7.5</strong>.</p>
-<p>So, the SSTable will be added to the bucket, and the bucket’s average size will be recalculated.</p>
-</dd>
-</dl>
-<hr class="docutils" />
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> (default: 52,428,800)</dt><dd><p>All SSTables smaller than this number of bytes are eligible to be put into the same bucket, provided they are at least <code class="docutils literal notranslate"><span class="pre">min_sstable_age</span></code> old.</p>
-</dd>
-</dl>
-<hr class="docutils" />
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">min_sstable_age</span></code> (default: 3600)</dt><dd><p>The minimum age, in seconds, an SSTable must have before it is eligible to be put into the same bucket as other SSTables smaller than <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code>.
-SSTables smaller than <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> that were written more recently than this are kept in their own size tier, so that similarly sized SSTables
-are compacted together while they are still being actively written, avoiding excessive write amplification.</p>
-</dd>
-</dl>
-<hr class="docutils" />
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> (default: 4)</dt><dd><p>Minimum number of SSTables that need to belong to the same size bucket before compaction is triggered on that bucket.
-If your SSTables are small, use <em>min_sstable_size</em> to define a size threshold (in bytes) below which all SSTables belong to one unique bucket.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Enforcement of <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> is controlled by the <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold</span></code> configuration option in the scylla.yaml configuration settings.
-By default, <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold:</span> <span class="pre">false</span></code>, meaning the Size-Tiered Compaction Strategy will compact any bucket containing 2 or more SSTables.
-Otherwise, if <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold:</span> <span class="pre">true</span></code>, the value of <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> is considered and only those buckets that contain at
-least <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> SSTables will be compacted.</p>
-</div>
-</dd>
-</dl>
-<hr class="docutils" />
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">max_threshold</span></code> (default: 32)</dt><dd><p>Maximum number of SSTables that will be compacted together in one compaction step.</p>
-</dd>
-</dl>
-</section>
-</section>
 <section id="leveled-compaction-strategy-lcs">
 <span id="lcs"></span><h2>Leveled Compaction Strategy (LCS)<a class="headerlink" href="#leveled-compaction-strategy-lcs" title="Link to this heading">¶</a></h2>
 <p>The compaction class LeveledCompactionStrategy (LCS) creates SSTables of a fixed, relatively small size (160 MB by default) that are grouped into levels. Within each level, SSTables are guaranteed to be non-overlapping. Each level (L0, L1, L2 and so on) is ten times as large as the previous level.</p>
 <section id="lcs-options">
-<span id="id3"></span><h3>LCS options<a class="headerlink" href="#lcs-options" title="Link to this heading">¶</a></h3>
+<span id="id2"></span><h3>LCS options<a class="headerlink" href="#lcs-options" title="Link to this heading">¶</a></h3>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'LeveledCompactionStrategy'</span><span class="p">,</span>
   <span class="s1">'sstable_size_in_mb'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">}</span>
@@ -527,7 +463,7 @@ When compaction begins it merges SSTable runs whose size in KB are within <code 
 The minimum number of SSTable runs that triggers minor compaction is either 2 or <code class="docutils literal notranslate"><span class="pre">min_threshold</span></code>, if the <code class="docutils literal notranslate"><span class="pre">compaction_enforce_min_threshold</span></code>
 configuration option is set in the scylla.yaml configuration file.</p>
 <section id="ics-options">
-<span id="id4"></span><h3>ICS options<a class="headerlink" href="#ics-options" title="Link to this heading">¶</a></h3>
+<span id="id3"></span><h3>ICS options<a class="headerlink" href="#ics-options" title="Link to this heading">¶</a></h3>
 <p>The following options only apply to IncrementalCompactionStrategy:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'IncrementalCompactionStrategy'</span><span class="p">,</span>
@@ -628,7 +564,7 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
 <p>Avoid overwriting data and deleting data explicitly at all costs, as this can potentially block an expired SSTable from being purged, due to the checks that are performed to avoid data resurrection.</p>
 </div>
 <section id="twcs-options">
-<span id="id5"></span><h3>TWCS options<a class="headerlink" href="#twcs-options" title="Link to this heading">¶</a></h3>
+<span id="id4"></span><h3>TWCS options<a class="headerlink" href="#twcs-options" title="Link to this heading">¶</a></h3>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">compaction</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s1">'class'</span> <span class="p">:</span> <span class="s1">'TimeWindowCompactionStrategy'</span><span class="p">,</span>
   <span class="s1">'compaction_window_unit'</span> <span class="p">:</span> <span class="n">string</span><span class="p">,</span>
@@ -667,6 +603,31 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
 <dt><code class="docutils literal notranslate"><span class="pre">max_threshold</span></code> (default: 32)</dt><dd><p>Maximum number of SSTables that will be compacted together in one compaction step.</p>
 </dd>
 </dl>
+<hr class="docutils" />
+</section>
+</section>
+<section id="size-tiered-compaction-strategy-stcs">
+<span id="stcs"></span><h2>Size Tiered Compaction Strategy (STCS)<a class="headerlink" href="#size-tiered-compaction-strategy-stcs" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Size Tiered Compaction Strategy is deprecated. <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code>
+is an alias of <a class="reference internal" href="#incremental-compaction-strategy-ics">Incremental Compaction Strategy (ICS)</a>: a table configured
+with <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is compacted by ICS.</p>
+<p>Naming it in <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code>
+or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code> is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the <code class="docutils literal notranslate"><span class="pre">allow_deprecated_size_tiered_compaction_strategy</span></code> configuration
+option to <code class="docutils literal notranslate"><span class="pre">false</span></code> to make it an error instead. That option defaults to
+<code class="docutils literal notranslate"><span class="pre">true</span></code> for backward compatibility, and will default to <code class="docutils literal notranslate"><span class="pre">false</span></code> in a
+future version.</p>
+</div>
+<section id="stcs-options">
+<span id="id5"></span><h3>STCS options<a class="headerlink" href="#stcs-options" title="Link to this heading">¶</a></h3>
+<p>Since <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is an alias of
+<code class="docutils literal notranslate"><span class="pre">IncrementalCompactionStrategy</span></code>, it takes the same options, with the same
+defaults. See <a class="reference internal" href="#id3">ICS options</a>.</p>
+<p>The one exception is the <code class="docutils literal notranslate"><span class="pre">cold_reads_to_omit</span></code> option, which ICS does not have.
+It is accepted, and ignored.</p>
 </section>
 </section>
 <hr class="docutils" />
@@ -805,10 +766,6 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
             <ul>
 <li><a class="reference internal" href="#">Compaction</a><ul>
 <li><a class="reference internal" href="#common-options">Common options</a></li>
-<li><a class="reference internal" href="#size-tiered-compaction-strategy-stcs">Size Tiered Compaction Strategy (STCS)</a><ul>
-<li><a class="reference internal" href="#stcs-options">STCS options</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#leveled-compaction-strategy-lcs">Leveled Compaction Strategy (LCS)</a><ul>
 <li><a class="reference internal" href="#lcs-options">LCS options</a></li>
 </ul>
@@ -819,6 +776,10 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
 </li>
 <li><a class="reference internal" href="#time-window-compactionstrategy-twcs">Time Window CompactionStrategy (TWCS)</a><ul>
 <li><a class="reference internal" href="#twcs-options">TWCS options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#size-tiered-compaction-strategy-stcs">Size Tiered Compaction Strategy (STCS)</a><ul>
+<li><a class="reference internal" href="#stcs-options">STCS options</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#see-also">See Also</a></li>
@@ -1332,7 +1293,7 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Oct 2026.
+                        Last updated on 16 Oct 2026.
                     
                 </div>
             

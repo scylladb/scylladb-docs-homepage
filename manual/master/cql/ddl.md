@@ -864,12 +864,14 @@ set identically on all nodes.
 ##### Compaction options
 
 The `compaction` options must at least define the `'class'` sub-option, which defines the compaction strategy class
-to use. The default supported class are `'SizeTieredCompactionStrategy'`,
-`'LeveledCompactionStrategy'`, and `'IncrementalCompactionStrategy'`.
+to use. The default supported class are `'IncrementalCompactionStrategy'`,
+`'LeveledCompactionStrategy'`, and `'TimeWindowCompactionStrategy'`.
+`'SizeTieredCompactionStrategy'` is deprecated and is an alias of
+`'IncrementalCompactionStrategy'`.
 Custom strategy can be provided by specifying the full class name as a [string constant](https://docs.scylladb.com/manual/master/cql/definitions.md#constants).
 
 All default strategies support a number of common options, as well as options specific to
-the strategy chosen (see the section corresponding to your strategy for details: [STCS](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options), [LCS](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs-options), [ICS](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options), and [TWCS](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options)).
+the strategy chosen (see the section corresponding to your strategy for details: [ICS](https://docs.scylladb.com/manual/master/cql/compaction.md#ics-options), [LCS](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs-options), [TWCS](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options), and [STCS](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs-options)).
 
 <a id="cql-compression-options"></a>
 

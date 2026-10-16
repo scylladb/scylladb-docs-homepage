@@ -223,14 +223,16 @@ SAI on `ENTRIES(map)` is rewritten to a regular secondary index
 
 #### Create Table Compaction
 
-| Feature                                                                                               | Support                                                                      |
-|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| DateTieredCompactionStrategy (DTCS)                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub> |
-| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
+| Feature                                                                                               | Support                                                                       |
+|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>     <sub>\*\*</sub> |
+| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                     |
+| DateTieredCompactionStrategy (DTCS)                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub>  |
+| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                     |
 
 <sub>\*</sub> No longer supported. Use TimeWindowCompactionStrategy (TWCS) instead.
+
+<sub>\*\*</sub> Deprecated. It is accepted, but it is an alias of [IncrementalCompactionStrategy](https://docs.scylladb.com/manual/master/cql/compaction.md#ics) (ICS).
 
 #### Create Table Compression
 

@@ -775,8 +775,9 @@ See <a class="reference internal" href="#where-clause"><span class="std std-ref"
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
-about Vector Search is available in the
+Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">DISTINCT</span></code>).
+<code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">DISTINCT</span></code> is currently accepted in queries ordered by <code class="docutils literal notranslate"><span class="pre">ANN</span> <span class="pre">OF</span></code> or <code class="docutils literal notranslate"><span class="pre">ANN()</span></code>, but does not remove
+duplicate partition keys. More information about Vector Search is available in the
 <a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/">ScyllaDB Cloud documentation</a>.</p>
 </div>
 </section>
@@ -817,6 +818,8 @@ full-text and a vector search, fuse them into one ordering in a
 <a class="reference internal" href="#hybrid-queries"><span class="std std-ref">hybrid query</span></a>.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause is mandatory; queries without <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> are rejected. The
 specified value must not exceed 1000.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">DISTINCT</span></code> is not supported in queries ordered by <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>. It is
+currently accepted, but does not remove duplicate partition keys.</p>
 <p><strong>Examples:</strong></p>
 <p>Filter and rank by relevance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">articles</span>
@@ -1991,7 +1994,7 @@ columns.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Oct 2026.
+                        Last updated on 16 Oct 2026.
                     
                 </div>
             

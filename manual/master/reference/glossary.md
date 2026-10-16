@@ -250,7 +250,7 @@ Shedding
 <a id="term-Size-tiered-compaction-strategy"></a>
 
 Size-tiered compaction strategy
-: Triggers when the system has enough (four by default) similarly sized SSTables.  See [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md).
+: Merges SSTables of approximately the same size, triggered when the system has two or more of them - or `min_threshold`, four by default, if `compaction_enforce_min_threshold` is enabled. Deprecated as a table property: `SizeTieredCompactionStrategy` is now an alias of the incremental compaction strategy.  See [Compaction Strategies](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md).
 
 <a id="term-Snapshot"></a>
 

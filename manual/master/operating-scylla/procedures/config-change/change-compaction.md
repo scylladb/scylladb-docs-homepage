@@ -21,7 +21,7 @@ CREATE TABLE nba.team_roster (
     player_jersy_number int,
     player_position text,
     team text
-) AND compaction = {'class': 'SizeTieredCompactionStrategy'};
+) WITH compaction = {'class': 'IncrementalCompactionStrategy'};
 ```
 
 1. Change the compaction strategy to a new one. If you are unsure of which strategy to use, refer to [Choose a Compaction Strategy](https://docs.scylladb.com/manual/master/architecture/compaction/compaction-strategies.md#which-strategy-is-best) for more information.
