@@ -30,5 +30,7 @@ This document highlights ScyllaDB’s key data modeling features.
   similarity-based queries on vector embeddings.
 * [Full-Text Search](https://docs.scylladb.com/manual/master/features/fulltext-search.md) lets you search and
   rank text columns by relevance using the BM25 scoring algorithm.
+* [Pattern Search](https://docs.scylladb.com/manual/master/features/pattern-search.md) answers `LIKE`
+  on text columns from an index instead of a scan.
 
 </div></div>

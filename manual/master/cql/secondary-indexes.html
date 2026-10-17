@@ -732,6 +732,71 @@ a word is kept as part of that term (e.g., <code class="docutils literal notrans
 or stop-word removal.</p></li>
 </ul>
 </section>
+<section id="pattern-index-scylladb-cloud">
+<span id="create-pattern-index-statement"></span><h2>Pattern Index <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#pattern-index-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pattern indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For the full description, see the <a class="reference internal" href="../features/pattern-search.html"><span class="doc">Pattern Search documentation</span></a>.</p>
+</div>
+<p>A pattern index serves <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> restrictions on a text column. Such a query does not need
+<code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>; if it is given, it is ignored and the index is still used.
+Instead of tokenizing the text into words, as a <a class="reference internal" href="#create-fulltext-index-statement"><span class="std std-ref">full-text index</span></a>
+does, it matches the whole value against the pattern, so a pattern such as <code class="docutils literal notranslate"><span class="pre">'%abc%'</span></code> is an index
+lookup rather than a scan of the table. Which patterns are supported depends on the index node. It is
+meant for values searched by any part of them, such as codes, identifiers and tags.</p>
+<p>A pattern index is a custom index created using the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code> keyword and the index type
+<code class="docutils literal notranslate"><span class="pre">pattern_index</span></code>. CDC is enabled automatically on the base table when a pattern index is created.</p>
+<p><strong>Column restrictions:</strong></p>
+<ul class="simple">
+<li><p>The indexed column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>. Other types are rejected.</p></li>
+<li><p>The indexed column must be a regular column. Primary-key and static columns cannot be indexed.</p></li>
+<li><p>The table must use tablets (not vnodes).</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">parts</span> <span class="p">(</span><span class="n">code</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">'pattern_index'</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">parts</span> <span class="p">(</span><span class="n">supplier</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">'pattern_index'</span>
+    <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'case_sensitive'</span><span class="p">:</span> <span class="s1">'false'</span><span class="p">};</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Creating a pattern index changes the meaning of every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on its column, for every application
+that queries the column, not only the one the index was created for. Once the index exists, a
+<code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on the column is served by the index, even with <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>:</p>
+<ul class="simple">
+<li><p>Queries that worked by filtering start failing. The <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> must be the only restriction in the
+<code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, and the query needs a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> of at most 1000, so for example a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>
+together with a restriction on the partition key, or a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> without a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>, is rejected.</p></li>
+<li><p>Queries that still succeed can return different rows, without any error. The index is eventually
+consistent, so a recent write may be missed, and the rows are neither paged nor ordered. With
+<code class="docutils literal notranslate"><span class="pre">'case_sensitive':</span> <span class="pre">'false'</span></code>, matching ignores letter case, so a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> returns rows that a
+filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> does not.</p></li>
+<li><p>When the index node is unavailable, every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on the column fails.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code> returns a warning that summarizes these changes. To restore filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>, drop the
+index with <a class="reference internal" href="#drop-index-statement"><span class="std std-ref">DROP INDEX</span></a>. For all the differences from a filtered
+<code class="docutils literal notranslate"><span class="pre">LIKE</span></code>, see <a class="reference internal" href="../features/pattern-search.html#pattern-search-indexed-vs-filtered"><span class="std std-ref">Indexed vs. Filtered LIKE</span></a>.</p>
+</div>
+<p>The following options are supported for pattern indexes:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">case_sensitive</span></code></p></td>
+<td><p>Whether matching distinguishes letter case, as <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> does. With <code class="docutils literal notranslate"><span class="pre">false</span></code> both the
+indexed values and the patterns are lowercased, so <code class="docutils literal notranslate"><span class="pre">'%ab-%'</span></code> matches
+<code class="docutils literal notranslate"><span class="pre">AB-1024-XL</span></code>. Supported values: <code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code>, in any letter case.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="drop-index">
 <span id="drop-index-statement"></span><h2>DROP INDEX<a class="headerlink" href="#drop-index" title="Link to this heading">¶</a></h2>
 <p>Dropping a secondary index uses the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> statement:</p>
@@ -742,6 +807,9 @@ or stop-word removal.</p></li>
 name, which may optionally specify the keyspace of the index.</p>
 <p>If the index is currently being built, the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> can still be executed. Once the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> command is issued,
 the system stops the build process and cleans up any partially built data associated with the index.</p>
+<p>Dropping a <a class="reference internal" href="#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a> restores filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on its
+column: from then on, a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on the column is a filter again, requires <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>, and
+follows the rules of <a class="reference internal" href="dml/select.html#like-operator"><span class="std std-ref">LIKE Operator</span></a>.</p>
 </section>
 <section id="changing-indexes-during-a-paged-read">
 <h2>Changing Indexes During a Paged Read<a class="headerlink" href="#changing-indexes-during-a-paged-read" title="Link to this heading">¶</a></h2>
@@ -912,6 +980,7 @@ the new table holds before that position is skipped without an error.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#full-text-index-scylladb-cloud">Full-text Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
+<li><a class="reference internal" href="#pattern-index-scylladb-cloud">Pattern Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#drop-index">DROP INDEX</a></li>
 <li><a class="reference internal" href="#changing-indexes-during-a-paged-read">Changing Indexes During a Paged Read</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
@@ -1218,6 +1287,7 @@ the new table holds before that position is skipped without an error.</p>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1425,7 +1495,7 @@ the new table holds before that position is skipped without an error.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

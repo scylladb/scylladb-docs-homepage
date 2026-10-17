@@ -941,6 +941,51 @@ that is no longer in the base table, the ranks after it are not renumbered.</p><
 smaller than the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> was requested.</p></li>
 </ul>
 </section>
+<section id="indexed-like-queries-pattern-index-scylladb-cloud">
+<span id="pattern-queries"></span><h2>Indexed LIKE queries (pattern index) <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#indexed-like-queries-pattern-index-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pattern Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For more information, see the <a class="reference internal" href="../../features/pattern-search.html"><span class="doc">Pattern Search documentation</span></a>.</p>
+</div>
+<p>This section covers <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on a column that has a <a class="reference internal" href="../secondary-indexes.html#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a>.
+<code class="docutils literal notranslate"><span class="pre">LIKE</span></code> as a filter, available in every deployment, is described in <a class="reference internal" href="#like-operator"><span class="std std-ref">LIKE Operator</span></a>.
+The two use the same pattern syntax but otherwise behave differently, for example in result order,
+paging, consistency and case sensitivity; see
+<a class="reference internal" href="../../features/pattern-search.html#pattern-search-indexed-vs-filtered"><span class="std std-ref">Indexed vs. Filtered LIKE</span></a> for a comparison.</p>
+<p>On a column that has a pattern index, every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> restriction is served by the index instead of by
+filtering. Such a query does not need <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>; if it is given, it is ignored and the index
+is still used:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">pattern_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
+               <span class="p">:</span>   <span class="k">WHERE</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="k">LIKE</span> <span class="o">`</span><span class="n">pattern</span><span class="o">`</span>
+               <span class="p">:</span>   <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">code</span> <span class="k">FROM</span> <span class="n">parts</span>
+    <span class="k">WHERE</span> <span class="n">code</span> <span class="k">LIKE</span> <span class="s1">'%024%'</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The rules are:</p>
+<ul class="simple">
+<li><p>The pattern uses the <a class="reference internal" href="#like-operator"><span class="std std-ref">LIKE</span></a> syntax. Which patterns are supported depends on the
+index node, and a pattern it does not support fails the query with an <code class="docutils literal notranslate"><span class="pre">InvalidRequest</span></code> error.</p></li>
+<li><p>A bind marker may stand for the pattern (<code class="docutils literal notranslate"><span class="pre">LIKE</span> <span class="pre">?</span></code>). The pattern must not be null.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> is mandatory and must not exceed 1000. <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code>, <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span> <span class="pre">LIMIT</span></code>, <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code>,
+aggregation and any further <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> restriction, including one on the partition key, are not
+supported.</p></li>
+<li><p>The query is served by the index even with <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>. When the index node is unavailable
+or does not support the pattern, the query fails.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A pattern index changes every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on its column, from every application, for as long as the
+index exists: a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> that worked by filtering before the index was created can fail or return
+different rows afterwards. Dropping the index with <a class="reference internal" href="../secondary-indexes.html#drop-index-statement"><span class="std std-ref">DROP INDEX</span></a> restores
+filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>.</p>
+</div>
+</section>
 <section id="limiting-results">
 <span id="limit-clause"></span><h2>Limiting results<a class="headerlink" href="#limiting-results" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> option to a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement limits the number of rows returned by a query, while the <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span>
@@ -1138,6 +1183,12 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <section id="like-operator">
 <span id="id4"></span><h2>LIKE Operator<a class="headerlink" href="#like-operator" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> operation on <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statements informs ScyllaDB that you are looking for a pattern match. The expression ‘column LIKE pattern’ yields true only if the entire column value matches the pattern.</p>
+<p>Without an index, <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> is a filter: ScyllaDB reads the rows and checks each value against the
+pattern, so the query requires <a class="reference internal" href="#allow-filtering"><span class="std std-ref">ALLOW FILTERING</span></a>. This section describes that
+filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>. On a column with a <a class="reference internal" href="../secondary-indexes.html#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a>, <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>
+is served by the index instead, even with <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>, and follows different rules; see
+<a class="reference internal" href="#pattern-queries"><span class="std std-ref">Indexed LIKE queries</span></a> and
+<a class="reference internal" href="../../features/pattern-search.html#pattern-search-indexed-vs-filtered"><span class="std std-ref">Indexed vs. Filtered LIKE</span></a>.</p>
 <p>The search pattern is a string of characters with two wildcards, as shown:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">_</span></code> matches any single character</p></li>
@@ -1150,17 +1201,21 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <p class="admonition-title">Note</p>
 <p>Only string types (ascii, text, and varchar) are valid for matching</p>
 </div>
-<p>Currently, the match is <strong>case sensitive</strong>. The entire column value must match the pattern.
+<p>A filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> is always <strong>case sensitive</strong>. The entire column value must match the pattern.
 For example, consider the search pattern ‘M%n’ - this will match <code class="docutils literal notranslate"><span class="pre">Martin</span></code>, but will not match <code class="docutils literal notranslate"><span class="pre">Moonbeam</span></code> because the <code class="docutils literal notranslate"><span class="pre">m</span></code> at the end isn’t matched. In addition, <code class="docutils literal notranslate"><span class="pre">moon</span></code> is not matched because <code class="docutils literal notranslate"><span class="pre">M</span></code> is not the same as <code class="docutils literal notranslate"><span class="pre">m</span></code>. Both the pattern and the column value are assumed to be UTF-8 encoded.</p>
+<p>To match regardless of letter case, use a pattern index created with <code class="docutils literal notranslate"><span class="pre">'case_sensitive':</span> <span class="pre">'false'</span></code>.</p>
 <p>A query can find all values containing some text fragment by matching to an appropriate <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> pattern.</p>
 <p><strong>Differences Between ScyllaDB and Cassandra LIKE Operators</strong></p>
 <ul class="simple">
-<li><p>In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter.</p></li>
-<li><p>Consequently, ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.</p></li>
+<li><p>In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter,
+and can also serve it from a <a class="reference internal" href="../secondary-indexes.html#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a>.</p></li>
+<li><p>Consequently, a filtered ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.</p></li>
 <li><p>ScyllaDB treats underscore (_) as a wildcard; Cassandra doesn’t.</p></li>
 <li><p>ScyllaDB treats percent (%) as a wildcard anywhere in the pattern; Cassandra only at the beginning/end</p></li>
 <li><p>ScyllaDB interprets backslash (\) as an escape character; Cassandra doesn’t.</p></li>
-<li><p>Cassandra allows case-insensitive LIKE; ScyllaDB doesn’t (see <a class="reference external" href="https://github.com/scylladb/scylla/issues/4911">#4911</a>).</p></li>
+<li><p>Cassandra allows case-insensitive LIKE through an option of the SASI index. A filtered ScyllaDB LIKE is always
+case-sensitive (see <a class="reference external" href="https://github.com/scylladb/scylla/issues/4911">#4911</a>); case-insensitive matching needs a
+pattern index created with <code class="docutils literal notranslate"><span class="pre">'case_sensitive':</span> <span class="pre">'false'</span></code>.</p></li>
 <li><p>ScyllaDB allows empty LIKE pattern; Cassandra doesn’t.</p></li>
 </ul>
 <p><strong>Example A</strong></p>
@@ -1476,6 +1531,7 @@ columns.</p>
 </li>
 <li><a class="reference internal" href="#selecting-an-excerpt">Selecting an excerpt</a><ul>
 <li><a class="reference internal" href="#hybrid-search-queries-scylladb-cloud">Hybrid search queries <span class="label label--note">ScyllaDB Cloud</span></a></li>
+<li><a class="reference internal" href="#indexed-like-queries-pattern-index-scylladb-cloud">Indexed LIKE queries (pattern index) <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#limiting-results">Limiting results</a></li>
 <li><a class="reference internal" href="#allowing-filtering">Allowing filtering</a></li>
 <li><a class="reference internal" href="#evaluation-order-of-select-statement-clauses">Evaluation order of SELECT statement clauses</a></li>
@@ -1787,6 +1843,7 @@ columns.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1994,7 +2051,7 @@ columns.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

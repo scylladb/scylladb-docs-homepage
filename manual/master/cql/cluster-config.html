@@ -451,7 +451,7 @@ scope it does not support, or a value of the wrong type is rejected and nothing 
 <p>Setting an option to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> removes the value stored at that scope, so the option falls back to
 the next broader scope, or to its default:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">tbl</span> <span class="k">WITH</span> <span class="n">auto_repair_enabled</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>   <span class="c1">-- ks.tbl now follows its keyspace</span>
-<span class="k">ALTER</span> <span class="n">CLUSTER</span> <span class="k">WITH</span> <span class="n">auto_repair_enabled</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>        <span class="c1">-- back to the built-in default</span>
+<span class="k">ALTER</span> <span class="n">CLUSTER</span> <span class="k">WITH</span> <span class="n">auto_repair_enabled</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>        <span class="c1">-- back to the default</span>
 </pre></div>
 </div>
 <p>Only the bare <code class="docutils literal notranslate"><span class="pre">NULL</span></code> keyword removes a value. The string <code class="docutils literal notranslate"><span class="pre">'null'</span></code> is an ordinary value and is
@@ -508,7 +508,19 @@ emitted, which is the form used for backup and restore. See <a class="reference 
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code></p></td>
 <td><p>boolean</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code>, <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code>, <code class="docutils literal notranslate"><span class="pre">TABLE</span></code></p></td>
-<td><p>Enable automatic repair for tablet-based tables. Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+<td><p>Enable <a class="reference internal" href="../features/automatic-repair.html"><span class="doc">automatic repair</span></a> for tablet-based tables. Default:
+<code class="docutils literal notranslate"><span class="pre">false</span></code>. Until the deprecated <code class="docutils literal notranslate"><span class="pre">auto_repair_enabled_default</span></code> option is removed, a node
+that sets it in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> uses that value when no scope sets this option.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">auto_repair_threshold_in_seconds</span></code></p></td>
+<td><p>integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code>, <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code>, <code class="docutils literal notranslate"><span class="pre">TABLE</span></code></p></td>
+<td><p>Time in seconds since the start of the last successful repair of a tablet after which it is
+eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,
+and a tablet that was never repaired is eligible immediately. <code class="docutils literal notranslate"><span class="pre">0</span></code> disables time-based
+automatic repair. Default: <code class="docutils literal notranslate"><span class="pre">86400</span></code>. Until the deprecated
+<code class="docutils literal notranslate"><span class="pre">auto_repair_threshold_default_in_seconds</span></code> option is removed, a node that sets it in
+<code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> uses that value when no scope sets this option.</p></td>
 </tr>
 </tbody>
 </table>
@@ -945,6 +957,7 @@ emitted, which is the form used for backup and restore. See <a class="reference 
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1152,7 +1165,7 @@ emitted, which is the form used for backup and restore. See <a class="reference 
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

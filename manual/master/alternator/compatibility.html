@@ -392,7 +392,8 @@ to reason about the number and size of your nodes - not the throughput.</p>
 not yet supported by Scylla. The BillingMode and ProvisionedThroughput options
 on a table need to be valid but are ignored, and ScyllaDB behaves like DynamoDB’s
 <code class="docutils literal notranslate"><span class="pre">BillingMode=PAY_PER_REQUEST</span></code>: All requests are accepted without a per-table
-throughput cap.</p>
+throughput cap. The values provisioned for a table and for each of its GSIs
+are remembered and returned by <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code>, but are not enforced.</p>
 </section>
 <section id="load-balancing">
 <h2>Load balancing<a class="headerlink" href="#load-balancing" title="Link to this heading">¶</a></h2>
@@ -899,8 +900,11 @@ DynamoDB in March 2023.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/14482">https://github.com/scylladb/scylla/issues/14482</a></p></li>
 <li><p>Alternator does not support the table option WarmThroughput that can be
 used to check or guarantee that the database has “warmed” to handle a
-particular throughput. This table option was added to DynamoDB in
-November 2024.
+particular throughput. Alternator has no throughput caps and nothing to
+pre-warm, so a table’s WarmThroughput is remembered and returned by
+<code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> but otherwise ignored; a table which never set one reports
+zero units, as does each of its active GSIs. This table option was added to
+DynamoDB in November 2024.
 <a class="reference external" href="https://github.com/scylladb/scylladb/issues/21853">https://github.com/scylladb/scylladb/issues/21853</a></p></li>
 <li><p>Alternator does not support the table option MultiRegionConsistency
 that can be used to achieve consistent reads on global (multi-region) tables.
@@ -1346,6 +1350,7 @@ This table option was added as a preview to DynamoDB in December 2024.
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1553,7 +1558,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

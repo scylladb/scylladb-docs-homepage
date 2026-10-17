@@ -92,6 +92,8 @@ This document highlights ScyllaDB’s key data modeling features.
   similarity-based queries on vector embeddings.
 * [Full-Text Search](https://docs.scylladb.com/manual/master/features/fulltext-search.md) lets you search and
   rank text columns by relevance using the BM25 scoring algorithm.
+* [Pattern Search](https://docs.scylladb.com/manual/master/features/pattern-search.md) answers `LIKE`
+  on text columns from an index instead of a scan.
 
 </div></div>
 
@@ -3954,6 +3956,7 @@ The full set of available permissions is:
 - `DESCRIBE`
 - `VECTOR_SEARCH_INDEXING`
 - `TEXT_SEARCH_INDEXING`
+- `PATTERN_SEARCH_INDEXING`
 
 <!-- - ``EXECUTE`` -->
 <!-- Not all permissions are applicable to every type of resource. For instance, ``EXECUTE`` is only relevant in the context -->
@@ -3962,33 +3965,34 @@ The full set of available permissions is:
 Attempting to `GRANT` permission on a resource to which it cannot be applied results in an error response. The following illustrates which
 permissions can be granted on which types of resources, and which statements are enabled by that permission.
 
-| Permission               | Resource                 | Operations                                                                                                       |
-|--------------------------|--------------------------|------------------------------------------------------------------------------------------------------------------|
-| `CREATE`                 | `ALL KEYSPACES`          | `CREATE KEYSPACE` and `CREATE TABLE` in any keyspace                                                             |
-| `CREATE`                 | `KEYSPACE keyspace_name` | `CREATE TABLE` in specified keyspace                                                                             |
-| `ALTER`                  | `ALL KEYSPACES`          | `ALTER KEYSPACE` and `ALTER TABLE` in any keyspace                                                               |
-| `ALTER`                  | `KEYSPACE keyspace_name` | `ALTER KEYSPACE` and `ALTER TABLE` in specified keyspace                                                         |
-| `ALTER`                  | `TABLE table_name`       | `ALTER TABLE` on specified table                                                                                 |
-| `DROP`                   | `ALL KEYSPACES`          | `DROP KEYSPACE` and `DROP TABLE` in any keyspace                                                                 |
-| `DROP`                   | `KEYSPACE keyspace_name` | `DROP TABLE` and `DROP KEYSPACE` in specified keyspace                                                           |
-| `DROP`                   | `TABLE table_name`       | `DROP TABLE`                                                                                                     |
-| `SELECT`                 | `ALL KEYSPACES`          | `SELECT` on any table                                                                                            |
-| `SELECT`                 | `KEYSPACE keyspace_name` | `SELECT` on any table in specified keyspace                                                                      |
-| `SELECT`                 | `TABLE table_name`       | `SELECT` on specified table                                                                                      |
-| `MODIFY`                 | `ALL KEYSPACES`          | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table                                                         |
-| `MODIFY`                 | `KEYSPACE keyspace_name` | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table in the specified keyspace                               |
-| `MODIFY`                 | `TABLE table_name`       | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on specified table                                                   |
-| `AUTHORIZE`              | `ALL KEYSPACES`          | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table                                                          |
-| `AUTHORIZE`              | `KEYSPACE keyspace_name` | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table in the specified keyspace                                |
-| `AUTHORIZE`              | `TABLE table_name`       | `GRANT PERMISSION` and `REVOKE PERMISSION` on specified table                                                    |
-| `DESCRIBE`               | `ALL ROLES`              | `LIST ROLES` on all roles or only roles granted to another specified role                                        |
-| `VECTOR_SEARCH_INDEXING` | `ALL KEYSPACES`          | `SELECT` on all tables with vector search indexes, and on some [system tables](#external-index-system-tables)    |
-| `TEXT_SEARCH_INDEXING`   | `ALL KEYSPACES`          | `SELECT` on all tables with full-text search indexes, and on some [system tables](#external-index-system-tables) |
+| Permission                | Resource                 | Operations                                                                                                       |
+|---------------------------|--------------------------|------------------------------------------------------------------------------------------------------------------|
+| `CREATE`                  | `ALL KEYSPACES`          | `CREATE KEYSPACE` and `CREATE TABLE` in any keyspace                                                             |
+| `CREATE`                  | `KEYSPACE keyspace_name` | `CREATE TABLE` in specified keyspace                                                                             |
+| `ALTER`                   | `ALL KEYSPACES`          | `ALTER KEYSPACE` and `ALTER TABLE` in any keyspace                                                               |
+| `ALTER`                   | `KEYSPACE keyspace_name` | `ALTER KEYSPACE` and `ALTER TABLE` in specified keyspace                                                         |
+| `ALTER`                   | `TABLE table_name`       | `ALTER TABLE` on specified table                                                                                 |
+| `DROP`                    | `ALL KEYSPACES`          | `DROP KEYSPACE` and `DROP TABLE` in any keyspace                                                                 |
+| `DROP`                    | `KEYSPACE keyspace_name` | `DROP TABLE` and `DROP KEYSPACE` in specified keyspace                                                           |
+| `DROP`                    | `TABLE table_name`       | `DROP TABLE`                                                                                                     |
+| `SELECT`                  | `ALL KEYSPACES`          | `SELECT` on any table                                                                                            |
+| `SELECT`                  | `KEYSPACE keyspace_name` | `SELECT` on any table in specified keyspace                                                                      |
+| `SELECT`                  | `TABLE table_name`       | `SELECT` on specified table                                                                                      |
+| `MODIFY`                  | `ALL KEYSPACES`          | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table                                                         |
+| `MODIFY`                  | `KEYSPACE keyspace_name` | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on any table in the specified keyspace                               |
+| `MODIFY`                  | `TABLE table_name`       | `INSERT`, `UPDATE`, `DELETE` and `TRUNCATE` on specified table                                                   |
+| `AUTHORIZE`               | `ALL KEYSPACES`          | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table                                                          |
+| `AUTHORIZE`               | `KEYSPACE keyspace_name` | `GRANT PERMISSION` and `REVOKE PERMISSION` on any table in the specified keyspace                                |
+| `AUTHORIZE`               | `TABLE table_name`       | `GRANT PERMISSION` and `REVOKE PERMISSION` on specified table                                                    |
+| `DESCRIBE`                | `ALL ROLES`              | `LIST ROLES` on all roles or only roles granted to another specified role                                        |
+| `VECTOR_SEARCH_INDEXING`  | `ALL KEYSPACES`          | `SELECT` on all tables with vector search indexes, and on some [system tables](#external-index-system-tables)    |
+| `TEXT_SEARCH_INDEXING`    | `ALL KEYSPACES`          | `SELECT` on all tables with full-text search indexes, and on some [system tables](#external-index-system-tables) |
+| `PATTERN_SEARCH_INDEXING` | `ALL KEYSPACES`          | `SELECT` on all tables with pattern search indexes, and on some [system tables](#external-index-system-tables)   |
 
 <a id="external-index-system-tables"></a>
 
-Both the `VECTOR_SEARCH_INDEXING` and `TEXT_SEARCH_INDEXING` permissions also grant `SELECT` on the following
-system tables, which the external Vector Store engine reads to track schema changes, tablet placement, and CDC
+The `VECTOR_SEARCH_INDEXING`, `TEXT_SEARCH_INDEXING` and `PATTERN_SEARCH_INDEXING` permissions also grant
+`SELECT` on the following system tables, which the external Vector Store engine reads to track schema changes, tablet placement, and CDC
 streams for the tables it indexes:
 
 - `system.group0_history`
@@ -4006,7 +4010,7 @@ Granting permission uses the `GRANT PERMISSION` statement:
 ```cql
 grant_permission_statement: GRANT `permissions` ON `resource` TO `user_name`
 permissions: ALL [ PERMISSIONS ] | `permission` [ PERMISSION ]
-permission: CREATE | ALTER | DROP | SELECT | MODIFY | AUTHORIZE | DESCRIBE | VECTOR_SEARCH_INDEXING | TEXT_SEARCH_INDEXING
+permission: CREATE | ALTER | DROP | SELECT | MODIFY | AUTHORIZE | DESCRIBE | VECTOR_SEARCH_INDEXING | TEXT_SEARCH_INDEXING | PATTERN_SEARCH_INDEXING
 resource: ALL KEYSPACES
         :| KEYSPACE `keyspace_name`
         :| [ TABLE ] `table_name`
@@ -4144,20 +4148,68 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 
 Traditionally, launching [repairs](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/repair.md) in a ScyllaDB cluster is left to an external process, typically done via [Scylla Manager](https://manager.docs.scylladb.com/stable/repair/index.html).
 
-Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the last repair is greater than the configured repair interval, ScyllaDB will start a repair for the [tablet table](https://docs.scylladb.com/manual/master/architecture/tablets.md) automatically.
+Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the start of the last successful repair of a tablet is greater than the configured repair interval, ScyllaDB will start a repair for the [tablet table](https://docs.scylladb.com/manual/master/architecture/tablets.md) automatically.
 Repairs are spread over time and among nodes and shards, to avoid load spikes or any adverse effects on user workloads.
 
-To enable automatic repair, add this to the configuration (`scylla.yaml`):
+## Configuring with CQL
+
+Automatic repair is controlled by two [cluster configuration options](https://docs.scylladb.com/manual/master/cql/cluster-config.md):
+
+* `auto_repair_enabled` (boolean): whether tablets of a table are scheduled for automatic repair.
+* `auto_repair_threshold_in_seconds` (integer, seconds): a tablet becomes eligible for automatic repair when this
+  much time has passed since the start of its last successful repair. A repair restricted to some hosts or
+  datacenters does not count, and a tablet that was never repaired is eligible immediately. `0` disables
+  time-based automatic repair at that scope.
+
+Both can be set for the whole cluster, for a keyspace, or for a single table. A value set for a table
+overrides the keyspace value, which overrides the cluster value:
+
+```cql
+ALTER CLUSTER WITH auto_repair_enabled = true;
+ALTER CLUSTER WITH auto_repair_threshold_in_seconds = 86400;
+ALTER KEYSPACE ks WITH auto_repair_enabled = false;
+ALTER TABLE ks.important WITH auto_repair_enabled = true AND auto_repair_threshold_in_seconds = 3600;
+```
+
+This enables automatic repair for every tablet table with a repair period of 1 day, turns it off for
+keyspace `ks`, and turns it back on for `ks.important` with a repair period of 1 hour. The setting is
+stored in the cluster schema, so it applies to every node without editing per-node configuration files.
+
+Setting an option to `NULL` removes it from that scope, so the next broader scope applies again:
+
+```cql
+ALTER TABLE ks.important WITH auto_repair_threshold_in_seconds = NULL;
+```
+
+When an option is set at any scope, `DESCRIBE TABLE` and `DESCRIBE KEYSPACE` show its effective
+value and which scope it comes from.
+
+## Deprecated scylla.yaml options
+
+Earlier releases configured automatic repair through two options in `scylla.yaml`:
 
 ```yaml
 auto_repair_enabled_default: true
 auto_repair_threshold_default_in_seconds: 86400
 ```
 
-This will enable automatic repair for all tables with a repair period of 1 day. This configuration has to be set on each node, to an identical value.
-More featureful configuration methods will be implemented in the future.
+These options are deprecated and will be removed in a future release. They still apply when no
+scope sets the corresponding CQL option, and a node that has them set logs a warning at startup.
+A value set with `ALTER CLUSTER`, `ALTER KEYSPACE` or `ALTER TABLE` always takes precedence
+over them. While the value comes from `scylla.yaml`, `DESCRIBE` shows nothing for the option;
+query `system.config` on each node to see it.
 
-To disable, set `auto_repair_enabled_default: false`.
+To migrate, run the equivalent statements once from any node and then remove the options from
+`scylla.yaml` on every node:
+
+```cql
+ALTER CLUSTER WITH auto_repair_enabled = true;
+ALTER CLUSTER WITH auto_repair_threshold_in_seconds = 86400;
+```
+
+To disable automatic repair by default for the whole cluster, run `ALTER CLUSTER WITH auto_repair_enabled = false`.
+A keyspace or table that stores its own `auto_repair_enabled = true` keeps automatic repair; set that
+option to `NULL` at both the keyspace and table scopes to make it follow the cluster value again.
 
 Automatic repair relies on [Incremental Repair](https://docs.scylladb.com/manual/master/features/incremental-repair.md) and as such it only works with [tablet](https://docs.scylladb.com/manual/master/architecture/tablets.md) tables.
 
@@ -9907,7 +9959,7 @@ the next broader scope, or to its default:
 
 ```cql
 ALTER TABLE ks.tbl WITH auto_repair_enabled = NULL;   -- ks.tbl now follows its keyspace
-ALTER CLUSTER WITH auto_repair_enabled = NULL;        -- back to the built-in default
+ALTER CLUSTER WITH auto_repair_enabled = NULL;        -- back to the default
 ```
 
 Only the bare `NULL` keyword removes a value. The string `'null'` is an ordinary value and is
@@ -9953,9 +10005,10 @@ emitted, which is the form used for backup and restore. See [DESCRIBE SCHEMA](ht
 
 ## Available options
 
-| Option                | Type    | Scopes                         | Description                                                        |
-|-----------------------|---------|--------------------------------|--------------------------------------------------------------------|
-| `auto_repair_enabled` | boolean | `CLUSTER`, `KEYSPACE`, `TABLE` | Enable automatic repair for tablet-based tables. Default: `false`. |
+| Option                             | Type    | Scopes                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------------------|---------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `auto_repair_enabled`              | boolean | `CLUSTER`, `KEYSPACE`, `TABLE` | Enable [automatic repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) for tablet-based tables. Default:<br/>`false`. Until the deprecated `auto_repair_enabled_default` option is removed, a node<br/>that sets it in `scylla.yaml` uses that value when no scope sets this option.                                                                                                                                                                                                     |
+| `auto_repair_threshold_in_seconds` | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. `0` disables time-based<br/>automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option. |
 
 
 # cluster-platform-migration.md
@@ -11288,7 +11341,8 @@ Moreover, DynamoDB’s per-table provisioning (`BillingMode=PROVISIONED`) is
 not yet supported by Scylla. The BillingMode and ProvisionedThroughput options
 on a table need to be valid but are ignored, and ScyllaDB behaves like DynamoDB’s
 `BillingMode=PAY_PER_REQUEST`: All requests are accepted without a per-table
-throughput cap.
+throughput cap. The values provisioned for a table and for each of its GSIs
+are remembered and returned by `DescribeTable`, but are not enforced.
 
 ## Load balancing
 
@@ -11765,8 +11819,11 @@ they should be easy to detect. Here is a list of these unimplemented features:
   [https://github.com/scylladb/scylla/issues/14482](https://github.com/scylladb/scylla/issues/14482)
 * Alternator does not support the table option WarmThroughput that can be
   used to check or guarantee that the database has “warmed” to handle a
-  particular throughput. This table option was added to DynamoDB in
-  November 2024.
+  particular throughput. Alternator has no throughput caps and nothing to
+  pre-warm, so a table’s WarmThroughput is remembered and returned by
+  `DescribeTable` but otherwise ignored; a table which never set one reports
+  zero units, as does each of its active GSIs. This table option was added to
+  DynamoDB in November 2024.
   [https://github.com/scylladb/scylladb/issues/21853](https://github.com/scylladb/scylladb/issues/21853)
 * Alternator does not support the table option MultiRegionConsistency
   that can be used to achieve consistent reads on global (multi-region) tables.
@@ -15290,20 +15347,20 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### auto_repair_enabled_default
 
-> Set true to enable auto repair for tablet tables by default. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.
+> Deprecated, use ALTER CLUSTER WITH auto_repair_enabled = true instead. Set true to enable auto repair for tablet tables when the auto_repair_enabled cluster config option is not set at cluster, keyspace or table scope. The option will be removed in a future release.
 
 > * **Type:** `bool`
-> * **Default value:** `false`
+> * **Default value:** `cluster_config_registry::auto_repair_enabled_default`
 > * Liveness: `True`
 
 <a id="confprop-auto-repair-threshold-default-in-seconds"></a>
 
 ### auto_repair_threshold_default_in_seconds
 
-> Set the default time in seconds for the auto repair threshold for tablet tables. If the time since last repair is bigger than the configured time, the tablet is eligible for auto repair. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.
+> Deprecated, use ALTER CLUSTER WITH auto_repair_threshold_in_seconds = <seconds> instead. Set the auto repair threshold in seconds for tablet tables when the auto_repair_threshold_in_seconds cluster config option is not set at cluster, keyspace or table scope. A tablet is eligible for auto repair when this much time has passed since the start of its last successful repair; a repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. 0 disables time-based auto repair. The option will be removed in a future release.
 
 > * **Type:** `int32_t`
-> * **Default value:** `24 * 3600`
+> * **Default value:** `int32_t(cluster_config_registry::auto_repair_threshold_default_seconds)`
 > * Liveness: `True`
 
 <a id="confprop-view-flow-control-delay-limit-in-ms"></a>
@@ -18362,7 +18419,7 @@ The supported `options` are:
 | `consistency`    | *simple* | no          | eventual  | Configures consistency mode for the keyspace (see [consistency](#consistency-option)).                  |
 
 A keyspace also accepts the options that can be set through CQL at the `KEYSPACE` scope, such as
-`auto_repair_enabled`; setting one to `NULL` removes it from the keyspace. See
+`auto_repair_enabled` and `auto_repair_threshold_in_seconds`; setting one to `NULL` removes it from the keyspace. See
 [configuring a cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md).
 
 The `replication` property is optional. Omitting it is equivalent to supplying an empty map (`replication = {}`),
@@ -19063,24 +19120,25 @@ has three visible consequences:
 
 A table supports the following options:
 
-| Option                          | Kind   | Default      | Description                                                                                                                                                                                                                                                         |
-|---------------------------------|--------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `comment`                       | simple | none         | A free-form, human-readable comment.                                                                                                                                                                                                                                |
-| `speculative_retry`             | simple | 99PERCENTILE | [Speculative retry options](#speculative-retry-options)                                                                                                                                                                                                             |
-| `gc_grace_seconds`              | simple | 864000       | Time to wait before garbage collecting tombstones (deletion markers). See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                              |
-| `tombstone_gc`                  | mode   | see below    | The mode of garbage collecting tombstones. See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                         |
-| `bloom_filter_fp_chance`        | simple | 0.01         | The target probability of false-positive of the sstable bloom filters. Sstable bloom filters will be sized to provide the provided probability (thus lowering this value impact the size of bloom filters in-memory and on-disk).                                   |
-| `default_time_to_live`          | simple | 0            | The default expiration time (“TTL”) in seconds for a table.                                                                                                                                                                                                         |
-| `memtable_flush_period_in_ms`   | simple | 0            | Flush the memtables associated with this table every `memtable_flush_period_in_ms` milliseconds. When set to `0`, periodic flush is disabled. Cannot set to values lower than `60000` (1 minute). Default: `0`.                                                     |
-| `min_index_interval`            | simple | 128          | Minimum gap between summary entries: ScyllaDB will create summary entries with at least this amount of partitions between them. Controls the maximums density of the summary.                                                                                       |
-| `max_index_interval`            | simple | 2048         | Not implemented (option value is ignored).                                                                                                                                                                                                                          |
-| `auto_repair_enabled`           | simple | inherited    | Enable automatic repair for tablet-based tables. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md). |
-| `compaction`                    | map    | see below    | [Compaction options](#cql-compaction-options)                                                                                                                                                                                                                       |
-| `compression`                   | map    | see below    | [Compression options](#cql-compression-options)                                                                                                                                                                                                                     |
-| `caching`                       | map    | see below    | [Caching Options](#cql-caching-options)                                                                                                                                                                                                                             |
-| `cdc`                           | map    | see below    | [CDC Options](#cdc-options)                                                                                                                                                                                                                                         |
-| `tablet_options`                | map    | see below    | [Per-table tablet options](#cql-per-table-tablet-options)                                                                                                                                                                                                           |
-| `large_data_guardrails_enabled` | simple | `false`      | Enables [large data guardrails](https://docs.scylladb.com/manual/master/cql/guardrails.md#guardrails-large-data) for this table.                                                                                                                                    |
+| Option                             | Kind   | Default      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|------------------------------------|--------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `comment`                          | simple | none         | A free-form, human-readable comment.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `speculative_retry`                | simple | 99PERCENTILE | [Speculative retry options](#speculative-retry-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `gc_grace_seconds`                 | simple | 864000       | Time to wait before garbage collecting tombstones (deletion markers). See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `tombstone_gc`                     | mode   | see below    | The mode of garbage collecting tombstones. See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `bloom_filter_fp_chance`           | simple | 0.01         | The target probability of false-positive of the sstable bloom filters. Sstable bloom filters will be sized to provide the provided probability (thus lowering this value impact the size of bloom filters in-memory and on-disk).                                                                                                                                                                                                                                                                                                   |
+| `default_time_to_live`             | simple | 0            | The default expiration time (“TTL”) in seconds for a table.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `memtable_flush_period_in_ms`      | simple | 0            | Flush the memtables associated with this table every `memtable_flush_period_in_ms` milliseconds. When set to `0`, periodic flush is disabled. Cannot set to values lower than `60000` (1 minute). Default: `0`.                                                                                                                                                                                                                                                                                                                     |
+| `min_index_interval`               | simple | 128          | Minimum gap between summary entries: ScyllaDB will create summary entries with at least this amount of partitions between them. Controls the maximums density of the summary.                                                                                                                                                                                                                                                                                                                                                       |
+| `max_index_interval`               | simple | 2048         | Not implemented (option value is ignored).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `auto_repair_enabled`              | simple | inherited    | Enable automatic repair for tablet-based tables. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md).                                                                                                                                                                                                                                                                 |
+| `auto_repair_threshold_in_seconds` | simple | inherited    | Time in seconds since the start of the last successful repair of a tablet of the table after which it is eligible for automatic repair. A repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. `0` disables time-based automatic repair. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/master/cql/cluster-config.md). |
+| `compaction`                       | map    | see below    | [Compaction options](#cql-compaction-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `compression`                      | map    | see below    | [Compression options](#cql-compression-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `caching`                          | map    | see below    | [Caching Options](#cql-caching-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `cdc`                              | map    | see below    | [CDC Options](#cdc-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `tablet_options`                   | map    | see below    | [Per-table tablet options](#cql-per-table-tablet-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `large_data_guardrails_enabled`    | simple | `false`      | Enables [large data guardrails](https://docs.scylladb.com/manual/master/cql/guardrails.md#guardrails-large-data) for this table.                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 <a id="speculative-retry-options"></a>
 
@@ -30615,8 +30673,9 @@ The current migration procedure has the following limitations:
   not yet supported.
 * **No schema changes** during the migration. Do not create, alter, or drop
   tables in the migrating keyspace until the migration is finished.
-* **No topology changes** during the migration. Do not add, remove, decommission,
-  replace, or rebuild nodes while a migration is in progress.
+* **No planned topology changes** during the migration. Do not add, remove,
+  decommission, or rebuild nodes while a migration is in progress. Replacing
+  a dead node is supported as an emergency recovery operation.
 * **No repair** operations during the migration. Do not run `nodetool repair`
   on the migrating keyspace while a migration is in progress.
 * **No backup and restore** for migrating tables during the migration.
@@ -31135,6 +31194,18 @@ To migrate multiple keyspaces simultaneously, follow these steps:
    nodetool migrate-to-tablets finalize <keyspace2>
    ...
    ```
+
+## Replacing a Dead Node during Migration
+
+If a node fails during the migration, replace it using the standard procedure
+for [replacing a dead node](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node.md).
+
+The replacing node must have the same shard count as the replaced node. If the
+shard count differs, the replacement will fail.
+
+After replacement completes, you can resume the migration. The replacing node
+always starts in vnode mode and must be upgraded to tablets, regardless of the
+storage mode of node it replaced.
 
 
 # modules.md
@@ -32192,6 +32263,172 @@ Password:
 Enter the value of <new_password> password when prompted. The input is not displayed.
 
 [Troubleshoot](https://docs.scylladb.com/manual/master/troubleshooting/index.md)
+
+
+# pattern-search.md
+
+# Pattern Search in ScyllaDB
+
+## What Is Pattern Search
+
+Pattern Search finds the rows whose text column matches a `LIKE`
+pattern, such as `'%abc%'`, `'abc%'` or `'a%b'`, but served by an
+index rather than by a scan of the table. The index node does not match
+approximately: a value matches when the whole of it matches the pattern. The
+pattern has the same syntax as in a filtered `LIKE`, with the
+same `%`, `_` and `\` rules, but the query does not behave like a filtered
+one in other respects; see
+[Indexed vs. Filtered LIKE](#pattern-search-indexed-vs-filtered).
+
+It suits values that are searched by any part of them rather than by whole
+words, such as product codes, identifiers and tags. For example, with the
+table below:
+
+```default
+code
+------------
+AB-1024-XL
+AB-2048-S
+ab-4096-M
+XAB-1024
+CD-1024-AB
+```
+
+* `code LIKE 'AB-%'` returns AB-1024-XL and AB-2048-S, and also ab-4096-M on
+  an index created with `'case_sensitive': 'false'`. It does not return
+  XAB-1024 or CD-1024-AB, which contain `AB` but do not start with `AB-`.
+* `code LIKE '%024%'` returns AB-1024-XL, XAB-1024 and CD-1024-AB. It matches
+  inside `1024`, which a word-based search would not find.
+* `code LIKE '%-_'` returns AB-2048-S and ab-4096-M, the codes that end with
+  a one-character suffix.
+
+A row either matches the pattern or it does not, and no row is ranked above
+another: CD-1024-AB, with `AB` at its end, is as much a result of
+`code LIKE '%AB%'` as AB-1024-XL. When more rows match than the `LIMIT`,
+which of them are returned is not specified. A query can also return fewer rows
+than its `LIMIT`, even when more rows match, if a row was deleted after the
+index found it.
+
+Pattern Search does not tokenize, stem or rank. For word-based search ranked
+by relevance, use [Full-Text Search](https://docs.scylladb.com/manual/master/features/fulltext-search.md).
+
+## Creating a Pattern Index
+
+A `pattern_index` on a column serves the `LIKE` restrictions on that
+column. Such a query does not need `ALLOW FILTERING`; if it is given, it is
+ignored and the index is still used. To create the index:
+
+```default
+CREATE CUSTOM INDEX ON ks.parts (code) USING 'pattern_index';
+```
+
+or, to match regardless of letter case:
+
+```default
+CREATE CUSTOM INDEX ON ks.parts (code) USING 'pattern_index'
+    WITH OPTIONS = {'case_sensitive': 'false'};
+```
+
+For the option and its default, see
+[Pattern Index](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#create-pattern-index-statement).
+
+#### WARNING
+Creating a pattern index changes the meaning of every `LIKE` on its
+column, for every application that queries the column. Once the index
+exists, a `LIKE` on the column is served by the index, even with
+`ALLOW FILTERING`:
+
+* Queries that worked by filtering start failing. The `LIKE` must be the
+  only restriction in the `WHERE` clause, and the query needs a `LIMIT`
+  of at most 1000, so for example a `LIKE` together with a restriction on
+  the partition key, or a `LIKE` without a `LIMIT`, is rejected.
+* Queries that still succeed can return different rows, without any error.
+  The index is eventually consistent, so a recent write may be missed, and
+  the rows are neither paged nor ordered. With
+  `'case_sensitive': 'false'`, matching ignores letter case, so a `LIKE`
+  returns rows that a filtered `LIKE` does not.
+* When the index node is unavailable, every `LIKE` on the column fails.
+
+`CREATE INDEX` returns a warning that summarizes these changes. Dropping the
+index restores filtered `LIKE` (see [Dropping a Pattern Index]()). For all
+the differences, see
+[Indexed vs. Filtered LIKE](#pattern-search-indexed-vs-filtered).
+
+**Requirements:**
+
+* The indexed column must be of type `text`, `varchar`, or `ascii`.
+* The indexed column must be a regular column. Primary-key and static columns
+  cannot be indexed.
+* The table must use tablets (not vnodes).
+* CDC must be enabled on the table with a TTL of at least 86400 seconds
+  (24 hours) and either `delta = 'full'` or postimage enabled, because the
+  index is updated from the CDC log. CDC is enabled automatically when creating
+  a pattern index, so you do not need to configure it manually.
+
+Cell-level TTL, set with the standard `USING TTL` syntax on `INSERT` or
+`UPDATE`, makes the value unreadable at its expiration deadline but does not
+generate a CDC event, so the pattern index is not updated and keeps a stale
+entry for that value. A `LIKE` query can then still return the row, with the
+expired value read as `null`. If the index must reflect expiration, use the
+[Per-row TTL](https://docs.scylladb.com/manual/master/cql/cql-extensions.md#cql-per-row-ttl) feature instead.
+
+## Querying with LIKE
+
+On a column with a pattern index, `LIKE` queries look like this:
+
+```default
+SELECT id, code FROM ks.parts
+    WHERE code LIKE '%024%'
+    LIMIT 10;
+
+SELECT id, code FROM ks.parts
+    WHERE code LIKE 'AB-%'
+    LIMIT 10;
+
+SELECT id, code FROM ks.parts
+    WHERE code LIKE ?
+    LIMIT 10;
+```
+
+Creating the index is a deliberate choice to serve every `LIKE` on the
+column from the index, even with `ALLOW FILTERING`. The full rules are in
+[Indexed LIKE queries](https://docs.scylladb.com/manual/master/cql/dml/select.md#pattern-queries).
+
+<a id="pattern-search-indexed-vs-filtered"></a>
+
+### Indexed vs. Filtered LIKE
+
+Without a pattern index, `LIKE` is a filter: ScyllaDB reads the rows and
+checks each value against the pattern, as described in
+[LIKE Operator](https://docs.scylladb.com/manual/master/cql/dml/select.md#like-operator). On a column with a pattern index, the
+same `LIKE` is served by the index instead, and the query differs from a
+filtered one as follows:
+
+|                                    | Filtered `LIKE`                                                       | Indexed `LIKE`                                                                                                                                                                                                     |
+|------------------------------------|-----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Where it works                     | Every deployment, on any `text`,<br/>`varchar` or `ascii` column.     | ScyllaDB Cloud, on a regular column with a<br/>`pattern_index`. Every `LIKE` on that column is<br/>served by the index.                                                                                            |
+| Matching                           | Always case-sensitive.                                                | Case-sensitive, unless the index was created with<br/>`'case_sensitive': 'false'`: then letter case is<br/>ignored.                                                                                                |
+| Patterns                           | Any pattern.                                                          | The same syntax. Which patterns are supported<br/>depends on the index node.                                                                                                                                       |
+| `ALLOW FILTERING`                  | Required.                                                             | Not needed. If given, it is ignored and the index is<br/>still used.                                                                                                                                               |
+| `LIMIT`                            | Optional, any value.                                                  | Required, at most 1000.                                                                                                                                                                                            |
+| Other restrictions<br/>and clauses | Allowed, as in any query with<br/>`ALLOW FILTERING`.                  | None: the `LIKE` must be the only `WHERE`<br/>restriction, and `ORDER BY`, `GROUP BY`,<br/>`PER PARTITION LIMIT` and aggregation are<br/>rejected.                                                                 |
+| Paging                             | Paged like any other query.                                           | Not paged: the whole result is returned in one page,<br/>with a warning when the page size is smaller than<br/>`LIMIT`.                                                                                            |
+| Order                              | The order of a scan: by token, then by<br/>clustering key.            | Not specified. When more rows match than the<br/>`LIMIT`, which of them are returned is not<br/>specified either.                                                                                                  |
+| Consistency                        | The rows are read, and matched, at the<br/>query’s consistency level. | Eventually consistent, and the rows are not checked<br/>against the pattern again: shortly after a write, a<br/>query may miss a new value, or return a row whose<br/>current value no longer matches the pattern. |
+| Failure                            | Fails as any read does.                                               | Also fails when the index node is unavailable or<br/>does not support the pattern.                                                                                                                                 |
+
+## Dropping a Pattern Index
+
+Dropping the index restores filtered `LIKE` on its column:
+
+```default
+DROP INDEX ks.parts_code_idx;
+```
+
+From then on, a `LIKE` on the column is a filter again: it requires
+`ALLOW FILTERING`, matches case-sensitively, and follows the rules of
+[LIKE Operator](https://docs.scylladb.com/manual/master/cql/dml/select.md#like-operator). Dropping the index is the way back when
+the indexed `LIKE` does not suit an application that queries the column.
 
 
 # perftune.md
@@ -39095,6 +39332,63 @@ The analyzers differ in how they tokenize and normalize text:
   `Hello,` and `World!`). It does not apply lowercasing, stemming,
   or stop-word removal.
 
+<a id="create-pattern-index-statement"></a>
+
+## Pattern Index ScyllaDB Cloud
+
+#### NOTE
+Pattern indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For the full description, see the [Pattern Search documentation](https://docs.scylladb.com/manual/master/features/pattern-search.md).
+
+A pattern index serves `LIKE` restrictions on a text column. Such a query does not need
+`ALLOW FILTERING`; if it is given, it is ignored and the index is still used.
+Instead of tokenizing the text into words, as a [full-text index](#create-fulltext-index-statement)
+does, it matches the whole value against the pattern, so a pattern such as `'%abc%'` is an index
+lookup rather than a scan of the table. Which patterns are supported depends on the index node. It is
+meant for values searched by any part of them, such as codes, identifiers and tags.
+
+A pattern index is a custom index created using the `CUSTOM` keyword and the index type
+`pattern_index`. CDC is enabled automatically on the base table when a pattern index is created.
+
+**Column restrictions:**
+
+* The indexed column must be of type `text`, `varchar`, or `ascii`. Other types are rejected.
+* The indexed column must be a regular column. Primary-key and static columns cannot be indexed.
+* The table must use tablets (not vnodes).
+
+Example:
+
+```cql
+CREATE CUSTOM INDEX ON parts (code) USING 'pattern_index';
+
+CREATE CUSTOM INDEX ON parts (supplier) USING 'pattern_index'
+    WITH OPTIONS = {'case_sensitive': 'false'};
+```
+
+#### WARNING
+Creating a pattern index changes the meaning of every `LIKE` on its column, for every application
+that queries the column, not only the one the index was created for. Once the index exists, a
+`LIKE` on the column is served by the index, even with `ALLOW FILTERING`:
+
+* Queries that worked by filtering start failing. The `LIKE` must be the only restriction in the
+  `WHERE` clause, and the query needs a `LIMIT` of at most 1000, so for example a `LIKE`
+  together with a restriction on the partition key, or a `LIKE` without a `LIMIT`, is rejected.
+* Queries that still succeed can return different rows, without any error. The index is eventually
+  consistent, so a recent write may be missed, and the rows are neither paged nor ordered. With
+  `'case_sensitive': 'false'`, matching ignores letter case, so a `LIKE` returns rows that a
+  filtered `LIKE` does not.
+* When the index node is unavailable, every `LIKE` on the column fails.
+
+`CREATE INDEX` returns a warning that summarizes these changes. To restore filtered `LIKE`, drop the
+index with [DROP INDEX](#drop-index-statement). For all the differences from a filtered
+`LIKE`, see [Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/master/features/pattern-search.md#pattern-search-indexed-vs-filtered).
+
+The following options are supported for pattern indexes:
+
+| Option           | Description                                                                                                                                                                                                                         | Default Value   |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| `case_sensitive` | Whether matching distinguishes letter case, as `LIKE` does. With `false` both the<br/>indexed values and the patterns are lowercased, so `'%ab-%'` matches<br/>`AB-1024-XL`. Supported values: `true`, `false`, in any letter case. | `true`          |
+
 <a id="drop-index-statement"></a>
 
 ## DROP INDEX
@@ -39110,6 +39404,10 @@ name, which may optionally specify the keyspace of the index.
 
 If the index is currently being built, the `DROP INDEX` can still be executed. Once the `DROP INDEX` command is issued,
 the system stops the build process and cleans up any partially built data associated with the index.
+
+Dropping a [pattern index](#create-pattern-index-statement) restores filtered `LIKE` on its
+column: from then on, a `LIKE` on the column is a filter again, requires `ALLOW FILTERING`, and
+follows the rules of [LIKE Operator](https://docs.scylladb.com/manual/master/cql/dml/select.md#like-operator).
 
 <!-- If the index does not exists, the statement will return an error, unless ``IF EXISTS`` is used in which case the -->
 <!-- operation is a no-op. -->
@@ -40267,6 +40565,55 @@ Hybrid queries have the following limitations:
 * Paging is not supported: the whole result is returned at once, with a warning if a page size
   smaller than the `LIMIT` was requested.
 
+<a id="pattern-queries"></a>
+
+## Indexed LIKE queries (pattern index) ScyllaDB Cloud
+
+#### NOTE
+Pattern Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For more information, see the [Pattern Search documentation](https://docs.scylladb.com/manual/master/features/pattern-search.md).
+
+This section covers `LIKE` on a column that has a [pattern index](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#create-pattern-index-statement).
+`LIKE` as a filter, available in every deployment, is described in [LIKE Operator](#like-operator).
+The two use the same pattern syntax but otherwise behave differently, for example in result order,
+paging, consistency and case sensitivity; see
+[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/master/features/pattern-search.md#pattern-search-indexed-vs-filtered) for a comparison.
+
+On a column that has a pattern index, every `LIKE` restriction is served by the index instead of by
+filtering. Such a query does not need `ALLOW FILTERING`; if it is given, it is ignored and the index
+is still used:
+
+```cql
+pattern_query: SELECT ... FROM `table_name`
+               :   WHERE `column_name` LIKE `pattern`
+               :   LIMIT `integer`
+```
+
+Example:
+
+```cql
+SELECT id, code FROM parts
+    WHERE code LIKE '%024%'
+    LIMIT 10;
+```
+
+The rules are:
+
+* The pattern uses the [LIKE](#like-operator) syntax. Which patterns are supported depends on the
+  index node, and a pattern it does not support fails the query with an `InvalidRequest` error.
+* A bind marker may stand for the pattern (`LIKE ?`). The pattern must not be null.
+* `LIMIT` is mandatory and must not exceed 1000. `ORDER BY`, `PER PARTITION LIMIT`, `GROUP BY`,
+  aggregation and any further `WHERE` restriction, including one on the partition key, are not
+  supported.
+* The query is served by the index even with `ALLOW FILTERING`. When the index node is unavailable
+  or does not support the pattern, the query fails.
+
+#### WARNING
+A pattern index changes every `LIKE` on its column, from every application, for as long as the
+index exists: a `LIKE` that worked by filtering before the index was created can fail or return
+different rows afterwards. Dropping the index with [DROP INDEX](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#drop-index-statement) restores
+filtered `LIKE`.
+
 <a id="limit-clause"></a>
 
 ## Limiting results
@@ -40503,6 +40850,13 @@ SELECT name, occupation FROM users WHERE userid IN (199, 200, 207) BYPASS CACHE 
 
 The `LIKE` operation on `SELECT` statements informs ScyllaDB that you are looking for a pattern match. The expression ‘column LIKE pattern’ yields true only if the entire column value matches the pattern.
 
+Without an index, `LIKE` is a filter: ScyllaDB reads the rows and checks each value against the
+pattern, so the query requires [ALLOW FILTERING](#allow-filtering). This section describes that
+filtered `LIKE`. On a column with a [pattern index](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#create-pattern-index-statement), `LIKE`
+is served by the index instead, even with `ALLOW FILTERING`, and follows different rules; see
+[Indexed LIKE queries](#pattern-queries) and
+[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/master/features/pattern-search.md#pattern-search-indexed-vs-filtered).
+
 The search pattern is a string of characters with two wildcards, as shown:
 
 * `_` matches any single character
@@ -40514,19 +40868,24 @@ The search pattern is a string of characters with two wildcards, as shown:
 #### NOTE
 Only string types (ascii, text, and varchar) are valid for matching
 
-Currently, the match is **case sensitive**. The entire column value must match the pattern.
+A filtered `LIKE` is always **case sensitive**. The entire column value must match the pattern.
 For example, consider the search pattern ‘M%n’ - this will match `Martin`, but will not match `Moonbeam` because the `m` at the end isn’t matched. In addition, `moon` is not matched because `M` is not the same as `m`. Both the pattern and the column value are assumed to be UTF-8 encoded.
+
+To match regardless of letter case, use a pattern index created with `'case_sensitive': 'false'`.
 
 A query can find all values containing some text fragment by matching to an appropriate `LIKE` pattern.
 
 **Differences Between ScyllaDB and Cassandra LIKE Operators**
 
-* In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter.
-* Consequently, ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.
+* In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter,
+  and can also serve it from a [pattern index](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#create-pattern-index-statement).
+* Consequently, a filtered ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.
 * ScyllaDB treats underscore (_) as a wildcard; Cassandra doesn’t.
 * ScyllaDB treats percent (%) as a wildcard anywhere in the pattern; Cassandra only at the beginning/end
 * ScyllaDB interprets backslash (\\) as an escape character; Cassandra doesn’t.
-* Cassandra allows case-insensitive LIKE; ScyllaDB doesn’t (see [#4911](https://github.com/scylladb/scylla/issues/4911)).
+* Cassandra allows case-insensitive LIKE through an option of the SASI index. A filtered ScyllaDB LIKE is always
+  case-sensitive (see [#4911](https://github.com/scylladb/scylla/issues/4911)); case-insensitive matching needs a
+  pattern index created with `'case_sensitive': 'false'`.
 * ScyllaDB allows empty LIKE pattern; Cassandra doesn’t.
 
 **Example A**

@@ -3319,20 +3319,20 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### auto_repair_enabled_default
 
-> Set true to enable auto repair for tablet tables by default. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.
+> Deprecated, use ALTER CLUSTER WITH auto_repair_enabled = true instead. Set true to enable auto repair for tablet tables when the auto_repair_enabled cluster config option is not set at cluster, keyspace or table scope. The option will be removed in a future release.
 
 > * **Type:** `bool`
-> * **Default value:** `false`
+> * **Default value:** `cluster_config_registry::auto_repair_enabled_default`
 > * Liveness: `True`
 
 <a id="confprop-auto-repair-threshold-default-in-seconds"></a>
 
 ### auto_repair_threshold_default_in_seconds
 
-> Set the default time in seconds for the auto repair threshold for tablet tables. If the time since last repair is bigger than the configured time, the tablet is eligible for auto repair. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.
+> Deprecated, use ALTER CLUSTER WITH auto_repair_threshold_in_seconds = <seconds> instead. Set the auto repair threshold in seconds for tablet tables when the auto_repair_threshold_in_seconds cluster config option is not set at cluster, keyspace or table scope. A tablet is eligible for auto repair when this much time has passed since the start of its last successful repair; a repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. 0 disables time-based auto repair. The option will be removed in a future release.
 
 > * **Type:** `int32_t`
-> * **Default value:** `24 * 3600`
+> * **Default value:** `int32_t(cluster_config_registry::auto_repair_threshold_default_seconds)`
 > * Liveness: `True`
 
 <a id="confprop-view-flow-control-delay-limit-in-ms"></a>

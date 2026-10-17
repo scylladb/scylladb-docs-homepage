@@ -659,6 +659,7 @@ following permissions changes.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PATTERN_SEARCH_INDEXING</span></code></p></li>
 </ul>
 <p>Attempting to <code class="docutils literal notranslate"><span class="pre">GRANT</span></code> permission on a resource to which it cannot be applied results in an error response. The following illustrates which
 permissions can be granted on which types of resources, and which statements are enabled by that permission.</p>
@@ -755,10 +756,14 @@ permissions can be granted on which types of resources, and which statements are
 <td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">KEYSPACES</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with full-text search indexes, and on some <a class="reference internal" href="#external-index-system-tables"><span class="std std-ref">system tables</span></a></p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PATTERN_SEARCH_INDEXING</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">KEYSPACES</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with pattern search indexes, and on some <a class="reference internal" href="#external-index-system-tables"><span class="std std-ref">system tables</span></a></p></td>
+</tr>
 </tbody>
 </table>
-<p id="external-index-system-tables">Both the <code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code> and <code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code> permissions also grant <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on the following
-system tables, which the external Vector Store engine reads to track schema changes, tablet placement, and CDC
+<p id="external-index-system-tables">The <code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code>, <code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code> and <code class="docutils literal notranslate"><span class="pre">PATTERN_SEARCH_INDEXING</span></code> permissions also grant
+<code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on the following system tables, which the external Vector Store engine reads to track schema changes, tablet placement, and CDC
 streams for the tables it indexes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">system.group0_history</span></code></p></li>
@@ -773,7 +778,7 @@ streams for the tables it indexes:</p>
 <p>Granting permission uses the <code class="docutils literal notranslate"><span class="pre">GRANT</span> <span class="pre">PERMISSION</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">grant_permission_statement</span><span class="p">:</span> <span class="k">GRANT</span> <span class="o">`</span><span class="k">permissions</span><span class="o">`</span> <span class="k">ON</span> <span class="o">`</span><span class="n">resource</span><span class="o">`</span> <span class="k">TO</span> <span class="o">`</span><span class="n">user_name</span><span class="o">`</span>
 <span class="k">permissions</span><span class="p">:</span> <span class="k">ALL</span> <span class="p">[</span> <span class="k">PERMISSIONS</span> <span class="p">]</span> <span class="o">|</span> <span class="o">`</span><span class="k">permission</span><span class="o">`</span> <span class="p">[</span> <span class="k">PERMISSION</span> <span class="p">]</span>
-<span class="k">permission</span><span class="p">:</span> <span class="k">CREATE</span> <span class="o">|</span> <span class="k">ALTER</span> <span class="o">|</span> <span class="k">DROP</span> <span class="o">|</span> <span class="k">SELECT</span> <span class="o">|</span> <span class="k">MODIFY</span> <span class="o">|</span> <span class="k">AUTHORIZE</span> <span class="o">|</span> <span class="k">DESCRIBE</span> <span class="o">|</span> <span class="n">VECTOR_SEARCH_INDEXING</span> <span class="o">|</span> <span class="n">TEXT_SEARCH_INDEXING</span>
+<span class="k">permission</span><span class="p">:</span> <span class="k">CREATE</span> <span class="o">|</span> <span class="k">ALTER</span> <span class="o">|</span> <span class="k">DROP</span> <span class="o">|</span> <span class="k">SELECT</span> <span class="o">|</span> <span class="k">MODIFY</span> <span class="o">|</span> <span class="k">AUTHORIZE</span> <span class="o">|</span> <span class="k">DESCRIBE</span> <span class="o">|</span> <span class="n">VECTOR_SEARCH_INDEXING</span> <span class="o">|</span> <span class="n">TEXT_SEARCH_INDEXING</span> <span class="o">|</span> <span class="n">PATTERN_SEARCH_INDEXING</span>
 <span class="n">resource</span><span class="p">:</span> <span class="k">ALL</span> <span class="k">KEYSPACES</span>
         <span class="p">:</span><span class="o">|</span> <span class="k">KEYSPACE</span> <span class="o">`</span><span class="n">keyspace_name</span><span class="o">`</span>
         <span class="p">:</span><span class="o">|</span> <span class="p">[</span> <span class="k">TABLE</span> <span class="p">]</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
@@ -1317,6 +1322,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1524,7 +1530,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

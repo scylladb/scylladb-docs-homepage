@@ -376,17 +376,59 @@
                     <section id="automatic-repair">
 <span id="id1"></span><h1>Automatic Repair<a class="headerlink" href="#automatic-repair" title="Link to this heading">¶</a></h1>
 <p>Traditionally, launching <a class="reference internal" href="../operating-scylla/procedures/maintenance/repair.html"><span class="doc">repairs</span></a> in a ScyllaDB cluster is left to an external process, typically done via <a class="reference external" href="https://manager.docs.scylladb.com/stable/repair/index.html">Scylla Manager</a>.</p>
-<p>Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the last repair is greater than the configured repair interval, ScyllaDB will start a repair for the <a class="reference internal" href="../architecture/tablets.html"><span class="doc">tablet table</span></a> automatically.
+<p>Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the start of the last successful repair of a tablet is greater than the configured repair interval, ScyllaDB will start a repair for the <a class="reference internal" href="../architecture/tablets.html"><span class="doc">tablet table</span></a> automatically.
 Repairs are spread over time and among nodes and shards, to avoid load spikes or any adverse effects on user workloads.</p>
-<p>To enable automatic repair, add this to the configuration (<code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>):</p>
+<section id="configuring-with-cql">
+<h2>Configuring with CQL<a class="headerlink" href="#configuring-with-cql" title="Link to this heading">¶</a></h2>
+<p>Automatic repair is controlled by two <a class="reference internal" href="../cql/cluster-config.html"><span class="doc">cluster configuration options</span></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code> (boolean): whether tablets of a table are scheduled for automatic repair.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_repair_threshold_in_seconds</span></code> (integer, seconds): a tablet becomes eligible for automatic repair when this
+much time has passed since the start of its last successful repair. A repair restricted to some hosts or
+datacenters does not count, and a tablet that was never repaired is eligible immediately. <code class="docutils literal notranslate"><span class="pre">0</span></code> disables
+time-based automatic repair at that scope.</p></li>
+</ul>
+<p>Both can be set for the whole cluster, for a keyspace, or for a single table. A value set for a table
+overrides the keyspace value, which overrides the cluster value:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="n">CLUSTER</span> <span class="k">WITH</span> <span class="n">auto_repair_enabled</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="n">CLUSTER</span> <span class="k">WITH</span> <span class="n">auto_repair_threshold_in_seconds</span> <span class="o">=</span> <span class="mf">86400</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">KEYSPACE</span> <span class="n">ks</span> <span class="k">WITH</span> <span class="n">auto_repair_enabled</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">important</span> <span class="k">WITH</span> <span class="n">auto_repair_enabled</span> <span class="o">=</span> <span class="n">true</span> <span class="k">AND</span> <span class="n">auto_repair_threshold_in_seconds</span> <span class="o">=</span> <span class="mf">3600</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This enables automatic repair for every tablet table with a repair period of 1 day, turns it off for
+keyspace <code class="docutils literal notranslate"><span class="pre">ks</span></code>, and turns it back on for <code class="docutils literal notranslate"><span class="pre">ks.important</span></code> with a repair period of 1 hour. The setting is
+stored in the cluster schema, so it applies to every node without editing per-node configuration files.</p>
+<p>Setting an option to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> removes it from that scope, so the next broader scope applies again:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">ks</span><span class="mf">.</span><span class="n">important</span> <span class="k">WITH</span> <span class="n">auto_repair_threshold_in_seconds</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>When an option is set at any scope, <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">TABLE</span></code> and <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">KEYSPACE</span></code> show its effective
+value and which scope it comes from.</p>
+</section>
+<section id="deprecated-scylla-yaml-options">
+<h2>Deprecated scylla.yaml options<a class="headerlink" href="#deprecated-scylla-yaml-options" title="Link to this heading">¶</a></h2>
+<p>Earlier releases configured automatic repair through two options in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">auto_repair_enabled_default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="nt">auto_repair_threshold_default_in_seconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">86400</span>
 </pre></div>
 </div>
-<p>This will enable automatic repair for all tables with a repair period of 1 day. This configuration has to be set on each node, to an identical value.
-More featureful configuration methods will be implemented in the future.</p>
-<p>To disable, set <code class="docutils literal notranslate"><span class="pre">auto_repair_enabled_default:</span> <span class="pre">false</span></code>.</p>
+<p>These options are deprecated and will be removed in a future release. They still apply when no
+scope sets the corresponding CQL option, and a node that has them set logs a warning at startup.
+A value set with <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">CLUSTER</span></code>, <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code> always takes precedence
+over them. While the value comes from <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span></code> shows nothing for the option;
+query <code class="docutils literal notranslate"><span class="pre">system.config</span></code> on each node to see it.</p>
+<p>To migrate, run the equivalent statements once from any node and then remove the options from
+<code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> on every node:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="n">CLUSTER</span> <span class="k">WITH</span> <span class="n">auto_repair_enabled</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="n">CLUSTER</span> <span class="k">WITH</span> <span class="n">auto_repair_threshold_in_seconds</span> <span class="o">=</span> <span class="mf">86400</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>To disable automatic repair by default for the whole cluster, run <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">CLUSTER</span> <span class="pre">WITH</span> <span class="pre">auto_repair_enabled</span> <span class="pre">=</span> <span class="pre">false</span></code>.
+A keyspace or table that stores its own <code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span> <span class="pre">=</span> <span class="pre">true</span></code> keeps automatic repair; set that
+option to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> at both the keyspace and table scopes to make it follow the cluster value again.</p>
 <p>Automatic repair relies on <a class="reference internal" href="incremental-repair.html"><span class="doc">Incremental Repair</span></a> and as such it only works with <a class="reference internal" href="../architecture/tablets.html"><span class="doc">tablet</span></a> tables.</p>
+</section>
 </section>
 
                 </div>
@@ -505,6 +547,18 @@ More featureful configuration methods will be implemented in the future.</p>
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">Automatic Repair</a><ul>
+<li><a class="reference internal" href="#configuring-with-cql">Configuring with CQL</a></li>
+<li><a class="reference internal" href="#deprecated-scylla-yaml-options">Deprecated scylla.yaml options</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                     </div>
@@ -803,6 +857,7 @@ More featureful configuration methods will be implemented in the future.</p>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1010,7 +1065,7 @@ More featureful configuration methods will be implemented in the future.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

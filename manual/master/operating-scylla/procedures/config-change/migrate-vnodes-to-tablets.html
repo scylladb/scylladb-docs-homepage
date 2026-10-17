@@ -471,8 +471,9 @@ Datacenters with a replication factor of zero (RF=0) are not yet supported.</p><
 not yet supported.</p></li>
 <li><p><strong>No schema changes</strong> during the migration. Do not create, alter, or drop
 tables in the migrating keyspace until the migration is finished.</p></li>
-<li><p><strong>No topology changes</strong> during the migration. Do not add, remove, decommission,
-replace, or rebuild nodes while a migration is in progress.</p></li>
+<li><p><strong>No planned topology changes</strong> during the migration. Do not add, remove,
+decommission, or rebuild nodes while a migration is in progress. Replacing
+a dead node is supported as an emergency recovery operation.</p></li>
 <li><p><strong>No repair</strong> operations during the migration. Do not run <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code>
 on the migrating keyspace while a migration is in progress.</p></li>
 <li><p><strong>No backup and restore</strong> for migrating tables during the migration.
@@ -994,6 +995,16 @@ migration in one pass.</p></li>
 </li>
 </ol>
 </section>
+<section id="replacing-a-dead-node-during-migration">
+<h2>Replacing a Dead Node during Migration<a class="headerlink" href="#replacing-a-dead-node-during-migration" title="Link to this heading">¶</a></h2>
+<p>If a node fails during the migration, replace it using the standard procedure
+for <a class="reference internal" href="../cluster-management/replace-dead-node.html"><span class="doc">replacing a dead node</span></a>.</p>
+<p>The replacing node must have the same shard count as the replaced node. If the
+shard count differs, the replacement will fail.</p>
+<p>After replacement completes, you can resume the migration. The replacing node
+always starts in vnode mode and must be upgraded to tablets, regardless of the
+storage mode of node it replaced.</p>
+</section>
 </section>
 
                 </div>
@@ -1127,6 +1138,7 @@ migration in one pass.</p></li>
 <li><a class="reference internal" href="#procedure">Procedure</a></li>
 <li><a class="reference internal" href="#rollback-procedure">Rollback Procedure</a></li>
 <li><a class="reference internal" href="#migrating-multiple-keyspaces">Migrating multiple keyspaces</a></li>
+<li><a class="reference internal" href="#replacing-a-dead-node-during-migration">Replacing a Dead Node during Migration</a></li>
 </ul>
 </li>
 </ul>
@@ -1430,6 +1442,7 @@ migration in one pass.</p></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1637,7 +1650,7 @@ migration in one pass.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

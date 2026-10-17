@@ -5012,10 +5012,10 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-auto_repair_enabled_default">
 <span class="sig-name descname"><span class="pre">auto_repair_enabled_default</span></span><a class="headerlink" href="#confval-auto_repair_enabled_default" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Set true to enable auto repair for tablet tables by default. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.</p>
+<div><p>Deprecated, use ALTER CLUSTER WITH auto_repair_enabled = true instead. Set true to enable auto repair for tablet tables when the auto_repair_enabled cluster config option is not set at cluster, keyspace or table scope. The option will be removed in a future release.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">cluster_config_registry::auto_repair_enabled_default</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -5026,10 +5026,10 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-auto_repair_threshold_default_in_seconds">
 <span class="sig-name descname"><span class="pre">auto_repair_threshold_default_in_seconds</span></span><a class="headerlink" href="#confval-auto_repair_threshold_default_in_seconds" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Set the default time in seconds for the auto repair threshold for tablet tables. If the time since last repair is bigger than the configured time, the tablet is eligible for auto repair. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.</p>
+<div><p>Deprecated, use ALTER CLUSTER WITH auto_repair_threshold_in_seconds = &lt;seconds&gt; instead. Set the auto repair threshold in seconds for tablet tables when the auto_repair_threshold_in_seconds cluster config option is not set at cluster, keyspace or table scope. A tablet is eligible for auto repair when this much time has passed since the start of its last successful repair; a repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. 0 disables time-based auto repair. The option will be removed in a future release.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int32_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">24</span> <span class="pre">*</span> <span class="pre">3600</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">int32_t(cluster_config_registry::auto_repair_threshold_default_seconds)</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -5810,6 +5810,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -6017,7 +6018,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             

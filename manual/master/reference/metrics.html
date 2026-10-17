@@ -2087,6 +2087,21 @@
 </div></blockquote>
 </dd></dl>
 
+<dl class="std metrics_option" id="metricsprop-scylla-raft-log-full">
+<dt class="sig sig-object std" id="metrics_option-scylla_raft_log_full">
+<span class="sig-name descname"><span class="pre">scylla_raft_log_full</span></span><a class="headerlink" href="#metrics_option-scylla_raft_log_full" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>1 if the in-memory log reached max_follower_log_size, so entries from a leader are being refused</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">log_full</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std metrics_option" id="metricsprop-scylla-raft-log-last-index">
 <dt class="sig sig-object std" id="metrics_option-scylla_raft_log_last_index">
 <span class="sig-name descname"><span class="pre">scylla_raft_log_last_index</span></span><a class="headerlink" href="#metrics_option-scylla_raft_log_last_index" title="Link to this definition">¶</a></dt>
@@ -2211,7 +2226,7 @@
 <dt class="sig sig-object std" id="metrics_option-scylla_raft_blocked_followers">
 <span class="sig-name descname"><span class="pre">scylla_raft_blocked_followers</span></span><a class="headerlink" href="#metrics_option-scylla_raft_blocked_followers" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Number of followers the leader cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight) or snapshot (waiting for a snapshot transfer); followers the failure detector reports down are not counted</p>
+<div><p>Number of followers the leader cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight), snapshot (waiting for a snapshot transfer) or log_full (the follower reported that its log is full); followers the failure detector reports down are not counted</p>
 </div></blockquote>
 <blockquote>
 <div><ul class="simple">
@@ -5615,6 +5630,21 @@
 </div></blockquote>
 </dd></dl>
 
+<dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-raft-full-logs">
+<dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_raft_full_logs">
+<span class="sig-name descname"><span class="pre">scylla_strong_consistency_raft_full_logs</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_raft_full_logs" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of raft logs of the table which reached max_follower_log_size, so entries from a leader are being refused</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">gauge</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">strong_consistency_raft</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">full_logs</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-raft-uncommitted-entries">
 <dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_raft_uncommitted_entries">
 <span class="sig-name descname"><span class="pre">scylla_strong_consistency_raft_uncommitted_entries</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_raft_uncommitted_entries" title="Link to this definition">¶</a></dt>
@@ -5664,7 +5694,7 @@
 <dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_raft_blocked_followers">
 <span class="sig-name descname"><span class="pre">scylla_strong_consistency_raft_blocked_followers</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_raft_blocked_followers" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Number of followers the tablet raft group leaders cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight) or snapshot (waiting for a snapshot transfer); followers the failure detector reports down are not counted</p>
+<div><p>Number of followers the tablet raft group leaders cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight), snapshot (waiting for a snapshot transfer) or log_full (the follower reported that its log is full); followers the failure detector reports down are not counted</p>
 </div></blockquote>
 <blockquote>
 <div><ul class="simple">
@@ -6567,6 +6597,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -6774,7 +6805,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Oct 2026.
+                        Last updated on 17 Oct 2026.
                     
                 </div>
             
