@@ -810,8 +810,8 @@ which ranks the rows by several searches at once and takes no <code class="docut
 </div>
 <p>In the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> is the only supported comparison operator, and the right-hand side must be
 the literal <code class="docutils literal notranslate"><span class="pre">0</span></code>. The column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>
-and have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>; it may be a regular or clustering-key column, but
-not a partition-key column.</p>
+and have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>. Columns of the <a class="reference internal" href="../ddl.html#primary-key"><span class="std std-ref">primary key</span></a>
+and <a class="reference internal" href="../ddl.html#static-columns"><span class="std std-ref">static columns</span></a> cannot be indexed.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> must be the only ordering in the query - it cannot be combined
 with another <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> column. To rank the rows by several searches, such as a
 full-text and a vector search, fuse them into one ordering in a
@@ -2051,7 +2051,7 @@ columns.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Oct 2026.
+                        Last updated on 19 Oct 2026.
                     
                 </div>
             

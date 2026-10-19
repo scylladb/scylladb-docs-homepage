@@ -36,8 +36,8 @@ CREATE CUSTOM INDEX ON ks.t (v) USING 'fulltext_index'
 
 * The indexed column must be of type `text`, `varchar`, or `ascii`.
   Other types are rejected.
-* The indexed column must be a regular or clustering-key column. Partition-key
-  columns cannot be indexed.
+* The indexed column must be a regular column. Primary-key and static columns
+  cannot be indexed.
 * The table must use tablets (not vnodes).
 * CDC must be enabled on the table with a TTL of at least 86400 seconds
   (24 hours) and either `delta = 'full'` or postimage enabled.

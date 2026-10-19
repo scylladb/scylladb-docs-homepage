@@ -509,8 +509,8 @@ fts_query: SELECT ... FROM `table_name`
 
 In the `WHERE` clause, `>` is the only supported comparison operator, and the right-hand side must be
 the literal `0`. The column must be of type `text`, `varchar`, or `ascii`
-and have a `fulltext_index`; it may be a regular or clustering-key column, but
-not a partition-key column.
+and have a `fulltext_index`. Columns of the [primary key](https://docs.scylladb.com/manual/master/cql/ddl.md#primary-key)
+and [static columns](https://docs.scylladb.com/manual/master/cql/ddl.md#static-columns) cannot be indexed.
 
 `ORDER BY BM25()` must be the only ordering in the query - it cannot be combined
 with another `ORDER BY` column. To rank the rows by several searches, such as a

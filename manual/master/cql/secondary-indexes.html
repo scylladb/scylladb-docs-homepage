@@ -473,6 +473,9 @@ are treated as filtering columns. The local vector index requires that the
 partition key of the index is of a type allowed for filtering columns and the
 vector column is the first one after the partition key definition, and any
 subsequent columns are filtering columns.</p>
+<p>The vector column must be a regular column. Primary-key and static columns
+cannot be indexed.
+A filtering column cannot be a static column.</p>
 <p>ScyllaDB allows creating multiple <strong>named</strong> vector indexes on the same vector column.
 This can be used to create a replacement index before dropping an older one.
 Unnamed duplicate vector index definitions are still rejected, and index names
@@ -675,7 +678,7 @@ keyword and specifying the index type as <code class="docutils literal notransla
 <p><strong>Column restrictions:</strong></p>
 <ul class="simple">
 <li><p>The indexed column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>. Other types are rejected.</p></li>
-<li><p>The indexed column must be a regular or clustering-key column. Partition-key columns cannot be indexed.</p></li>
+<li><p>The indexed column must be a regular column. Primary-key and static columns cannot be indexed.</p></li>
 <li><p>The table must use tablets (not vnodes).</p></li>
 </ul>
 <p>Example:</p>
@@ -1495,7 +1498,7 @@ the new table holds before that position is skipped without an error.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Oct 2026.
+                        Last updated on 19 Oct 2026.
                     
                 </div>
             
