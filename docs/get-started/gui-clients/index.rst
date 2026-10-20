@@ -9,5 +9,6 @@ ScyllaDB from a graphical interface.
    :titlesonly:
 
    dbeaver
+   dbine
    dbschema
    libredb-studio
