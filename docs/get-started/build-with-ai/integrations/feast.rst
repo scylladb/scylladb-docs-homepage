@@ -6,7 +6,7 @@ Feast
    :alt: Feast logo
    :width: 400px
 
-`Feast <https://feast.dev/>`_ is an open source feature store framework that 
+`Feast <https://feast.dev/>`_ is an open-source feature store framework that 
 manages and serves machine learning features for training and inference. 
 The ScyllaDB integration provides a Feast online store for low-latency, 
 distributed, real-time feature serving, with built-in support for vector search. 
@@ -132,7 +132,7 @@ Configuration Options
 Vector Search
 ----------------
 
-ScyllaDB Cloud supports approximate nearest-neighbour (ANN) vector search. To
+ScyllaDB Cloud supports approximate nearest-neighbor (ANN) vector search. To
 enable it for a feature view, tag the embedding ``Field`` with
 ``vector_index=true`` and specify the number of dimensions:
 

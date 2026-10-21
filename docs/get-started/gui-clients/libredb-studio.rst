@@ -2,8 +2,8 @@
 LibreDB Studio
 ==============
 
-`LibreDB Studio <https://github.com/libredb/libredb-studio>`_ is an open
-source, web-based SQL IDE that you run yourself.
+`LibreDB Studio <https://github.com/libredb/libredb-studio>`_ is an
+open-source, web-based SQL IDE that you run yourself.
 
 Prerequisites
 -------------
