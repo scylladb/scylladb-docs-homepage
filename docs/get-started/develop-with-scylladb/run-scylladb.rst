@@ -37,7 +37,7 @@ Docker will start a new container named "scylla" in detached mode using
 the ScyllaDB image, allowing it to run in the background.
 
 It will take a minute or so on a decent internet connection to pull the image 
-from Docker hub and start the container. Read on for more details on how to 
+from Docker Hub and start the container. Read on for more details on how to 
 check your node logs and status.
 
 Viewing Node Logs
