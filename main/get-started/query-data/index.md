@@ -12,4 +12,4 @@ To perform these basic operations, you will use CQL.
 * [Deleting Data](https://docs.scylladb.com/stable/get-started/query-data/delete-data.md)
 
 #### NOTE
-If you are looking to query data with a DynamoDB compatible API, we recommend using [ScyllaDB Alternator](https://docs.scylladb.com/manual/stable/alternator/getting-started.html).
+If you are looking to query data with a DynamoDB-compatible API, we recommend using [ScyllaDB Alternator](https://docs.scylladb.com/manual/stable/alternator/getting-started.html).

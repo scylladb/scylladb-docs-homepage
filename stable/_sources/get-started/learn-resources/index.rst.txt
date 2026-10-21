@@ -40,5 +40,5 @@ ScyllaDB Blog
 ----------------
 
 Subscribe to the `ScyllaDB blog <https://www.scylladb.com/blog/>`_
-to be up to date with recent news about the ScyllaDB NoSQL database and 
+to stay up to date with recent news about the ScyllaDB NoSQL database and 
 related technologies.

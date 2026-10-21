@@ -10,9 +10,9 @@ retrying and resuming from the last completed step.
 The Temporal Server persists all Workflow, Activity, and history state
 through a pluggable persistence layer.
 
-## Two back-end store elements
+## Execution and visibility stores
 
-Starting from Temporal [v1.24.0 release notes](https://github.com/temporalio/temporal/releases/tag/v1.24.0),  back-end is split into two elements:
+Starting with Temporal v1.24.0 (see the [release notes](https://github.com/temporalio/temporal/releases/tag/v1.24.0)), the back end is split into two stores:
 
 * **Execution store** (Workflow/Activity/history state)
 * **Visibility store**

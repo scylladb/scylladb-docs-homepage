@@ -36,7 +36,7 @@ CREATE TABLE my_keyspace.user_activities_good (
 );
 ```
 
-In this table, here the partition is a combination of the `user_id`
+In this table, the partition is a combination of the `user_id`
 and `activity_date`, using a technique called “bucketing”. This ensures that there
 is no unbounded growth within a partition, bucketed to a date. In addition, logs are
 ordered by `log_time` within each `(user_id, activity_date)` partition, making it

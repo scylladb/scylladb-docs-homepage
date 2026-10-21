@@ -28,7 +28,7 @@ prevent accidental deletions of the wrong data in the table.
 Similar to `INSERT` and `UPDATE` statements, a `DELETE` operation can be conditional
 using ScyllaDB’s
 [Lightweight Transaction](https://docs.scylladb.com/manual/stable/features/lwt.html)
-IF EXISTS\` clause.
+`IF EXISTS` clause.
 
 In summary, the `DELETE` statement in ScyllaDB is used to remove existing
 data from a table. Always use a `WHERE` clause with a suitable restriction to

@@ -28,7 +28,7 @@ CREATE TABLE my_keyspace.products (
 );
 ```
 
-In this example, for the `price`` column, we’ve chosen the decimal data type.
+In this example, for the `price` column, we’ve chosen the decimal data type.
 This data type is suitable for storing precise numerical values, such as prices,
 as it preserves decimal precision. Choosing decimal over other numeric data types
 like float or double is essential when dealing with financial data to avoid issues

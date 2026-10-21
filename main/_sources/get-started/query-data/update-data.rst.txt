@@ -13,7 +13,7 @@ Let's break down the components of this ``UPDATE`` statement:
 
 **Keyspace and Table**
 
-``my_keyspace.users``: This specifies the keyspace and table from which you 
+``my_keyspace.users``: This specifies the keyspace and table in which you 
 want to update data. In this example, you are updating data in a table named 
 ``my_table`` within the ``my_keyspace`` keyspace.
 
@@ -39,7 +39,7 @@ the statement specifies the affected partition key, which is mandatory.
 In summary, the ``UPDATE`` statement in ScyllaDB is used to modify existing 
 data in a table. Always include a ``WHERE`` clause with a suitable restriction 
 to target the specific rows you want to update, and specify the changes you 
-want to make using the SET clause. This helps you ensure the accuracy and 
+want to make using the ``SET`` clause. This helps you ensure the accuracy and 
 precision of your updates.
 
 See the details about the `UPDATE statement <https://docs.scylladb.com/manual/stable/cql/dml/update.html>`_ 

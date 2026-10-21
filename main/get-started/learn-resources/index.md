@@ -33,5 +33,5 @@ It is a public discussion space for asking questions, sharing knowledge, and tro
 ## ScyllaDB Blog
 
 Subscribe to the [ScyllaDB blog](https://www.scylladb.com/blog/)
-to be up to date with recent news about the ScyllaDB NoSQL database and
+to stay up to date with recent news about the ScyllaDB NoSQL database and
 related technologies.

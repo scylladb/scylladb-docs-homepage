@@ -22,7 +22,7 @@ runs alongside your existing stack as a single binary.
 
    The Resonate server always runs on your own infrastructure. ScyllaDB
    (self-hosted or ScyllaDB Cloud) is the durable storage backend it
-   connects to. You are not locked in to a hosted workflow service.
+   connects to. You are not locked into a hosted workflow service.
 
 Prerequisites
 -------------
@@ -71,7 +71,7 @@ ScyllaDB Cloud
 
 When using ScyllaDB Cloud as the backend, run the Resonate server on your
 own infrastructure and point it at your ScyllaDB Cloud cluster. The Resonate 
-server is **not** hosted in ScyllaDB Cloud, only the durable storage is.
+server is **not** hosted in ScyllaDB Cloud; only the durable storage is.
 
 1. Clone the repository and build the server image:
 
@@ -158,7 +158,7 @@ Expected output:
    promise ID return immediately from the database.
 
 The durable promise for ``greet.1`` is now persisted in ScyllaDB. Kill and
-restart the worker with the same script, the result is served from the
+restart the worker with the same script; the result is served from the
 database and the function is not executed again.
 
 Additional Resources

@@ -22,14 +22,14 @@ want to insert data. In this example, it's inserting data into a table named
 **Column Names**
 
 ``(user_id, first_name, last_name, age)``: This part of the statement specifies 
-the column names in the table to which you want to insert data. 
+the column names in the table into which you want to insert data. 
 
 **VALUES Clause**
 
 ``VALUES (123e4567-e89b-12d3-a456-426655440000, 'Polly', 'Partition', 77)``: 
 This part of the statement specifies the values that you want to insert into 
 the corresponding columns. ``123e4567-e89b-12d3-a456-426655440000`` is being 
-inserted into the ``user_id`` column (without quotes) as it is an ``uuid`` data 
+inserted into the ``user_id`` column (without quotes) as it is a ``uuid`` data 
 type. ``'Polly', 'Partition'`` (enclosed in single quotes) are being inserted into 
 the ``first_name``, ``last_name`` columns. ``77`` is being inserted into 
 the ``age`` column (without quotes) as it is an ``int`` data type. 
