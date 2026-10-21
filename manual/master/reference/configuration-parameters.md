@@ -621,7 +621,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### stream_io_throughput_mb_per_sec
 
-> Throttles streaming I/O to the specified total throughput (in MiBs/s) across the entire system. Streaming I/O includes the one performed by repair and both RBNO and legacy topology operations such as adding or removing a node. Setting the value to 0 disables stream throttling. It is recommended to set the value for this parameter to be 75% of network bandwidth
+> Throttles streaming I/O to the specified total throughput (in MiB/s) across the entire system. Streaming I/O includes the one performed by repair and both RBNO and legacy topology operations such as adding or removing a node. Setting the value to 0 disables stream throttling.     When maintenance_io_throughput_mb_per_sec is not set, this value is used in its place and limits the background I/O.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `0`
@@ -3503,7 +3503,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### maintenance_io_throughput_mb_per_sec
 
-> Throttles background I/O to the specified total throughput (in MiBs/s) across the entire system. Background I/O includes the one performed by repair and both RBNO and legacy topology operations such as adding or removing a node. Setting the value to 0 disables background IO throttling. It is recommended to set the value for this parameter to be 75% of network bandwidth
+> Throttles background I/O to the specified total throughput (in MiB/s) across the entire system. Background I/O is the sum of all low-priority activities – streaming performed by repair and by both RBNO and legacy topology operations such as adding or removing a node, maintenance compaction and backup. Setting the value to 0 disables background IO throttling.     It is recommended to set the value for this parameter to be 75% of network bandwidth, so that the background activities do not saturate the network interface and interfere with the user workload.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `0`
@@ -3513,7 +3513,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### backup_io_throughput_mb_per_sec
 
-> Throttles backup I/O to the specified total throughput (in MiBs/s) across the entire system
+> Throttles backup I/O to the specified total throughput (in MiB/s) across the entire system. Setting the value to 0 disables backup throttling.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `0`
