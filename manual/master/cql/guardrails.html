@@ -494,7 +494,8 @@ guardrail violations:</p>
 <span id="guardrails-write-consistency-level"></span><h2>Write Consistency Level Guardrails<a class="headerlink" href="#write-consistency-level-guardrails" title="Link to this heading">¶</a></h2>
 <p>These two parameters control which consistency levels (CL) are allowed for
 write operations (<code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>, and <code class="docutils literal notranslate"><span class="pre">BATCH</span></code>
-statements).</p>
+statements). They apply only to writes sent by clients. Writes that ScyllaDB
+issues internally are not affected.</p>
 <p>Be aware that adding warnings to CQL responses can significantly increase
 network traffic and reduce overall throughput.</p>
 <section id="write-consistency-levels-warned">
@@ -539,7 +540,7 @@ guardrail violations:</p>
 </ul>
 <p>Additionally, ScyllaDB exposes the
 <code class="docutils literal notranslate"><span class="pre">scylla_cql_writes_per_consistency_level</span></code> metric, labeled by consistency
-level, which tracks the total number of write requests per CL. This metric is
+level, which tracks the total number of client write requests per CL. This metric is
 useful for understanding the current write-CL distribution across the cluster
 <em>before</em> deciding which levels to warn on or disallow. For example, querying
 this metric can reveal whether any application is inadvertently using <code class="docutils literal notranslate"><span class="pre">ANY</span></code>
@@ -1409,7 +1410,7 @@ applications during a migration). For details on the <code class="docutils liter
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Oct 2026.
+                        Last updated on 22 Oct 2026.
                     
                 </div>
             
