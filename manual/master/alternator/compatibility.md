@@ -410,13 +410,9 @@ they should be easy to detect. Here is a list of these unimplemented features:
   [https://github.com/scylladb/scylla/issues/5036](https://github.com/scylladb/scylla/issues/5036)
 * The deprecated `KeyConditions` parameter of `Query` works only on
   single-attribute keys. Using it to query a composite GSI fails with a
-  `ValidationException`carrying this message:
-  ```default
-  Legacy KeyConditions are not supported for composite key GSIs in Alternator
-  ```
-
-  Use `KeyConditionExpression` instead - AWS recommends it for all new
-  applications anyway.
+  `ValidationException`. Use `KeyConditionExpression` instead - AWS
+  recommends it for all new applications anyway.
+  [https://github.com/scylladb/scylladb/issues/31393](https://github.com/scylladb/scylladb/issues/31393)
 * DynamoDB’s multi-item transaction feature (TransactWriteItems,
   TransactGetItems) is not supported. Note that the older single-item
   conditional updates feature are fully supported.

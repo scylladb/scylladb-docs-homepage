@@ -398,9 +398,12 @@ validating the content of SStables, and more. See <a class="reference internal" 
 <p>You can specify more than one SSTable.</p>
 <p>A single directory can be passed in place of the individual SSTables in it –
 typically the table directory – in which case all the SSTables found in it are
-processed. Note that the data directory of a running node is a moving target:
-SSTables which are not sealed yet are left out, and ones deleted while being
-loaded are reported and skipped.</p>
+processed. SSTables which are not sealed yet are left out.</p>
+<p>An SSTable with components missing fails the operation, whether it is named on
+the command line or found in a directory. Note that the data directory of a
+running node is a moving target: the node can delete an SSTable while the tool
+is loading it. Pass <code class="docutils literal notranslate"><span class="pre">--ignore-incomplete-sstables</span></code> to have such SSTables
+reported and skipped instead.</p>
 <p>Additionally, the path to SSTable can point to an object storage fully qualified
 path in the form of <code class="docutils literal notranslate"><span class="pre">s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt</span></code>
 or <code class="docutils literal notranslate"><span class="pre">gs://bucket-name/prefix/of/your/sstable/sstable-TOC.txt</span></code>. This also
@@ -1313,7 +1316,9 @@ they live in a directory of the data dir or in a bucket of an object store. The
 data dir is the one <code class="docutils literal notranslate"><span class="pre">--scylla-data-dir</span></code> names, or the one the scylla.yaml
 configures. The system tables the SSTables of a table are looked up in have to
 be on disk: <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">flush</span> <span class="pre">system_schema</span></code>, and for a table on object storage
-<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">flush</span> <span class="pre">system</span> <span class="pre">sstables</span></code> as well. SSTables named on the command line
+<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">flush</span> <span class="pre">system</span> <span class="pre">sstables</span></code> as well. Describing the table of a running
+node usually needs <code class="docutils literal notranslate"><span class="pre">--ignore-incomplete-sstables</span></code>, as the node can delete
+SSTables, e.g. by compacting them, while they are being loaded. SSTables named on the command line
 are the ones described, <code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">--table</span></code> then only saying which
 schema to load.</p>
 <p>Supports both a text and a JSON output, selected with <code class="docutils literal notranslate"><span class="pre">--output-format</span></code>. The
@@ -2037,7 +2042,7 @@ the one the table of this node keeps its SSTables in:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Oct 2026.
+                        Last updated on 23 Oct 2026.
                     
                 </div>
             

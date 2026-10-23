@@ -461,6 +461,9 @@ tables in the migrating keyspace until the migration is finished.</p></li>
 replace, or rebuild nodes while a migration is in progress.</p></li>
 <li><p><strong>No repair</strong> operations during the migration. Do not run <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">repair</span></code>
 on the migrating keyspace while a migration is in progress.</p></li>
+<li><p><strong>No backup and restore</strong> for migrating tables during the migration.
+Do not take snapshots, run backups, or restore into the migrating keyspace
+while the migration is in progress.</p></li>
 <li><p><strong>No TRUNCATE</strong> on tables in the migrating keyspace during the migration.</p></li>
 <li><p>Only <strong>CQL base tables</strong> can be migrated. Materialized views, secondary
 indexes, CDC tables, and Alternator tables are not supported.</p></li>
@@ -494,19 +497,30 @@ vice versa. Do not confuse it with version upgrades/downgrades.</p>
 <section id="procedure">
 <h2>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
+<li><p>If the cluster is managed by <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a>,
+<a class="reference external" href="https://manager.docs.scylladb.com/stable/sctool/suspend-resume.html">suspend</a>
+its tasks. Backup, restore, and repair are not yet supported on migrating
+keyspaces:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sctool suspend --cluster &lt;cluster-id|name&gt; --no-continue</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--no-continue</span></code> option deletes the local snapshots of backup tasks.
+Otherwise, these snapshots would keep a copy of the pre-migration SSTables
+on disk throughout the migration, as resharding rewrites all SSTables.</p>
+</li>
 <li><p>Prepare the keyspace for migration:</p>
 <ol class="arabic">
 <li><p>Create tablet maps for all tables in the keyspace:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets start &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets start &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 </li>
 <li><p>Verify that the keyspace is in <code class="docutils literal notranslate"><span class="pre">migrating_to_tablets</span></code> state and all nodes are still using vnodes:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: migrating_to_tablets</span>
 
@@ -521,14 +535,9 @@ vice versa. Do not confuse it with version upgrades/downgrades.</p>
 </ol>
 </li>
 <li id="upgrade-nodes"><p>Upgrade all nodes to tablets:</p>
-<ol class="arabic">
-<li><p>Pick a node.</p></li>
+<ol class="arabic" id="upgrade-node-start">
+<li><p>Pick a node and open a shell on it to run the following commands.</p></li>
 <li><p>Mark the node for upgrade to tablets:</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is a node-local operation. Use the IP address of the node that
-you are upgrading.</p>
-</div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>Do not mark more than one node for upgrade at the same time. Even if
@@ -536,16 +545,16 @@ you restart them serially, unexpected restarts can happen for various
 reasons (crashes, power failures, etc.) leading to parallel node
 upgrades which can reduce availability.</p>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool -h &lt;node-ip&gt; migrate-to-tablets upgrade</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets upgrade</span>
 </pre></div>
 </div>
 </li>
 <li><p>Verify that the node status changed from <code class="docutils literal notranslate"><span class="pre">vnodes</span></code> to <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">tablets</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: migrating_to_tablets</span>
 
@@ -558,7 +567,7 @@ upgrades which can reduce availability.</p>
 </div>
 </li>
 <li><p>Drain and stop the node:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool -h &lt;node-ip&gt; drain</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool drain</span>
 </pre></div>
 </div>
 <div class="sphinx-tabs docutils container">
@@ -573,9 +582,12 @@ upgrades which can reduce availability.</p>
 </li>
 <li><p>Restart the node:</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-1-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-1-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-1-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>scylla-server
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-1-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-1-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-1-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>--no-block<span class="w"> </span>scylla-server
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--no-block</span></code> option makes the command return immediately
+instead of blocking until resharding completes, so that you can
+monitor its progress as described in the next step.</p>
 </div><div aria-labelledby="tab-1-RG9ja2Vy" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-RG9ja2Vy" name="RG9ja2Vy" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>some-scylla<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>scylla
 </pre></div>
 </div>
@@ -585,16 +597,61 @@ upgrades which can reduce availability.</p>
 <li><p>Wait until the node is UP and has returned to the ScyllaDB cluster using <a class="reference internal" href="../../nodetool-commands/status.html"><span class="doc">nodetool status</span></a>.
 This operation may take a long time due to resharding. To monitor
 resharding progress, use the task manager API:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool tasks list compaction -h &lt;node-ip&gt; --keyspace &lt;keyspace&gt; | grep -i reshard</span>
-</pre></div>
-</div>
-</li>
-<li><p>Verify that the node status changed from <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">tablets</span></code> to <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">tablets</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tasks list compaction --keyspace &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>list<span class="w"> </span>compaction<span class="w"> </span>--keyspace<span class="w"> </span>ks
+<span class="go">task_id                                type                   kind scope state   sequence_number keyspace table entity shard start_time           end_time</span>
+<span class="go">ccf28999-d19c-4c94-8b61-592a5f10dba8   resharding compaction  node table running 730             ks       t1           0     2026-08-07T08:22:03Z</span>
+</pre></div>
+</div>
+<p>The command should show one resharding task per migrating table.
+To inspect the progress of one particular task, pass its task ID to
+<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">status</span></code> and compare the number of resharded bytes
+(<code class="docutils literal notranslate"><span class="pre">progress_completed</span></code>) with the total number of bytes to be resharded
+(<code class="docutils literal notranslate"><span class="pre">progress_total</span></code>):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tasks status &lt;task-id&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>status<span class="w"> </span>ccf28999-d19c-4c94-8b61-592a5f10dba8
+<span class="go">id: ccf28999-d19c-4c94-8b61-592a5f10dba8</span>
+<span class="go">type: resharding compaction</span>
+<span class="go">kind: node</span>
+<span class="go">scope: table</span>
+<span class="go">state: running</span>
+<span class="go">is_abortable: false</span>
+<span class="go">start_time: 2026-08-07T08:22:03Z</span>
+<span class="go">end_time:</span>
+<span class="go">error:</span>
+<span class="go">parent_id: e85de42c-9bf0-3a0b-a3ce-6d481b093bc7</span>
+<span class="go">sequence_number: 730</span>
+<span class="go">shard: 0</span>
+<span class="go">keyspace: ks</span>
+<span class="go">table: t1</span>
+<span class="go">entity:</span>
+<span class="go">progress_units: bytes</span>
+<span class="go">progress_total: 5347926524519</span>
+<span class="go">progress_completed: 252509969840</span>
+<span class="go">children_ids: [{task_id: 22461a60-ae95-4356-a5cb-dceac72c75b5, node: 172.31.0.228 }, {task_id: e2f86734-6213-42b3-85ca-b86864a97dfb, node: 172.31.0.228 }, ...]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Resharding may be followed by a reshape compaction, which rewrites the
+resharded SSTables into the layout expected by the table’s compaction
+strategy. Both resharding and reshaping are part of the node’s boot
+process and both appear in <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">list</span> <span class="pre">compaction</span></code>. Wait for
+both to complete before proceeding to the next step.</p>
+</div>
+</li>
+<li><p>Verify that the node status changed from <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">tablets</span></code> to <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">tablets</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: migrating_to_tablets</span>
 
@@ -606,7 +663,8 @@ resharding progress, use the task manager API:</p>
 </pre></div>
 </div>
 </li>
-<li><p>Move to the next node and repeat from step a until all nodes are upgraded.</p></li>
+<li><p>Move to the next node and repeat from <a class="reference internal" href="#upgrade-node-start"><span class="std std-ref">step a</span></a>
+until all nodes are upgraded.</p></li>
 </ol>
 </li>
 <li><p>Finalize the migration:</p>
@@ -617,33 +675,33 @@ keyspace cannot be switched back to vnodes.</p>
 </div>
 <ol class="arabic">
 <li><p>Issue the finalization request:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets finalize &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets finalize &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 </li>
 <li><p>Verify that the keyspace status changed to <code class="docutils literal notranslate"><span class="pre">tablets</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>finalize<span class="w"> </span>ks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: tablets</span>
 </pre></div>
 </div>
 </li>
-<li><p>Optionally, wait for tablet layout normalization to complete:</p>
+<li><p>Wait for tablet layout normalization to complete:</p>
 <p>After finalization, a tablet normalization process takes place in the
 background which transforms the tablets of all migrated tables into a
 power-of-two layout. Until power-of-two convergence is complete, the
 tablet layout of all these tables will be suboptimal, causing degraded
 performance. Run the following command repeatedly to monitor the per-table
 status of this background work:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt; --with-tablet-status</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt; --with-tablet-status</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks<span class="w"> </span>--with-tablet-status
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks<span class="w"> </span>--with-tablet-status
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: tablets</span>
 
@@ -660,6 +718,32 @@ status of this background work:</p>
 </li>
 </ol>
 </li>
+<li><p>If you suspended ScyllaDB Manager in the first step, resume it:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sctool resume --cluster &lt;cluster-id|name&gt; --no-continue</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--no-continue</span></code> option makes interrupted tasks start from scratch,
+instead of continuing from progress recorded before the migration.</p>
+</li>
+<li><p>Run a full cluster repair to ensure that all nodes have the most up-to-date
+data. As the storage upgrade process kept each node offline for an extended
+period of time, its dataset might have become stale.</p>
+<p>Either run the repair with <code class="docutils literal notranslate"><span class="pre">nodetool</span></code>, as described below, or let
+<a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a> run it for you.</p>
+<p>For vnode-based keyspaces, run
+<a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair</span></a> on
+<strong>every</strong> node:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool repair -pr</span>
+</pre></div>
+</div>
+<p>For tablet-based keyspaces, including the one you just migrated, run
+<a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a>
+on <strong>any</strong> single node:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool cluster repair</span>
+</pre></div>
+</div>
+<p>Run both if the cluster has keyspaces of both kinds.</p>
+</li>
 </ol>
 </section>
 <section id="rollback-procedure">
@@ -675,11 +759,11 @@ following:</p>
 <ol class="arabic">
 <li><p>Find all nodes that have been upgraded to tablets (status: <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">tablets</span></code>)
 or they are in the process of upgrading to tablets (status: <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">tablets</span></code>):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: migrating_to_tablets</span>
 
@@ -693,9 +777,10 @@ or they are in the process of upgrading to tablets (status: <code class="docutil
 </li>
 <li><p>For <strong>each upgraded or upgrading node</strong> in the cluster, perform a downgrade
 (one node at a time):</p>
-<ol class="arabic">
+<ol class="arabic" id="downgrade-node-start">
+<li><p>Open a shell on the node to run the following commands.</p></li>
 <li><p>Mark the node for downgrade:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool -h &lt;node-ip&gt; migrate-to-tablets downgrade</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets downgrade</span>
 </pre></div>
 </div>
 </li>
@@ -703,11 +788,11 @@ or they are in the process of upgrading to tablets (status: <code class="docutil
 change from <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">tablets</span></code> to <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">vnodes</span></code>. The status for a
 previously upgrading node should change from <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">tablets</span></code> to
 <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">vnodes</span></code> or <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">vnodes</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: migrating_to_tablets</span>
 
@@ -720,12 +805,12 @@ previously upgrading node should change from <code class="docutils literal notra
 </div>
 </li>
 <li><p>If the node status is <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">vnodes</span></code>, the downgrade is complete. Move to
-the next node and repeat from step a.</p></li>
+the next node and repeat from <a class="reference internal" href="#downgrade-node-start"><span class="std std-ref">step a</span></a>.</p></li>
 <li><p>If the node is <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">vnodes</span></code>, restart it to complete the
 downgrade:</p>
 <ol class="arabic">
 <li><p>Drain and stop the node:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool -h &lt;node-ip&gt; drain</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool drain</span>
 </pre></div>
 </div>
 <div class="sphinx-tabs docutils container">
@@ -740,9 +825,12 @@ downgrade:</p>
 </li>
 <li><p>Restart the node:</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-3-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-3-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-3-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>scylla-server
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-U3VwcG9ydGVkIE9T" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tab" tabindex="0">Supported OS</button><button aria-controls="panel-3-RG9ja2Vy" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-RG9ja2Vy" name="RG9ja2Vy" role="tab" tabindex="-1">Docker</button></div><div aria-labelledby="tab-3-U3VwcG9ydGVkIE9T" class="sphinx-tabs-panel group-tab" id="panel-3-U3VwcG9ydGVkIE9T" name="U3VwcG9ydGVkIE9T" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>--no-block<span class="w"> </span>scylla-server
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--no-block</span></code> option makes the command return immediately
+instead of blocking until resharding completes, so that you can
+monitor its progress as described in the next step.</p>
 </div><div aria-labelledby="tab-3-RG9ja2Vy" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-RG9ja2Vy" name="RG9ja2Vy" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>some-scylla<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>scylla
 </pre></div>
 </div>
@@ -752,16 +840,61 @@ downgrade:</p>
 <li><p>Wait until the node is UP and has returned to the ScyllaDB cluster using <a class="reference internal" href="../../nodetool-commands/status.html"><span class="doc">nodetool status</span></a>.
 This operation may take a long time due to resharding. To monitor
 resharding progress, use the task manager API:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool tasks list compaction -h &lt;node-ip&gt; --keyspace &lt;keyspace&gt; | grep -i reshard</span>
-</pre></div>
-</div>
-</li>
-<li><p>Verify that the node status changed from <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">vnodes</span></code> to <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">vnodes</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tasks list compaction --keyspace &lt;keyspace&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>list<span class="w"> </span>compaction<span class="w"> </span>--keyspace<span class="w"> </span>ks
+<span class="go">task_id                                type                   kind scope state   sequence_number keyspace table entity shard start_time           end_time</span>
+<span class="go">ccf28999-d19c-4c94-8b61-592a5f10dba8   resharding compaction  node table running 730             ks       t1           0     2026-08-07T08:22:03Z</span>
+</pre></div>
+</div>
+<p>The command should show one resharding task per migrating table.
+To inspect the progress of one particular task, pass its task ID to
+<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">status</span></code> and compare the number of resharded bytes
+(<code class="docutils literal notranslate"><span class="pre">progress_completed</span></code>) with the total number of bytes to be resharded
+(<code class="docutils literal notranslate"><span class="pre">progress_total</span></code>):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tasks status &lt;task-id&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>status<span class="w"> </span>ccf28999-d19c-4c94-8b61-592a5f10dba8
+<span class="go">id: ccf28999-d19c-4c94-8b61-592a5f10dba8</span>
+<span class="go">type: resharding compaction</span>
+<span class="go">kind: node</span>
+<span class="go">scope: table</span>
+<span class="go">state: running</span>
+<span class="go">is_abortable: false</span>
+<span class="go">start_time: 2026-08-07T08:22:03Z</span>
+<span class="go">end_time:</span>
+<span class="go">error:</span>
+<span class="go">parent_id: e85de42c-9bf0-3a0b-a3ce-6d481b093bc7</span>
+<span class="go">sequence_number: 730</span>
+<span class="go">shard: 0</span>
+<span class="go">keyspace: ks</span>
+<span class="go">table: t1</span>
+<span class="go">entity:</span>
+<span class="go">progress_units: bytes</span>
+<span class="go">progress_total: 5347926524519</span>
+<span class="go">progress_completed: 252509969840</span>
+<span class="go">children_ids: [{task_id: 22461a60-ae95-4356-a5cb-dceac72c75b5, node: 172.31.0.228 }, {task_id: e2f86734-6213-42b3-85ca-b86864a97dfb, node: 172.31.0.228 }, ...]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Resharding may be followed by a reshape compaction, which rewrites the
+resharded SSTables into the layout expected by the table’s compaction
+strategy. Both resharding and reshaping are part of the node’s boot
+process and both appear in <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">list</span> <span class="pre">compaction</span></code>. Wait for
+both to complete before proceeding to the next node.</p>
+</div>
+</li>
+<li><p>Verify that the node status changed from <code class="docutils literal notranslate"><span class="pre">migrating</span> <span class="pre">to</span> <span class="pre">vnodes</span></code> to <code class="docutils literal notranslate"><span class="pre">uses</span> <span class="pre">vnodes</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nodetool<span class="w"> </span>migrate-to-tablets<span class="w"> </span>status<span class="w"> </span>ks
 <span class="go">Keyspace: ks</span>
 <span class="go">Status: migrating_to_tablets</span>
 
@@ -773,16 +906,42 @@ resharding progress, use the task manager API:</p>
 </pre></div>
 </div>
 </li>
-<li><p>Move to the next node and repeat from step a until all nodes are
-downgraded.</p></li>
+<li><p>Move to the next node and repeat from
+<a class="reference internal" href="#downgrade-node-start"><span class="std std-ref">step a</span></a> until all nodes are downgraded.</p></li>
 </ol>
 </li>
 </ol>
 </li>
 <li><p>Once all nodes have been downgraded, finalize the rollback:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets finalize &lt;keyspace&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets finalize &lt;keyspace&gt;</span>
 </pre></div>
 </div>
+</li>
+<li><p>If you suspended ScyllaDB Manager before starting the migration, resume it:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sctool resume --cluster &lt;cluster-id|name&gt; --no-continue</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--no-continue</span></code> option makes interrupted tasks start from scratch,
+instead of continuing from progress recorded before the rollback.</p>
+</li>
+<li><p>Run a full cluster repair to ensure that all nodes have the most up-to-date
+data. As the storage downgrade process kept each node offline for an extended
+period of time, its dataset might have become stale.</p>
+<p>Either run the repair with <code class="docutils literal notranslate"><span class="pre">nodetool</span></code>, as described below, or let
+<a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a> run it for you.</p>
+<p>For vnode-based keyspaces, including the one you just rolled back, run
+<a class="reference internal" href="../../nodetool-commands/repair.html"><span class="doc">nodetool repair</span></a> on
+<strong>every</strong> node:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool repair -pr</span>
+</pre></div>
+</div>
+<p>For tablet-based keyspaces, run
+<a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a>
+on <strong>any</strong> single node:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool cluster repair</span>
+</pre></div>
+</div>
+<p>Run both if the cluster has keyspaces of both kinds.</p>
 </li>
 </ol>
 </section>
@@ -796,15 +955,15 @@ need to be prepared and finalized together.</p>
 <p>To migrate multiple keyspaces simultaneously, follow these steps:</p>
 <ol class="arabic">
 <li><p>For <strong>each keyspace</strong>, prepare it for migration:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets start &lt;keyspace1&gt;</span>
-<span class="go">scylla nodetool migrate-to-tablets start &lt;keyspace2&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets start &lt;keyspace1&gt;</span>
+<span class="go">nodetool migrate-to-tablets start &lt;keyspace2&gt;</span>
 <span class="go">...</span>
 </pre></div>
 </div>
 <p>Verify that all keyspaces are in <code class="docutils literal notranslate"><span class="pre">migrating_to_tablets</span></code> state before
 proceeding:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace1&gt;</span>
-<span class="go">scylla nodetool migrate-to-tablets status &lt;keyspace2&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace1&gt;</span>
+<span class="go">nodetool migrate-to-tablets status &lt;keyspace2&gt;</span>
 <span class="go">...</span>
 </pre></div>
 </div>
@@ -813,8 +972,8 @@ proceeding:</p>
 as for a single keyspace. Each node restart reshards all keyspaces under
 migration in one pass.</p></li>
 <li><p>For <strong>each keyspace</strong>, finalize the migration:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla nodetool migrate-to-tablets finalize &lt;keyspace1&gt;</span>
-<span class="go">scylla nodetool migrate-to-tablets finalize &lt;keyspace2&gt;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets finalize &lt;keyspace1&gt;</span>
+<span class="go">nodetool migrate-to-tablets finalize &lt;keyspace2&gt;</span>
 <span class="go">...</span>
 </pre></div>
 </div>
@@ -1462,7 +1621,7 @@ migration in one pass.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Oct 2026.
+                        Last updated on 23 Oct 2026.
                     
                 </div>
             

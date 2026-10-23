@@ -75,6 +75,9 @@ The current migration procedure has the following limitations:
   replace, or rebuild nodes while a migration is in progress.
 * **No repair** operations during the migration. Do not run `nodetool repair`
   on the migrating keyspace while a migration is in progress.
+* **No backup and restore** for migrating tables during the migration.
+  Do not take snapshots, run backups, or restore into the migrating keyspace
+  while the migration is in progress.
 * **No TRUNCATE** on tables in the migrating keyspace during the migration.
 * Only **CQL base tables** can be migrated. Materialized views, secondary
   indexes, CDC tables, and Alternator tables are not supported.
@@ -105,19 +108,30 @@ vice versa. Do not confuse it with version upgrades/downgrades.
 
 ## Procedure
 
-1. Prepare the keyspace for migration:
+1. If the cluster is managed by [ScyllaDB Manager](https://manager.docs.scylladb.com/),
+   [suspend](https://manager.docs.scylladb.com/stable/sctool/suspend-resume.html)
+   its tasks. Backup, restore, and repair are not yet supported on migrating
+   keyspaces:
+   ```console
+   sctool suspend --cluster <cluster-id|name> --no-continue
+   ```
+
+   The `--no-continue` option deletes the local snapshots of backup tasks.
+   Otherwise, these snapshots would keep a copy of the pre-migration SSTables
+   on disk throughout the migration, as resharding rewrites all SSTables.
+2. Prepare the keyspace for migration:
    1. Create tablet maps for all tables in the keyspace:
       ```console
-      scylla nodetool migrate-to-tablets start <keyspace>
+      nodetool migrate-to-tablets start <keyspace>
       ```
    2. Verify that the keyspace is in `migrating_to_tablets` state and all nodes are still using vnodes:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -129,13 +143,11 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       ```
 
    <a id="upgrade-nodes"></a>
-2. Upgrade all nodes to tablets:
-   1. Pick a node.
-   2. Mark the node for upgrade to tablets:
+3. Upgrade all nodes to tablets:
 
-      #### NOTE
-      This is a node-local operation. Use the IP address of the node that
-      you are upgrading.
+   <a id="upgrade-node-start"></a>
+   1. Pick a node and open a shell on it to run the following commands.
+   2. Mark the node for upgrade to tablets:
 
       #### CAUTION
       Do not mark more than one node for upgrade at the same time. Even if
@@ -144,16 +156,16 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       upgrades which can reduce availability.
 
       ```console
-      scylla nodetool -h <node-ip> migrate-to-tablets upgrade
+      nodetool migrate-to-tablets upgrade
       ```
    3. Verify that the node status changed from `vnodes` to `migrating to tablets`:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -165,7 +177,7 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       ```
    4. Drain and stop the node:
       ```console
-      scylla nodetool -h <node-ip> drain
+      nodetool drain
       ```
 
       Supported OS
@@ -183,8 +195,12 @@ vice versa. Do not confuse it with version upgrades/downgrades.
 
       Supported OS
       ```shell
-      sudo systemctl start scylla-server
+      sudo systemctl start --no-block scylla-server
       ```
+
+      The `--no-block` option makes the command return immediately
+      instead of blocking until resharding completes, so that you can
+      monitor its progress as described in the next step.
 
       Docker
       ```shell
@@ -196,16 +212,63 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       This operation may take a long time due to resharding. To monitor
       resharding progress, use the task manager API:
       ```console
-      scylla nodetool tasks list compaction -h <node-ip> --keyspace <keyspace> | grep -i reshard
-      ```
-   7. Verify that the node status changed from `migrating to tablets` to `uses tablets`:
-      ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool tasks list compaction --keyspace <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool tasks list compaction --keyspace ks
+      task_id                                type                   kind scope state   sequence_number keyspace table entity shard start_time           end_time
+      ccf28999-d19c-4c94-8b61-592a5f10dba8   resharding compaction  node table running 730             ks       t1           0     2026-08-07T08:22:03Z
+      ```
+
+      The command should show one resharding task per migrating table.
+      To inspect the progress of one particular task, pass its task ID to
+      `nodetool tasks status` and compare the number of resharded bytes
+      (`progress_completed`) with the total number of bytes to be resharded
+      (`progress_total`):
+      ```console
+      nodetool tasks status <task-id>
+      ```
+
+      **Example:**
+      ```console
+      $ nodetool tasks status ccf28999-d19c-4c94-8b61-592a5f10dba8
+      id: ccf28999-d19c-4c94-8b61-592a5f10dba8
+      type: resharding compaction
+      kind: node
+      scope: table
+      state: running
+      is_abortable: false
+      start_time: 2026-08-07T08:22:03Z
+      end_time:
+      error:
+      parent_id: e85de42c-9bf0-3a0b-a3ce-6d481b093bc7
+      sequence_number: 730
+      shard: 0
+      keyspace: ks
+      table: t1
+      entity:
+      progress_units: bytes
+      progress_total: 5347926524519
+      progress_completed: 252509969840
+      children_ids: [{task_id: 22461a60-ae95-4356-a5cb-dceac72c75b5, node: 172.31.0.228 }, {task_id: e2f86734-6213-42b3-85ca-b86864a97dfb, node: 172.31.0.228 }, ...]
+      ```
+
+      #### NOTE
+      Resharding may be followed by a reshape compaction, which rewrites the
+      resharded SSTables into the layout expected by the table’s compaction
+      strategy. Both resharding and reshaping are part of the node’s boot
+      process and both appear in `nodetool tasks list compaction`. Wait for
+      both to complete before proceeding to the next step.
+   7. Verify that the node status changed from `migrating to tablets` to `uses tablets`:
+      ```console
+      nodetool migrate-to-tablets status <keyspace>
+      ```
+
+      **Example:**
+      ```console
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -215,8 +278,9 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
       017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
       ```
-   8. Move to the next node and repeat from step a until all nodes are upgraded.
-3. Finalize the migration:
+   8. Move to the next node and repeat from [step a](#upgrade-node-start)
+      until all nodes are upgraded.
+4. Finalize the migration:
 
    #### WARNING
    Finalization **cannot be undone**. Once the migration is finalized, the
@@ -224,20 +288,20 @@ vice versa. Do not confuse it with version upgrades/downgrades.
 
    1. Issue the finalization request:
       ```console
-      scylla nodetool migrate-to-tablets finalize <keyspace>
+      nodetool migrate-to-tablets finalize <keyspace>
       ```
    2. Verify that the keyspace status changed to `tablets`:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets finalize ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: tablets
       ```
-   3. Optionally, wait for tablet layout normalization to complete:
+   3. Wait for tablet layout normalization to complete:
 
       After finalization, a tablet normalization process takes place in the
       background which transforms the tablets of all migrated tables into a
@@ -246,12 +310,12 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       performance. Run the following command repeatedly to monitor the per-table
       status of this background work:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace> --with-tablet-status
+      nodetool migrate-to-tablets status <keyspace> --with-tablet-status
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks --with-tablet-status
+      $ nodetool migrate-to-tablets status ks --with-tablet-status
       Keyspace: ks
       Status: tablets
 
@@ -264,6 +328,35 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       t2      converging   2176      2048
       t3      converged    2048      -
       ```
+5. If you suspended ScyllaDB Manager in the first step, resume it:
+   ```console
+   sctool resume --cluster <cluster-id|name> --no-continue
+   ```
+
+   The `--no-continue` option makes interrupted tasks start from scratch,
+   instead of continuing from progress recorded before the migration.
+6. Run a full cluster repair to ensure that all nodes have the most up-to-date
+   data. As the storage upgrade process kept each node offline for an extended
+   period of time, its dataset might have become stale.
+
+   Either run the repair with `nodetool`, as described below, or let
+   [ScyllaDB Manager](https://manager.docs.scylladb.com/) run it for you.
+
+   For vnode-based keyspaces, run
+   [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on
+   **every** node:
+   ```console
+   nodetool repair -pr
+   ```
+
+   For tablet-based keyspaces, including the one you just migrated, run
+   [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md)
+   on **any** single node:
+   ```console
+   nodetool cluster repair
+   ```
+
+   Run both if the cluster has keyspaces of both kinds.
 
 ## Rollback Procedure
 
@@ -278,12 +371,12 @@ following:
 1. Find all nodes that have been upgraded to tablets (status: `uses tablets`)
    or they are in the process of upgrading to tablets (status: `migrating to tablets`):
    ```console
-   scylla nodetool migrate-to-tablets status <keyspace>
+   nodetool migrate-to-tablets status <keyspace>
    ```
 
    **Example:**
    ```console
-   $ scylla nodetool migrate-to-tablets status ks
+   $ nodetool migrate-to-tablets status ks
    Keyspace: ks
    Status: migrating_to_tablets
 
@@ -295,21 +388,24 @@ following:
    ```
 2. For **each upgraded or upgrading node** in the cluster, perform a downgrade
    (one node at a time):
-   1. Mark the node for downgrade:
+
+   <a id="downgrade-node-start"></a>
+   1. Open a shell on the node to run the following commands.
+   2. Mark the node for downgrade:
       ```console
-      scylla nodetool -h <node-ip> migrate-to-tablets downgrade
+      nodetool migrate-to-tablets downgrade
       ```
-   2. Check the node status. The status for a previously upgraded node should
+   3. Check the node status. The status for a previously upgraded node should
       change from `uses tablets` to `migrating to vnodes`. The status for a
       previously upgrading node should change from `migrating to tablets` to
       `uses vnodes` or `migrating to vnodes`:
       ```console
-      scylla nodetool migrate-to-tablets status <keyspace>
+      nodetool migrate-to-tablets status <keyspace>
       ```
 
       **Example:**
       ```console
-      $ scylla nodetool migrate-to-tablets status ks
+      $ nodetool migrate-to-tablets status ks
       Keyspace: ks
       Status: migrating_to_tablets
 
@@ -319,13 +415,13 @@ following:
       0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
       017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
       ```
-   3. If the node status is `uses vnodes`, the downgrade is complete. Move to
-      the next node and repeat from step a.
-   4. If the node is `migrating to vnodes`, restart it to complete the
+   4. If the node status is `uses vnodes`, the downgrade is complete. Move to
+      the next node and repeat from [step a](#downgrade-node-start).
+   5. If the node is `migrating to vnodes`, restart it to complete the
       downgrade:
       1. Drain and stop the node:
          ```console
-         scylla nodetool -h <node-ip> drain
+         nodetool drain
          ```
 
          Supported OS
@@ -343,8 +439,12 @@ following:
 
          Supported OS
          ```shell
-         sudo systemctl start scylla-server
+         sudo systemctl start --no-block scylla-server
          ```
+
+         The `--no-block` option makes the command return immediately
+         instead of blocking until resharding completes, so that you can
+         monitor its progress as described in the next step.
 
          Docker
          ```shell
@@ -356,16 +456,63 @@ following:
          This operation may take a long time due to resharding. To monitor
          resharding progress, use the task manager API:
          ```console
-         scylla nodetool tasks list compaction -h <node-ip> --keyspace <keyspace> | grep -i reshard
-         ```
-      4. Verify that the node status changed from `migrating to vnodes` to `uses vnodes`:
-         ```console
-         scylla nodetool migrate-to-tablets status <keyspace>
+         nodetool tasks list compaction --keyspace <keyspace>
          ```
 
          **Example:**
          ```console
-         $ scylla nodetool migrate-to-tablets status ks
+         $ nodetool tasks list compaction --keyspace ks
+         task_id                                type                   kind scope state   sequence_number keyspace table entity shard start_time           end_time
+         ccf28999-d19c-4c94-8b61-592a5f10dba8   resharding compaction  node table running 730             ks       t1           0     2026-08-07T08:22:03Z
+         ```
+
+         The command should show one resharding task per migrating table.
+         To inspect the progress of one particular task, pass its task ID to
+         `nodetool tasks status` and compare the number of resharded bytes
+         (`progress_completed`) with the total number of bytes to be resharded
+         (`progress_total`):
+         ```console
+         nodetool tasks status <task-id>
+         ```
+
+         **Example:**
+         ```console
+         $ nodetool tasks status ccf28999-d19c-4c94-8b61-592a5f10dba8
+         id: ccf28999-d19c-4c94-8b61-592a5f10dba8
+         type: resharding compaction
+         kind: node
+         scope: table
+         state: running
+         is_abortable: false
+         start_time: 2026-08-07T08:22:03Z
+         end_time:
+         error:
+         parent_id: e85de42c-9bf0-3a0b-a3ce-6d481b093bc7
+         sequence_number: 730
+         shard: 0
+         keyspace: ks
+         table: t1
+         entity:
+         progress_units: bytes
+         progress_total: 5347926524519
+         progress_completed: 252509969840
+         children_ids: [{task_id: 22461a60-ae95-4356-a5cb-dceac72c75b5, node: 172.31.0.228 }, {task_id: e2f86734-6213-42b3-85ca-b86864a97dfb, node: 172.31.0.228 }, ...]
+         ```
+
+         #### NOTE
+         Resharding may be followed by a reshape compaction, which rewrites the
+         resharded SSTables into the layout expected by the table’s compaction
+         strategy. Both resharding and reshaping are part of the node’s boot
+         process and both appear in `nodetool tasks list compaction`. Wait for
+         both to complete before proceeding to the next node.
+      4. Verify that the node status changed from `migrating to vnodes` to `uses vnodes`:
+         ```console
+         nodetool migrate-to-tablets status <keyspace>
+         ```
+
+         **Example:**
+         ```console
+         $ nodetool migrate-to-tablets status ks
          Keyspace: ks
          Status: migrating_to_tablets
 
@@ -375,12 +522,41 @@ following:
          0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
          017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
          ```
-      5. Move to the next node and repeat from step a until all nodes are
-         downgraded.
+      5. Move to the next node and repeat from
+         [step a](#downgrade-node-start) until all nodes are downgraded.
 3. Once all nodes have been downgraded, finalize the rollback:
    ```console
-   scylla nodetool migrate-to-tablets finalize <keyspace>
+   nodetool migrate-to-tablets finalize <keyspace>
    ```
+4. If you suspended ScyllaDB Manager before starting the migration, resume it:
+   ```console
+   sctool resume --cluster <cluster-id|name> --no-continue
+   ```
+
+   The `--no-continue` option makes interrupted tasks start from scratch,
+   instead of continuing from progress recorded before the rollback.
+5. Run a full cluster repair to ensure that all nodes have the most up-to-date
+   data. As the storage downgrade process kept each node offline for an extended
+   period of time, its dataset might have become stale.
+
+   Either run the repair with `nodetool`, as described below, or let
+   [ScyllaDB Manager](https://manager.docs.scylladb.com/) run it for you.
+
+   For vnode-based keyspaces, including the one you just rolled back, run
+   [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on
+   **every** node:
+   ```console
+   nodetool repair -pr
+   ```
+
+   For tablet-based keyspaces, run
+   [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md)
+   on **any** single node:
+   ```console
+   nodetool cluster repair
+   ```
+
+   Run both if the cluster has keyspaces of both kinds.
 
 ## Migrating multiple keyspaces
 
@@ -394,16 +570,16 @@ To migrate multiple keyspaces simultaneously, follow these steps:
 
 1. For **each keyspace**, prepare it for migration:
    ```console
-   scylla nodetool migrate-to-tablets start <keyspace1>
-   scylla nodetool migrate-to-tablets start <keyspace2>
+   nodetool migrate-to-tablets start <keyspace1>
+   nodetool migrate-to-tablets start <keyspace2>
    ...
    ```
 
    Verify that all keyspaces are in `migrating_to_tablets` state before
    proceeding:
    ```console
-   scylla nodetool migrate-to-tablets status <keyspace1>
-   scylla nodetool migrate-to-tablets status <keyspace2>
+   nodetool migrate-to-tablets status <keyspace1>
+   nodetool migrate-to-tablets status <keyspace2>
    ...
    ```
 2. Upgrade all nodes in the cluster following the same [procedure](#upgrade-nodes)
@@ -411,7 +587,7 @@ To migrate multiple keyspaces simultaneously, follow these steps:
    migration in one pass.
 3. For **each keyspace**, finalize the migration:
    ```console
-   scylla nodetool migrate-to-tablets finalize <keyspace1>
-   scylla nodetool migrate-to-tablets finalize <keyspace2>
+   nodetool migrate-to-tablets finalize <keyspace1>
+   nodetool migrate-to-tablets finalize <keyspace2>
    ...
    ```

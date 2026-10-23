@@ -54,12 +54,20 @@ tablet load balancer rebalances the data.
 
 ### Keyspace and table configuration
 
-* The keyspace’s replication strategy must be the **NetworkTopologyStrategy**,
-  and its replication factor must equal the number of racks to ensure that the
-  keyspace will be [RF-rack-valid](https://docs.scylladb.com/manual/master/reference/glossary.md#term-RF-rack-valid-keyspace) after the
-  migration. If your configuration requires changes, see
-  [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md)
-  and [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/master/kb/rf-increase.md).
+* The keyspace’s replication strategy must be the **NetworkTopologyStrategy**.
+  To change it, see
+  [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md).
+* In every datacenter, the keyspace’s replication factor must equal the number
+  of racks in that datacenter, to ensure that the keyspace will be
+  [RF-rack-valid](https://docs.scylladb.com/manual/master/reference/glossary.md#term-RF-rack-valid-keyspace) after the migration.
+  Racks that contain only [zero-token nodes](https://docs.scylladb.com/manual/master/architecture/zero-token-nodes.md)
+  are not counted. A datacenter can also have a replication factor of zero
+  (RF=0), in which case it holds no replicas of the keyspace. For example, a
+  keyspace with replication `{'dc1': 3, 'dc2': 2, 'dc3': 0}` can be migrated
+  if `dc1` has three racks and `dc2` has two racks. An
+  [arbiter datacenter](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/arbiter-dc.md),
+  which contains only zero-token nodes, must have RF=0. To change the
+  replication factor, see [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/master/kb/rf-increase.md).
 * All tables in the keyspace should have `tombstone_gc` mode set to `repair`
   to prevent tombstone garbage collection from running during migration.
   For guidance, see [Tombstone Garbage Collection](https://docs.scylladb.com/manual/master/cql/ddl.md#ddl-tombstones-gc).
@@ -68,11 +76,6 @@ tablet load balancer rebalances the data.
 
 The current migration procedure has the following limitations:
 
-* **Multi-DC clusters** are supported, but every datacenter in the migrating
-  keyspace’s replication strategy must have a replication factor of at least one.
-  Datacenters with a replication factor of zero (RF=0) are not yet supported.
-* Clusters with [zero-token nodes](https://docs.scylladb.com/manual/master/architecture/zero-token-nodes.md) are
-  not yet supported.
 * **No schema changes** during the migration. Do not create, alter, or drop
   tables in the migrating keyspace until the migration is finished.
 * **No planned topology changes** during the migration. Do not add, remove,

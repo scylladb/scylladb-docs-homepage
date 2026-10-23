@@ -1599,7 +1599,8 @@ data the cluster contains) time operation.</p></li>
 <li><p>Remove column(s) from the table. This drops both the column and all its content, but note that while the column
 becomes immediately unavailable, its content is only removed lazily during compaction. Please also note the warnings
 below. Due to lazy removal, the altering itself is a constant (in the amount of data removed or contained in the
-cluster) time operation.</p></li>
+cluster) time operation. A column that an index or a materialized view uses cannot be removed; drop the index or
+the view first.</p></li>
 <li><p>Change data type of the column to a compatible type.</p></li>
 <li><p>Change some of the table options (through the <code class="docutils literal notranslate"><span class="pre">WITH</span></code> instruction). The <a class="reference internal" href="#create-table-options"><span class="std std-ref">supported options</span></a> are the same that when creating a table (outside of <code class="docutils literal notranslate"><span class="pre">COMPACT</span> <span class="pre">STORAGE</span></code> and <code class="docutils literal notranslate"><span class="pre">CLUSTERING</span>
 <span class="pre">ORDER</span></code> that cannot be changed after creation). Note that setting any <code class="docutils literal notranslate"><span class="pre">compaction</span></code> sub-options has the effect of
@@ -2375,7 +2376,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Oct 2026.
+                        Last updated on 23 Oct 2026.
                     
                 </div>
             
