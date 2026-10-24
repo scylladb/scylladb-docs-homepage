@@ -81,7 +81,7 @@
             
         
             
-                <link rel="stylesheet" type="text/css" href="../../_static/css/main.css?v=041c0933" />
+                <link rel="stylesheet" type="text/css" href="../../_static/css/main.css?v=d1ecaa33" />
             
         
             
@@ -1032,6 +1032,9 @@ In both cases the input is expected to be provided via the file whose path is pa
 <p>The input file is expected to contain <code class="docutils literal notranslate"><span class="pre">;</span></code> separated CQL statements, providing the content of the output SSTable(s).
 The following CQL statements are allowed: <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code> and <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.
 The statements can be in any order, the data will be sorted internally.
+The table lives in the <code class="docutils literal notranslate"><span class="pre">scylla_sstable</span></code> keyspace, which is already selected when
+the statements are run, so the table name doesn’t have to be qualified with it
+(but it can be).
 Writes are internally applied to a memtable, which is flushed to disk once its size exceeds the memory limit, specified via the <code class="docutils literal notranslate"><span class="pre">--memory-limit</span></code> command line argument (defaults to <code class="docutils literal notranslate"><span class="pre">1MiB</span></code>).</p>
 <p>Reading the statements from the input file happens via a streaming parser, it is
 safe to provide input files of any size.</p>
@@ -1101,8 +1104,10 @@ Custom queries can be provided either via the <code class="docutils literal notr
 or via <code class="docutils literal notranslate"><span class="pre">--query-file</span></code> (in a file).
 When writing queries by hand, there are some things to keep in in mind:</p>
 <ul class="simple">
-<li><p>The keyspace of the table is changed to <code class="docutils literal notranslate"><span class="pre">scylla_sstable.</span></code> This is to avoid any
-collisions in case the sstables belong to a system keyspace.</p></li>
+<li><p>The keyspace of the table is changed to <code class="docutils literal notranslate"><span class="pre">scylla_sstable</span></code>. This is to avoid any
+collisions in case the sstables belong to a system keyspace. The query is run
+with this keyspace already selected, so the table name doesn’t have to be
+qualified with it (but it can be).</p></li>
 <li><p>If the schema is read from the sstable itself, partition key columns will be
 <code class="docutils literal notranslate"><span class="pre">$pk0..$pkN</span></code> and clustering key columns will be <code class="docutils literal notranslate"><span class="pre">$ck0..$ckN</span></code>. This is because
 the in-sstable schema doesn’t contain key column names.
@@ -1154,14 +1159,14 @@ environment variable. This temporary directory is removed on exit.</p>
 </pre></div>
 </div>
 <p>Select a specific field in a specific partition using the command-line:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query<span class="w"> </span><span class="s2">"SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks'"</span><span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-Data.db
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query<span class="w"> </span><span class="s2">"SELECT replication FROM keyspaces WHERE keyspace_name='ks'"</span><span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-Data.db
 <span class="go"> replication</span>
 <span class="go">-------------------------------------------------------------------------------------</span>
 <span class="go"> ({class : org.apache.cassandra.locator.NetworkTopologyStrategy}, {datacenter1 : 1})</span>
 </pre></div>
 </div>
 <p>Select a specific field in a specific partition using <code class="docutils literal notranslate"><span class="pre">--query-file</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks';"</span><span class="w"> </span>&gt;<span class="w"> </span>query.cql
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"SELECT replication FROM keyspaces WHERE keyspace_name='ks';"</span><span class="w"> </span>&gt;<span class="w"> </span>query.cql
 <span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query-file<span class="o">=</span>./query.cql<span class="w"> </span>./scylla-workdir/data/system_schema/keyspaces-*/*-Data.db
 <span class="go"> replication</span>
 <span class="go">-------------------------------------------------------------------------------------</span>
@@ -2042,14 +2047,14 @@ the one the table of this node keeps its SSTables in:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Oct 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             
             <div class="footer-bottom__version">
                 Powered by
-                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 9.1.0</a> &amp;
-                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.9.3</a>
+                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 9.1.1</a> &amp;
+                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.10.0</a>
             </div>
         </div>
     </div>

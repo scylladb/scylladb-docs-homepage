@@ -81,7 +81,7 @@
             
         
             
-                <link rel="stylesheet" type="text/css" href="../_static/css/main.css?v=041c0933" />
+                <link rel="stylesheet" type="text/css" href="../_static/css/main.css?v=d1ecaa33" />
             
         
             
@@ -392,7 +392,8 @@ to reason about the number and size of your nodes - not the throughput.</p>
 not yet supported by Scylla. The BillingMode and ProvisionedThroughput options
 on a table need to be valid but are ignored, and ScyllaDB behaves like DynamoDB’s
 <code class="docutils literal notranslate"><span class="pre">BillingMode=PAY_PER_REQUEST</span></code>: All requests are accepted without a per-table
-throughput cap.</p>
+throughput cap. The values provisioned for a table and for each of its GSIs
+are remembered and returned by <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code>, but are not enforced.</p>
 </section>
 <section id="load-balancing">
 <h2>Load balancing<a class="headerlink" href="#load-balancing" title="Link to this heading">¶</a></h2>
@@ -776,8 +777,11 @@ DynamoDB in March 2023.
 <a class="reference external" href="https://github.com/scylladb/scylla/issues/14482">https://github.com/scylladb/scylla/issues/14482</a></p></li>
 <li><p>Alternator does not support the table option WarmThroughput that can be
 used to check or guarantee that the database has “warmed” to handle a
-particular throughput. This table option was added to DynamoDB in
-November 2024.
+particular throughput. Alternator has no throughput caps and nothing to
+pre-warm, so a table’s WarmThroughput is remembered and returned by
+<code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> but otherwise ignored; a table which never set one reports
+zero units, as does each of its active GSIs. This table option was added to
+DynamoDB in November 2024.
 <a class="reference external" href="https://github.com/scylladb/scylladb/issues/21853">https://github.com/scylladb/scylladb/issues/21853</a></p></li>
 <li><p>Alternator does not support the table option MultiRegionConsistency
 that can be used to achieve consistent reads on global (multi-region) tables.
@@ -1429,14 +1433,14 @@ This feature was added to DynamoDB in November 2025.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Oct 2026.
+                        Last updated on 28 Sep 2026.
                     
                 </div>
             
             <div class="footer-bottom__version">
                 Powered by
-                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 9.1.0</a> &amp;
-                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.9.3</a>
+                <a class="footer-bottom__link" href="http://sphinx-doc.org/">Sphinx 9.1.1</a> &amp;
+                <a class="footer-bottom__link" href="https://sphinx-theme.scylladb.com/">ScyllaDB Theme 1.10.0</a>
             </div>
         </div>
     </div>
