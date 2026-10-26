@@ -395,6 +395,10 @@ See <a class="reference internal" href="../operating-scylla/admin.html#yaml-enab
 <span id="id1"></span><h2>Scalar functions<a class="headerlink" href="#scalar-functions" title="Link to this heading">¶</a></h2>
 <section id="scalar-native-functions">
 <span id="id2"></span><h3>Native functions<a class="headerlink" href="#scalar-native-functions" title="Link to this heading">¶</a></h3>
+<p>Native functions whose names are made of several words run together, such as <code class="docutils literal notranslate"><span class="pre">toTimestamp</span></code> and <code class="docutils literal notranslate"><span class="pre">blobAsInt</span></code>,
+can also be called by a “snake_case” name, with the words separated by underscores - here, <code class="docutils literal notranslate"><span class="pre">to_timestamp</span></code> and
+<code class="docutils literal notranslate"><span class="pre">blob_as_int</span></code>. These are the names with which Cassandra 5 documents these functions. Either name can be used.
+The only exceptions are the deprecated functions <code class="docutils literal notranslate"><span class="pre">dateOf</span></code> and <code class="docutils literal notranslate"><span class="pre">unixTimestampOf</span></code>, which have no snake_case names.</p>
 <section id="cast">
 <h4>Cast<a class="headerlink" href="#cast" title="Link to this heading">¶</a></h4>
 <p>Supported starting from ScyllaDB version 2.1</p>
@@ -1018,6 +1022,12 @@ instance:</p>
             
                 
                     <li>
+                        <a href="../../branch-2026.4/cql/functions.html">2026.4</a>
+                    </li>
+                
+            
+                
+                    <li>
                         <a href="../../stable/cql/functions.html">2026.3</a>
                     </li>
                 
@@ -1467,7 +1477,7 @@ instance:</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 02 Jun 2026.
+                        Last updated on 14 Oct 2026.
                     
                 </div>
             

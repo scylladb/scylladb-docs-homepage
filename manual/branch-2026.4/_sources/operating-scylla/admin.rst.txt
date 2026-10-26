@@ -1,0 +1,631 @@
+=========================
+Administration Guide
+=========================
+
+For training material, also check out the `Admin Procedures lesson <https://university.scylladb.com/courses/scylla-operations/lessons/admin-procedures-and-basic-monitoring/>`_ on ScyllaDB University.
+
+System Requirements
+---------------------------
+Make sure you have met the :doc:`System Requirements </getting-started/system-requirements>`  before you install and configure ScyllaDB. 
+
+Download and Install
+---------------------------
+
+See the :doc:`getting started page </getting-started/index>` for info on installing ScyllaDB on your platform.
+
+
+System Configuration
+====================
+See :ref:`System Configuration Guide <system-configuration-files-and-scripts>` for details on optimum OS settings for ScyllaDB. (These settings are performed automatically in the ScyllaDB packages, Docker containers, and Amazon AMIs.)
+
+.. _admin-scylla-configuration:
+
+ScyllaDB Configuration
+--------------------------------
+
+ScyllaDB configuration files are:
+
++-------------------------------------------------------+-----------------------------------+
+| Installed location                                    | Description                       |
++=======================================================+===================================+
+| :code:`/etc/default/scylla-server` (Ubuntu/Debian)    | Server startup options            |
+| :code:`/etc/sysconfig/scylla-server` (others)         |                                   |
++-------------------------------------------------------+-----------------------------------+
+| :code:`/etc/scylla/scylla.yaml`                       | Main ScyllaDB configuration file  |
++-------------------------------------------------------+-----------------------------------+
+| :code:`/etc/scylla/cassandra-rackdc.properties`       | Rack & dc configuration file      |
++-------------------------------------------------------+-----------------------------------+
+
+.. _check-your-current-version-of-scylla:
+
+Check your current version of ScyllaDB
+==============================================
+This command allows you to check your current version of ScyllaDB. Note that this command is not the :doc:`nodetool version </operating-scylla/nodetool-commands/version>` command which reports the CQL version.
+If you are looking for the CQL or Cassandra version, refer to the CQLSH reference for :ref:`SHOW VERSION <cqlsh-show-version>`.
+
+.. code-block:: shell
+
+   scylla --version
+
+Output displays the ScyllaDB version. Your results may differ.
+
+.. code-block:: shell
+
+   4.4.0-0.20210331.05c6a40f0
+
+.. _admin-address-configuration-in-scylla:
+
+Address Configuration in ScyllaDB
+=====================================
+
+The following addresses can be configured in scylla.yaml:
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - Address Type
+     - Description
+   * - listen_address
+     - Address ScyllaDB listens for connections from other nodes. See storage_port and ssl_storage_ports.
+   * - rpc_address
+     - Address on which ScyllaDB is going to expect CQL client connections. See rpc_port, native_transport_port and native_transport_port_ssl in the :ref:`Networking <cqlsh-networking>` parameters.
+   * - broadcast_address
+     - Address that is broadcasted to tell other ScyllaDB nodes to connect to. Related to listen_address above.
+   * - broadcast_rpc_address
+     - Address that is broadcasted to tell the clients to connect to. Related to rpc_address.
+   * - seeds
+     - The broadcast_addresses of the existing nodes. You must specify the address of at least one existing node.
+   * - endpoint_snitch
+     - Node's address resolution helper.
+   * - api_address
+     - Address for REST API requests. See api_port in the :ref:`Networking <cqlsh-networking>` parameters.
+   * - prometheus_address
+     - Address for Prometheus queries. See prometheus_port in the :ref:`Networking <cqlsh-networking>` parameters and `ScyllaDB Monitoring Stack <https://monitoring.docs.scylladb.com/stable/>`_ for more details.
+   * - replace_node_first_boot
+     - Host ID of a dead node this ScyllaDB node is replacing. Refer to :doc:`Replace a Dead Node in a ScyllaDB Cluster </operating-scylla/procedures/cluster-management/replace-dead-node>` for more details.
+
+.. note:: When the listen_address, rpc_address, broadcast_address, and broadcast_rpc_address parameters are not set correctly, ScyllaDB does not work as expected.
+
+scylla-server
+===============
+The :code:`scylla-server` file contains configuration related to starting up the ScyllaDB server.
+
+.. _admin-scylla.yaml:
+
+.. include:: /operating-scylla/scylla-yaml.inc
+
+.. _object-storage-configuration:
+
+Configuring Object Storage
+----------------------------------
+
+ScyllaDB can communicate directly with S3-compatible object storage and with
+Google Cloud Storage (GCS). Before using features that rely on object storage,
+you must first enable and configure access to the storage endpoints.
+
+Storage endpoints define where data can be stored and are specified in
+the ``scylla.yaml`` configuration file.
+
+Amazon S3 and S3-compatible stores
+==================================
+
+An endpoint with no ``type`` is treated as S3, but state ``type: s3``
+explicitly so that the backend of each entry is evident.
+
+.. code-block:: yaml
+
+   object_storage_endpoints:
+     - name: http[s]://<endpoint_address_or_domain_name>[:<port_number>]
+       type: s3
+       aws_region: <region_name> # required unless AWS_DEFAULT_REGION is set, e.g. us-east-1
+       iam_role_arn: <iam_role> # optional
+
+Example:
+
+.. code:: yaml
+
+   object_storage_endpoints:
+     - name: https://s3.us-east-1.amazonaws.com
+       type: s3
+       aws_region: us-east-1
+       iam_role_arn: arn:aws:iam::123456789012:role/my-scylla-role
+
+The ``aws_region`` option can also be specified using 
+the ``AWS_DEFAULT_REGION`` environment variable. An S3 endpoint needs a region
+from one of the two. If neither supplies a non-empty value, ScyllaDB logs an
+error and ignores that endpoint.
+
+.. _object-storage-gcs-config:
+
+Google Cloud Storage
+====================
+
+Set ``type: gs`` to select the GCS backend. The endpoint ``name`` is normally
+``default``, which resolves to the standard GCS endpoint; a URI is only needed
+when using a private proxy or a mock server.
+
+.. code-block:: yaml
+
+   object_storage_endpoints:
+     - name: default
+       type: gs
+       credentials_file: <path to a service-account JSON file> # optional
+
+If ``credentials_file`` is omitted, the default credentials on the machine are
+used - the current user's credentials, or the instance credentials when running
+on a GCE instance. The ``GOOGLE_APPLICATION_CREDENTIALS`` environment variable is
+also honored.
+
+.. warning::
+
+   ``type`` defaults to ``s3`` when it is not specified. A GCS endpoint that
+   omits ``type: gs`` is configured as an S3 endpoint pointing at a Google URL,
+   which fails in ways that are hard to diagnose.
+
+.. _object-storage-endpoint-name:
+
+The endpoint name
+=================
+
+The ``name`` of an endpoint is also its identifier: statements that select an
+object-storage endpoint - such as
+:ref:`CREATE KEYSPACE <cql-keyspace-storage-options>` - must repeat this string
+**exactly**. The lookup is an exact string comparison, so
+``https://s3.us-east-1.amazonaws.com`` and ``https://s3.us-east-1.amazonaws.com:443``
+are two different endpoints even though they address the same server.
+
+Write ``name`` as a URL, for example ``https://s3.us-east-1.amazonaws.com``. The
+scheme selects whether the connection is encrypted; use ``https`` in production.
+The port is taken from the URL; when it is omitted, the scheme default is used
+(443 for ``https``, 80 for ``http``). Do not add a trailing slash or a path: it
+is ignored when connecting, but it still forms part of the endpoint identifier,
+so ``https://s3.us-east-1.amazonaws.com/`` and
+``https://s3.us-east-1.amazonaws.com`` are two different endpoints.
+
+S3 credentials
+==============
+
+This section applies to S3 and S3-compatible endpoints. Credentials for GCS
+endpoints are configured with ``credentials_file``, described in
+:ref:`Google Cloud Storage <object-storage-gcs-config>` above.
+
+The AWS-related credentials options (``aws_access_key_id``,
+``aws_secret_access_key``, ``aws_session_token``) can be configured using
+the following environment variables:
+
+  - ``AWS_ACCESS_KEY_ID``
+  - ``AWS_SECRET_ACCESS_KEY``
+  - ``AWS_SESSION_TOKEN``
+
+The ScyllaDB S3 client resolves credentials in this order: environment
+variables, the EC2 Instance Metadata Service, and finally the AWS Security
+Token Service (STS). STS additionally requires ``iam_role_arn`` to be set.
+
+``iam_role_arn`` must be the ARN of the IAM **role** to assume
+(``arn:aws:iam::<account>:role/<name>``) - not the ARN of the instance profile
+that contains that role. See `AssumeRole
+<https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html>`_ in
+the AWS documentation.
+
+.. note::
+
+   - All AWS-related parameters must be either present or absent as a group.
+   - When set, these values are used by the S3 client to sign requests.
+   - If not set, requests are sent unsigned, which may not be accepted by all servers.
+
+.. note::
+
+   On EC2, prefer an instance profile or STS so that no long-lived credentials
+   are kept on the node. Object stores that do not provide an EC2-compatible
+   instance metadata service - :ref:`OCI <admin-oci-object-storage>` among them -
+   can only be accessed with credentials supplied through the environment
+   variables above: unlike the GCS client, which reads a service-account file,
+   the S3 client has no file-based credentials provider.
+
+Tuning options
+==============
+
+.. list-table::
+   :widths: 30 15 55
+   :header-rows: 1
+
+   * - Option
+     - Default
+     - Description
+   * - ``object_storage_endpoints``
+     - empty
+     - The list of endpoints described above. Live-updateable: endpoints can be
+       added without restarting the node.
+   * - ``object_storage_connections_per_shard``
+     - 128
+     - Maximum number of connections per shard for **S3** endpoints, distributed
+       across scheduling groups in proportion to their shares so that compaction
+       and streaming traffic does not starve user reads. Live-updateable. The
+       GCS backend ignores this option.
+
+.. _admin-oci-object-storage:
+
+Using Oracle OCI Object Storage
+=================================
+
+Oracle Cloud Infrastructure (OCI) Object Storage is compatible with the Amazon
+S3 API, so ScyllaDB can use it without any special configuration beyond
+specifying the OCI S3-compatible endpoint.
+
+**Endpoint URL format**
+
+OCI S3-compatible endpoint URLs follow this pattern:
+
+.. code-block:: none
+
+   https://<namespace>.compat.objectstorage.<region>.oci.customer-oci.com:443
+
+Where:
+
+* ``<namespace>`` is your OCI Object Storage namespace.
+* ``<region>`` is the OCI region identifier, e.g. ``us-ashburn-1``.
+
+**Credentials**
+
+OCI does not expose an instance metadata endpoint compatible with AWS STS/EC2,
+so credentials **must** be supplied explicitly via environment variables. You
+need to create a Customer Secret Key in the OCI Console and set:
+
+.. code-block:: bash
+
+   export AWS_ACCESS_KEY_ID=<customer_secret_key_access_key>
+   export AWS_SECRET_ACCESS_KEY=<customer_secret_key_secret>
+
+.. note::
+
+   The ``iam_role_arn`` field is specific to AWS IAM and should be omitted
+   when configuring an OCI endpoint.
+
+**Configuration example**
+
+.. code:: yaml
+
+   object_storage_endpoints:
+     - name: https://idedxcgnkfkt.compat.objectstorage.us-ashburn-1.oci.customer-oci.com:443
+       aws_region: us-ashburn-1
+
+.. _admin-compression:
+
+Compression
+----------------
+
+In ScyllaDB, you can configure compression at rest and compression in transit.
+For compression in transit, you can configure compression between nodes or between the client and the node.
+
+
+.. _admin-client-node-compression:
+
+Client - Node Compression
+===============================
+
+Compression between the client and the node is set by the driver that the application is using to access ScyllaDB.
+
+For example:
+
+* `ScyllaDB Python Driver <https://python-driver.docs.scylladb.com/master/api/cassandra/cluster.html#cassandra.cluster.Cluster.compression>`_
+* `ScyllaDB Java Driver <https://github.com/scylladb/java-driver/tree/3.7.1-scylla/manual/compression>`_
+* `Go Driver <https://godoc.org/github.com/gocql/gocql#Compressor>`_
+
+Refer to `ScyllaDB Drivers <https://docs.scylladb.com/stable/drivers/index.html>`_ for more drivers.
+
+.. _internode-compression:
+
+Internode Compression
+===========================
+
+Internode compression is configured in the scylla.yaml
+
+internode_compression controls whether traffic between nodes is compressed.
+
+* all  - all traffic is compressed.
+* dc   - traffic between different datacenters is compressed.
+* rack - traffic between different racks is compressed.
+* none - nothing is compressed (default).
+
+Configuring TLS/SSL in scylla.yaml
+----------------------------------
+
+ScyllaDB supports encryption between nodes and between client and node. See the ScyllaDB :doc:`ScyllaDB TLS/SSL guide: </operating-scylla/security/index>` for configuration settings.
+
+.. _cqlsh-networking:
+
+Networking
+----------
+
+The ScyllaDB ports are detailed in the table below. For ScyllaDB Manager ports, see the `ScyllaDB Manager Documentation <https://manager.docs.scylladb.com/>`_.
+
+.. image:: /operating-scylla/security/Scylla-Ports2.png
+
+.. include:: /operating-scylla/_common/networking-ports.rst
+
+All ports above need to be open to external clients (CQL) and other nodes (RPC). REST API port can be kept closed for incoming external connections.
+
+Advanced networking
+======================
+
+It is possible that a client, or another node, may need to use a different IP address to connect to a ScyllaDB node from the address that the node is listening on. This is the case when a node is behind port forwarding. ScyllaDB allows for setting alternate IP addresses.
+
+Do not set any IP address to :code:`0.0.0.0`.
+
+.. list-table::
+   :widths: 30 40 30
+   :header-rows: 1
+
+   * - Address Type
+     - Description
+     - Default
+   * - listen_address (required)
+     - Address ScyllaDB listens for connections from other nodes. See storage_port and ssl_storage_ports.
+     - No default
+   * - rpc_address (required)
+     - Address on which ScyllaDB is going to expect CQL clients connections. See rpc_port, native_transport_port and native_transport_port_ssl in the :ref:`Networking <cqlsh-networking>` parameters.
+     - No default
+   * - broadcast_address
+     - Address that is broadcasted to tell other ScyllaDB nodes to connect to. Related to listen_address above.
+     - listen_address
+   * - broadcast_rpc_address
+     - Address that is broadcasted to tell the clients to connect to. Related to rpc_address.
+     - rpc_address
+
+
+If other nodes can connect directly to :code:`listen_address`, then :code:`broadcast_address` does not need to be set.
+
+If clients can connect directly to :code:`rpc_address`, then :code:`broadcast_rpc_address` does not need to be set.
+
+.. note:: For tips and examples on how to configure these addresses, refer to :doc:`How to Properly Set Address Values in scylla.yaml </kb/yaml-address>`
+
+.. _admin-core-dumps:
+
+Core dumps
+----------
+On RHEL and CentOS, the `Automatic Bug Reporting Tool <https://abrt.readthedocs.io/en/latest/>`_ conflicts with ScyllaDB coredump configuration. Remove it before installing ScyllaDB: :code:`sudo yum remove -y abrt`
+
+ScyllaDB places any core dumps in :code:`var/lib/scylla/coredump`. They are not visible with the :code:`coredumpctl` command. See the :doc:`System Configuration Guide </getting-started/system-configuration/>` for details on core dump configuration scripts. Check with ScyllaDB support before sharing any core dump, as they may contain sensitive data.
+
+Schedule fstrim
+----------------------
+
+ScyllaDB sets up daily fstrim on the filesystem(s),
+containing your ScyllaDB commitlog and data directory. This utility will
+discard, or trim, any blocks no longer in use by the filesystem.
+
+Experimental Features
+-------------------------------
+
+ScyllaDB uses experimental flags to expose non-production-ready features safely. These features are not stable enough to be used in production, and their API will likely change, breaking backward or forward compatibility.
+
+In recent ScyllaDB versions, these features are controlled by the ``experimental_features`` list in scylla.yaml, allowing one to choose which experimental to enable.
+Use ``scylla --help`` to get the list of experimental features.
+
+.. _admin-keyspace-storage-options:
+
+Keyspace storage options
+------------------------
+
+By default, SStables of a keyspace are stored in a local directory.
+As an alternative, you can configure your keyspace to be stored on Amazon S3,
+another S3-compatible object store, or Google Cloud Storage.
+
+Before creating keyspaces with object storage, you need to
+:ref:`configure <object-storage-configuration>` the object storage
+credentials and endpoint. The keyspace is then created with a ``STORAGE``
+option naming that endpoint - see
+:ref:`Keyspace storage options <cql-keyspace-storage-options>` for the CQL
+syntax.
+
+.. important::
+
+   Object-storage keyspaces are a **Preview** feature: they are available for
+   evaluation, but are not generally available and are not recommended for
+   production data. Review :ref:`Object storage keyspaces: status and limitations
+   <object-storage-limitations>` before using this feature. In particular,
+   snapshots and backup are **not available** for object-storage keyspaces.
+
+.. _admin-object-storage-config:
+
+Required configuration
+======================
+
+Object storage has far higher latency than local disks, and the following
+settings must be adjusted before using an object-storage keyspace:
+
+* ``query_page_size_in_bytes: 67108864`` (64 MiB). Without a larger page size,
+  range scans and multi-partition reads issue many small object requests and are
+  liable to time out.
+* Increased request timeouts. The relevant ``scylla.yaml`` options are
+  ``range_request_timeout_in_ms`` (default 10000), ``read_request_timeout_in_ms``
+  (5000) and ``write_request_timeout_in_ms`` (2000); all are live-updateable.
+  See :ref:`scylla.yaml <admin-scylla.yaml>` for the full list. The increase can
+  also be scoped to the affected workload instead of raising the global defaults,
+  with the ``USING TIMEOUT`` CQL extension on individual statements or with a
+  per-service-level timeout. Client-side timeouts are configured in the driver
+  and must be raised to match.
+* ``force_capacity_based_balancing: true``. By default the tablet load balancer
+  equalizes storage utilization, using SSTable sizes fetched from load
+  statistics. Those sizes do not correspond to local disk usage for
+  object-storage keyspaces, so the balancer must be switched to capacity based
+  balancing, which treats tablets as equally sized and balances against node and
+  shard capacity instead. The option is live-updateable.
+
+Verifying keyspace storage
+==========================
+
+.. code-block:: cql
+
+   SELECT keyspace_name, storage_type, storage_options
+   FROM system_schema.scylla_keyspaces;
+
+.. code-block:: none
+
+    keyspace_name | storage_type | storage_options
+   ---------------+--------------+---------------------------------------------------------------------------
+               ks |           S3 | {'bucket': 'my-bucket', 'endpoint': 'https://s3.us-east-1.amazonaws.com'}
+
+``storage_type`` is set only for object-storage keyspaces, to ``S3`` or ``GS``,
+and ``storage_options`` then holds the bucket and endpoint. There is no
+``LOCAL`` value: a keyspace that does not appear here, or appears with a null
+``storage_type``, is not stored on object storage. This table is not a list of
+all keyspaces.
+
+.. _object-storage-limitations:
+
+Object storage keyspaces: status and limitations
+-------------------------------------------------
+
+Object-storage keyspaces are a **Preview** feature in this release.
+
+Not every limitation listed below is enforced. Materialized views, secondary
+indexes, LWT, counters and CDC are accepted on an object-storage keyspace
+without an error, and their behavior there is undefined and untested.
+
+Object-storage keyspaces target archival workloads: data that is queried
+infrequently and benefits from object-storage pricing. Read latency is
+substantially higher than on local disks, and there is no local disk cache, so
+the cost of a read scales with the number of SSTables it touches.
+
+Supported
+=========
+
+* Tablets.
+* Reads, writes, memtable flush and compaction.
+* Adding, removing, replacing and decommissioning nodes. Tablet migration moves
+  no data for object-storage keyspaces: ownership of the shared objects is
+  transferred by reference instead of copying them.
+* Repair, including incremental repair.
+* Encryption at Rest.
+* Amazon S3 and S3-compatible object stores. Google Cloud Storage works over
+  the same code path, but is **experimental** - see below.
+
+Not supported
+=============
+
+.. list-table::
+   :widths: 35 65
+   :header-rows: 1
+
+   * - Capability
+     - Status
+   * - Snapshots, backup and restore
+     - Not available. ``nodetool snapshot`` fails for object-storage keyspaces
+       with ``Snapshotting non-local tables is not implemented``, and every
+       backup path is built on snapshots. Restoring **into** an object-storage
+       keyspace is likewise unavailable.
+   * - Vnode keyspaces
+     - Not supported. An object-storage keyspace must use tablets, which is the
+       default for new keyspaces.
+   * - Mixed-storage clusters
+     - Not supported, and refused. A cluster must use either local storage or
+       object storage for its user keyspaces, not both. ``CREATE KEYSPACE`` is
+       rejected when the storage it asks for differs from the storage the
+       cluster's existing user keyspaces use. A cluster that already holds
+       keyspaces of both kinds keeps working, and is only warned about. The
+       ``restrict_mixed_storage_clusters`` option relaxes the refusal to a
+       warning (``warn``) or removes it (``false``); it is live-updateable and
+       defaults to ``true``.
+   * - Materialized views and secondary indexes
+     - Not supported.
+   * - LWT, counters, CDC, Alternator
+     - Not supported. An Alternator table is stored locally, so ``CreateTable``
+       is rejected with a ``ValidationException`` on a cluster whose user
+       keyspaces are in object storage. That refusal follows
+       ``restrict_mixed_storage_clusters`` as well.
+   * - Size based tablet load balancing
+     - The load balancer's size based mode treats SSTable sizes as local disk
+       usage, which does not hold for object storage. Set
+       ``force_capacity_based_balancing: true`` as described in
+       :ref:`Required configuration <admin-object-storage-config>`.
+   * - Changing a keyspace's storage type
+     - Not possible. ``ALTER KEYSPACE`` cannot move a keyspace between local and
+       object storage. Moving existing data means creating a second keyspace
+       with the desired storage and copying the data through CQL, reading from
+       one and writing to the other.
+   * - Google Cloud Storage backend
+     - Experimental. ScyllaDB exposes no per-request metrics for the GCS
+       backend, so object-storage request rate, latency, retries and errors
+       cannot be observed. Use S3 for production deployments.
+
+Backup and ScyllaDB Manager
+===========================
+
+ScyllaDB Manager cannot back up object-storage keyspaces, and a backup task that
+includes them fails. There is no way to back up an object-storage keyspace in
+this release.
+
+Storing SSTables in an object store does **not** make them a backup. The objects
+are live SSTables, and ScyllaDB deletes them when the last reference to them
+goes away.
+
+.. _admin-views-with-tablets:
+
+Views with Tablets
+------------------
+
+Materialized Views (MV) and Secondary Indexes (SI) are supported in keyspaces that use tablets
+only when the keyspaces are :term:`RF-rack-valid <RF-rack-valid keyspace>`.
+
+When a keyspace contains a Materialized View or Secondary Index, some operations are restricted to maintain
+the RF-rack condition. The following actions are not allowed while the view or index is present:
+
+* Altering the keyspace's replication factor to a value that would violate the RF-rack-valid property
+* Adding a node in a new rack in an existing datacenter
+* Removing the last node in a rack
+
+
+Monitoring
+---------------------
+ScyllaDB exposes interfaces for online monitoring, as described below.
+
+Monitoring Interfaces
+==========================
+
+`ScyllaDB Monitoring Interfaces <https://monitoring.docs.scylladb.com/stable/reference/monitoring_apis.html>`_
+
+Monitoring Stack
+=======================
+
+|mon_root|
+
+.. REST
+
+.. include:: /operating-scylla/rest.rst
+
+Un-contents
+-----------
+
+ScyllaDB is designed for high performance before tuning, for fewer layers that interact in unpredictable ways, and to use better algorithms that do not require manual tuning. The following items are found in the manuals for other data stores but do not need to appear here.
+
+Configuration un-contents
+============================
+
+* Generating tokens
+* Configuring virtual nodes
+
+Operations un-contents
+============================
+
+* Tuning Bloom filters
+* Data caching
+* Configuring memtable throughput
+* Configuring compaction
+* Compression
+
+Testing compaction and compression
+====================================
+
+* Tuning Java resources
+* Purging gossip state on a node
+
+
+Help with ScyllaDB
+--------------------------
+Contact `Support <https://www.scylladb.com/product/support/>`_, or visit the ScyllaDB `Community <https://www.scylladb.com/open-source-community/>`_ page for peer support.
+
+.. include:: /rst_include/apache-copyrights-index.rst
+
+.. include:: /rst_include/apache-copyrights-index-all-attributes.rst

@@ -9935,8 +9935,10 @@ value set at a broader one:
 * `NODE` overrides `RACK`, which overrides `DATACENTER`, which overrides `CLUSTER`.
 
 Each option supports a fixed set of scopes. Options that describe a table (such as
-`auto_repair_enabled`) can be set at `TABLE`, `KEYSPACE` and `CLUSTER` scope. No option
-currently supports the `DATACENTER`, `RACK` or `NODE` scopes.
+`auto_repair_enabled`) can be set at `TABLE`, `KEYSPACE` and `CLUSTER` scope. Options that
+describe the cluster as a whole (such as `repair_hints_batchlog_flush_discard_unreplayed_hints`)
+can be set at `CLUSTER` scope only. No option currently supports the `DATACENTER`, `RACK` or
+`NODE` scopes.
 
 Each scope stores only the values that were explicitly set there. The *effective* value of an
 option for a table is the value stored at the narrowest scope that has one: the table’s own value
@@ -10045,10 +10047,11 @@ emitted, which is the form used for backup and restore. See [DESCRIBE SCHEMA](ht
 
 ## Available options
 
-| Option                             | Type    | Scopes                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-|------------------------------------|---------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `auto_repair_enabled`              | boolean | `CLUSTER`, `KEYSPACE`, `TABLE` | Enable [automatic repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) for tablet-based tables. Default:<br/>`false`. Until the deprecated `auto_repair_enabled_default` option is removed, a node<br/>that sets it in `scylla.yaml` uses that value when no scope sets this option.                                                                                                                                                                                                     |
-| `auto_repair_threshold_in_seconds` | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. `0` disables time-based<br/>automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option. |
+| Option                                                 | Type    | Scopes                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|--------------------------------------------------------|---------|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `auto_repair_enabled`                                  | boolean | `CLUSTER`, `KEYSPACE`, `TABLE` | Enable [automatic repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) for tablet-based tables. Default:<br/>`false`. Until the deprecated `auto_repair_enabled_default` option is removed, a node<br/>that sets it in `scylla.yaml` uses that value when no scope sets this option.                                                                                                                                                                                                                                                             |
+| `auto_repair_threshold_in_seconds`                     | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. `0` disables time-based<br/>automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option.                                                         |
+| `repair_hints_batchlog_flush_discard_unreplayed_hints` | boolean | `CLUSTER`                      | A repair of a table with `tombstone_gc` in `repair` mode waits for the hints written<br/>before it to be sent, and records no repair time if that times out. With this option on,<br/>such a timeout discards those hints, so that the next repair does not wait for them again.<br/>This drops every regular hint on the node, for all tables and destinations; a write<br/>acknowledged at consistency level `ANY` that only hints hold is lost. Hints for<br/>materialized views are never discarded. Default: `true`, in effect once every node knows<br/>the option. |
 
 
 # cluster-platform-migration.md
@@ -24511,6 +24514,11 @@ function_name: [ `keyspace_name` '.' ] `name` -->
 
 ### Native functions
 
+Native functions whose names are made of several words run together, such as `toTimestamp` and `blobAsInt`,
+can also be called by a “snake_case” name, with the words separated by underscores - here, `to_timestamp` and
+`blob_as_int`. These are the names with which Cassandra 5 documents these functions. Either name can be used.
+The only exceptions are the deprecated functions `dateOf` and `unixTimestampOf`, which have no snake_case names.
+
 #### Cast
 
 Supported starting from ScyllaDB version 2.1
@@ -27625,13 +27633,13 @@ arguments) as well as the format ScyllaDB will use when returning data for `SELE
 
 ## The fromJson() Function
 
-The `fromJson()` function may be used similarly to `INSERT JSON`, but for a single column value. It may only be used
+The `fromJson()` function (which can also be called `from_json()`) may be used similarly to `INSERT JSON`, but for a single column value. It may only be used
 in the `VALUES` clause of an `INSERT` statement or as one of the column values in an `UPDATE`, `DELETE`, or
 `SELECT` statement. For example, it cannot be used in the selection clause of a `SELECT` statement.
 
 ## The toJson() Function
 
-The `toJson()` function may be used similarly to `SELECT JSON`, but for a single column value. It may only be used
+The `toJson()` function (which can also be called `to_json()`) may be used similarly to `SELECT JSON`, but for a single column value. It may only be used
 in the selection clause of a `SELECT` statement.
 
 * [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/master/cql/index.md)

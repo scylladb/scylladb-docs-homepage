@@ -401,8 +401,10 @@ value set at a broader one:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">NODE</span></code> overrides <code class="docutils literal notranslate"><span class="pre">RACK</span></code>, which overrides <code class="docutils literal notranslate"><span class="pre">DATACENTER</span></code>, which overrides <code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code>.</p></li>
 </ul>
 <p>Each option supports a fixed set of scopes. Options that describe a table (such as
-<code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code>) can be set at <code class="docutils literal notranslate"><span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code> and <code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code> scope. No option
-currently supports the <code class="docutils literal notranslate"><span class="pre">DATACENTER</span></code>, <code class="docutils literal notranslate"><span class="pre">RACK</span></code> or <code class="docutils literal notranslate"><span class="pre">NODE</span></code> scopes.</p>
+<code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code>) can be set at <code class="docutils literal notranslate"><span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code> and <code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code> scope. Options that
+describe the cluster as a whole (such as <code class="docutils literal notranslate"><span class="pre">repair_hints_batchlog_flush_discard_unreplayed_hints</span></code>)
+can be set at <code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code> scope only. No option currently supports the <code class="docutils literal notranslate"><span class="pre">DATACENTER</span></code>, <code class="docutils literal notranslate"><span class="pre">RACK</span></code> or
+<code class="docutils literal notranslate"><span class="pre">NODE</span></code> scopes.</p>
 <p>Each scope stores only the values that were explicitly set there. The <em>effective</em> value of an
 option for a table is the value stored at the narrowest scope that has one: the table’s own value
 if it has one, otherwise the keyspace’s, otherwise the cluster’s. If no scope stores a value, the
@@ -521,6 +523,17 @@ and a tablet that was never repaired is eligible immediately. <code class="docut
 automatic repair. Default: <code class="docutils literal notranslate"><span class="pre">86400</span></code>. Until the deprecated
 <code class="docutils literal notranslate"><span class="pre">auto_repair_threshold_default_in_seconds</span></code> option is removed, a node that sets it in
 <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> uses that value when no scope sets this option.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">repair_hints_batchlog_flush_discard_unreplayed_hints</span></code></p></td>
+<td><p>boolean</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code></p></td>
+<td><p>A repair of a table with <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> in <code class="docutils literal notranslate"><span class="pre">repair</span></code> mode waits for the hints written
+before it to be sent, and records no repair time if that times out. With this option on,
+such a timeout discards those hints, so that the next repair does not wait for them again.
+This drops every regular hint on the node, for all tables and destinations; a write
+acknowledged at consistency level <code class="docutils literal notranslate"><span class="pre">ANY</span></code> that only hints hold is lost. Hints for
+materialized views are never discarded. Default: <code class="docutils literal notranslate"><span class="pre">true</span></code>, in effect once every node knows
+the option.</p></td>
 </tr>
 </tbody>
 </table>
@@ -711,6 +724,12 @@ automatic repair. Default: <code class="docutils literal notranslate"><span clas
                 
                     <li>
                         <a href="cluster-config.html">master</a>
+                    </li>
+                
+            
+                
+                    <li>
+                        <a href="../../branch-2026.4/cql/cluster-config.html">2026.4</a>
                     </li>
                 
             
@@ -1165,7 +1184,7 @@ automatic repair. Default: <code class="docutils literal notranslate"><span clas
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Sep 2026.
+                        Last updated on 23 Sep 2026.
                     
                 </div>
             
