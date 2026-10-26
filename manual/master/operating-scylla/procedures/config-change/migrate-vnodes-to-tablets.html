@@ -461,10 +461,21 @@ keyspace with replication <code class="docutils literal notranslate"><span class
 if <code class="docutils literal notranslate"><span class="pre">dc1</span></code> has three racks and <code class="docutils literal notranslate"><span class="pre">dc2</span></code> has two racks. An
 <a class="reference internal" href="../cluster-management/arbiter-dc.html"><span class="doc">arbiter datacenter</span></a>,
 which contains only zero-token nodes, must have RF=0. To change the
-replication factor, see <a class="reference internal" href="../../../kb/rf-increase.html"><span class="doc">How to Safely Increase the Replication Factor</span></a>.</p></li>
-<li><p>All tables in the keyspace should have <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> mode set to <code class="docutils literal notranslate"><span class="pre">repair</span></code>
-to prevent tombstone garbage collection from running during migration.
-For guidance, see <a class="reference internal" href="../../../cql/ddl.html#ddl-tombstones-gc"><span class="std std-ref">Tombstone Garbage Collection</span></a>.</p></li>
+replication factor, see <a class="reference internal" href="../../../kb/rf-increase.html"><span class="doc">How to Safely Increase the Replication Factor</span></a>.
+If the keyspace has materialized views or secondary indexes, or the
+<code class="docutils literal notranslate"><span class="pre">rf_rack_valid_keyspaces</span></code> option is enabled, the migration refuses to
+start unless the keyspace is RF-rack-valid. Migration with the
+<code class="docutils literal notranslate"><span class="pre">enforce_rack_list</span></code> option enabled is not currently supported. Check the
+Limitations section below for more details.</p></li>
+<li><p>All tables, materialized views and secondary indexes in the keyspace should
+have <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> mode set to <code class="docutils literal notranslate"><span class="pre">repair</span></code> to prevent tombstone garbage
+collection from running during migration. For guidance, see
+<a class="reference internal" href="../../../cql/ddl.html#ddl-tombstones-gc"><span class="std std-ref">Tombstone Garbage Collection</span></a>.</p></li>
+<li><p>All materialized views and secondary indexes in the keyspace must be
+<strong>fully built</strong> before the migration is started. Builds in progress are not
+carried over to tablets. Check the build status with
+<a class="reference internal" href="../../nodetool-commands/viewbuildstatus.html"><span class="doc">nodetool viewbuildstatus</span></a>;
+for a secondary index, pass the name of its backing view, <code class="docutils literal notranslate"><span class="pre">&lt;index</span> <span class="pre">name&gt;_index</span></code>.</p></li>
 </ul>
 </section>
 </section>
@@ -472,8 +483,15 @@ For guidance, see <a class="reference internal" href="../../../cql/ddl.html#ddl-
 <h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
 <p>The current migration procedure has the following limitations:</p>
 <ul class="simple">
-<li><p><strong>No schema changes</strong> during the migration. Do not create, alter, or drop
-tables in the migrating keyspace until the migration is finished.</p></li>
+<li><p>Clusters with the <code class="docutils literal notranslate"><span class="pre">enforce_rack_list</span></code> option enabled are not yet
+supported: the migrated keyspace would keep its numeric replication factors,
+which the option rejects. Disable the option, run the migration, convert the
+replication factors to rack lists with <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code>, then enable it
+again.</p></li>
+<li><p><strong>No schema changes</strong> during the migration. Creating or dropping tables, views,
+or indexes, and dropping the migrating keyspace are rejected until the
+migration is finished. Altering the properties of existing tables and views is
+allowed, except enabling CDC, which is not supported.</p></li>
 <li><p><strong>No planned topology changes</strong> during the migration. Do not add, remove,
 decommission, or rebuild nodes while a migration is in progress. Replacing
 a dead node is supported as an emergency recovery operation.</p></li>
@@ -483,8 +501,13 @@ on the migrating keyspace while a migration is in progress.</p></li>
 Do not take snapshots, run backups, or restore into the migrating keyspace
 while the migration is in progress.</p></li>
 <li><p><strong>No TRUNCATE</strong> on tables in the migrating keyspace during the migration.</p></li>
-<li><p>Only <strong>CQL base tables</strong> can be migrated. Materialized views, secondary
-indexes, CDC tables, and Alternator tables are not supported.</p></li>
+<li><p>Only <strong>CQL tables, materialized views, and secondary indexes</strong> can be
+migrated. CDC tables and Alternator tables are not supported. Views whose
+partition key consists of exactly the base table’s partition key columns,
+in the same order, including the backing views of local secondary indexes,
+are migrated as <a class="reference internal" href="../../../reference/glossary.html#term-Colocated-Table"><span class="xref std std-term">co-located tables</span></a> with their base
+table (sharing its tablets). Other views, including the backing views of
+global secondary indexes, get tablets of their own.</p></li>
 <li><p>Tables with <strong>counters</strong> or <strong>LWTs</strong> cannot be migrated.</p></li>
 <li><p>Only tables using the <strong>Incremental Compaction Strategy (ICS)</strong> can be migrated.
 Other compaction strategies are not supported.</p></li>
@@ -696,6 +719,12 @@ keyspace cannot be switched back to vnodes.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets finalize &lt;keyspace&gt;</span>
 </pre></div>
 </div>
+<p>Finalization switches co-located materialized views and local secondary
+indexes that use the <code class="docutils literal notranslate"><span class="pre">repair</span></code> <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> mode to <code class="docutils literal notranslate"><span class="pre">timeout</span></code>.
+After the migration they become
+<a class="reference internal" href="../../../reference/glossary.html#term-Colocated-Table"><span class="xref std std-term">co-located tables</span></a>, which do not support
+<code class="docutils literal notranslate"><span class="pre">repair</span></code>, and <code class="docutils literal notranslate"><span class="pre">timeout</span></code> is their default mode. Other views and the
+backing views of global secondary indexes keep their mode.</p>
 </li>
 <li><p>Verify that the keyspace status changed to <code class="docutils literal notranslate"><span class="pre">tablets</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool migrate-to-tablets status &lt;keyspace&gt;</span>
@@ -746,6 +775,11 @@ instead of continuing from progress recorded before the migration.</p>
 <li><p>Run a full cluster repair to ensure that all nodes have the most up-to-date
 data. As the storage upgrade process kept each node offline for an extended
 period of time, its dataset might have become stale.</p>
+<p>If the keyspace has materialized views or secondary indexes, the repair
+also covers updates to them that were lost during finalization. Each node
+switches to the tablet-based way of pairing base and view replicas when it
+applies the finalization, so view updates written while the nodes
+disagreed can miss some view replicas.</p>
 <p>Either run the repair with <code class="docutils literal notranslate"><span class="pre">nodetool</span></code>, as described below, or let
 <a class="reference external" href="https://manager.docs.scylladb.com/">ScyllaDB Manager</a> run it for you.</p>
 <p>For vnode-based keyspaces, run
@@ -1653,7 +1687,7 @@ storage mode of node it replaced.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Oct 2026.
+                        Last updated on 30 Jul 2026.
                     
                 </div>
             

@@ -3445,6 +3445,16 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > * **Default value:** `service::default_target_tablet_size / 100`
 > * Liveness: `True`
 
+<a id="confprop-tablet-transition-abort-grace-period-in-seconds"></a>
+
+### tablet_transition_abort_grace_period_in_seconds
+
+> Default grace period given to in-flight tablet transitions when disabling tablet balancing. Transitions which can     still be cancelled after it, tablet repairs included, are cancelled; the others are waited for. A cancelled repair     drops its tablets from the repair request without reporting them as failed. Cancelling a transition which was     adding a replica leaves that tablet below its replication factor until balancing is enabled again. Callers of the     API can pass their own grace period, which overrides this. 0, the default, cancels nothing.
+
+> * **Type:** `uint32_t`
+> * **Default value:** `0`
+> * Liveness: `True`
+
 <a id="confgroup-ungrouped-properties"></a>
 
 ## Ungrouped properties

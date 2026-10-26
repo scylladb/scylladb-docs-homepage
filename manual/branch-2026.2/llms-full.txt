@@ -4311,8 +4311,12 @@ Restoring to a live cluster is not yet supported.
      > See the [ScyllaDB Manager backup documentation](https://manager.docs.scylladb.com/stable/backup/index.html)
      > for more details on how to configure the upload method.
 3. **Native Configuration**:
-   * For native backup to work without interference to users’ workload, it is
-     best to limit io-scheduling. See [stream_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/branch-2026.2/reference/configuration-parameters.md#confprop-stream-io-throughput-mb-per-sec) for details.
+   * To prevent native backup from saturating the network and affecting user
+     workloads, limit background I/O throughput with
+     [maintenance_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/branch-2026.2/reference/configuration-parameters.md#confprop-maintenance-io-throughput-mb-per-sec).
+     This limit applies to all background activities together, including backup,
+     streaming, and maintenance compaction. To limit only the backup upload, use
+     [backup_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/branch-2026.2/reference/configuration-parameters.md#confprop-backup-io-throughput-mb-per-sec).
    * For native backup to work, ScyllaDB node must have access to the S3 bucket.
      See [Configuring Object Storage](https://docs.scylladb.com/manual/branch-2026.2/operating-scylla/admin.md#object-storage-configuration) for details.
 
@@ -11936,7 +11940,7 @@ having the highest priority:
 
 ### stream_io_throughput_mb_per_sec
 
-> Throttles streaming I/O to the specified total throughput (in MiBs/s) across the entire system. Streaming I/O includes the one performed by repair and both RBNO and legacy topology operations such as adding or removing a node. Setting the value to 0 disables stream throttling. It is recommended to set the value for this parameter to be 75% of network bandwidth
+> Throttles streaming I/O to the specified total throughput (in MiB/s) across the entire system. Streaming I/O includes the one performed by repair and both RBNO and legacy topology operations such as adding or removing a node. Setting the value to 0 disables stream throttling.     When maintenance_io_throughput_mb_per_sec is not set, this value is used in its place and limits the background I/O.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `0`
@@ -14695,7 +14699,7 @@ having the highest priority:
 
 ### maintenance_io_throughput_mb_per_sec
 
-> Throttles background I/O to the specified total throughput (in MiBs/s) across the entire system. Background I/O includes the one performed by repair and both RBNO and legacy topology operations such as adding or removing a node. Setting the value to 0 disables background IO throttling. It is recommended to set the value for this parameter to be 75% of network bandwidth
+> Throttles background I/O to the specified total throughput (in MiB/s) across the entire system. Background I/O is the sum of all low-priority activities – streaming performed by repair and by both RBNO and legacy topology operations such as adding or removing a node, maintenance compaction and backup. Setting the value to 0 disables background IO throttling.     It is recommended to set the value for this parameter to be 75% of network bandwidth, so that the background activities do not saturate the network interface and interfere with the user workload.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `0`
@@ -14705,7 +14709,7 @@ having the highest priority:
 
 ### backup_io_throughput_mb_per_sec
 
-> Throttles backup I/O to the specified total throughput (in MiBs/s) across the entire system
+> Throttles backup I/O to the specified total throughput (in MiB/s) across the entire system. Setting the value to 0 disables backup throttling.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `0`
