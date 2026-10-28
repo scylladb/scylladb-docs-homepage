@@ -1277,7 +1277,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > > Related information: Failure detection and recovery
 > * **Type:** `uint32_t`
 > * **Default value:** `10800000`
-> * Liveness: `False`
+> * Liveness: `True`
 
 <a id="confprop-batchlog-replay-cleanup-after-replays"></a>
 

@@ -400,11 +400,12 @@
 <h2>Choosing a restore method<a class="headerlink" href="#choosing-a-restore-method" title="Link to this heading">¶</a></h2>
 <p>ScyllaDB supports several restore methods. Choose the one that matches where your backup files are and whether the cluster topology changed since the backup was taken:</p>
 <ul class="simple">
+<li><p><a class="reference internal" href="#restore-cluster-backup"><span class="std std-ref">Restore a cluster backup</span></a> - restore a backup made with <a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool cluster backup</span></a> into a tablet-based table. Each replica downloads the SSTables of its own tablets straight from object storage, with no streaming between nodes. Runs on a running cluster.</p></li>
 <li><p><a class="reference internal" href="#restore-object-storage"><span class="std std-ref">Restore from object storage</span></a> - restore SSTables backed up to S3-compatible object storage with <a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool backup</span></a>. Runs on a running cluster and works regardless of cluster topology changes since the backup.</p></li>
 <li><p><a class="reference internal" href="#restore-load-and-stream"><span class="std std-ref">Restore with load and stream</span></a> - upload backed-up SSTable files to a running cluster; the data is streamed to the nodes owning it. Works regardless of cluster topology changes since the backup.</p></li>
 <li><p><a class="reference internal" href="#restore-procedure"><span class="std std-ref">Restore to an identical cluster</span></a> - copy snapshot files back in place and restart the nodes. Requires a cluster with the same number of nodes and the same token distribution as at the time of the backup, and each node must be restored from the backup of the <strong>same node</strong>. Suitable for vnode-based keyspaces only.</p></li>
 </ul>
-<p>For cluster-wide backup and restore, use <a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a>, which orchestrates the process across the cluster.</p>
+<p><a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a> can also back up and restore the whole cluster, orchestrating the process across the nodes.</p>
 </section>
 <section id="prerequisites">
 <span id="restore-prerequisites"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
@@ -431,6 +432,46 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you are restoring <a class="reference internal" href="../../security/encryption-at-rest.html"><span class="doc">encrypted backup files</span></a>, make sure ScyllaDB is configured with the same keys that were used to encrypt the data before starting the restore process.</p>
+</div>
+</section>
+<section id="restore-a-cluster-backup">
+<span id="restore-cluster-backup"></span><h2>Restore a cluster backup<a class="headerlink" href="#restore-a-cluster-backup" title="Link to this heading">¶</a></h2>
+<p>Use this method to restore a backup made with <a class="reference internal" href="backup.html#backup-native-backup"><span class="std std-ref">nodetool cluster backup</span></a> into a tablet-based table.
+The restore runs as a topology operation: the replicas of each tablet download the SSTables that belong to the tablet
+directly from object storage and attach them, so no data is streamed between nodes. Repaired data that the backup
+stored as a single copy is restored to every replica it was taken from.</p>
+<p>The object storage endpoint must be configured on the nodes, as described in <a class="reference internal" href="../../admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a>.</p>
+<p>The backup holds the SSTables and their manifests only. It does not include the schema, so the keyspace and table
+must exist before the restore starts: recreate them from the schema backup taken with <code class="docutils literal notranslate"><span class="pre">DESC</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span> <span class="pre">AND</span> <span class="pre">PASSWORDS</span></code>,
+as described in the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a>.</p>
+<p>There is no nodetool command for this restore yet. It is started through the REST API
+(see the <a class="reference internal" href="../../../reference/api/storage-service.html"><span class="doc">storage_service API reference</span></a>), with
+<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/storage_service/tablets/restore</span></code>. The query parameters are the destination <code class="docutils literal notranslate"><span class="pre">keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">table</span></code>
+and the <code class="docutils literal notranslate"><span class="pre">snapshot</span></code> name. The request body is a JSON array with one entry per datacenter the keyspace replicates to,
+each giving the <code class="docutils literal notranslate"><span class="pre">datacenter</span></code>, the <code class="docutils literal notranslate"><span class="pre">endpoint</span></code>, <code class="docutils literal notranslate"><span class="pre">bucket</span></code> and <code class="docutils literal notranslate"><span class="pre">prefix</span></code> of the backup location, and <code class="docutils literal notranslate"><span class="pre">manifests</span></code>,
+the paths of the table’s backup manifests relative to that prefix.</p>
+<p><strong>Procedure</strong></p>
+<ol class="arabic">
+<li><p>Complete the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a>. The destination table must use tablets; restoring into a vnode-based table fails.</p></li>
+<li><p>Start the restore. For example, for a backup taken with <code class="docutils literal notranslate"><span class="pre">--location</span> <span class="pre">mydc,s3.us-east-2.amazonaws.com,bucket-foo,backups/mysnapshot</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s1">'http://&lt;node&gt;:10000/storage_service/tablets/restore?keyspace=mykeyspace&amp;table=team_roster&amp;snapshot=mysnapshot'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'[{"datacenter": "mydc",</span>
+<span class="s1">        "endpoint": "s3.us-east-2.amazonaws.com",</span>
+<span class="s1">        "bucket": "bucket-foo",</span>
+<span class="s1">        "prefix": "backups/mysnapshot",</span>
+<span class="s1">        "manifests": ["snapshots/mykeyspace/team_roster/mysnapshot/manifest.json"]}]'</span>
+</pre></div>
+</div>
+<p>The call returns the ID of the restore task.</p>
+</li>
+<li><p>Monitor the restore with the <a class="reference internal" href="../../nodetool-commands/tasks/index.html"><span class="doc">nodetool tasks</span></a> commands, for example
+<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">wait</span> <span class="pre">&lt;task</span> <span class="pre">ID&gt;</span></code> to wait for it to finish, or <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">status</span> <span class="pre">&lt;task</span> <span class="pre">ID&gt;</span></code> to see its progress.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A replica that is down cannot restore its tablets, so the restore fails rather than wait for it.
+Bring the node back, or remove it from the cluster, and run the restore again.</p>
 </div>
 </section>
 <section id="restore-from-object-storage">
@@ -740,6 +781,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li><a class="reference internal" href="#">Restore from a Backup and Incremental Backup</a><ul>
 <li><a class="reference internal" href="#choosing-a-restore-method">Choosing a restore method</a></li>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#restore-a-cluster-backup">Restore a cluster backup</a></li>
 <li><a class="reference internal" href="#restore-from-object-storage">Restore from object storage</a></li>
 <li><a class="reference internal" href="#restore-with-load-and-stream">Restore with load and stream</a></li>
 <li><a class="reference internal" href="#restore-to-an-identical-cluster">Restore to an identical cluster</a><ul>
@@ -1263,7 +1305,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Aug 2026.
+                        Last updated on 23 Oct 2026.
                     
                 </div>
             

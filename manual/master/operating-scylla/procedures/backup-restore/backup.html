@@ -389,8 +389,10 @@
 <h1>Backup your Data<a class="headerlink" href="#backup-your-data" title="Link to this heading">¶</a></h1>
 <p>Even though ScyllaDB is a fault-tolerant system, it is recommended to regularly back up the data to external storage.</p>
 <ul class="simple">
-<li><p>Backup is a per-node procedure. Make sure to back up each node in your
-cluster. For cluster-wide backup and restore, see <a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a>.</p></li>
+<li><p>Snapshot-based backup is a per-node procedure. Make sure to back up each node in your
+cluster. To back up the whole cluster from one node, use the cluster-wide
+<a class="reference internal" href="#backup-native-backup"><span class="std std-ref">Native Backup</span></a>, or <a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a>,
+which orchestrates backup and restore across the cluster.</p></li>
 <li><p>Backup works the same for non-encrypted and encrypted SStables. You can use
 <a class="reference internal" href="../../security/encryption-at-rest.html"><span class="doc">Encryption at Rest</span></a>
 without affecting the backup procedure.</p></li>
@@ -399,11 +401,12 @@ without affecting the backup procedure.</p></li>
 <ul class="simple">
 <li><p><a class="reference internal" href="#backup-full-backup-snapshots"><span class="std std-ref">Full Backup</span></a> - Copy the entire data of a node.</p></li>
 <li><p><a class="reference internal" href="#backup-incremental-backup"><span class="std std-ref">Incremental Backup</span></a> - Updates (delta) - flushed SSTables.</p></li>
+<li><p><a class="reference internal" href="#backup-native-backup"><span class="std std-ref">Native Backup</span></a> - ScyllaDB uploads the SSTables of a snapshot to S3-compatible object storage, cluster-wide or per node.</p></li>
 </ul>
 <section id="full-backup-snapshots">
 <span id="backup-full-backup-snapshots"></span><h2>Full Backup - Snapshots<a class="headerlink" href="#full-backup-snapshots" title="Link to this heading">¶</a></h2>
-<p>Snapshots are taken using <a class="reference internal" href="../../nodetool-commands/snapshot.html"><span class="doc">nodetool snapshot</span></a>. First, the command flushes the MemTables from memory to SSTables on disk, and afterward, it creates a hard link for each SSTable in each keyspace.
-With time, SSTables are compacted, but the hard link keeps a copy of each file. This takes up an increasing amount of disk space. It is important to clear space by <a class="reference internal" href="delete-snapshot.html"><span class="doc">clean unnecessary snapshots</span></a>.</p>
+<p>Snapshots are taken using <a class="reference internal" href="../../nodetool-commands/snapshot.html"><span class="doc">nodetool snapshot</span></a>. First, the command flushes the MemTables from memory to SSTables on disk, and afterward, it creates a hard link for each SSTable in each keyspace and table.
+Over time, as SSTables are compacted, the original files remain hard-linked from the snapshot directories, so snapshots hold an increasing amount of disk space. It is important to clear space by <a class="reference internal" href="delete-snapshot.html"><span class="doc">cleaning unnecessary snapshots</span></a>.</p>
 <p><strong>Procedure</strong></p>
 <div class="line-block">
 <div class="line">1. Data can only be restored from a snapshot of the table schema, where data exists in a backup. Backup your schema, roles, permissions</div>
@@ -451,7 +454,20 @@ an older version of cqlsh may lead to data resurrection or data loss. To check t
 <div class="line">For example:</div>
 <div class="line"><code class="docutils literal notranslate"><span class="pre">/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/snapshots/1487847672222</span></code></div>
 </div>
-<p>From one of the nodes, recreate the schema. Repeat these steps for each node in the cluster.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, nodetool names the snapshot after the current time, in milliseconds since the Unix epoch.
+To choose the name (a.k.a. tag), list the keyspaces to snapshot, or set a TTL after which the snapshot
+is deleted automatically, see <a class="reference internal" href="../../nodetool-commands/snapshot.html"><span class="doc">nodetool snapshot</span></a>.
+<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">cluster</span> <span class="pre">snapshot</span></code> takes the snapshot on all nodes of the cluster with one command.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each snapshot directory also contains a <code class="docutils literal notranslate"><span class="pre">schema.cql</span></code> file with the <code class="docutils literal notranslate"><span class="pre">CREATE</span></code> statement of its table,
+including the table’s dropped columns. It describes that one table only, and does not include the keyspace,
+roles, permissions, or service levels, so it does not replace step 1.</p>
+</div>
+<p>Repeat these steps on each node in the cluster.</p>
 </section>
 <section id="incremental-backup">
 <span id="backup-incremental-backup"></span><h2>Incremental Backup<a class="headerlink" href="#incremental-backup" title="Link to this heading">¶</a></h2>
@@ -476,6 +492,57 @@ an older version of cqlsh may lead to data resurrection or data loss. To check t
 <div class="line">For example:</div>
 <div class="line"><code class="docutils literal notranslate"><span class="pre">/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/backups</span></code></div>
 </div>
+</section>
+<section id="native-backup">
+<span id="backup-native-backup"></span><h2>Native Backup<a class="headerlink" href="#native-backup" title="Link to this heading">¶</a></h2>
+<p>With native backup, ScyllaDB itself uploads the SSTables of a snapshot to S3-compatible object storage (AWS S3 or Google Cloud Storage).
+The upload runs inside the node, so its disk, CPU and network usage is scheduled and throttled like the rest of the node’s work,
+and no external tool needs access to the data directory. See <a class="reference internal" href="../../../features/backup-and-restore.html"><span class="doc">Backup and Restore Overview</span></a>
+for how native backup compares with uploading through the ScyllaDB Manager agent, and for the options that limit its I/O throughput.</p>
+<p>The object storage endpoint must be configured on the nodes first, as described in <a class="reference internal" href="../../admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a>.</p>
+<p>Native backup uploads the SSTables of the snapshot, not the schema. Back up the schema separately with
+<code class="docutils literal notranslate"><span class="pre">DESC</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span> <span class="pre">AND</span> <span class="pre">PASSWORDS</span></code>, as in the <a class="reference internal" href="#backup-full-backup-snapshots"><span class="std std-ref">Full Backup</span></a> procedure,
+so that it can be recreated before the data is restored.</p>
+<section id="cluster-wide-backup">
+<h3>Cluster-wide backup<a class="headerlink" href="#cluster-wide-backup" title="Link to this heading">¶</a></h3>
+<p>The whole cluster can be snapshotted and backed up from one node, with
+<a class="reference internal" href="../../nodetool-commands/snapshot.html"><span class="doc">nodetool cluster snapshot</span></a> and <a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool cluster backup</span></a>.
+The cluster snapshot is taken on all nodes and recorded in the <code class="docutils literal notranslate"><span class="pre">system_distributed</span></code> keyspace, and the backup then has each node upload its own SSTables
+to the location given for its datacenter.</p>
+<p>Cluster backup is designed for tablet-based keyspaces, and stores a <strong>single copy</strong> of the repaired data. For each tablet, SSTables whose data is covered
+by the tablet’s last repair are uploaded from one replica only, since the other replicas hold the same data. SSTables holding data that is not covered
+by that repair, because they were never repaired or were last repaired before it, are uploaded from every replica. The backup manifest records the
+replicas that were skipped, so that a restore repopulates all of them.
+To get the most out of this, run <a class="reference internal" href="../../nodetool-commands/cluster/repair.html"><span class="doc">nodetool cluster repair</span></a> before taking the snapshot.</p>
+<p>The backup is laid out as follows under the prefix of each location: the SSTables go under <code class="docutils literal notranslate"><span class="pre">sstables/</span></code>, and the manifest of each table goes to
+<code class="docutils literal notranslate"><span class="pre">snapshots/&lt;keyspace_name&gt;/&lt;table_name&gt;/&lt;snapshot_name&gt;/manifest.json</span></code>.</p>
+<p><strong>Procedure</strong></p>
+<p>On any node, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>cluster<span class="w"> </span>snapshot<span class="w"> </span>--tag<span class="w"> </span>mysnapshot<span class="w"> </span>mykeyspace
+nodetool<span class="w"> </span>cluster<span class="w"> </span>backup<span class="w"> </span>--location<span class="w"> </span>mydc,s3.us-east-2.amazonaws.com,bucket-foo,backups/mysnapshot<span class="w"> </span>--snapshot<span class="w"> </span>mysnapshot<span class="w"> </span>--keyspaces<span class="w"> </span>mykeyspace
+</pre></div>
+</div>
+<p>Repeat the <code class="docutils literal notranslate"><span class="pre">--location</span></code> option for each datacenter the keyspace replicates to. If the snapshot does not exist yet, <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">cluster</span> <span class="pre">backup</span></code> takes it,
+so the first command is optional. A backup that failed part-way can be run again with the same parameters; SSTables that were already uploaded are skipped.
+With <code class="docutils literal notranslate"><span class="pre">--move-files</span></code>, each node deletes the SSTable files it uploaded from its local disk. Unlike the per-node backup, the other snapshot files,
+such as <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code> and <code class="docutils literal notranslate"><span class="pre">schema.cql</span></code>, stay in the snapshot directory until the snapshot is cleared.</p>
+<p>To restore, see <a class="reference internal" href="restore.html#restore-cluster-backup"><span class="std std-ref">Restore a cluster backup</span></a>.</p>
+</section>
+<section id="per-node-backup">
+<h3>Per-node backup<a class="headerlink" href="#per-node-backup" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool backup</span></a> copies the SSTables of one table, from a snapshot taken on the node it runs on,
+to a bucket and prefix of your choice. Run it on each node, with a prefix that identifies the node and the snapshot, so that each node’s backup
+can be told apart and restored on its own. The snapshot’s <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code>, listing the uploaded SSTables, is uploaded under the same prefix.</p>
+<p><strong>Procedure</strong></p>
+<p>On each node, take a snapshot of the keyspace, and back up each of its tables:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>snapshot<span class="w"> </span>--tag<span class="w"> </span>mysnapshot<span class="w"> </span>mykeyspace
+nodetool<span class="w"> </span>backup<span class="w"> </span>--endpoint<span class="w"> </span>s3.us-east-2.amazonaws.com<span class="w"> </span>--bucket<span class="w"> </span>bucket-foo<span class="w"> </span>--prefix<span class="w"> </span>node1/mysnapshot/team_roster<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--keyspace<span class="w"> </span>mykeyspace<span class="w"> </span>--table<span class="w"> </span>team_roster<span class="w"> </span>--snapshot<span class="w"> </span>mysnapshot
+</pre></div>
+</div>
+<p>With the <code class="docutils literal notranslate"><span class="pre">--move-files</span></code> option, the snapshot files are deleted from the local disk once they are uploaded, so the snapshot no longer holds disk space.</p>
+<p>To restore, see <a class="reference internal" href="restore.html#restore-object-storage"><span class="std std-ref">Restore from object storage</span></a>.</p>
+</section>
 </section>
 <section id="additional-resources">
 <h2>Additional Resources<a class="headerlink" href="#additional-resources" title="Link to this heading">¶</a></h2>
@@ -608,6 +675,11 @@ an older version of cqlsh may lead to data resurrection or data loss. To check t
 <li><a class="reference internal" href="#">Backup your Data</a><ul>
 <li><a class="reference internal" href="#full-backup-snapshots">Full Backup - Snapshots</a></li>
 <li><a class="reference internal" href="#incremental-backup">Incremental Backup</a></li>
+<li><a class="reference internal" href="#native-backup">Native Backup</a><ul>
+<li><a class="reference internal" href="#cluster-wide-backup">Cluster-wide backup</a></li>
+<li><a class="reference internal" href="#per-node-backup">Per-node backup</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#additional-resources">Additional Resources</a></li>
 </ul>
 </li>
@@ -1126,7 +1198,7 @@ an older version of cqlsh may lead to data resurrection or data loss. To check t
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Aug 2026.
+                        Last updated on 23 Oct 2026.
                     
                 </div>
             

@@ -4627,28 +4627,28 @@ If `--nowait` flag is not set, the command relies on `user_task_ttl` internally.
 
 ```console
 nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)] cluster backup
-            [--keyspace <keyspace>] --table <table>
+            [--keyspaces <keyspace>]...
+            [--table <table>]
             [--snapshot <snapshot>]
             --location <dc>,<endpoint>,<bucket>(,<prefix>)
             [--location <dc2>,<endpoint2>,<bucket2>(,<prefix2>)]...
             [--nowait]
             [--move-files]
-            [... keyspaces ...]
 ```
 
 ## Example
 
 ```console
-nodetool cluster backup --locations mydc,s3.us-east-2.amazonaws.com,bucket-foo,foo/bar/baz --keyspace ks --table table --snapshot ss --move-files
+nodetool cluster backup --location mydc,s3.us-east-2.amazonaws.com,bucket-foo,foo/bar/baz --keyspaces ks --table table --snapshot ss --move-files
 ```
 
 ## Options
 
 * `-h <host>` or `--host <host>` - Node hostname or IP address.
-* `--keyspace` - Name of a keyspace to copy SSTables from
-* `--table` - Name of a table to copy SSTables from
-* `--snapshot` - Name of a snapshot to copy sstables from
-* `--locations` - Tuple of <dc>,<endpoint>,<bucket> and optional <prefix> which to write the backup. This is set per DC
+* `--keyspaces` - Name of a keyspace to copy SSTables from. Repeat for each keyspace. By default, all keyspaces are backed up
+* `--table` - Name of a table to copy SSTables from, or a comma-separated list of tables. Requires exactly one keyspace
+* `--snapshot` - Name of a snapshot to copy sstables from. If it does not exist, it is taken first
+* `--location` - Tuple of <dc>,<endpoint>,<bucket> and optional <prefix> which to write the backup. Repeat for each DC
   Endpoints should be configured as per [the object storage configuration instructions](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#object-storage-configuration).
 * `--nowait` - Don’t wait on the backup process
 * `--move-files` - Move files instead of copying them. This will delete the files from the local disk after they are uploaded to the object storage.
@@ -4666,8 +4666,10 @@ See also
 
 Even though ScyllaDB is a fault-tolerant system, it is recommended to regularly back up the data to external storage.
 
-* Backup is a per-node procedure. Make sure to back up each node in your
-  cluster. For cluster-wide backup and restore, see [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/).
+* Snapshot-based backup is a per-node procedure. Make sure to back up each node in your
+  cluster. To back up the whole cluster from one node, use the cluster-wide
+  [Native Backup](#backup-native-backup), or [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/),
+  which orchestrates backup and restore across the cluster.
 * Backup works the same for non-encrypted and encrypted SStables. You can use
   [Encryption at Rest](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md)
   without affecting the backup procedure.
@@ -4676,13 +4678,14 @@ You can choose one of the following:
 
 * [Full Backup](#backup-full-backup-snapshots) - Copy the entire data of a node.
 * [Incremental Backup](#backup-incremental-backup) - Updates (delta) - flushed SSTables.
+* [Native Backup](#backup-native-backup) - ScyllaDB uploads the SSTables of a snapshot to S3-compatible object storage, cluster-wide or per node.
 
 <a id="backup-full-backup-snapshots"></a>
 
 ## Full Backup - Snapshots
 
-Snapshots are taken using [nodetool snapshot](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/snapshot.md). First, the command flushes the MemTables from memory to SSTables on disk, and afterward, it creates a hard link for each SSTable in each keyspace.
-With time, SSTables are compacted, but the hard link keeps a copy of each file. This takes up an increasing amount of disk space. It is important to clear space by [clean unnecessary snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/delete-snapshot.md).
+Snapshots are taken using [nodetool snapshot](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/snapshot.md). First, the command flushes the MemTables from memory to SSTables on disk, and afterward, it creates a hard link for each SSTable in each keyspace and table.
+Over time, as SSTables are compacted, the original files remain hard-linked from the snapshot directories, so snapshots hold an increasing amount of disk space. It is important to clear space by [cleaning unnecessary snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/delete-snapshot.md).
 
 **Procedure**
 
@@ -4725,7 +4728,18 @@ For example:
 `/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/snapshots/1487847672222`
 <br/>
 
-From one of the nodes, recreate the schema. Repeat these steps for each node in the cluster.
+#### NOTE
+By default, nodetool names the snapshot after the current time, in milliseconds since the Unix epoch.
+To choose the name (a.k.a. tag), list the keyspaces to snapshot, or set a TTL after which the snapshot
+is deleted automatically, see [nodetool snapshot](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/snapshot.md).
+`nodetool cluster snapshot` takes the snapshot on all nodes of the cluster with one command.
+
+#### NOTE
+Each snapshot directory also contains a `schema.cql` file with the `CREATE` statement of its table,
+including the table’s dropped columns. It describes that one table only, and does not include the keyspace,
+roles, permissions, or service levels, so it does not replace step 1.
+
+Repeat these steps on each node in the cluster.
 
 <a id="backup-incremental-backup"></a>
 
@@ -4751,6 +4765,73 @@ For example:
 <br/>
 `/mykeyspace/team_roster-91cd2060f99d11e6a47a000000000000/backups`
 <br/>
+
+<a id="backup-native-backup"></a>
+
+## Native Backup
+
+With native backup, ScyllaDB itself uploads the SSTables of a snapshot to S3-compatible object storage (AWS S3 or Google Cloud Storage).
+The upload runs inside the node, so its disk, CPU and network usage is scheduled and throttled like the rest of the node’s work,
+and no external tool needs access to the data directory. See [Backup and Restore Overview](https://docs.scylladb.com/manual/master/features/backup-and-restore.md)
+for how native backup compares with uploading through the ScyllaDB Manager agent, and for the options that limit its I/O throughput.
+
+The object storage endpoint must be configured on the nodes first, as described in [Configuring Object Storage](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#object-storage-configuration).
+
+Native backup uploads the SSTables of the snapshot, not the schema. Back up the schema separately with
+`DESC SCHEMA WITH INTERNALS AND PASSWORDS`, as in the [Full Backup](#backup-full-backup-snapshots) procedure,
+so that it can be recreated before the data is restored.
+
+### Cluster-wide backup
+
+The whole cluster can be snapshotted and backed up from one node, with
+[nodetool cluster snapshot](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/snapshot.md) and [nodetool cluster backup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/backup.md).
+The cluster snapshot is taken on all nodes and recorded in the `system_distributed` keyspace, and the backup then has each node upload its own SSTables
+to the location given for its datacenter.
+
+Cluster backup is designed for tablet-based keyspaces, and stores a **single copy** of the repaired data. For each tablet, SSTables whose data is covered
+by the tablet’s last repair are uploaded from one replica only, since the other replicas hold the same data. SSTables holding data that is not covered
+by that repair, because they were never repaired or were last repaired before it, are uploaded from every replica. The backup manifest records the
+replicas that were skipped, so that a restore repopulates all of them.
+To get the most out of this, run [nodetool cluster repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cluster/repair.md) before taking the snapshot.
+
+The backup is laid out as follows under the prefix of each location: the SSTables go under `sstables/`, and the manifest of each table goes to
+`snapshots/<keyspace_name>/<table_name>/<snapshot_name>/manifest.json`.
+
+**Procedure**
+
+On any node, run:
+
+```shell
+nodetool cluster snapshot --tag mysnapshot mykeyspace
+nodetool cluster backup --location mydc,s3.us-east-2.amazonaws.com,bucket-foo,backups/mysnapshot --snapshot mysnapshot --keyspaces mykeyspace
+```
+
+Repeat the `--location` option for each datacenter the keyspace replicates to. If the snapshot does not exist yet, `nodetool cluster backup` takes it,
+so the first command is optional. A backup that failed part-way can be run again with the same parameters; SSTables that were already uploaded are skipped.
+With `--move-files`, each node deletes the SSTable files it uploaded from its local disk. Unlike the per-node backup, the other snapshot files,
+such as `manifest.json` and `schema.cql`, stay in the snapshot directory until the snapshot is cleared.
+
+To restore, see [Restore a cluster backup](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/restore.md#restore-cluster-backup).
+
+### Per-node backup
+
+[nodetool backup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/backup.md) copies the SSTables of one table, from a snapshot taken on the node it runs on,
+to a bucket and prefix of your choice. Run it on each node, with a prefix that identifies the node and the snapshot, so that each node’s backup
+can be told apart and restored on its own. The snapshot’s `manifest.json`, listing the uploaded SSTables, is uploaded under the same prefix.
+
+**Procedure**
+
+On each node, take a snapshot of the keyspace, and back up each of its tables:
+
+```shell
+nodetool snapshot --tag mysnapshot mykeyspace
+nodetool backup --endpoint s3.us-east-2.amazonaws.com --bucket bucket-foo --prefix node1/mysnapshot/team_roster \
+  --keyspace mykeyspace --table team_roster --snapshot mysnapshot
+```
+
+With the `--move-files` option, the snapshot files are deleted from the local disk once they are uploaded, so the snapshot no longer holds disk space.
+
+To restore, see [Restore from object storage](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/restore.md#restore-object-storage).
 
 ## Additional Resources
 
@@ -13383,7 +13464,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > > Related information: Failure detection and recovery
 > * **Type:** `uint32_t`
 > * **Default value:** `10800000`
-> * Liveness: `False`
+> * Liveness: `True`
 
 <a id="confprop-batchlog-replay-cleanup-after-replays"></a>
 
@@ -34910,11 +34991,12 @@ For cluster-wide backup and restore, see the [ScyllaDB Manager](https://manager.
 
 ScyllaDB supports several restore methods. Choose the one that matches where your backup files are and whether the cluster topology changed since the backup was taken:
 
+* [Restore a cluster backup](#restore-cluster-backup) - restore a backup made with [nodetool cluster backup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/backup.md) into a tablet-based table. Each replica downloads the SSTables of its own tablets straight from object storage, with no streaming between nodes. Runs on a running cluster.
 * [Restore from object storage](#restore-object-storage) - restore SSTables backed up to S3-compatible object storage with [nodetool backup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/backup.md). Runs on a running cluster and works regardless of cluster topology changes since the backup.
 * [Restore with load and stream](#restore-load-and-stream) - upload backed-up SSTable files to a running cluster; the data is streamed to the nodes owning it. Works regardless of cluster topology changes since the backup.
 * [Restore to an identical cluster](#restore-procedure) - copy snapshot files back in place and restart the nodes. Requires a cluster with the same number of nodes and the same token distribution as at the time of the backup, and each node must be restored from the backup of the **same node**. Suitable for vnode-based keyspaces only.
 
-For cluster-wide backup and restore, use [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/), which orchestrates the process across the cluster.
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/) can also back up and restore the whole cluster, orchestrating the process across the nodes.
 
 <a id="restore-prerequisites"></a>
 
@@ -34946,6 +35028,50 @@ For example:
 
 #### NOTE
 If you are restoring [encrypted backup files](https://docs.scylladb.com/manual/master/operating-scylla/security/encryption-at-rest.md), make sure ScyllaDB is configured with the same keys that were used to encrypt the data before starting the restore process.
+
+<a id="restore-cluster-backup"></a>
+
+## Restore a cluster backup
+
+Use this method to restore a backup made with [nodetool cluster backup](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md#backup-native-backup) into a tablet-based table.
+The restore runs as a topology operation: the replicas of each tablet download the SSTables that belong to the tablet
+directly from object storage and attach them, so no data is streamed between nodes. Repaired data that the backup
+stored as a single copy is restored to every replica it was taken from.
+
+The object storage endpoint must be configured on the nodes, as described in [Configuring Object Storage](https://docs.scylladb.com/manual/master/operating-scylla/admin.md#object-storage-configuration).
+
+The backup holds the SSTables and their manifests only. It does not include the schema, so the keyspace and table
+must exist before the restore starts: recreate them from the schema backup taken with `DESC SCHEMA WITH INTERNALS AND PASSWORDS`,
+as described in the [prerequisites](#restore-prerequisites).
+
+There is no nodetool command for this restore yet. It is started through the REST API
+(see the [storage_service API reference](https://docs.scylladb.com/manual/master/reference/api/storage-service.md)), with
+`POST /storage_service/tablets/restore`. The query parameters are the destination `keyspace` and `table`
+and the `snapshot` name. The request body is a JSON array with one entry per datacenter the keyspace replicates to,
+each giving the `datacenter`, the `endpoint`, `bucket` and `prefix` of the backup location, and `manifests`,
+the paths of the table’s backup manifests relative to that prefix.
+
+**Procedure**
+
+1. Complete the [prerequisites](#restore-prerequisites). The destination table must use tablets; restoring into a vnode-based table fails.
+2. Start the restore. For example, for a backup taken with `--location mydc,s3.us-east-2.amazonaws.com,bucket-foo,backups/mysnapshot`:
+   ```shell
+   curl -X POST -H 'Content-Type: application/json' \
+     'http://<node>:10000/storage_service/tablets/restore?keyspace=mykeyspace&table=team_roster&snapshot=mysnapshot' \
+     -d '[{"datacenter": "mydc",
+           "endpoint": "s3.us-east-2.amazonaws.com",
+           "bucket": "bucket-foo",
+           "prefix": "backups/mysnapshot",
+           "manifests": ["snapshots/mykeyspace/team_roster/mysnapshot/manifest.json"]}]'
+   ```
+
+   The call returns the ID of the restore task.
+3. Monitor the restore with the [nodetool tasks](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/index.md) commands, for example
+   `nodetool tasks wait <task ID>` to wait for it to finish, or `nodetool tasks status <task ID>` to see its progress.
+
+#### NOTE
+A replica that is down cannot restore its tablets, so the restore fails rather than wait for it.
+Bring the node back, or remove it from the cluster, and run the restore again.
 
 <a id="restore-object-storage"></a>
 
