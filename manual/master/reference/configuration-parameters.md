@@ -509,6 +509,16 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > * **Default value:** `true`
 > * Liveness: `False`
 
+<a id="confprop-strongly-consistent-tables-start-on-damaged-commitlog"></a>
+
+### strongly_consistent_tables_start_on_damaged_commitlog
+
+> Whether or not to start when commitlog replay could not read a segment in full while this shard hosts strongly consistent raft groups.     The unread bytes may have held raft batches the node already acknowledged, so starting can drop committed entries and diverge the replica from the quorum.     Set it only to recover a node that cannot start because an intact segment is reported damaged.
+
+> * **Type:** `bool`
+> * **Default value:** `false`
+> * Liveness: `False`
+
 <a id="confgroup-compaction-settings"></a>
 
 ## Compaction settings

@@ -87,8 +87,10 @@ The datacenter, rack, or node named in the statement must exist in the cluster.
 
 Values are validated against the option’s type before anything is stored: a boolean option accepts
 `true` and `false` (in any letter case), an integer option accepts a signed 64-bit integer, and
-so on, and a text option accepts at most 4096 bytes. An unknown option name, an option used at a
-scope it does not support, or a value of the wrong type is rejected and nothing changes.
+so on, and a text option accepts at most 4096 bytes. An option may introduce further restrictions
+(see `auto_scrub_period_seconds` in [Available options](#cql-cluster-config-options)). An unknown
+option name, an option used at a scope it does not support, or a value of the wrong type is
+rejected and nothing changes.
 
 ## Removing an option
 
@@ -148,3 +150,4 @@ emitted, which is the form used for backup and restore. See [DESCRIBE SCHEMA](ht
 | `auto_repair_enabled`                                  | boolean | `CLUSTER`, `KEYSPACE`, `TABLE` | Enable [automatic repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) for tablet-based tables. Default:<br/>`false`. Until the deprecated `auto_repair_enabled_default` option is removed, a node<br/>that sets it in `scylla.yaml` uses that value when no scope sets this option.                                                                                                                                                                                                                                                             |
 | `auto_repair_threshold_in_seconds`                     | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. `0` disables time-based<br/>automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option.                                                         |
 | `repair_hints_batchlog_flush_discard_unreplayed_hints` | boolean | `CLUSTER`                      | A repair of a table with `tombstone_gc` in `repair` mode waits for the hints written<br/>before it to be sent, and records no repair time if that times out. With this option on,<br/>such a timeout discards those hints, so that the next repair does not wait for them again.<br/>This drops every regular hint on the node, for all tables and destinations; a write<br/>acknowledged at consistency level `ANY` that only hints hold is lost. Hints for<br/>materialized views are never discarded. Default: `true`, in effect once every node knows<br/>the option. |
+| `auto_scrub_period_seconds`                            | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Schedule every sstable written or validated more than this many seconds ago for scrub.<br/>Accepts `0` or `3600` to `4294967295`. Default: `0`. `0` disables automatic scrub<br/>at that scope even if a broader scope enabled it, whereas `NULL` removes the value and<br/>falls back to the broader scope. See<br/>[Automatic Scrub](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/automatic-scrub.md).                                                                                                                               |

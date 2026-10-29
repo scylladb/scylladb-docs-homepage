@@ -3,3 +3,4 @@
 ScyllaDB Maintenance Procedures
 
 * [Repair](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/repair.md)
+* [Automatic Scrub](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/automatic-scrub.md)

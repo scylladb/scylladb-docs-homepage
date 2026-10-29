@@ -445,8 +445,10 @@ in the same <code class="docutils literal notranslate"><span class="pre">ALTER</
 <p>The datacenter, rack, or node named in the statement must exist in the cluster.</p>
 <p>Values are validated against the option’s type before anything is stored: a boolean option accepts
 <code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> (in any letter case), an integer option accepts a signed 64-bit integer, and
-so on, and a text option accepts at most 4096 bytes. An unknown option name, an option used at a
-scope it does not support, or a value of the wrong type is rejected and nothing changes.</p>
+so on, and a text option accepts at most 4096 bytes. An option may introduce further restrictions
+(see <code class="docutils literal notranslate"><span class="pre">auto_scrub_period_seconds</span></code> in <a class="reference internal" href="#cql-cluster-config-options"><span class="std std-ref">Available options</span></a>). An unknown
+option name, an option used at a scope it does not support, or a value of the wrong type is
+rejected and nothing changes.</p>
 </section>
 <section id="removing-an-option">
 <h2>Removing an option<a class="headerlink" href="#removing-an-option" title="Link to this heading">¶</a></h2>
@@ -534,6 +536,15 @@ This drops every regular hint on the node, for all tables and destinations; a wr
 acknowledged at consistency level <code class="docutils literal notranslate"><span class="pre">ANY</span></code> that only hints hold is lost. Hints for
 materialized views are never discarded. Default: <code class="docutils literal notranslate"><span class="pre">true</span></code>, in effect once every node knows
 the option.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">auto_scrub_period_seconds</span></code></p></td>
+<td><p>integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code>, <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code>, <code class="docutils literal notranslate"><span class="pre">TABLE</span></code></p></td>
+<td><p>Schedule every sstable written or validated more than this many seconds ago for scrub.
+Accepts <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">3600</span></code> to <code class="docutils literal notranslate"><span class="pre">4294967295</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>. <code class="docutils literal notranslate"><span class="pre">0</span></code> disables automatic scrub
+at that scope even if a broader scope enabled it, whereas <code class="docutils literal notranslate"><span class="pre">NULL</span></code> removes the value and
+falls back to the broader scope. See
+<a class="reference internal" href="../operating-scylla/procedures/maintenance/automatic-scrub.html"><span class="doc">Automatic Scrub</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1184,7 +1195,7 @@ the option.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Sep 2026.
+                        Last updated on 26 Oct 2026.
                     
                 </div>
             
