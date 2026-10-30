@@ -39,6 +39,10 @@ jobs:
       - name: Update docs dependencies to latest compatible versions
         run: make -C docs update
 
+      # A finding fails the run, so no pull request proposes a vulnerable lockfile.
+      - name: Audit dependencies for known vulnerabilities
+        run: make -C docs audit
+
       - name: Test docs
         run: make -C docs test
 
@@ -149,7 +153,9 @@ jobs:
           PR_TITLE: "chore(docs): update dependencies to latest compatible versions"
           PR_BODY: |
             Updates the Python dependencies used to build the docs to the latest
-            versions allowed by the project's `pyproject.toml`.
+            versions allowed by the project's `pyproject.toml`. Files uploaded to
+            PyPI less than a week ago are skipped (`exclude-newer` in `pyproject.toml`),
+            except for sphinx-scylladb-theme and sphinx-multiversion-scylla.
 
             Review the updated dependencies in the lockfile before merging, including
             version changes, added or removed packages, and relevant release notes.

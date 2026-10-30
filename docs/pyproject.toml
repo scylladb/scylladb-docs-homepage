@@ -16,3 +16,9 @@ dependencies = [
 
 [tool.uv]
 package = false
+# Lock only distribution files uploaded to PyPI at least a week ago, so that a
+# compromised release is usually caught and removed before we pick it up.
+# ScyllaDB's own packages are exempt. To take a security fix younger than a
+# week, add `<package> = false` below until the fix is a week old.
+exclude-newer = "7 days"
+exclude-newer-package = { sphinx-scylladb-theme = false, sphinx-multiversion-scylla = false }
