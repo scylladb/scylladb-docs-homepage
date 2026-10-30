@@ -35,6 +35,25 @@ jobs:
       - name: Set up env
         run: make -C docs setupenv
 
+      # Audits the committed lockfile before the build's `uv sync` can rewrite it.
+      # The build still runs; the last step fails the check if this one failed.
+      # The docs report shows only build diagnostics, so the audit writes its own summary.
+      - name: Audit dependencies for known vulnerabilities
+        id: audit
+        continue-on-error: true
+        shell: bash
+        run: |
+          if ! make -C docs audit > "$RUNNER_TEMP/docs-audit.log" 2>&1; then
+            cat "$RUNNER_TEMP/docs-audit.log"
+            {
+              echo "### Dependency audit failed"
+              echo
+              sed 's/^/    /' "$RUNNER_TEMP/docs-audit.log"
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/docs-audit.log"
+
       - name: Check redirects
         run: make -C docs check-redirects
 
@@ -49,4 +68,11 @@ jobs:
         if: always()
         uses: scylladb/sphinx-scylladb-theme/.github/actions/docs-report@0d821fc4038ee9ad6363362c02035132489bf3f6
         with:
-          build-outcome: ${{ steps.docs-build.outcome }}
+          # A failed audit fails the check, so the report must not say it passed.
+          build-outcome: ${{ steps.audit.outcome == 'failure' && 'failure' || steps.docs-build.outcome }}
+
+      - name: Fail on known vulnerabilities
+        if: ${{ !cancelled() && steps.audit.outcome == 'failure' }}
+        run: |
+          echo "::error::The docs dependencies have known vulnerabilities or an outdated lockfile. See the audit step and the job summary."
+          exit 1
