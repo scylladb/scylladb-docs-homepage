@@ -16740,6 +16740,8 @@ value. For example, to run the PRUNE with 100 parallel reads/writes, you can use
   PRUNE MATERIALIZED VIEW my_view WHERE v = 19 USING CONCURRENCY 100;
 ```
 
+<a id="synchronous-materialized-views"></a>
+
 ## Synchronous materialized views
 
 Usually, when a table with materialized views is updated, the update to the
@@ -18660,12 +18662,12 @@ AND durable_writes = true;
 
 The supported `options` are:
 
-| name             | kind     | mandatory   | default   | description                                                                                             |
-|------------------|----------|-------------|-----------|---------------------------------------------------------------------------------------------------------|
-| `replication`    | *map*    | no          |           | The replication strategy and options to use for the keyspace (see<br/>details below).                   |
-| `durable_writes` | *simple* | no          | true      | Whether to use the commit log for updates on this keyspace<br/>(disable this option at your own risk!). |
-| `tablets`        | *map*    | no          |           | Enables or disables tablets for the keyspace (see [tablets](#tablets))                                  |
-| `consistency`    | *simple* | no          | eventual  | Configures consistency mode for the keyspace (see [consistency](#consistency-option)).                  |
+| name             | kind     | mandatory   | default   | description                                                                                                                                                                                                                                                                              |
+|------------------|----------|-------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `replication`    | *map*    | no          |           | The replication strategy and options to use for the keyspace (see<br/>details below).                                                                                                                                                                                                    |
+| `durable_writes` | *simple* | no          | true      | Whether to use the commit log for updates on this keyspace<br/>(disable this option at your own risk!). Disabling it can break<br/>LWT linearizability on tablet-based tables, see<br/>[Paxos State Tables](https://docs.scylladb.com/manual/master/features/lwt.md#paxos-state-tables). |
+| `tablets`        | *map*    | no          |           | Enables or disables tablets for the keyspace (see [tablets](#tablets))                                                                                                                                                                                                                   |
+| `consistency`    | *simple* | no          | eventual  | Configures consistency mode for the keyspace (see [consistency](#consistency-option)).                                                                                                                                                                                                   |
 
 A keyspace also accepts the options that can be set through CQL at the `KEYSPACE` scope, such as
 `auto_repair_enabled` and `auto_repair_threshold_in_seconds`; setting one to `NULL` removes it from the keyspace. See
@@ -30358,6 +30360,16 @@ operations — such as migration, split, or merge — are consistently applied t
 tablets and its corresponding $paxos table tablets. As a result, Paxos state remains intact
 and consistent during such operations.
 
+#### WARNING
+Since the $paxos table belongs to the user table’s keyspace, it inherits the keyspace’s
+`durable_writes` option. If the keyspace has `durable_writes = false`, Paxos state is
+not written to the commit log, and a replica that crashes, or is otherwise shut down
+uncleanly, can lose Paxos state it has already acknowledged. LWT on tablet-based tables in such
+a keyspace is then not linearizable: for example, two conditional updates that expect the
+same old value can both be applied. Keep `durable_writes` enabled in keyspaces that use
+LWT with tablets. Vnode-based tables are not affected, since system.paxos is always
+written to the commit log.
+
 Access to the $paxos tables is restricted. ScyllaDB does not grant any explicit permissions on them.
 Only superusers can view these tables, and even they cannot execute ALTER or DROP commands.
 
@@ -30684,7 +30696,25 @@ ALTER MATERIALIZED VIEW ks.mv
   WITH COMPACTION = {'class': 'LeveledCompactionStrategy'} ;
 ```
 
-### More information
+## Consistency of View Updates
+
+By default, updates to materialized views are applied **asynchronously**.
+A write to the base table is considered successful once the required
+consistency level is reached for the base table replicas, and does not wait
+for the corresponding updates to be applied to the view. As a result, reads
+from the view may temporarily return stale data, and only achieve eventual
+consistency.
+
+If stronger consistency is required, a materialized view can be created with
+`WITH synchronous_updates = true`. In this mode, writes succeed only after
+the required consistency level is reached for both the base table and
+the view, ensuring that new data is immediately visible in the view, at
+the cost of higher write latency and reduced availability.
+
+See [Synchronous materialized views](https://docs.scylladb.com/manual/master/cql/cql-extensions.md#synchronous-materialized-views) for
+more information.
+
+## More information
 
 * [CQL Reference for Materialized Views](https://docs.scylladb.com/manual/master/cql/mv.md)
 * Learn more about Materialized Views with ScyllaDB University (Free, registration required)

@@ -836,6 +836,17 @@ user table and follows the naming pattern <cite>&lt;user-table&gt;$paxos</cite>.
 operations — such as migration, split, or merge — are consistently applied to both the user table
 tablets and its corresponding <cite>$paxos</cite> table tablets. As a result, Paxos state remains intact
 and consistent during such operations.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Since the <cite>$paxos</cite> table belongs to the user table’s keyspace, it inherits the keyspace’s
+<code class="docutils literal notranslate"><span class="pre">durable_writes</span></code> option. If the keyspace has <code class="docutils literal notranslate"><span class="pre">durable_writes</span> <span class="pre">=</span> <span class="pre">false</span></code>, Paxos state is
+not written to the commit log, and a replica that crashes, or is otherwise shut down
+uncleanly, can lose Paxos state it has already acknowledged. LWT on tablet-based tables in such
+a keyspace is then not linearizable: for example, two conditional updates that expect the
+same old value can both be applied. Keep <code class="docutils literal notranslate"><span class="pre">durable_writes</span></code> enabled in keyspaces that use
+LWT with tablets. Vnode-based tables are not affected, since <cite>system.paxos</cite> is always
+written to the commit log.</p>
+</div>
 <p>Access to the <cite>$paxos</cite> tables is restricted. ScyllaDB does not grant any explicit permissions on them.
 Only superusers can view these tables, and even they cannot execute <cite>ALTER</cite> or <cite>DROP</cite> commands.</p>
 <p>The <cite>$paxos</cite> table is automatically dropped when the user table is dropped.</p>
@@ -1573,7 +1584,7 @@ during these are still returned as write timeouts.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 May 2026.
+                        Last updated on 28 Oct 2026.
                     
                 </div>
             

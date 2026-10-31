@@ -102,12 +102,12 @@ AND durable_writes = true;
 
 The supported `options` are:
 
-| name             | kind     | mandatory   | default   | description                                                                                             |
-|------------------|----------|-------------|-----------|---------------------------------------------------------------------------------------------------------|
-| `replication`    | *map*    | no          |           | The replication strategy and options to use for the keyspace (see<br/>details below).                   |
-| `durable_writes` | *simple* | no          | true      | Whether to use the commit log for updates on this keyspace<br/>(disable this option at your own risk!). |
-| `tablets`        | *map*    | no          |           | Enables or disables tablets for the keyspace (see [tablets](#tablets))                                  |
-| `consistency`    | *simple* | no          | eventual  | Configures consistency mode for the keyspace (see [consistency](#consistency-option)).                  |
+| name             | kind     | mandatory   | default   | description                                                                                                                                                                                                                                                                              |
+|------------------|----------|-------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `replication`    | *map*    | no          |           | The replication strategy and options to use for the keyspace (see<br/>details below).                                                                                                                                                                                                    |
+| `durable_writes` | *simple* | no          | true      | Whether to use the commit log for updates on this keyspace<br/>(disable this option at your own risk!). Disabling it can break<br/>LWT linearizability on tablet-based tables, see<br/>[Paxos State Tables](https://docs.scylladb.com/manual/master/features/lwt.md#paxos-state-tables). |
+| `tablets`        | *map*    | no          |           | Enables or disables tablets for the keyspace (see [tablets](#tablets))                                                                                                                                                                                                                   |
+| `consistency`    | *simple* | no          | eventual  | Configures consistency mode for the keyspace (see [consistency](#consistency-option)).                                                                                                                                                                                                   |
 
 A keyspace also accepts the options that can be set through CQL at the `KEYSPACE` scope, such as
 `auto_repair_enabled` and `auto_repair_threshold_in_seconds`; setting one to `NULL` removes it from the keyspace. See

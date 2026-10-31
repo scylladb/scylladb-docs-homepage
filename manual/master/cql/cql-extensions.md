@@ -227,6 +227,8 @@ value. For example, to run the PRUNE with 100 parallel reads/writes, you can use
   PRUNE MATERIALIZED VIEW my_view WHERE v = 19 USING CONCURRENCY 100;
 ```
 
+<a id="synchronous-materialized-views"></a>
+
 ## Synchronous materialized views
 
 Usually, when a table with materialized views is updated, the update to the

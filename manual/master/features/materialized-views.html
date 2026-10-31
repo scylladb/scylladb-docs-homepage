@@ -450,8 +450,25 @@ Instead, the default compaction strategy (IncrementalCompactionStrategy) is used
   <span class="k">WITH</span> <span class="n">COMPACTION</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'LeveledCompactionStrategy'</span><span class="p">}</span> <span class="p">;</span>
 </pre></div>
 </div>
+</section>
+<section id="consistency-of-view-updates">
+<h2>Consistency of View Updates<a class="headerlink" href="#consistency-of-view-updates" title="Link to this heading">¶</a></h2>
+<p>By default, updates to materialized views are applied <strong>asynchronously</strong>.
+A write to the base table is considered successful once the required
+consistency level is reached for the base table replicas, and does not wait
+for the corresponding updates to be applied to the view. As a result, reads
+from the view may temporarily return stale data, and only achieve eventual
+consistency.</p>
+<p>If stronger consistency is required, a materialized view can be created with
+<code class="docutils literal notranslate"><span class="pre">WITH</span> <span class="pre">synchronous_updates</span> <span class="pre">=</span> <span class="pre">true</span></code>. In this mode, writes succeed only after
+the required consistency level is reached for both the base table and
+the view, ensuring that new data is immediately visible in the view, at
+the cost of higher write latency and reduced availability.</p>
+<p>See <a class="reference internal" href="../cql/cql-extensions.html#synchronous-materialized-views"><span class="std std-ref">Synchronous materialized views</span></a> for
+more information.</p>
+</section>
 <section id="more-information">
-<h3>More information<a class="headerlink" href="#more-information" title="Link to this heading">¶</a></h3>
+<h2>More information<a class="headerlink" href="#more-information" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../cql/mv.html"><span class="doc">CQL Reference for Materialized Views</span></a></p></li>
 <li><p>Learn more about Materialized Views with ScyllaDB University (Free, registration required)</p>
@@ -462,7 +479,6 @@ Instead, the default compaction strategy (IncrementalCompactionStrategy) is used
 </ul>
 </li>
 </ul>
-</section>
 </section>
 </section>
 
@@ -588,10 +604,9 @@ Instead, the default compaction strategy (IncrementalCompactionStrategy) is used
             <ul>
 <li><a class="reference internal" href="#">ScyllaDB Materialized Views</a><ul>
 <li><a class="reference internal" href="#configuration-example">Configuration Example</a></li>
-<li><a class="reference internal" href="#compaction-strategies-with-materialized-views">Compaction Strategies with Materialized Views</a><ul>
+<li><a class="reference internal" href="#compaction-strategies-with-materialized-views">Compaction Strategies with Materialized Views</a></li>
+<li><a class="reference internal" href="#consistency-of-view-updates">Consistency of View Updates</a></li>
 <li><a class="reference internal" href="#more-information">More information</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -1109,7 +1124,7 @@ Instead, the default compaction strategy (IncrementalCompactionStrategy) is used
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Dec 2025.
+                        Last updated on 21 Apr 2026.
                     
                 </div>
             
