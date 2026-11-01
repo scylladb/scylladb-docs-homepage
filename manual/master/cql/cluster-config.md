@@ -12,7 +12,9 @@ keyspaces, and they appear in `DESCRIBE` output.
 
 The options and scopes currently available through CQL are listed in
 [Available options](#cql-cluster-config-options) at the end of this page. They are a
-separate set from the `scylla.yaml` parameters; more options will be added over time.
+separate set from the `scylla.yaml` parameters, except for a few `scylla.yaml` parameters that
+can also be set through CQL; see [Options also set in scylla.yaml](#cql-cluster-config-yaml-options).
+More options will be added over time.
 
 #### NOTE
 You can set a cluster configuration option only when all nodes in the cluster run a ScyllaDB
@@ -86,9 +88,10 @@ alter_node_statement:       ALTER NODE `host_id` WITH `option` '=' `value`
 The datacenter, rack, or node named in the statement must exist in the cluster.
 
 Values are validated against the option’s type before anything is stored: a boolean option accepts
-`true` and `false` (in any letter case), an integer option accepts a signed 64-bit integer, and
-so on, and a text option accepts at most 4096 bytes. An option may introduce further restrictions
-(see `auto_scrub_period_seconds` in [Available options](#cql-cluster-config-options)). An unknown
+`true` and `false` (in any letter case), an integer option accepts a signed 64-bit integer
+within the option’s range, and so on, and a text option accepts at most 4096 bytes. An option may
+introduce further restrictions (see `auto_scrub_period_seconds` in
+[Available options](#cql-cluster-config-options)). An unknown
 option name, an option used at a scope it does not support, or a value of the wrong type is
 rejected and nothing changes.
 
@@ -151,3 +154,22 @@ emitted, which is the form used for backup and restore. See [DESCRIBE SCHEMA](ht
 | `auto_repair_threshold_in_seconds`                     | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. `0` disables time-based<br/>automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option.                                                         |
 | `repair_hints_batchlog_flush_discard_unreplayed_hints` | boolean | `CLUSTER`                      | A repair of a table with `tombstone_gc` in `repair` mode waits for the hints written<br/>before it to be sent, and records no repair time if that times out. With this option on,<br/>such a timeout discards those hints, so that the next repair does not wait for them again.<br/>This drops every regular hint on the node, for all tables and destinations; a write<br/>acknowledged at consistency level `ANY` that only hints hold is lost. Hints for<br/>materialized views are never discarded. Default: `true`, in effect once every node knows<br/>the option. |
 | `auto_scrub_period_seconds`                            | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Schedule every sstable written or validated more than this many seconds ago for scrub.<br/>Accepts `0` or `3600` to `4294967295`. Default: `0`. `0` disables automatic scrub<br/>at that scope even if a broader scope enabled it, whereas `NULL` removes the value and<br/>falls back to the broader scope. See<br/>[Automatic Scrub](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/automatic-scrub.md).                                                                                                                               |
+
+<a id="cql-cluster-config-yaml-options"></a>
+
+### Options also set in scylla.yaml
+
+The following options are also `scylla.yaml` parameters. A value set through CQL overrides the
+node’s own value on every node it applies to:
+
+* While the value is stored, it is the option’s effective value on the node, and `system.config`
+  shows it with the source `cluster_config`.
+* Writing the option through the REST API or `UPDATE system.config` is rejected, and a
+  `scylla.yaml` reload does not change it.
+* Removing the value with `= NULL` returns the node to the value it had when the option was
+  first set through CQL. A `scylla.yaml` change made while the value was stored is not applied
+  until the next `scylla.yaml` reload or restart.
+
+| Option                   | Type    | Scopes    | Description                                                                                                                                                                                                                                                                                               |
+|--------------------------|---------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `tablets_per_shard_goal` | integer | `CLUSTER` | The goal for the maximum number of tablet replicas per shard that the tablet load balancer<br/>tries to keep; see [Tablets](https://docs.scylladb.com/manual/master/architecture/tablets.md). Range: 1 to 4294967295. Without<br/>a stored value, each node uses its `scylla.yaml` value (default `100`). |

@@ -501,6 +501,13 @@ config option:</p>
 </ul>
 <p>Please note that because of this alignment, the scaling may not be effective and in the worst case may be
 overshot by a factor of 2, and that the <code class="docutils literal notranslate"><span class="pre">tablets_per_shard_goal</span></code> is a soft limit and not a hard constraint.</p>
+<p>The tablet load balancer runs on one node at a time and uses that node’s <code class="docutils literal notranslate"><span class="pre">tablets_per_shard_goal</span></code>.
+The recommended way to set it is therefore cluster-wide through CQL, which keeps the value the same
+on all nodes:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="n">CLUSTER</span> <span class="k">WITH</span> <span class="n">tablets_per_shard_goal</span> <span class="o">=</span> <span class="mf">200</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../cql/cluster-config.html"><span class="doc">Configuring a Cluster with CQL</span></a>.</p>
 <p>Finally, the computed tablet count is compared with the current tablet count for each table, and if there is
 a difference, a table resize (split or merge) is executed.</p>
 </section>
@@ -1233,7 +1240,7 @@ starts serving CQL.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 17 Mar 2026.
+                        Last updated on 20 Oct 2026.
                     
                 </div>
             

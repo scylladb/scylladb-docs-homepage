@@ -389,9 +389,11 @@ signal to the server processes will trigger ScyllaDB to re-read its configuratio
 and override the current configuration with the new value.</p>
 <p><strong>Configuration Precedence</strong></p>
 <p>As the parameters can be configured in more than one place, ScyllaDB applies them
-in the following order with <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> parameters updated via <code class="docutils literal notranslate"><span class="pre">SIGHUP</span></code>
-having the highest priority:</p>
+in the following order, with the first having the highest priority:</p>
 <ol class="arabic simple">
+<li><p>A value set through CQL cluster configuration, for the parameters that support it
+(see <a class="reference internal" href="../cql/cluster-config.html#cql-cluster-config-yaml-options"><span class="std std-ref">Options also set in scylla.yaml</span></a>).
+While it is set, it takes precedence over all the node-local sources below.</p></li>
 <li><p>Live update via <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> (with <code class="docutils literal notranslate"><span class="pre">SIGHUP</span></code>) or REST API</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">system.config</span></code> table</p></li>
 <li><p>command line options</p></li>
@@ -6052,7 +6054,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 09 Sep 2026.
+                        Last updated on 20 Oct 2026.
                     
                 </div>
             

@@ -384,7 +384,9 @@ are part of the schema: they are replicated to every node through the same path 
 keyspaces, and they appear in <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span></code> output.</p>
 <p>The options and scopes currently available through CQL are listed in
 <a class="reference internal" href="#cql-cluster-config-options"><span class="std std-ref">Available options</span></a> at the end of this page. They are a
-separate set from the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> parameters; more options will be added over time.</p>
+separate set from the <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> parameters, except for a few <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> parameters that
+can also be set through CQL; see <a class="reference internal" href="#cql-cluster-config-yaml-options"><span class="std std-ref">Options also set in scylla.yaml</span></a>.
+More options will be added over time.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>You can set a cluster configuration option only when all nodes in the cluster run a ScyllaDB
@@ -444,9 +446,10 @@ in the same <code class="docutils literal notranslate"><span class="pre">ALTER</
 </div>
 <p>The datacenter, rack, or node named in the statement must exist in the cluster.</p>
 <p>Values are validated against the option’s type before anything is stored: a boolean option accepts
-<code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> (in any letter case), an integer option accepts a signed 64-bit integer, and
-so on, and a text option accepts at most 4096 bytes. An option may introduce further restrictions
-(see <code class="docutils literal notranslate"><span class="pre">auto_scrub_period_seconds</span></code> in <a class="reference internal" href="#cql-cluster-config-options"><span class="std std-ref">Available options</span></a>). An unknown
+<code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> (in any letter case), an integer option accepts a signed 64-bit integer
+within the option’s range, and so on, and a text option accepts at most 4096 bytes. An option may
+introduce further restrictions (see <code class="docutils literal notranslate"><span class="pre">auto_scrub_period_seconds</span></code> in
+<a class="reference internal" href="#cql-cluster-config-options"><span class="std std-ref">Available options</span></a>). An unknown
 option name, an option used at a scope it does not support, or a value of the wrong type is
 rejected and nothing changes.</p>
 </section>
@@ -548,6 +551,44 @@ falls back to the broader scope. See
 </tr>
 </tbody>
 </table>
+<section id="options-also-set-in-scylla-yaml">
+<span id="cql-cluster-config-yaml-options"></span><h3>Options also set in scylla.yaml<a class="headerlink" href="#options-also-set-in-scylla-yaml" title="Link to this heading">¶</a></h3>
+<p>The following options are also <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> parameters. A value set through CQL overrides the
+node’s own value on every node it applies to:</p>
+<ul class="simple">
+<li><p>While the value is stored, it is the option’s effective value on the node, and <code class="docutils literal notranslate"><span class="pre">system.config</span></code>
+shows it with the source <code class="docutils literal notranslate"><span class="pre">cluster_config</span></code>.</p></li>
+<li><p>Writing the option through the REST API or <code class="docutils literal notranslate"><span class="pre">UPDATE</span> <span class="pre">system.config</span></code> is rejected, and a
+<code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> reload does not change it.</p></li>
+<li><p>Removing the value with <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">NULL</span></code> returns the node to the value it had when the option was
+first set through CQL. A <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> change made while the value was stored is not applied
+until the next <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> reload or restart.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 10.0%" />
+<col style="width: 25.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Scopes</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tablets_per_shard_goal</span></code></p></td>
+<td><p>integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code></p></td>
+<td><p>The goal for the maximum number of tablet replicas per shard that the tablet load balancer
+tries to keep; see <a class="reference internal" href="../architecture/tablets.html"><span class="doc">Tablets</span></a>. Range: 1 to 4294967295. Without
+a stored value, each node uses its <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code> value (default <code class="docutils literal notranslate"><span class="pre">100</span></code>).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 </section>
 
@@ -677,7 +718,10 @@ falls back to the broader scope. See
 <li><a class="reference internal" href="#removing-an-option">Removing an option</a></li>
 <li><a class="reference internal" href="#permissions">Permissions</a></li>
 <li><a class="reference internal" href="#inspecting-effective-values">Inspecting effective values</a></li>
-<li><a class="reference internal" href="#available-options">Available options</a></li>
+<li><a class="reference internal" href="#available-options">Available options</a><ul>
+<li><a class="reference internal" href="#options-also-set-in-scylla-yaml">Options also set in scylla.yaml</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1195,7 +1239,7 @@ falls back to the broader scope. See
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Oct 2026.
+                        Last updated on 20 Oct 2026.
                     
                 </div>
             
