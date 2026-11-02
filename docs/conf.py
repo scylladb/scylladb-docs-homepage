@@ -49,6 +49,10 @@ project = "ScyllaDB Documentation"
 copyright = str(date.today().year) + ", ScyllaDB. All rights reserved."
 author = u"ScyllaDB Project Contributors"
 
+# Description at the top of llms.txt.
+llms_txt_description = """ScyllaDB is a distributed NoSQL database for real-time applications at high scale. ScyllaDB Cloud is the fully managed service.
+Using a coding agent? Install the ScyllaDB agent skills: `npx skills add scylladb/agent-skills --skill scylladb`. More information: https://github.com/scylladb/agent-skills"""
+
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'lib', 'lib64','**/_common/*', 'README.md', 'index.md', '.git', '.github', '_utils', 'rst_include', 'venv', '.venv', 'dev']
