@@ -8,6 +8,15 @@ applications to ScyllaDB Cloud.
 
 ## Installation
 
+Install the `scylladb` skill first. It gives an overview of ScyllaDB and
+a map of the other skills:
+
+```bash
+npx skills add scylladb/agent-skills --skill scylladb
+```
+
+To install all skills:
+
 ```bash
 npx skills add scylladb/agent-skills
 ```
