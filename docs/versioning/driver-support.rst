@@ -39,8 +39,8 @@ versions.
 
         Java Driver 3.x
 
+        * 3.12
         * 3.11
-        * 3.10
     * - `Go Driver <https://gocql-driver.docs.scylladb.com/>`_
       - * 1.20
         * 1.19
