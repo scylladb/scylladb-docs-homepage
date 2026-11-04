@@ -665,17 +665,6 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 > Properties for advanced users or properties that are less commonly used.
 
-<a id="confprop-auto-bootstrap"></a>
-
-### auto_bootstrap
-
-> This setting has been removed from default configuration. It makes new (non-seed) nodes automatically migrate the right data to themselves. Do not set this to false unless you really know what you are doing.
-> : Related information: Initializing a multiple node cluster (single data center) and Initializing a multiple node cluster (multiple data centers).
-
-> * **Type:** `bool`
-> * **Default value:** `true`
-> * Liveness: `False`
-
 <a id="confprop-batch-size-warn-threshold-in-kb"></a>
 
 ### batch_size_warn_threshold_in_kb
