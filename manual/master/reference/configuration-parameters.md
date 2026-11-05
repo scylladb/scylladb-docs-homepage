@@ -2076,7 +2076,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### sstable_compression_dictionaries_retrain_period_in_seconds
 
-> Minimum age of the current compression dictionary before another dictionary for this table is trained.
+> Minimum age of the current compression dictionary (or of the last check which confirmed that it is still good enough) before another dictionary for this table is trained.
 
 > * **Type:** `float`
 > * **Default value:** `86400`

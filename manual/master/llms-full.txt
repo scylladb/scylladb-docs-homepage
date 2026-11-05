@@ -14355,7 +14355,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### sstable_compression_dictionaries_retrain_period_in_seconds
 
-> Minimum age of the current compression dictionary before another dictionary for this table is trained.
+> Minimum age of the current compression dictionary (or of the last check which confirmed that it is still good enough) before another dictionary for this table is trained.
 
 > * **Type:** `float`
 > * **Default value:** `86400`
@@ -48660,7 +48660,7 @@ Ubuntu or Debian, you need to apply an extended upgrade procedure:
 ### Start the node
 
 ```sh
-sudo service start scylla-server
+sudo service scylla-server start
 ```
 
 ### Validate
@@ -48700,7 +48700,7 @@ cluster shutdown. For each of the nodes to roll back to 2026.x.y, you will:
 
 ```sh
 nodetool drain
-sudo service stop scylla-server
+sudo service scylla-server stop
 ```
 
 ### Downgrade to the previous release
