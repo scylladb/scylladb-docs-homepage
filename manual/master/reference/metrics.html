@@ -5765,6 +5765,96 @@
 </div></blockquote>
 </dd></dl>
 
+<dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-table-write-latency">
+<dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_table_write_latency">
+<span class="sig-name descname"><span class="pre">scylla_strong_consistency_table_write_latency</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_table_write_latency" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Latency of the strongly consistent writes that reached a raft group of the table on this node and ended there</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">histogram</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">strong_consistency_table</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">write_latency</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-table-write-errors">
+<dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_table_write_errors">
+<span class="sig-name descname"><span class="pre">scylla_strong_consistency_table_write_errors</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_table_write_errors" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of strongly consistent writes that reached a raft group of the table on this node and failed there, the reason label can be timeout, status_unknown or other</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">strong_consistency_table</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">write_errors</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-table-read-latency">
+<dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_table_read_latency">
+<span class="sig-name descname"><span class="pre">scylla_strong_consistency_table_read_latency</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_table_read_latency" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Latency of the strongly consistent reads that reached a raft group of the table on this node and ended there, the read_type label can be linearizable or non_linearizable</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">histogram</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">strong_consistency_table</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">read_latency</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-table-read-errors">
+<dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_table_read_errors">
+<span class="sig-name descname"><span class="pre">scylla_strong_consistency_table_read_errors</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_table_read_errors" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of strongly consistent reads that reached a raft group of the table on this node and failed there, the reason label can be timeout or other</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">strong_consistency_table</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">read_errors</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-state-machine-apply-latency">
+<dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_state_machine_apply_latency">
+<span class="sig-name descname"><span class="pre">scylla_strong_consistency_state_machine_apply_latency</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_state_machine_apply_latency" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Time it took to apply a write from the raft log of the table to the replica on this node, including resolving the schema the write was made with</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">histogram</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">strong_consistency_state_machine</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">apply_latency</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std metrics_option" id="metricsprop-scylla-strong-consistency-state-machine-schema-barrier-waits">
+<dt class="sig sig-object std" id="metrics_option-scylla_strong_consistency_state_machine_schema_barrier_waits">
+<span class="sig-name descname"><span class="pre">scylla_strong_consistency_state_machine_schema_barrier_waits</span></span><a class="headerlink" href="#metrics_option-scylla_strong_consistency_state_machine_schema_barrier_waits" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of times applying the raft log entries of the table on this node waited for a group 0 read barrier, because they were written with a schema this node did not know yet</p>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">counter</span></code></p></li>
+<li><p><strong>Component:</strong> <code class="docutils literal notranslate"><span class="pre">strong_consistency_state_machine</span></code></p></li>
+<li><p><strong>Key:</strong> <code class="docutils literal notranslate"><span class="pre">schema_barrier_waits</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </section>
 <section id="topology-coordinator">
 <h2>Topology coordinator<a class="headerlink" href="#topology-coordinator" title="Link to this heading">¶</a></h2>
