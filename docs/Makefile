@@ -31,6 +31,10 @@ setup:
 update:
 	$(UV) sync --upgrade
 
+.PHONY: audit
+audit:
+	$(UV) audit --locked
+
 # Clean commands
 .PHONY: pristine
 pristine: clean
