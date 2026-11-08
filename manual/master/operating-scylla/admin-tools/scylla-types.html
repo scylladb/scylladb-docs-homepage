@@ -394,7 +394,8 @@ such as <code class="docutils literal notranslate"><span class="pre">deserialize
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Provide the values in the hex form without a leading 0x prefix.</p></li>
+<li><p>By default, provide the values in the hex form without a leading 0x prefix. The exception is the <code class="docutils literal notranslate"><span class="pre">serialize</span></code> operation, which expects values
+in human-readable form. Some operations accept values in other formats too, see <a class="reference internal" href="#scylla-types-input-formats"><span class="std std-ref">Input Formats</span></a>.</p></li>
 <li><p>You must specify the type of the provided values. See <a class="reference internal" href="#scylla-types-type"><span class="std std-ref">Specifying the Value Type</span></a>.</p></li>
 <li><p>The number of provided values depends on the operation. See <a class="reference internal" href="#scylla-types-operations"><span class="std std-ref">Supported Operations</span></a> for details.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">types</span></code> operations come with additional options. See <a class="reference internal" href="#scylla-types-options"><span class="std std-ref">Additional Options</span></a> for the list of options.</p></li>
@@ -403,31 +404,81 @@ such as <code class="docutils literal notranslate"><span class="pre">deserialize
 <section id="specifying-the-value-type">
 <span id="scylla-types-type"></span><h2>Specifying the Value Type<a class="headerlink" href="#specifying-the-value-type" title="Link to this heading">¶</a></h2>
 <p>You must specify the type of the value(s) you want to examine by adding the <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">[type</span> <span class="pre">name]</span></code> option to the operation.
-Specify the type by providing its Cassandra class name (the prefix can be omitted, for example, you can provide <code class="docutils literal notranslate"><span class="pre">Int32Type</span></code>
-instead of <code class="docutils literal notranslate"><span class="pre">org.apache.cassandra.db.marshal.Int32Type</span></code>). See <a class="reference external" href="https://github.com/scylladb/scylladb/blob/master/docs/dev/cql3-type-mapping.md">CQL3 Type Mapping</a> for a mapping of cql3 types to Cassandra type class names.</p>
+Specify the type by providing either its CQL name (for example, <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">map&lt;int,</span> <span class="pre">text&gt;</span></code>) or its Cassandra class name (the prefix can be omitted,
+for example, you can provide <code class="docutils literal notranslate"><span class="pre">Int32Type</span></code> instead of <code class="docutils literal notranslate"><span class="pre">org.apache.cassandra.db.marshal.Int32Type</span></code>). See <a class="reference external" href="https://github.com/scylladb/scylladb/blob/master/docs/dev/cql3-type-mapping.md">CQL3 Type Mapping</a>
+for a mapping of CQL types to Cassandra type class names. CQL names are case-insensitive and can be mixed with Cassandra class names, for example,
+<code class="docutils literal notranslate"><span class="pre">ReversedType(timeuuid)</span></code>.</p>
+<p>Type names and values containing spaces, for example <code class="docutils literal notranslate"><span class="pre">MapType(Int32Type,</span> <span class="pre">UTF8Type)</span></code>, have to be quoted on the command line.</p>
 <p>If you provide more than one value, all of the values must share the same type. For example:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types deserialize -t Int32Type b34b62d4 00783562</span>
 </pre></div>
 </div>
 <p id="scylla-types-compound"><strong>Compounds</strong></p>
 <p>A compound is a single value that is composed of multiple values of possibly different types. An example of a compound value is a clustering key or a partition key.</p>
-<p>You can use the <code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code> or <code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>  options to indicate that the provided value is a compound
-(see <a class="reference internal" href="#scylla-types-options"><span class="std std-ref">Additional Options</span></a>) for details.</p>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code>, <code class="docutils literal notranslate"><span class="pre">--full-compound</span></code> or <code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code> options to indicate that the provided value is a compound
+(see <a class="reference internal" href="#scylla-types-options"><span class="std std-ref">Additional Options</span></a>) for details. These options have more human-friendly aliases, which can be used
+interchangeably with them: <code class="docutils literal notranslate"><span class="pre">--clustering-key</span></code> (alias of <code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code>), <code class="docutils literal notranslate"><span class="pre">--partition-key</span></code> (alias of <code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">--legacy-partition-key</span></code> (alias of <code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code>).</p>
+<p>Full compounds (partition keys) can be serialized in two formats: ScyllaDB’s in-memory format (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>), which is the format
+partition keys are printed in, in ScyllaDB’s logs, and the legacy composite format (<code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code>), which is the format partition
+keys are stored in, in SStables. Note that in the legacy composite format, single-component keys are serialized as the value of the component.</p>
 <p>When a value is a compound, you can specify a different type for each value making up the compound, <strong>respectively</strong> (i.e., the order
 of the types on the command line must be the same as the order in the compound). For example:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types deserialize --prefix-compound -t TimeUUIDType -t Int32Type 0010d00819896f6b11ea00000000001c571b000400000010</span>
 </pre></div>
 </div>
+<p id="scylla-types-schema-file"><strong>Schema file</strong></p>
+<p>Instead of specifying the type(s) with <code class="docutils literal notranslate"><span class="pre">-t</span></code>, you can load the schema of the table the values belong to, from a schema file, with <code class="docutils literal notranslate"><span class="pre">--schema-file</span></code>.
+The schema file is expected to contain the <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> statement of exactly one table, possibly preceded by <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code> and <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TYPE</span></code>
+statements (for the UDTs the table uses). This is the same schema file format accepted by <a class="reference internal" href="scylla-sstable.html"><span class="doc">scylla sstable</span></a>.
+When loading the type from the schema file, you also have to specify which type of the table the values belong to:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--column</span> <span class="pre">&lt;name&gt;</span></code> - The type of the named column. For clustering columns, this is the type the clustering order of the column applies to
+(<code class="docutils literal notranslate"><span class="pre">ReversedType</span></code> for descending order).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code> (<code class="docutils literal notranslate"><span class="pre">--clustering-key</span></code>) - The clustering key.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--full-compound</span></code> (<code class="docutils literal notranslate"><span class="pre">--partition-key</span></code>) or <code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code> (<code class="docutils literal notranslate"><span class="pre">--legacy-partition-key</span></code>) - The partition key. When working with partition
+keys of a table loaded from a schema file, its partitioner is used too (e.g., the CDC partitioner for CDC log tables), so <code class="docutils literal notranslate"><span class="pre">tokenof</span></code>, <code class="docutils literal notranslate"><span class="pre">shardof</span></code>
+and <code class="docutils literal notranslate"><span class="pre">ring-order-compare</span></code> work correctly even for tables with non-default partitioners.</p></li>
+</ul>
+<p>For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types deserialize --schema-file schema.cql --partition-key 0004000000010003616263</span>
+</pre></div>
+</div>
+</section>
+<section id="input-formats">
+<span id="scylla-types-input-formats"></span><h2>Input Formats<a class="headerlink" href="#input-formats" title="Link to this heading">¶</a></h2>
+<p>The format of the provided values can be selected with the <code class="docutils literal notranslate"><span class="pre">-f</span></code> (or <code class="docutils literal notranslate"><span class="pre">--input-format</span></code>) option. The supported input formats are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hex</span></code> - The values are serialized, hex encoded, without a leading 0x prefix. This is the default for all operations, except <code class="docutils literal notranslate"><span class="pre">serialize</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code> - The values are unserialized, in their human-readable string representation. This is the default for the <code class="docutils literal notranslate"><span class="pre">serialize</span></code> operation.
+This saves the need to serialize the values with the <code class="docutils literal notranslate"><span class="pre">serialize</span></code> operation first, before passing them to another operation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json</span></code> - The values are unserialized, in their JSON representation, the same format accepted by <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">JSON</span></code>. Values of collection
+and vector types have no string representation, they can only be provided in this format.</p></li>
+</ul>
+<p>Not all operations support all input formats, see <a class="reference internal" href="#scylla-types-operations"><span class="std std-ref">Supported Operations</span></a>. For operations which operate on
+more than one value, unserialized values are interpreted as follows:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">compare</span></code> and <code class="docutils literal notranslate"><span class="pre">ring-order-compare</span></code> - The first half of the values make up the first compared value, the second half the second one.
+This allows comparing compounds, which are made up of multiple values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tokenof</span></code> and <code class="docutils literal notranslate"><span class="pre">shardof</span></code> - All values make up a single partition key.</p></li>
+</ul>
+<p>Note that boost program options, used to parse the command line, doesn’t support <code class="docutils literal notranslate"><span class="pre">-f=&lt;format&gt;</span></code>, use <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">&lt;format&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">--input-format=&lt;format&gt;</span></code>.</p>
 </section>
 <section id="supported-operations">
 <span id="scylla-types-operations"></span><h2>Supported Operations<a class="headerlink" href="#supported-operations" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">serialize</span></code> - Serialize the value and prints it in a hex encoded form. Required arguments: 1 value in human-readable form. To avoid problems around special symbols, separate values with <code class="docutils literal notranslate"><span class="pre">--</span></code> from the rest of the arguments.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">deserialize</span></code> - Deserializes and prints the provided value in a human-readable form. Required arguments: 1 or more serialized values.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">compare</span></code> - Compares two values and prints the result. Required arguments: 2 serialized values.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">validate</span></code> - Verifies if the value is valid for the type, according to the requirements of the type. Required arguments: 1 or more serialized values.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tokenof</span></code> - Calculates the token of the partition key (i.e. decorates it). Required arguments: 1 or more serialized values. Only accepts partition keys (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shardof</span></code> - Calculates the token of the partition key and the shard it belongs to, given the provided shard configuration (<code class="docutils literal notranslate"><span class="pre">--shards</span></code> and <code class="docutils literal notranslate"><span class="pre">--ignore-msb-bits</span></code>). In most cases, only <code class="docutils literal notranslate"><span class="pre">--shards</span></code> has to be provided unless you have a non-standard configuration. Required arguments: 1 or more serialized values. Only accepts partition keys (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">serialize</span></code> - Serializes the value and prints it in a hex encoded form. Input formats: <code class="docutils literal notranslate"><span class="pre">text</span></code> (default), <code class="docutils literal notranslate"><span class="pre">json</span></code>. Required arguments: 1 value in human-readable form, or in the case of
+compounds, 1 value for each component (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>), or for some of the components (<code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code>). To avoid problems around
+special symbols, separate values with <code class="docutils literal notranslate"><span class="pre">--</span></code> from the rest of the arguments. Values of collection and vector types (including tuples and UDTs,
+which have fields of such types) have no string representation, they can only be serialized from their JSON representation (<code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">json</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deserialize</span></code> - Deserializes and prints the provided value in a human-readable form. Input formats: <code class="docutils literal notranslate"><span class="pre">hex</span></code>. Required arguments: 1 or more serialized values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compare</span></code> - Compares two values and prints the result. Input formats: <code class="docutils literal notranslate"><span class="pre">hex</span></code> (default), <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">json</span></code>. Required arguments: 2 values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ring-order-compare</span></code> - Compares two partition keys in ring order, the order ScyllaDB orders partitions in, and prints the result, along with the
+tokens of the keys: partition keys are ordered by their token first and only by the keys themselves on token collision. Input formats: <code class="docutils literal notranslate"><span class="pre">hex</span></code> (default), <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">json</span></code>. Required arguments: 2 values. Only accepts partition keys
+(<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>/<code class="docutils literal notranslate"><span class="pre">--partition-key</span></code> or <code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code>/<code class="docutils literal notranslate"><span class="pre">--legacy-partition-key</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate</span></code> - Verifies if the value is valid for the type, according to the requirements of the type. Input formats: <code class="docutils literal notranslate"><span class="pre">hex</span></code>. Required arguments: 1 or more serialized values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tokenof</span></code> - Calculates the token of the partition key (i.e. decorates it). Input formats: <code class="docutils literal notranslate"><span class="pre">hex</span></code> (default), <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">json</span></code>. Required arguments: 1 or more values. Only accepts partition keys (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>/<code class="docutils literal notranslate"><span class="pre">--partition-key</span></code> or <code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code>/<code class="docutils literal notranslate"><span class="pre">--legacy-partition-key</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shardof</span></code> - Calculates the token of the partition key and the shard it belongs to, given the provided shard configuration (<code class="docutils literal notranslate"><span class="pre">--shards</span></code> and <code class="docutils literal notranslate"><span class="pre">--ignore-msb-bits</span></code>). In most cases, only <code class="docutils literal notranslate"><span class="pre">--shards</span></code> has to be provided unless you have a non-standard configuration. Input formats: <code class="docutils literal notranslate"><span class="pre">hex</span></code> (default), <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">json</span></code>. Required arguments: 1 or more values. Only accepts partition keys (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>/<code class="docutils literal notranslate"><span class="pre">--partition-key</span></code> or <code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code>/<code class="docutils literal notranslate"><span class="pre">--legacy-partition-key</span></code>).</p></li>
 </ul>
 <p>You can learn more about each operation by invoking its help:</p>
 <blockquote>
@@ -444,8 +495,16 @@ of the types on the command line must be the same as the order in the compound).
 <li><p><code class="docutils literal notranslate"><span class="pre">--help-seastar</span></code> - Prints the help message about the Seastar options.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--help-loggers</span></code> - Prints a list of logger names.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-t</span></code> ( or <code class="docutils literal notranslate"><span class="pre">--type</span></code>) - Specifies the type of the provided value. See <a class="reference internal" href="#scylla-types-type"><span class="std std-ref">Specifying the Value Type</span></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code> - Indicates that the value is a prefixable compound (e.g., clustering key) composed of multiple values of possibly different types.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--full-compound</span></code> - Indicates that the value is a full compound (e.g., partition key) composed of multiple values of possibly different types.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--schema-file</span></code> - Path to a schema file, to load the type of the values from, instead of specifying it with <code class="docutils literal notranslate"><span class="pre">-t</span></code>. See <a class="reference internal" href="#scylla-types-schema-file"><span class="std std-ref">Schema file</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--column</span></code> - The name of the column, which the values belong to. Only usable with <code class="docutils literal notranslate"><span class="pre">--schema-file</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code> (or <code class="docutils literal notranslate"><span class="pre">--clustering-key</span></code>) - Indicates that the value is a prefixable compound (e.g., clustering key) composed of multiple values of possibly different types.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--full-compound</span></code> (or <code class="docutils literal notranslate"><span class="pre">--partition-key</span></code>) - Indicates that the value is a full compound (e.g., partition key) composed of multiple values of possibly different types.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code> (or <code class="docutils literal notranslate"><span class="pre">--legacy-partition-key</span></code>) - Indicates that the value is a full compound (e.g., partition key), serialized in the legacy composite format,
+used in SStables, instead of ScyllaDB’s in-memory format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-f</span></code> (or <code class="docutils literal notranslate"><span class="pre">--input-format</span></code>) - The format the values are provided in: <code class="docutils literal notranslate"><span class="pre">hex</span></code>, <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">json</span></code>. See <a class="reference internal" href="#scylla-types-input-formats"><span class="std std-ref">Input Formats</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--shards</span></code> - The number of shards (only relevant for the <code class="docutils literal notranslate"><span class="pre">shardof</span></code> operation).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--ignore-msb-bits</span></code> - The number of the most significant bits of the token to ignore, when calculating the shard. Defaults to 12, the default
+value of the <code class="docutils literal notranslate"><span class="pre">murmur3_partitioner_ignore_msb_bits</span></code> configuration option (only relevant for the <code class="docutils literal notranslate"><span class="pre">shardof</span></code> operation).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--value</span> <span class="pre">arg</span></code> - Specifies the value to process (if not provided as a positional argument).</p></li>
 </ul>
 </section>
@@ -474,13 +533,46 @@ of the types on the command line must be the same as the order in the compound).
 </div>
 </div></blockquote>
 </li>
-<li><p>Serializing a partition-key (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>):</p>
+<li><p>Serializing a clustering-key prefix (<code class="docutils literal notranslate"><span class="pre">--prefix-compound</span></code>), with only some of the components present:</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types serialize --prefix-compound -t TimeUUIDType -t Int32Type -- d0081989-6f6b-11ea-0000-0000001c571b</span>
 </pre></div>
 </div>
 <p>Output:</p>
 <div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> 0010d00819896f6b11ea00000000001c571b</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Serializing a partition-key (<code class="docutils literal notranslate"><span class="pre">--full-compound</span></code>):</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types serialize --full-compound -t Int32Type -t UTF8Type -- 1 abc</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> 0004000000010003616263</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Serializing a partition-key in the legacy composite format, used in SStables (<code class="docutils literal notranslate"><span class="pre">--legacy-composite</span></code>):</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types serialize --legacy-composite -t Int32Type -t UTF8Type -- 1 abc</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> 00040000000100000361626300</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Serializing a value of a collection type, from its JSON representation (<code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">json</span></code>):</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types serialize -f json -t 'map&lt;int, text&gt;' -- '{"1": "a"}'</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> 0000000100000004000000010000000161</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -507,6 +599,17 @@ of the types on the command line must be the same as the order in the compound).
 </div>
 </div></blockquote>
 </li>
+<li><p>Deserializing a value of a collection type, specified with its CQL name:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types deserialize -t 'map&lt;int, text&gt;' 0000000100000004000000010000000161</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">{1 : a}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
 <li><p>Comparing two values of ReversedType(TimeUUIDType):</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types compare -t 'ReversedType(TimeUUIDType)' b34b62d46a8d11ea0000005000237906 d00819896f6b11ea00000000001c571b</span>
@@ -514,6 +617,18 @@ of the types on the command line must be the same as the order in the compound).
 </div>
 <p>Output:</p>
 <div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">b34b62d4-6a8d-11ea-0000-005000237906 &gt; d0081989-6f6b-11ea-0000-0000001c571b</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Comparing two partition keys in ring order. Note that <code class="docutils literal notranslate"><span class="pre">compare</span></code> would return the opposite result, as it compares the components of the keys,
+not their tokens:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types ring-order-compare --partition-key -t Int32Type -t UTF8Type 0004000000010003616263 0004000000020003616263</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">{token: 8771735466527499816, key: (1, abc)} &gt; {token: -3504390351319460166, key: (2, abc)}</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -532,6 +647,17 @@ of the types on the command line must be the same as the order in the compound).
 <li><p>Calculating the token of a partition key:</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types tokenof --full-compound -t UTF8Type -t SimpleDateType -t UUIDType 000d66696c655f696e7374616e63650004800049190010c61a3321045941c38e5675255feb0196</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="hide-copy-button highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> (file_instance, 2021-03-27, c61a3321-0459-41c3-8e56-75255feb0196): -5043005771368701888</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Calculating the token of a partition key, provided in human-readable form (<code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">text</span></code>):</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla types tokenof --partition-key -t text -t date -t uuid -f text -- file_instance 2021-03-27 c61a3321-0459-41c3-8e56-75255feb0196</span>
 </pre></div>
 </div>
 <p>Output:</p>
@@ -679,6 +805,7 @@ of the types on the command line must be the same as the order in the compound).
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#specifying-the-value-type">Specifying the Value Type</a></li>
+<li><a class="reference internal" href="#input-formats">Input Formats</a></li>
 <li><a class="reference internal" href="#supported-operations">Supported Operations</a></li>
 <li><a class="reference internal" href="#additional-options">Additional Options</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
@@ -1199,7 +1326,7 @@ of the types on the command line must be the same as the order in the compound).
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Jul 2024.
+                        Last updated on 08 Oct 2026.
                     
                 </div>
             

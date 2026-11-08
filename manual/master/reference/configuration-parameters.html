@@ -953,7 +953,7 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">64</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">32</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
@@ -1040,7 +1040,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-commitlog_flush_threshold_in_mb">
 <span class="sig-name descname"><span class="pre">commitlog_flush_threshold_in_mb</span></span><a class="headerlink" href="#confval-commitlog_flush_threshold_in_mb" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Threshold for commitlog disk usage. When used disk space goes above this value, Scylla initiates flushes of memtables to disk for the oldest commitlog segments, removing those log segments. Adjusting this affects disk usage vs. write latency. Default is (approximately) commitlog_total_space_in_mb - &lt;num shards&gt;*commitlog_segment_size_in_mb.</p>
+<div><p>Threshold for commitlog disk usage. When used disk space goes above this value, Scylla initiates flushes of memtables to disk for the oldest commitlog segments, removing those log segments. Adjusting this affects disk usage vs. write latency. Default is half of commitlog_total_space_in_mb.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int64_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">-1</span></code></p></li>

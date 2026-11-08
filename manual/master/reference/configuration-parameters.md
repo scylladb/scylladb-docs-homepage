@@ -426,7 +426,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 > > Related information: Commit log archive configuration
 > * **Type:** `uint32_t`
-> * **Default value:** `64`
+> * **Default value:** `32`
 > * Liveness: `False`
 
 <a id="confprop-schema-commitlog-segment-size-in-mb"></a>
@@ -485,7 +485,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### commitlog_flush_threshold_in_mb
 
-> Threshold for commitlog disk usage. When used disk space goes above this value, Scylla initiates flushes of memtables to disk for the oldest commitlog segments, removing those log segments. Adjusting this affects disk usage vs. write latency. Default is (approximately) commitlog_total_space_in_mb - <num shards>\*commitlog_segment_size_in_mb.
+> Threshold for commitlog disk usage. When used disk space goes above this value, Scylla initiates flushes of memtables to disk for the oldest commitlog segments, removing those log segments. Adjusting this affects disk usage vs. write latency. Default is half of commitlog_total_space_in_mb.
 
 > * **Type:** `int64_t`
 > * **Default value:** `-1`

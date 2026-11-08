@@ -15,7 +15,8 @@ The command syntax is as follows:
 scylla types <operation> [options] <hex_value1> [hex_value2]
 ```
 
-* Provide the values in the hex form without a leading 0x prefix.
+* By default, provide the values in the hex form without a leading 0x prefix. The exception is the `serialize` operation, which expects values
+  in human-readable form. Some operations accept values in other formats too, see [Input Formats](#scylla-types-input-formats).
 * You must specify the type of the provided values. See [Specifying the Value Type](#scylla-types-type).
 * The number of provided values depends on the operation. See [Supported Operations](#scylla-types-operations) for details.
 * The `scylla types` operations come with additional options. See [Additional Options](#scylla-types-options) for the list of options.
@@ -25,8 +26,12 @@ scylla types <operation> [options] <hex_value1> [hex_value2]
 ## Specifying the Value Type
 
 You must specify the type of the value(s) you want to examine by adding the `-t [type name]` option to the operation.
-Specify the type by providing its Cassandra class name (the prefix can be omitted, for example, you can provide `Int32Type`
-instead of `org.apache.cassandra.db.marshal.Int32Type`). See [CQL3 Type Mapping](https://github.com/scylladb/scylladb/blob/master/docs/dev/cql3-type-mapping.md) for a mapping of cql3 types to Cassandra type class names.
+Specify the type by providing either its CQL name (for example, `int` or `map<int, text>`) or its Cassandra class name (the prefix can be omitted,
+for example, you can provide `Int32Type` instead of `org.apache.cassandra.db.marshal.Int32Type`). See [CQL3 Type Mapping](https://github.com/scylladb/scylladb/blob/master/docs/dev/cql3-type-mapping.md)
+for a mapping of CQL types to Cassandra type class names. CQL names are case-insensitive and can be mixed with Cassandra class names, for example,
+`ReversedType(timeuuid)`.
+
+Type names and values containing spaces, for example `MapType(Int32Type, UTF8Type)`, have to be quoted on the command line.
 
 If you provide more than one value, all of the values must share the same type. For example:
 
@@ -40,8 +45,14 @@ scylla types deserialize -t Int32Type b34b62d4 00783562
 
 A compound is a single value that is composed of multiple values of possibly different types. An example of a compound value is a clustering key or a partition key.
 
-You can use the `--prefix-compound` or `--full-compound`  options to indicate that the provided value is a compound
-(see [Additional Options](#scylla-types-options)) for details.
+You can use the `--prefix-compound`, `--full-compound` or `--legacy-composite` options to indicate that the provided value is a compound
+(see [Additional Options](#scylla-types-options)) for details. These options have more human-friendly aliases, which can be used
+interchangeably with them: `--clustering-key` (alias of `--prefix-compound`), `--partition-key` (alias of `--full-compound`) and
+`--legacy-partition-key` (alias of `--legacy-composite`).
+
+Full compounds (partition keys) can be serialized in two formats: ScyllaDB’s in-memory format (`--full-compound`), which is the format
+partition keys are printed in, in ScyllaDB’s logs, and the legacy composite format (`--legacy-composite`), which is the format partition
+keys are stored in, in SStables. Note that in the legacy composite format, single-component keys are serialized as the value of the component.
 
 When a value is a compound, you can specify a different type for each value making up the compound, **respectively** (i.e., the order
 of the types on the command line must be the same as the order in the compound). For example:
@@ -50,16 +61,65 @@ of the types on the command line must be the same as the order in the compound).
 scylla types deserialize --prefix-compound -t TimeUUIDType -t Int32Type 0010d00819896f6b11ea00000000001c571b000400000010
 ```
 
+<a id="scylla-types-schema-file"></a>
+
+**Schema file**
+
+Instead of specifying the type(s) with `-t`, you can load the schema of the table the values belong to, from a schema file, with `--schema-file`.
+The schema file is expected to contain the `CREATE TABLE` statement of exactly one table, possibly preceded by `CREATE KEYSPACE` and `CREATE TYPE`
+statements (for the UDTs the table uses). This is the same schema file format accepted by [scylla sstable](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/scylla-sstable.md).
+When loading the type from the schema file, you also have to specify which type of the table the values belong to:
+
+* `--column <name>` - The type of the named column. For clustering columns, this is the type the clustering order of the column applies to
+  (`ReversedType` for descending order).
+* `--prefix-compound` (`--clustering-key`) - The clustering key.
+* `--full-compound` (`--partition-key`) or `--legacy-composite` (`--legacy-partition-key`) - The partition key. When working with partition
+  keys of a table loaded from a schema file, its partitioner is used too (e.g., the CDC partitioner for CDC log tables), so `tokenof`, `shardof`
+  and `ring-order-compare` work correctly even for tables with non-default partitioners.
+
+For example:
+
+```console
+scylla types deserialize --schema-file schema.cql --partition-key 0004000000010003616263
+```
+
+<a id="scylla-types-input-formats"></a>
+
+## Input Formats
+
+The format of the provided values can be selected with the `-f` (or `--input-format`) option. The supported input formats are:
+
+* `hex` - The values are serialized, hex encoded, without a leading 0x prefix. This is the default for all operations, except `serialize`.
+* `text` - The values are unserialized, in their human-readable string representation. This is the default for the `serialize` operation.
+  This saves the need to serialize the values with the `serialize` operation first, before passing them to another operation.
+* `json` - The values are unserialized, in their JSON representation, the same format accepted by `INSERT JSON`. Values of collection
+  and vector types have no string representation, they can only be provided in this format.
+
+Not all operations support all input formats, see [Supported Operations](#scylla-types-operations). For operations which operate on
+more than one value, unserialized values are interpreted as follows:
+
+* `compare` and `ring-order-compare` - The first half of the values make up the first compared value, the second half the second one.
+  This allows comparing compounds, which are made up of multiple values.
+* `tokenof` and `shardof` - All values make up a single partition key.
+
+Note that boost program options, used to parse the command line, doesn’t support `-f=<format>`, use `-f <format>` or `--input-format=<format>`.
+
 <a id="scylla-types-operations"></a>
 
 ## Supported Operations
 
-* `serialize` - Serialize the value and prints it in a hex encoded form. Required arguments: 1 value in human-readable form. To avoid problems around special symbols, separate values with `--` from the rest of the arguments.
-* `deserialize` - Deserializes and prints the provided value in a human-readable form. Required arguments: 1 or more serialized values.
-* `compare` - Compares two values and prints the result. Required arguments: 2 serialized values.
-* `validate` - Verifies if the value is valid for the type, according to the requirements of the type. Required arguments: 1 or more serialized values.
-* `tokenof` - Calculates the token of the partition key (i.e. decorates it). Required arguments: 1 or more serialized values. Only accepts partition keys (`--full-compound`).
-* `shardof` - Calculates the token of the partition key and the shard it belongs to, given the provided shard configuration (`--shards` and `--ignore-msb-bits`). In most cases, only `--shards` has to be provided unless you have a non-standard configuration. Required arguments: 1 or more serialized values. Only accepts partition keys (`--full-compound`).
+* `serialize` - Serializes the value and prints it in a hex encoded form. Input formats: `text` (default), `json`. Required arguments: 1 value in human-readable form, or in the case of
+  compounds, 1 value for each component (`--full-compound`), or for some of the components (`--prefix-compound`). To avoid problems around
+  special symbols, separate values with `--` from the rest of the arguments. Values of collection and vector types (including tuples and UDTs,
+  which have fields of such types) have no string representation, they can only be serialized from their JSON representation (`-f json`).
+* `deserialize` - Deserializes and prints the provided value in a human-readable form. Input formats: `hex`. Required arguments: 1 or more serialized values.
+* `compare` - Compares two values and prints the result. Input formats: `hex` (default), `text`, `json`. Required arguments: 2 values.
+* `ring-order-compare` - Compares two partition keys in ring order, the order ScyllaDB orders partitions in, and prints the result, along with the
+  tokens of the keys: partition keys are ordered by their token first and only by the keys themselves on token collision. Input formats: `hex` (default), `text`, `json`. Required arguments: 2 values. Only accepts partition keys
+  (`--full-compound`/`--partition-key` or `--legacy-composite`/`--legacy-partition-key`).
+* `validate` - Verifies if the value is valid for the type, according to the requirements of the type. Input formats: `hex`. Required arguments: 1 or more serialized values.
+* `tokenof` - Calculates the token of the partition key (i.e. decorates it). Input formats: `hex` (default), `text`, `json`. Required arguments: 1 or more values. Only accepts partition keys (`--full-compound`/`--partition-key` or `--legacy-composite`/`--legacy-partition-key`).
+* `shardof` - Calculates the token of the partition key and the shard it belongs to, given the provided shard configuration (`--shards` and `--ignore-msb-bits`). In most cases, only `--shards` has to be provided unless you have a non-standard configuration. Input formats: `hex` (default), `text`, `json`. Required arguments: 1 or more values. Only accepts partition keys (`--full-compound`/`--partition-key` or `--legacy-composite`/`--legacy-partition-key`).
 
 You can learn more about each operation by invoking its help:
 
@@ -77,8 +137,16 @@ You can run `scylla types [operation] --help` for additional information on a gi
 * `--help-seastar` - Prints the help message about the Seastar options.
 * `--help-loggers` - Prints a list of logger names.
 * `-t` ( or `--type`) - Specifies the type of the provided value. See [Specifying the Value Type](#scylla-types-type).
-* `--prefix-compound` - Indicates that the value is a prefixable compound (e.g., clustering key) composed of multiple values of possibly different types.
-* `--full-compound` - Indicates that the value is a full compound (e.g., partition key) composed of multiple values of possibly different types.
+* `--schema-file` - Path to a schema file, to load the type of the values from, instead of specifying it with `-t`. See [Schema file](#scylla-types-schema-file).
+* `--column` - The name of the column, which the values belong to. Only usable with `--schema-file`.
+* `--prefix-compound` (or `--clustering-key`) - Indicates that the value is a prefixable compound (e.g., clustering key) composed of multiple values of possibly different types.
+* `--full-compound` (or `--partition-key`) - Indicates that the value is a full compound (e.g., partition key) composed of multiple values of possibly different types.
+* `--legacy-composite` (or `--legacy-partition-key`) - Indicates that the value is a full compound (e.g., partition key), serialized in the legacy composite format,
+  used in SStables, instead of ScyllaDB’s in-memory format.
+* `-f` (or `--input-format`) - The format the values are provided in: `hex`, `text` or `json`. See [Input Formats](#scylla-types-input-formats).
+* `--shards` - The number of shards (only relevant for the `shardof` operation).
+* `--ignore-msb-bits` - The number of the most significant bits of the token to ignore, when calculating the shard. Defaults to 12, the default
+  value of the `murmur3_partitioner_ignore_msb_bits` configuration option (only relevant for the `shardof` operation).
 * `--value arg` - Specifies the value to process (if not provided as a positional argument).
 
 ## Examples
@@ -101,7 +169,7 @@ You can run `scylla types [operation] --help` for additional information on a gi
   > ```console
   >  0010d00819896f6b11ea00000000001c571b000400000010
   > ```
-* Serializing a partition-key (`--full-compound`):
+* Serializing a clustering-key prefix (`--prefix-compound`), with only some of the components present:
   > ```console
   > scylla types serialize --prefix-compound -t TimeUUIDType -t Int32Type -- d0081989-6f6b-11ea-0000-0000001c571b
   > ```
@@ -109,6 +177,33 @@ You can run `scylla types [operation] --help` for additional information on a gi
   > Output:
   > ```console
   >  0010d00819896f6b11ea00000000001c571b
+  > ```
+* Serializing a partition-key (`--full-compound`):
+  > ```console
+  > scylla types serialize --full-compound -t Int32Type -t UTF8Type -- 1 abc
+  > ```
+
+  > Output:
+  > ```console
+  >  0004000000010003616263
+  > ```
+* Serializing a partition-key in the legacy composite format, used in SStables (`--legacy-composite`):
+  > ```console
+  > scylla types serialize --legacy-composite -t Int32Type -t UTF8Type -- 1 abc
+  > ```
+
+  > Output:
+  > ```console
+  >  00040000000100000361626300
+  > ```
+* Serializing a value of a collection type, from its JSON representation (`-f json`):
+  > ```console
+  > scylla types serialize -f json -t 'map<int, text>' -- '{"1": "a"}'
+  > ```
+
+  > Output:
+  > ```console
+  >  0000000100000004000000010000000161
   > ```
 * Deserializing and printing a value of type Int32Type:
   > ```console
@@ -128,6 +223,15 @@ You can run `scylla types [operation] --help` for additional information on a gi
   > ```console
   > b34b62d4: VALID - -1286905132
   > ```
+* Deserializing a value of a collection type, specified with its CQL name:
+  > ```console
+  > scylla types deserialize -t 'map<int, text>' 0000000100000004000000010000000161
+  > ```
+
+  > Output:
+  > ```console
+  > {1 : a}
+  > ```
 * Comparing two values of ReversedType(TimeUUIDType):
   > ```console
   > scylla types compare -t 'ReversedType(TimeUUIDType)' b34b62d46a8d11ea0000005000237906 d00819896f6b11ea00000000001c571b
@@ -136,6 +240,16 @@ You can run `scylla types [operation] --help` for additional information on a gi
   > Output:
   > ```console
   > b34b62d4-6a8d-11ea-0000-005000237906 > d0081989-6f6b-11ea-0000-0000001c571b
+  > ```
+* Comparing two partition keys in ring order. Note that `compare` would return the opposite result, as it compares the components of the keys,
+  not their tokens:
+  > ```console
+  > scylla types ring-order-compare --partition-key -t Int32Type -t UTF8Type 0004000000010003616263 0004000000020003616263
+  > ```
+
+  > Output:
+  > ```console
+  > {token: 8771735466527499816, key: (1, abc)} > {token: -3504390351319460166, key: (2, abc)}
   > ```
 * Deserializing and printing a compound value:
   > ```console
@@ -149,6 +263,15 @@ You can run `scylla types [operation] --help` for additional information on a gi
 * Calculating the token of a partition key:
   > ```console
   > scylla types tokenof --full-compound -t UTF8Type -t SimpleDateType -t UUIDType 000d66696c655f696e7374616e63650004800049190010c61a3321045941c38e5675255feb0196
+  > ```
+
+  > Output:
+  > ```console
+  >  (file_instance, 2021-03-27, c61a3321-0459-41c3-8e56-75255feb0196): -5043005771368701888
+  > ```
+* Calculating the token of a partition key, provided in human-readable form (`-f text`):
+  > ```console
+  > scylla types tokenof --partition-key -t text -t date -t uuid -f text -- file_instance 2021-03-27 c61a3321-0459-41c3-8e56-75255feb0196
   > ```
 
   > Output:

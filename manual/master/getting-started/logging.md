@@ -1,8 +1,8 @@
 # Logging
 
-## Logging with the systemd journal (CentOS, Amazon AMI, Ubuntu, Debian)
+## Logging with the systemd journal
 
-On distributions with systemd, ScyllaDB logs are written to the [systemd journal](http://www.freedesktop.org/software/systemd/man/systemd-journald.service.html). You can retrieve log entries with the [journalctl](http://www.freedesktop.org/software/systemd/man/journalctl.html) command.
+ScyllaDB logs are written to the [systemd journal](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html). You can retrieve log entries with the [journalctl](https://www.freedesktop.org/software/systemd/man/journalctl.html) command.
 
 Listed below are a few useful examples.
 
@@ -28,7 +28,7 @@ Listed below are a few useful examples.
   ```
 
   ```shell
-  journalctl _COMM=scylla --since "2015-01-10" --until "2015-01-11 03:00"`
+  journalctl _COMM=scylla --since "2015-01-10" --until "2015-01-11 03:00"
   ```
 
   ```shell
@@ -39,28 +39,8 @@ Listed below are a few useful examples.
   journalctl _COMM=scylla -b
   ```
 
-## Logging on Ubuntu 14.04
-
-On Ubuntu 14.04, ScyllaDB writes its initial boot message into `/var/log/upstart/scylla-server.log`.
-
-After ScyllaDB has started, logs are stored in `/var/log/syslog`. ScyllaDB logs can be filter by creating a `rsyslog` configuration file with the following rule (for example, in `/etc/rsyslog.d/10-scylla.conf`)
-
-```shell
-:syslogtag, startswith, "scylla" /var/log/scylla/scylla.log
-& ~
-```
-
-And then creating the log file with the correct permissions and restarting the service:
-
-```shell
-install -o syslog -g adm -m 0640 /dev/null /var/log/scylla/scylla.log
-service rsyslog restart
-```
-
-This will send ScyllaDB only logs to `/var/log/scylla/scylla.log`
-
 ## Logging on Docker
 
-Starting from ScyllaDB 1.3, [ScyllaDB Docker](https://hub.docker.com/r/scylladb/scylla/), you should use `docker logs` command to access ScyllaDB server logs.
+To access ScyllaDB server logs when running [ScyllaDB in Docker](https://hub.docker.com/r/scylladb/scylla/), use the `docker logs` command.
 
 [Getting Started](https://docs.scylladb.com/manual/master/getting-started/index.md)
