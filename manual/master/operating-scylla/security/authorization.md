@@ -426,6 +426,9 @@ permissions can be granted on which types of resources, and which statements are
 | `VECTOR_SEARCH_INDEXING`  | `ALL KEYSPACES`          | `SELECT` on all tables with vector search indexes, and on some [system tables](#external-index-system-tables)    |
 | `TEXT_SEARCH_INDEXING`    | `ALL KEYSPACES`          | `SELECT` on all tables with full-text search indexes, and on some [system tables](#external-index-system-tables) |
 | `PATTERN_SEARCH_INDEXING` | `ALL KEYSPACES`          | `SELECT` on all tables with pattern search indexes, and on some [system tables](#external-index-system-tables)   |
+| `SELECT`                  | `ALL OBJECT STORAGE`     | Alternator’s `DescribeExport` and `ListExports`                                                                  |
+| `MODIFY`                  | `ALL OBJECT STORAGE`     | Alternator’s `ExportTableToPointInTime` (with `SELECT` on the table)                                             |
+| `AUTHORIZE`               | `ALL OBJECT STORAGE`     | `GRANT PERMISSION` and `REVOKE PERMISSION` on `ALL OBJECT STORAGE`                                               |
 
 <a id="external-index-system-tables"></a>
 
@@ -454,6 +457,7 @@ resource: ALL KEYSPACES
         :| [ TABLE ] `table_name`
         :| ALL USERS
         :| USER `user_name`
+        :| ALL OBJECT STORAGE
 ```
 
 For instance:

@@ -760,6 +760,18 @@ permissions can be granted on which types of resources, and which statements are
 <td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">KEYSPACES</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on all tables with pattern search indexes, and on some <a class="reference internal" href="#external-index-system-tables"><span class="std std-ref">system tables</span></a></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">OBJECT</span> <span class="pre">STORAGE</span></code></p></td>
+<td><p>Alternator’s <code class="docutils literal notranslate"><span class="pre">DescribeExport</span></code> and <code class="docutils literal notranslate"><span class="pre">ListExports</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MODIFY</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">OBJECT</span> <span class="pre">STORAGE</span></code></p></td>
+<td><p>Alternator’s <code class="docutils literal notranslate"><span class="pre">ExportTableToPointInTime</span></code> (with <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> on the table)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AUTHORIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">OBJECT</span> <span class="pre">STORAGE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GRANT</span> <span class="pre">PERMISSION</span></code> and <code class="docutils literal notranslate"><span class="pre">REVOKE</span> <span class="pre">PERMISSION</span></code> on <code class="docutils literal notranslate"><span class="pre">ALL</span> <span class="pre">OBJECT</span> <span class="pre">STORAGE</span></code></p></td>
+</tr>
 </tbody>
 </table>
 <p id="external-index-system-tables">The <code class="docutils literal notranslate"><span class="pre">VECTOR_SEARCH_INDEXING</span></code>, <code class="docutils literal notranslate"><span class="pre">TEXT_SEARCH_INDEXING</span></code> and <code class="docutils literal notranslate"><span class="pre">PATTERN_SEARCH_INDEXING</span></code> permissions also grant
@@ -784,6 +796,7 @@ streams for the tables it indexes:</p>
         <span class="p">:</span><span class="o">|</span> <span class="p">[</span> <span class="k">TABLE</span> <span class="p">]</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
         <span class="p">:</span><span class="o">|</span> <span class="k">ALL</span> <span class="k">USERS</span>
         <span class="p">:</span><span class="o">|</span> <span class="k">USER</span> <span class="o">`</span><span class="n">user_name</span><span class="o">`</span>
+        <span class="p">:</span><span class="o">|</span> <span class="k">ALL</span> <span class="n">OBJECT</span> <span class="k">STORAGE</span>
 </pre></div>
 </div>
 <p>For instance:</p>
@@ -1536,7 +1549,7 @@ query. Adding the <code class="docutils literal notranslate"><span class="pre">N
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Sep 2026.
+                        Last updated on 22 Oct 2026.
                     
                 </div>
             

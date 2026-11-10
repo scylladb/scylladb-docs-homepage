@@ -534,7 +534,7 @@ on how to use GRANT and REVOKE to control permissions:
 <a class="reference external" href="https://docs.scylladb.com/stable/operating-scylla/security/authorization.html">https://docs.scylladb.com/stable/operating-scylla/security/authorization.html</a></p>
 <p>The following permissions are needed to run the following API operations:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code>:      GetItem, Query, Scan, BatchGetItem, GetRecords</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code>:      GetItem, Query, Scan, BatchGetItem, GetRecords, ExportTableToPointInTime</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">MODIFY</span></code>:      PutItem, DeleteItem, UpdateItem, BatchWriteItem</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">CREATE</span></code>:      CreateTable</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DROP</span></code>:        DeleteTable</p></li>
@@ -548,6 +548,9 @@ GetShardIterator</p></li>
 what it does. For example, even though the PutItem operation can read the
 value of an item (when used with <code class="docutils literal notranslate"><span class="pre">ReturnValues=ALL_OLD</span></code>), it still requires
 the MODIFY permission, not the SELECT permission.</p>
+<p>ExportTableToPointInTime needs both SELECT on the table and MODIFY on ALL
+OBJECT STORAGE. DescribeExport and ListExports, with or without a TableArn,
+need only SELECT on ALL OBJECT STORAGE, and no permission on the table.</p>
 <p>Permissions are separate for a base table and each of its GSI/LSI and CDC
 log, so it’s possible to give a role permissions to read one index and
 not the base, or vice versa, and so on. To build the GRANT command, you
@@ -1560,7 +1563,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Sep 2026.
+                        Last updated on 22 Oct 2026.
                     
                 </div>
             
