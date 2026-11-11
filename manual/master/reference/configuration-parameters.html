@@ -2192,7 +2192,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-vector_store_unreachable_node_detection_time_in_ms">
 <span class="sig-name descname"><span class="pre">vector_store_unreachable_node_detection_time_in_ms</span></span><a class="headerlink" href="#confval-vector_store_unreachable_node_detection_time_in_ms" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, TCP_USER_TIMEOUT,     and the deadline of the health-check request used to detect that an unreachable node became available again.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.</p>
+<div><p>Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, TCP_USER_TIMEOUT,     and the deadline of the health-check request used to detect that an unreachable node became available again.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.     Keepalive can’t detect an unreachable node in less than 2 seconds, so with a smaller value it uses 2 seconds.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">3000</span></code></p></li>
@@ -5951,6 +5951,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oci-images.html">OCI Images</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limits.html">Limits</a></li>

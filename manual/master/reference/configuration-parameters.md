@@ -1320,7 +1320,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### vector_store_unreachable_node_detection_time_in_ms
 
-> Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, TCP_USER_TIMEOUT,     and the deadline of the health-check request used to detect that an unreachable node became available again.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.
+> Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, TCP_USER_TIMEOUT,     and the deadline of the health-check request used to detect that an unreachable node became available again.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.     Keepalive can’t detect an unreachable node in less than 2 seconds, so with a smaller value it uses 2 seconds.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `3000`

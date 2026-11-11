@@ -1,9 +1,10 @@
 # Reference
 
-* ScyllaDB images for AWS, Azure, and GCP.
+* ScyllaDB images for AWS, Azure, GCP, and OCI.
   * [AWS Images](https://docs.scylladb.com/manual/master/reference/aws-images.md)
   * [Azure Images](https://docs.scylladb.com/manual/master/reference/azure-images.md)
   * [GCP Images](https://docs.scylladb.com/manual/master/reference/gcp-images.md)
+  * [OCI Images](https://docs.scylladb.com/manual/master/reference/oci-images.md)
 * [Configuration Parameters](https://docs.scylladb.com/manual/master/reference/configuration-parameters.md) - ScyllaDB properties configurable in the `scylla.yaml` configuration file.
 * [Glossary](https://docs.scylladb.com/manual/master/reference/glossary.md) - ScyllaDB-related terms and definitions.
 * [Limits](https://docs.scylladb.com/manual/master/reference/limits.md)
