@@ -27,13 +27,13 @@ Operations that are not listed below are currently not available.
 * [describecluster](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/describecluster.md) - Print the name, snitch, partitioner and schema version of a cluster.
 * [describering](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/describering.md) - `<keyspace>`- Shows the partition ranges of a given keyspace.
 * [disableautocompaction](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disableautocompaction.md) - Disable automatic compaction of a keyspace or table.
-* [disablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablebackup.md) - Disable incremental backup.
+* [disablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablebackup.md) - Disable incremental backup (deprecated).
 * [disablebinary](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablebinary.md) - Disable native transport (binary protocol).
 * [disablegossip](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablegossip.md) - Disable gossip (effectively marking the node down).
 * [drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/drain.md) - Drain the node (stop accepting writes and flush all column families).
 * [dropquarantinedsstables](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/dropquarantinedsstables.md) `<keyspace>` `<table>` Drop quarantined SSTables from the specified keyspace and table(s), or from all keyspaces if no keyspace is specified.
 * [enableautocompaction](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enableautocompaction.md) - Enable automatic compaction of a keyspace or table.
-* [enablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablebackup.md) - Enable incremental backup.
+* [enablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablebackup.md) - Enable incremental backup (deprecated).
 * [enablebinary](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablebinary.md) - Re-enable native transport (binary protocol).
 * [enablegossip](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablegossip.md) - Re-enable gossip.
 * [excludenode](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/excludenode.md)- Mark nodes as permanently down.
@@ -66,7 +66,7 @@ Operations that are not listed below are currently not available.
 * [snapshot](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/snapshot.md) `[-t tag] [-cf column_family] <keyspace>`  - Take a snapshot of specified keyspaces or a snapshot of the specified table.
 * [sstableinfo](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/sstableinfo.md) - Get information about sstables per keyspace/table.
 * [status](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/status.md) - Print cluster information.
-* [statusbackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusbackup.md) - Status of incremental backup.
+* [statusbackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusbackup.md) - Status of incremental backup (deprecated).
 * [statusbinary](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusbinary.md) - Status of native transport (binary protocol).
 * [statusgossip](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusgossip.md) - Status of gossip.
 * [stop](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/stop.md) - Stop compaction operation.

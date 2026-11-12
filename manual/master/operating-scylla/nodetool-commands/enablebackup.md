@@ -2,6 +2,11 @@
 
 **enablebackup** - Enables incremental backup.
 
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
+
 For example:
 
 `nodetool enablebackup`

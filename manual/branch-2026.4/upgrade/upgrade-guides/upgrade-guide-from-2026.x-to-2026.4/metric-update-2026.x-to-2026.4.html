@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>
-             Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3 | ScyllaDB Docs 
+             Metrics Update Between 2026.x and 2026.4 | ScyllaDB Docs 
         </title>
         <meta name="description" content="ScyllaDB is an Apache Cassandra-compatible NoSQL data store that can handle 1 million transactions per second on a single server." />
         <link rel="icon" href="../../../_static/img/favicon.ico" type="image/x-icon" />
@@ -32,11 +32,12 @@
 
         
             
+            
         
 
         
             
-            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/"/>
+            <link rel="canonical" href="https://docs.scylladb.com/manual/stable/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.html"/>
         
 
         <link rel="author" href="mailto:info@scylladb.com" />
@@ -46,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.md" />
             
         
 
@@ -349,7 +350,13 @@
             </a>
         </span>
     
-    <span class="bread__item bread__item--last">Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3</span>
+        <span class="bread__item">
+            <a href="index.html" class="bread__highlight">
+                Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.4
+            </a>
+        </span>
+    
+    <span class="bread__item bread__item--last">Metrics Update Between 2026.x and 2026.4</span>
 </div>
                     </div>
                 
@@ -363,11 +370,11 @@
                          data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
-                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.rst"
+                         data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md">https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.md">https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.md</a>.
                         </div>
                     
                     
@@ -376,14 +383,450 @@
 
                     
 
-                    <section id="upgrade-scylladb-2026-x-to-scylladb-2026-3">
-<h1>Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3<a class="headerlink" href="#upgrade-scylladb-2026-x-to-scylladb-2026-3" title="Link to this heading">¶</a></h1>
+                    <section id="metrics-update-between-src-version-and-new-version">
+<h1>Metrics Update Between 2026.x and 2026.4<a class="headerlink" href="#metrics-update-between-src-version-and-new-version" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<p>ScyllaDB 2026.4 Dashboards are available as part of the latest <a class="reference external" href="https://monitoring.docs.scylladb.com">Scylla Monitoring Stack</a>.</p>
+<section id="new-metrics-in-new-version">
+<h2>New Metrics in 2026.4<a class="headerlink" href="#new-metrics-in-new-version" title="Link to this heading">¶</a></h2>
+<p>The following metrics are new in ScyllaDB 2026.4 compared to 2026.3.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14.3%" />
+<col style="width: 85.7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>scylla_column_family_logstor_segments</p></td>
+<td><p>Number of logstor segments owned by this table.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_column_family_sstables_per_read</p></td>
+<td><p>Number of sstables accessed to serve a single-partition read.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_cql_select_paging_plan_rederivations</p></td>
+<td><p>Counts the pages of a prepared SELECT re-derived, each paying a re-parse, because the paging state pinned another query plan.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_encryption_key_attr_cache_blocked</p></td>
+<td><p>Number of key cache blocking load resolves.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_encryption_key_attr_cache_evictions</p></td>
+<td><p>Number of key cache evictions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_encryption_key_attr_cache_hits</p></td>
+<td><p>Number of key cache hits.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_encryption_key_attr_cache_misses</p></td>
+<td><p>Number of key cache misses.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_encryption_key_attr_cache_privileged_evictions</p></td>
+<td><p>Number of privileged key cache evictions.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_encryption_key_attr_cache_unprivileged_evictions</p></td>
+<td><p>Number of unprivileged key cache evictions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_encryption_key_id_cache_blocked</p></td>
+<td><p>Number of key cache blocking load resolves.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_encryption_key_id_cache_evictions</p></td>
+<td><p>Number of key cache evictions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_encryption_key_id_cache_hits</p></td>
+<td><p>Number of key cache hits.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_encryption_key_id_cache_misses</p></td>
+<td><p>Number of key cache misses.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_encryption_key_id_cache_privileged_evictions</p></td>
+<td><p>Number of privileged key cache evictions.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_encryption_key_id_cache_unprivileged_evictions</p></td>
+<td><p>Number of unprivileged key cache evictions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_hints_for_views_manager_discarded_segments</p></td>
+<td><p>Number of hints files that were discarded without being replayed.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_hints_manager_discarded_segments</p></td>
+<td><p>Number of hints files that were discarded without being replayed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_load_balancer_auto_repair_enabled_nr</p></td>
+<td><p>Number of tablets with auto repair enabled.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_load_balancer_auto_repair_needs_repair_nr</p></td>
+<td><p>Number of tablets with auto repair enabled that currently needs repair.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_load_balancer_calls</p></td>
+<td><p>Number of calls to the load balancer.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_load_balancer_cross_rack_collocations</p></td>
+<td><p>Number of co-locating migrations which move replica across racks.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_load_balancer_load</p></td>
+<td><p>Node load during last load balancing.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_load_balancer_migrations_produced</p></td>
+<td><p>Number of migrations produced by the load balancer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_load_balancer_migrations_skipped</p></td>
+<td><p>Number of migrations skipped by the load balancer due to load limits.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_load_balancer_rebuilds_produced</p></td>
+<td><p>Number of rebuilds produced by the load balancer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_load_balancer_repairs_produced</p></td>
+<td><p>Number of repairs produced by the load balancer.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_load_balancer_resizes_emitted</p></td>
+<td><p>Number of resizes produced by the load balancer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_load_balancer_resizes_finalized</p></td>
+<td><p>Number of resizes finalized by the load balancer.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_load_balancer_resizes_revoked</p></td>
+<td><p>Number of resizes revoked by the load balancer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_queued_write_count</p></td>
+<td><p>Number of writes currently queued in the write buffer.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_compaction_buffer_allocation_waits</p></td>
+<td><p>Counts number of times a compaction had to wait for a write buffer to become available.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_compaction_buffers_dropped</p></td>
+<td><p>Counts number of write buffers permanently removed from the pool after they could not be reclaimed.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_compaction_buffers_in_use</p></td>
+<td><p>Counts number of write buffers currently held by compaction. The pool size is the cap on concurrent compactions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_compaction_bytes_read</p></td>
+<td><p>Counts number of bytes read by compaction.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_compaction_failures</p></td>
+<td><p>Counts number of logstor compaction failures.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_live_record_bytes</p></td>
+<td><p>Counts the durable live record bytes currently referenced by the primary index.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_live_record_count</p></td>
+<td><p>Counts the durable live records currently referenced by the primary index.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_owned_segments_live_record_bytes</p></td>
+<td><p>Record bytes of the live records in the segments that the compaction groups of this shard own. Dead records use the remaining space of these segments. Compaction frees that space.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_segment_free_failures</p></td>
+<td><p>Counts number of logstor segment references that failed to free the segment.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_segment_utilization</p></td>
+<td><p>Distribution by utilization of the segments that the compaction groups of this shard own. The utilization of a segment is the record bytes of its live records divided by the segment size.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_separator_buffer_allocation_waits</p></td>
+<td><p>Counts number of times the separator had to wait for a write buffer to become available.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_separator_buffer_pool_capacity</p></td>
+<td><p>Number of write buffers the separator can hold at once, which follows the number of compaction groups.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_separator_buffers_allocated</p></td>
+<td><p>Counts number of write buffers the separator buffer pool holds the memory of, including the ones it keeps for reuse.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_separator_buffers_dropped</p></td>
+<td><p>Counts number of separator write buffers permanently removed from the pool after they could not be reclaimed.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_separator_flush_failures</p></td>
+<td><p>Counts number of logstor separator flush failures.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_separator_task_failures</p></td>
+<td><p>Counts number of logstor separator task failures.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_separator_task_queue_size</p></td>
+<td><p>Current number of pending tasks in the separator task queue.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_write_failures</p></td>
+<td><p>Counts number of write failures when appending to a logstor segment.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_write_failures</p></td>
+<td><p>Number of writes that failed to be persisted.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_memory_logstor_index_entries_bytes</p></td>
+<td><p>Bytes of memory that the logstor primary index entries take, without the nodes and buckets of the B+trees.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_integrated_request_queue_length</p></td>
+<td><p>The number of queued HTTP requests integrated over time (measured in request-seconds).</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_nr_active_connections</p></td>
+<td><p>Total number of connections with running requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_nr_connections</p></td>
+<td><p>Total number of connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_connect_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP CONNECT requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_connect_requests</p></td>
+<td><p>Total number of HTTP CONNECT requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_connect_retries</p></td>
+<td><p>Total number of HTTP CONNECT retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_delete_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP DELETE requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_delete_requests</p></td>
+<td><p>Total number of HTTP DELETE requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_delete_retries</p></td>
+<td><p>Total number of HTTP DELETE retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_get_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP GET requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_get_requests</p></td>
+<td><p>Total number of HTTP GET requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_get_retries</p></td>
+<td><p>Total number of HTTP GET retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_head_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP HEAD requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_head_requests</p></td>
+<td><p>Total number of HTTP HEAD requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_head_retries</p></td>
+<td><p>Total number of HTTP HEAD retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_new_connections</p></td>
+<td><p>Total number of new connections created so far.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_options_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP OPTIONS requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_options_requests</p></td>
+<td><p>Total number of HTTP OPTIONS requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_options_retries</p></td>
+<td><p>Total number of HTTP OPTIONS retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_patch_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP PATCH requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_patch_requests</p></td>
+<td><p>Total number of HTTP PATCH requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_patch_retries</p></td>
+<td><p>Total number of HTTP PATCH retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_post_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP POST requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_post_requests</p></td>
+<td><p>Total number of HTTP POST requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_post_retries</p></td>
+<td><p>Total number of HTTP POST retries.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_put_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP PUT requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_put_requests</p></td>
+<td><p>Total number of HTTP PUT requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_put_retries</p></td>
+<td><p>Total number of HTTP PUT retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_read_bytes</p></td>
+<td><p>Total number of bytes read from objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_read_latency_sec</p></td>
+<td><p>Total time spent reading data from objects.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_read_requests</p></td>
+<td><p>Total number of object read requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_trace_latency_sec</p></td>
+<td><p>Total time in seconds spent in HTTP TRACE requests.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_trace_requests</p></td>
+<td><p>Total number of HTTP TRACE requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_trace_retries</p></td>
+<td><p>Total number of HTTP TRACE retries.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_write_bytes</p></td>
+<td><p>Total number of bytes written to objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_object_storage_total_write_latency_sec</p></td>
+<td><p>Total time spent writing data to objects.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_object_storage_total_write_requests</p></td>
+<td><p>Total number of object write requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_raft_blocked_followers</p></td>
+<td><p>Number of followers the leader cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight), snapshot (waiting for a snapshot transfer) or log_full (the follower reported that its log is full); followers the failure detector reports down are not counted.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_raft_group0_append_entries_in_flight_bytes</p></td>
+<td><p>Bytes of append requests currently being sent, as charged against the in-flight memory limit.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_raft_group0_append_entries_memory_waiters</p></td>
+<td><p>Number of append requests currently waiting for the memory of other in-flight append requests to be released.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_raft_group0_append_entries_memory_waits</p></td>
+<td><p>Number of append requests that had to wait for the memory of other in-flight append requests to be released.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_raft_log_full</p></td>
+<td><p>1 if the in-memory log reached <code class="docutils literal notranslate"><span class="pre">max_follower_log_size</span></code>, so entries from a leader are being refused.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_raft_log_limiter_waiters</p></td>
+<td><p>Number of entries currently waiting for the in-memory log to shrink below <code class="docutils literal notranslate"><span class="pre">max_log_size</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_raft_log_limiter_waits</p></td>
+<td><p>Number of times appending an entry had to wait for the in-memory log to shrink below <code class="docutils literal notranslate"><span class="pre">max_log_size</span></code>; an entry waiting for its turn to be appended is counted only if it still has to wait once its turn comes.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_refused_request_ratio</p></td>
+<td><p>Smoothed share of S3 requests the endpoint is refusing.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_s3_send_freezes</p></td>
+<td><p>Times sending was held back after a throttling response.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_s3_throttles</p></td>
+<td><p>Total number of throttling responses (503 SlowDown etc.) from S3.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_storage_proxy_coordinator_read_repairs_diff_found_total</p></td>
+<td><p>Number of read repairs in which the full-data reconciliation found actual differences between replicas and repair mutations were sent.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_add_entries</p></td>
+<td><p>Number of entries added on this node, the log_entry_type label can be command, dummy or config.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_append_entries_in_flight_bytes</p></td>
+<td><p>Bytes of append requests currently being sent, as charged against the in-flight memory limit.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_append_entries_memory_waiters</p></td>
+<td><p>Number of append requests currently waiting for the memory of other in-flight append requests to be released.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_append_entries_memory_waits</p></td>
+<td><p>Number of append requests that had to wait for the memory of other in-flight append requests to be released.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_applied_entries</p></td>
+<td><p>Number of log entries applied.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_blocked_followers</p></td>
+<td><p>Number of followers the tablet raft group leaders cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight), snapshot (waiting for a snapshot transfer) or log_full (the follower reported that its log is full); followers the failure detector reports down are not counted.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_full_logs</p></td>
+<td><p>Number of raft logs of the table which reached <code class="docutils literal notranslate"><span class="pre">max_follower_log_size</span></code>, so entries from a leader are being refused.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_in_memory_log_size</p></td>
+<td><p>Number of entries in the in-memory part of the raft logs of the table.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_leaders</p></td>
+<td><p>Number of tablet raft groups of the table led by this node.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_log_limiter_waiters</p></td>
+<td><p>Number of entries currently waiting for an in-memory raft log of the table to shrink below <code class="docutils literal notranslate"><span class="pre">max_log_size</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_log_limiter_waits</p></td>
+<td><p>Number of times appending an entry had to wait for the in-memory log to shrink below <code class="docutils literal notranslate"><span class="pre">max_log_size</span></code>; an entry waiting for its turn to be appended is counted only if it still has to wait once its turn comes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_log_memory_usage</p></td>
+<td><p>Bytes used by the in-memory part of the raft logs of the table.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_messages_received</p></td>
+<td><p>Number of messages received, the message_type determines the type of message.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_messages_sent</p></td>
+<td><p>Number of messages sent, the message_type determines the type of message.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_persisted_log_entries</p></td>
+<td><p>Number of log entries persisted.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_polls</p></td>
+<td><p>Number of times raft state machine polled.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_queue_entries_for_apply</p></td>
+<td><p>Number of log entries scheduled to be applied.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_sm_load_snapshot</p></td>
+<td><p>Number of times user state machine reloaded with a snapshot.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_snapshots_taken</p></td>
+<td><p>Number of times user’s state machine snapshotted.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_store_snapshot</p></td>
+<td><p>Number of snapshots persisted.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_store_term_and_vote</p></td>
+<td><p>Number of times term and vote persisted.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_truncate_persisted_log</p></td>
+<td><p>Number of times log truncated on storage.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_unapplied_entries</p></td>
+<td><p>Number of committed raft log entries of the table not applied yet.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_uncommitted_entries</p></td>
+<td><p>Number of raft log entries of the table not committed yet.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_strong_consistency_raft_waiter_awoken</p></td>
+<td><p>Number of waiters that got result back.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_strong_consistency_raft_waiter_dropped</p></td>
+<td><p>Number of waiters that did not get result back.</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_tablet_ops_cancelled_transitions</p></td>
+<td><p>Number of tablet transitions which were cancelled and rolled back. Counted by the topology coordinator, so it restarts when the coordinator changes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="renamed-metrics-in-new-version">
+<h2>Renamed Metrics in 2026.4<a class="headerlink" href="#renamed-metrics-in-new-version" title="Link to this heading">¶</a></h2>
+<p>The following metrics are renamed in ScyllaDB 2026.4 compared to 2026.3.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14.3%" />
+<col style="width: 85.7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric Name in 2026.3</p></th>
+<th class="head"><p>Metric Name in 2026.4</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>scylla_alternator_vector_search_query_items_from_base_table</p></td>
+<td><p>scylla_alternator_vector_search_items_from_base_table</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_alternator_vector_search_query_items_from_vs</p></td>
+<td><p>scylla_alternator_vector_search_items_from_vs</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_alternator_vector_search_query_returned_items</p></td>
+<td><p>scylla_alternator_vector_search_returned_items</p></td>
+</tr>
+<tr class="row-odd"><td><p>scylla_logstor_sm_segments_compacted</p></td>
+<td><p>scylla_logstor_sm_compaction_segments_in</p></td>
+</tr>
+<tr class="row-even"><td><p>scylla_logstor_sm_compaction_segments_freed</p></td>
+<td><p>scylla_logstor_sm_compaction_segments_out</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="removed-metrics-in-new-version">
+<h2>Removed Metrics in 2026.4<a class="headerlink" href="#removed-metrics-in-new-version" title="Link to this heading">¶</a></h2>
+<p>The following metrics are removed in ScyllaDB 2026.4.</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="upgrade-guide-from-2026.x-to-2026.3.html"><span class="doc">Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3</span></a></p></li>
-<li><p><a class="reference internal" href="metric-update-2026.x-to-2026.3.html"><span class="doc">Metrics Update Between 2026.x and 2026.3</span></a></p></li>
+<li><p>scylla_alternator_vector_search_query</p></li>
+<li><p>scylla_logstor_sm_separator_flow_control_delay</p></li>
 </ul>
+</section>
+<section id="new-and-updated-metrics-in-previous-2026-x-releases">
+<h2>New and Updated Metrics in Previous 2026.x Releases<a class="headerlink" href="#new-and-updated-metrics-in-previous-2026-x-releases" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.scylladb.com/manual/branch-2026.3/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.html">Metrics Update Between 2026.x and 2026.3</a></p></li>
+<li><p><a class="reference external" href="https://docs.scylladb.com/manual/branch-2026.2/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/metric-update-2026.1-to-2026.2.html">Metrics Update Between 2026.1 and 2026.2</a></p></li>
+</ul>
+</section>
 </section>
 
                 </div>
@@ -418,7 +861,7 @@
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2026.x and 2026.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -453,21 +896,21 @@
                         <div class="content-navigation">
     <div class="navigation navigation--prev">
         
-            <a class="navigation__link" href="../index.html">
+            <a class="navigation__link" href="upgrade-guide-from-2026.x-to-2026.4.html">
                 <button class="navigation__button">
                     <i class="icon-chevron-left"></i>
                 </button>
                 <div class="navigation__title">
-                    <span class="colored">PREVIOUS</span> <br />Upgrade ScyllaDB
+                    <span class="colored">PREVIOUS</span> <br />Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.4
                 </div>
             </a>
         
     </div>
     <div class="navigation navigation--next">
         
-            <a class="navigation__link" href="upgrade-guide-from-2026.x-to-2026.3.html">
+            <a class="navigation__link" href="../upgrade-guide-from-2026.x.y-to-2026.x.z.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3
+                    <span class="colored">NEXT</span> <br />Upgrade - ScyllaDB 2026.x.y to 2026.x.z (Patch Upgrades)
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>
@@ -487,14 +930,14 @@
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Metrics Update Between 2026.x and 2026.4&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
         </li>
         
             <li class="contribute__item">
-                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.rst"
+                <a class="button button-sm" href="https://github.com/scylladb/scylladb/edit/master/docs/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.rst"
                    target="_blank">
                     <i class="icon-edit" aria-hidden="true"></i>Edit this page
                 </a>
@@ -502,6 +945,20 @@
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">Metrics Update Between 2026.x and 2026.4</a><ul>
+<li><a class="reference internal" href="#new-metrics-in-new-version">New Metrics in 2026.4</a></li>
+<li><a class="reference internal" href="#renamed-metrics-in-new-version">Renamed Metrics in 2026.4</a></li>
+<li><a class="reference internal" href="#removed-metrics-in-new-version">Removed Metrics in 2026.4</a></li>
+<li><a class="reference internal" href="#new-and-updated-metrics-in-previous-2026-x-releases">New and Updated Metrics in Previous 2026.x Releases</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                     </div>
@@ -553,19 +1010,19 @@
             
                 
                     <li>
-                        <a href="../../../../master/index.html">master</a>
+                        <a href="../../../../master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.html">master</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="index.html">2026.4</a>
+                        <a href="metric-update-2026.x-to-2026.4.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="../../../../stable/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.html">2026.3</a>
+                        <a href="../../../../stable/index.html">2026.3</a>
                     </li>
                 
             
@@ -1014,7 +1471,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Jul 2026.
+                        Last updated on 02 Nov 2026.
                     
                 </div>
             

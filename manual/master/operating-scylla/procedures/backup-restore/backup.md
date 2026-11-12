@@ -13,7 +13,7 @@ Even though ScyllaDB is a fault-tolerant system, it is recommended to regularly 
 You can choose one of the following:
 
 * [Full Backup](#backup-full-backup-snapshots) - Copy the entire data of a node.
-* [Incremental Backup](#backup-incremental-backup) - Updates (delta) - flushed SSTables.
+* [Incremental Backup](#backup-incremental-backup) - Updates (delta) - flushed SSTables. **Deprecated**.
 * [Native Backup](#backup-native-backup) - ScyllaDB uploads the SSTables of a snapshot to S3-compatible object storage, cluster-wide or per node.
 
 <a id="backup-full-backup-snapshots"></a>
@@ -80,6 +80,11 @@ Repeat these steps on each node in the cluster.
 <a id="backup-incremental-backup"></a>
 
 ## Incremental Backup
+
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](#backup-full-backup-snapshots) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
 
 Enabling the incremental backup (disabled by default) will create a hard-link from each SSTable, right after it is **flushed**, to a backups directory.
 <br/>

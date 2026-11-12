@@ -1,6 +1,6 @@
 # Upgrade ScyllaDB
 
-* [ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md)
+* [ScyllaDB 2026.x to ScyllaDB 2026.4](https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/index.md)
 * [ScyllaDB 2026.x Patch Upgrades](https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md)
   * [Upgrade Procedure](https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md#upgrade-procedure)
   * [Upgrade Steps](https://docs.scylladb.com/manual/branch-2026.4/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md#upgrade-steps)

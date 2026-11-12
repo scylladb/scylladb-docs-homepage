@@ -400,7 +400,7 @@ without affecting the backup procedure.</p></li>
 <p>You can choose one of the following:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#backup-full-backup-snapshots"><span class="std std-ref">Full Backup</span></a> - Copy the entire data of a node.</p></li>
-<li><p><a class="reference internal" href="#backup-incremental-backup"><span class="std std-ref">Incremental Backup</span></a> - Updates (delta) - flushed SSTables.</p></li>
+<li><p><a class="reference internal" href="#backup-incremental-backup"><span class="std std-ref">Incremental Backup</span></a> - Updates (delta) - flushed SSTables. <strong>Deprecated</strong>.</p></li>
 <li><p><a class="reference internal" href="#backup-native-backup"><span class="std std-ref">Native Backup</span></a> - ScyllaDB uploads the SSTables of a snapshot to S3-compatible object storage, cluster-wide or per node.</p></li>
 </ul>
 <section id="full-backup-snapshots">
@@ -471,6 +471,12 @@ roles, permissions, or service levels, so it does not replace step 1.</p>
 </section>
 <section id="incremental-backup">
 <span id="backup-incremental-backup"></span><h2>Incremental Backup<a class="headerlink" href="#incremental-backup" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Incremental backup is deprecated, and support for it may be removed in a future release.
+Use <a class="reference internal" href="#backup-full-backup-snapshots"><span class="std std-ref">snapshots</span></a> and
+<a class="reference external" href="https://manager.docs.scylladb.com/stable/backup/">ScyllaDB Manager</a> to back up your data instead.</p>
+</div>
 <div class="line-block">
 <div class="line">Enabling the incremental backup (disabled by default) will create a hard-link from each SSTable, right after it is <strong>flushed</strong>, to a backups directory.</div>
 <div class="line">For a complete point in time backup, the following is required:</div>
@@ -633,7 +639,7 @@ nodetool<span class="w"> </span>backup<span class="w"> </span>--endpoint<span cl
         
             <a class="navigation__link" href="restore.html">
                 <div class="navigation__title">
-                    <span class="colored">NEXT</span> <br />Restore from a Backup and Incremental Backup
+                    <span class="colored">NEXT</span> <br />Restore from a Backup
                 </div>
                 <button class="navigation__button">
                     <i class="icon-chevron-right"></i>

@@ -4786,7 +4786,7 @@ Even though ScyllaDB is a fault-tolerant system, it is recommended to regularly 
 You can choose one of the following:
 
 * [Full Backup](#backup-full-backup-snapshots) - Copy the entire data of a node.
-* [Incremental Backup](#backup-incremental-backup) - Updates (delta) - flushed SSTables.
+* [Incremental Backup](#backup-incremental-backup) - Updates (delta) - flushed SSTables. **Deprecated**.
 * [Native Backup](#backup-native-backup) - ScyllaDB uploads the SSTables of a snapshot to S3-compatible object storage, cluster-wide or per node.
 
 <a id="backup-full-backup-snapshots"></a>
@@ -4853,6 +4853,11 @@ Repeat these steps on each node in the cluster.
 <a id="backup-incremental-backup"></a>
 
 ## Incremental Backup
+
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](#backup-full-backup-snapshots) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
 
 Enabling the incremental backup (disabled by default) will create a hard-link from each SSTable, right after it is **flushed**, to a backups directory.
 <br/>
@@ -12731,7 +12736,9 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### incremental_backups
 
-> Backs up data updated since the last snapshot was taken. When enabled, Scylla creates a hard link to each SSTable flushed or streamed locally in a backups/ subdirectory of the keyspace data. Removing these links is the operator’s responsibility.
+> Deprecated: this feature is deprecated and support for it may be removed in a future release.
+
+> > Backs up data updated since the last snapshot was taken. When enabled, Scylla creates a hard link to each SSTable flushed or streamed locally in a backups/ subdirectory of the keyspace data. Removing these links is the operator’s responsibility.
 
 > > Related information: Enabling incremental backups
 > * **Type:** `bool`
@@ -21046,6 +21053,11 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 
 **disablebackup** - Disables incremental backup.
 
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
+
 For example:
 
 `nodetool disablebackup`
@@ -21663,6 +21675,11 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 # Nodetool enablebackup
 
 **enablebackup** - Enables incremental backup.
+
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
 
 For example:
 
@@ -32484,13 +32501,13 @@ Operations that are not listed below are currently not available.
 * [describecluster](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/describecluster.md) - Print the name, snitch, partitioner and schema version of a cluster.
 * [describering](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/describering.md) - `<keyspace>`- Shows the partition ranges of a given keyspace.
 * [disableautocompaction](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disableautocompaction.md) - Disable automatic compaction of a keyspace or table.
-* [disablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablebackup.md) - Disable incremental backup.
+* [disablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablebackup.md) - Disable incremental backup (deprecated).
 * [disablebinary](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablebinary.md) - Disable native transport (binary protocol).
 * [disablegossip](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/disablegossip.md) - Disable gossip (effectively marking the node down).
 * [drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/drain.md) - Drain the node (stop accepting writes and flush all column families).
 * [dropquarantinedsstables](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/dropquarantinedsstables.md) `<keyspace>` `<table>` Drop quarantined SSTables from the specified keyspace and table(s), or from all keyspaces if no keyspace is specified.
 * [enableautocompaction](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enableautocompaction.md) - Enable automatic compaction of a keyspace or table.
-* [enablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablebackup.md) - Enable incremental backup.
+* [enablebackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablebackup.md) - Enable incremental backup (deprecated).
 * [enablebinary](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablebinary.md) - Re-enable native transport (binary protocol).
 * [enablegossip](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/enablegossip.md) - Re-enable gossip.
 * [excludenode](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/excludenode.md)- Mark nodes as permanently down.
@@ -32523,7 +32540,7 @@ Operations that are not listed below are currently not available.
 * [snapshot](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/snapshot.md) `[-t tag] [-cf column_family] <keyspace>`  - Take a snapshot of specified keyspaces or a snapshot of the specified table.
 * [sstableinfo](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/sstableinfo.md) - Get information about sstables per keyspace/table.
 * [status](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/status.md) - Print cluster information.
-* [statusbackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusbackup.md) - Status of incremental backup.
+* [statusbackup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusbackup.md) - Status of incremental backup (deprecated).
 * [statusbinary](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusbinary.md) - Status of native transport (binary protocol).
 * [statusgossip](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/statusgossip.md) - Status of gossip.
 * [stop](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/stop.md) - Stop compaction operation.
@@ -35285,9 +35302,14 @@ See also
 
 # restore.md
 
-# Restore from a Backup and Incremental Backup
+# Restore from a Backup
 
 Restoring a keyspace from a backup requires all snapshot files of the tables, and (if available) incremental backup files taken after the snapshot. Before restoring from backup, the table data must be truncated, making sure that the existing data does not overwrite the restored data.
+
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
 
 #### NOTE
 For cluster-wide backup and restore, see the [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/) documentation.
@@ -35543,6 +35565,9 @@ It is recommended to:
    #### WARNING
    Copying files into the table’s data directory is only allowed while the ScyllaDB service is **stopped**. To load SSTables into a running node, place them in the table’s `upload` directory and use [nodetool refresh](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/refresh.md) instead.
 7. If you have incremental backup files, copy them from the **backups** folder `/var/lib/scylla/data/keyspace_name/table_name-UUID/backups` to  the `/var/lib/scylla/data/keyspace_name/table_name-UUID/` directory
+
+   #### WARNING
+   Incremental backup is deprecated, and support for it may be removed in a future release.
 
    For example:
    ```shell
@@ -45479,6 +45504,11 @@ children_ids: [{task_id: 9de80fd8-296e-432b-837e-63daf7c93e17, node: 127.0.0.1 }
 # Nodetool statusbackup
 
 **statusbackup** - Displays the incremental backup status.
+
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
 
 For example:
 

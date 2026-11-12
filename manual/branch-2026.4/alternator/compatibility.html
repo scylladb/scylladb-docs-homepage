@@ -393,7 +393,16 @@ not yet supported by Scylla. The BillingMode and ProvisionedThroughput options
 on a table need to be valid but are ignored, and ScyllaDB behaves like DynamoDB’s
 <code class="docutils literal notranslate"><span class="pre">BillingMode=PAY_PER_REQUEST</span></code>: All requests are accepted without a per-table
 throughput cap. The values provisioned for a table and for each of its GSIs
-are remembered and returned by <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code>, but are not enforced.</p>
+are remembered and returned by <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code>, but are not enforced. Unlike
+DynamoDB, which requires at least 1, Alternator also accepts zero capacities
+for a GSI. <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> reports zeros for a GSI of a <code class="docutils literal notranslate"><span class="pre">PAY_PER_REQUEST</span></code>
+table, and for a GSI created before Alternator stored GSI capacities, so a
+description copied back into <code class="docutils literal notranslate"><span class="pre">CreateTable</span></code> is accepted. On a
+<code class="docutils literal notranslate"><span class="pre">PAY_PER_REQUEST</span></code> table, zeros count as no throughput at all.</p>
+<p><code class="docutils literal notranslate"><span class="pre">UpdateTable</span></code> can switch a table to <code class="docutils literal notranslate"><span class="pre">BillingMode=PAY_PER_REQUEST</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> then reports zero capacities for the table and for its GSIs.
+The switch to <code class="docutils literal notranslate"><span class="pre">BillingMode=PROVISIONED</span></code> is not supported yet
+(<a class="reference external" href="https://github.com/scylladb/scylladb/issues/19718">https://github.com/scylladb/scylladb/issues/19718</a>).</p>
 </section>
 <section id="load-balancing">
 <h2>Load balancing<a class="headerlink" href="#load-balancing" title="Link to this heading">¶</a></h2>
@@ -897,10 +906,12 @@ DynamoDB in March 2023.
 <li><p>Alternator does not support the table option WarmThroughput that can be
 used to check or guarantee that the database has “warmed” to handle a
 particular throughput. Alternator has no throughput caps and nothing to
-pre-warm, so a table’s WarmThroughput is remembered and returned by
-<code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> but otherwise ignored; a table which never set one reports
-zero units, as does each of its active GSIs. This table option was added to
-DynamoDB in November 2024.
+pre-warm, so a WarmThroughput set on a table or on any of its GSIs is
+remembered and returned by <code class="docutils literal notranslate"><span class="pre">DescribeTable</span></code> but otherwise ignored; a table or
+an active GSI which never set one reports zero units. An UpdateTable request
+can change the WarmThroughput of only one GSI, while DynamoDB accepts several
+GSI updates in one request. This table option was added to DynamoDB in
+November 2024.
 <a class="reference external" href="https://github.com/scylladb/scylladb/issues/21853">https://github.com/scylladb/scylladb/issues/21853</a></p></li>
 <li><p>Alternator does not support the table option MultiRegionConsistency
 that can be used to achieve consistent reads on global (multi-region) tables.
@@ -1560,7 +1571,7 @@ This table option was added as a preview to DynamoDB in December 2024.
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Sep 2026.
+                        Last updated on 06 Nov 2026.
                     
                 </div>
             

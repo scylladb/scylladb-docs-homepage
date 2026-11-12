@@ -357,7 +357,9 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### incremental_backups
 
-> Backs up data updated since the last snapshot was taken. When enabled, Scylla creates a hard link to each SSTable flushed or streamed locally in a backups/ subdirectory of the keyspace data. Removing these links is the operator’s responsibility.
+> Deprecated: this feature is deprecated and support for it may be removed in a future release.
+
+> > Backs up data updated since the last snapshot was taken. When enabled, Scylla creates a hard link to each SSTable flushed or streamed locally in a backups/ subdirectory of the keyspace data. Removing these links is the operator’s responsibility.
 
 > > Related information: Enabling incremental backups
 > * **Type:** `bool`

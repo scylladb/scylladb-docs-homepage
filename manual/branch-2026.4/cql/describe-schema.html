@@ -395,7 +395,12 @@ If any cluster-scope configuration overrides are stored (see <code class="docuti
 <li><p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">[FULL]</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span></code>: in addition to the output of the previous tier, the statement
 also describes authentication and authorization, as well as service levels. The statements corresponding to
 restoring roles do <em>not</em> contain any information about their passwords. Aside from that, additional information
-about tables, materialized views, and secondary indices may be provided, e.g. the ID of a table.</p></li>
+about tables, materialized views, and secondary indices may be provided, e.g. the ID of a table.
+Cluster configuration overrides stored at any scope (cluster, keyspace, or table) are not part of the
+<code class="docutils literal notranslate"><span class="pre">CREATE</span></code> statements; they are described by separate rows of type <code class="docutils literal notranslate"><span class="pre">cluster_config</span></code>, <code class="docutils literal notranslate"><span class="pre">keyspace_config</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">table_config</span></code>, holding <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">CLUSTER</span></code>, <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code>, or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code> statements, which
+follow all keyspaces.
+See <a class="reference internal" href="cluster-config.html"><span class="doc">Cluster configuration</span></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DESCRIBE</span> <span class="pre">[FULL]</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span> <span class="pre">AND</span> <span class="pre">PASSWORDS</span></code>: aside from the information retrieved as part of the
 previous tier, the statements corresponding to restoring roles <em>do</em> contain information about their
 passwords; namely—their hashed passwords. For more information regarding hashed passwords, see the relevant section
@@ -415,6 +420,127 @@ below.</p></li>
 <p>All of those values are always present and represent strings using UTF-8 encoding.
 The value <code class="docutils literal notranslate"><span class="pre">keyspace_name</span></code> can be equal to <code class="docutils literal notranslate"><span class="pre">null</span></code> if the corresponding entity is not part of any keyspace,
 e.g. in the case of a role or a service level.</p>
+<section id="entity-types">
+<h3>Entity types<a class="headerlink" href="#entity-types" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">type</span></code> column takes one of the following values. A tool processing the output, e.g. to restore only a
+part of it, should select rows by <code class="docutils literal notranslate"><span class="pre">keyspace_name</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code> rather than by parsing
+<code class="docutils literal notranslate"><span class="pre">create_statement</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 14.0%" />
+<col style="width: 22.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">keyspace_name</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">create_statement</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">keyspace</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the keyspace</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">KEYSPACE</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the user-defined type</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TYPE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">function</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the function</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">FUNCTION</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">aggregate</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the aggregate</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">AGGREGATE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">table</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the table</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code>; for the CDC log table of a table with CDC enabled, an <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code> statement
+restoring the log table’s properties</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">index</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">view</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the materialized view</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cluster_config</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cluster</span></code></p></td>
+<td><p>The cluster configuration overrides stored at cluster scope, one <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">CLUSTER</span></code> statement per line.
+See <a class="reference internal" href="cluster-config.html"><span class="doc">Cluster configuration</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">keyspace_config</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the keyspace</p></td>
+<td><p>The cluster configuration overrides stored at keyspace scope, one <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">KEYSPACE</span></code> statement per line.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">table_config</span></code></p></td>
+<td><p>the keyspace</p></td>
+<td><p>the table</p></td>
+<td><p>The cluster configuration overrides stored at table scope, one <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code> statement per line.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">role</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+<td><p>the role</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">ROLE</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">grant_role</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+<td><p>the granted role</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GRANT</span> <span class="pre">&lt;role&gt;</span> <span class="pre">TO</span> <span class="pre">&lt;role&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">grant_permission</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+<td><p>the role the permission is granted to</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GRANT</span> <span class="pre">&lt;permission&gt;</span> <span class="pre">ON</span> <span class="pre">&lt;resource&gt;</span> <span class="pre">TO</span> <span class="pre">&lt;role&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">service_level</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+<td><p>the service level</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">SERVICE</span> <span class="pre">LEVEL</span></code>; for the built-in <code class="docutils literal notranslate"><span class="pre">driver</span></code> service level, an <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> or <code class="docutils literal notranslate"><span class="pre">DROP</span></code> statement may
+follow or replace it, so there can be more than one row with the same name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">service_level_attachment</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+<td><p>the service level</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ATTACH</span> <span class="pre">SERVICE</span> <span class="pre">LEVEL</span> <span class="pre">&lt;service</span> <span class="pre">level&gt;</span> <span class="pre">TO</span> <span class="pre">&lt;role&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The rows of type <code class="docutils literal notranslate"><span class="pre">keyspace_config</span></code>, <code class="docutils literal notranslate"><span class="pre">table_config</span></code>, <code class="docutils literal notranslate"><span class="pre">role</span></code>, <code class="docutils literal notranslate"><span class="pre">grant_role</span></code>, <code class="docutils literal notranslate"><span class="pre">grant_permission</span></code>,
+<code class="docutils literal notranslate"><span class="pre">service_level</span></code> and <code class="docutils literal notranslate"><span class="pre">service_level_attachment</span></code> are emitted only with <code class="docutils literal notranslate"><span class="pre">WITH</span> <span class="pre">INTERNALS</span></code>. The rows of the three
+<code class="docutils literal notranslate"><span class="pre">*_config</span></code> types are the cluster configuration; they can be selected or skipped as a group, e.g. to apply the
+configuration only after the data is restored.</p>
+<p>Every <code class="docutils literal notranslate"><span class="pre">create_statement</span></code> in the output can be executed. Objects that ScyllaDB creates automatically are not
+listed: the materialized view backing a secondary index (restored by restoring the index), the CDC log table
+(created with its base table, and followed by an <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code> statement restoring its properties) and the paxos
+tables. A direct <code class="docutils literal notranslate"><span class="pre">DESCRIBE</span></code> of such an object returns its statement as an informational CQL comment, which must
+not be executed.</p>
+<p>The rows are emitted in an order in which the statements can be executed one after the other:</p>
+<ol class="arabic simple">
+<li><p>without <code class="docutils literal notranslate"><span class="pre">WITH</span> <span class="pre">INTERNALS</span></code> only: the cluster-scope <code class="docutils literal notranslate"><span class="pre">cluster_config</span></code> row,</p></li>
+<li><p>for each keyspace, in alphabetical order: the keyspace, its user-defined types (each after the types it depends
+on), functions, aggregates and tables; each table is followed by its indexes, its materialized views and the
+<code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code> statement of its CDC log table,</p></li>
+<li><p>with <code class="docutils literal notranslate"><span class="pre">WITH</span> <span class="pre">INTERNALS</span></code> only: the <code class="docutils literal notranslate"><span class="pre">cluster_config</span></code> row, then the <code class="docutils literal notranslate"><span class="pre">keyspace_config</span></code> and <code class="docutils literal notranslate"><span class="pre">table_config</span></code> rows,
+in keyspace order, each keyspace’s row before its tables’ rows,</p></li>
+<li><p>with <code class="docutils literal notranslate"><span class="pre">WITH</span> <span class="pre">INTERNALS</span></code> only: roles, role grants, permission grants, service levels and service level
+attachments.</p></li>
+</ol>
+</section>
 </section>
 <section id="required-permissions">
 <h2>Required permissions<a class="headerlink" href="#required-permissions" title="Link to this heading">¶</a></h2>
@@ -601,7 +727,10 @@ See <a class="reference internal" href="../operating-scylla/security/authorizati
             <ul>
 <li><a class="reference internal" href="#">DESCRIBE SCHEMA</a><ul>
 <li><a class="reference internal" href="#syntax-and-semantics">Syntax and semantics</a></li>
-<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#output">Output</a><ul>
+<li><a class="reference internal" href="#entity-types">Entity types</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#required-permissions">Required permissions</a></li>
 <li><a class="reference internal" href="#relation-to-authentication-and-authorization">Relation to authentication and authorization</a></li>
 <li><a class="reference internal" href="#restoring-process-and-its-side-effects">Restoring process and its side effects</a></li>
@@ -1124,7 +1253,7 @@ See <a class="reference internal" href="../operating-scylla/security/authorizati
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Aug 2026.
+                        Last updated on 29 Oct 2026.
                     
                 </div>
             

@@ -1,6 +1,11 @@
-# Restore from a Backup and Incremental Backup
+# Restore from a Backup
 
 Restoring a keyspace from a backup requires all snapshot files of the tables, and (if available) incremental backup files taken after the snapshot. Before restoring from backup, the table data must be truncated, making sure that the existing data does not overwrite the restored data.
+
+#### WARNING
+Incremental backup is deprecated, and support for it may be removed in a future release.
+Use [snapshots](https://docs.scylladb.com/manual/master/operating-scylla/procedures/backup-restore/backup.md) and
+[ScyllaDB Manager](https://manager.docs.scylladb.com/stable/backup/) to back up your data instead.
 
 #### NOTE
 For cluster-wide backup and restore, see the [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/) documentation.
@@ -256,6 +261,9 @@ It is recommended to:
    #### WARNING
    Copying files into the table’s data directory is only allowed while the ScyllaDB service is **stopped**. To load SSTables into a running node, place them in the table’s `upload` directory and use [nodetool refresh](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/refresh.md) instead.
 7. If you have incremental backup files, copy them from the **backups** folder `/var/lib/scylla/data/keyspace_name/table_name-UUID/backups` to  the `/var/lib/scylla/data/keyspace_name/table_name-UUID/` directory
+
+   #### WARNING
+   Incremental backup is deprecated, and support for it may be removed in a future release.
 
    For example:
    ```shell
