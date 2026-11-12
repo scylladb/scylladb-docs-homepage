@@ -1721,7 +1721,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### repair_hints_batchlog_flush_cache_time_in_ms
 
-> The repair hints and batchlog flush request cache time. Setting 0 disables the flush cache. The cache reduces the number of hints and batchlog flushes during repair when tombstone_gc is set to repair mode. When the cache is on, a slightly smaller repair time will be used with the benefits of dropped hints and batchlog flushes.
+> The repair hints and batchlog flush request cache time. Setting 0 disables the flush cache. The cache reduces the number of hints and batchlog flushes during repair when tombstone_gc is set to repair mode. When the cache is on, a slightly smaller repair time will be used with the benefits of dropped hints and batchlog flushes. The topology coordinator also reuses one flush across tablet repairs for this long, or for up to this plus the flush timeout while a new flush runs.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `60 * 1000`
@@ -3271,11 +3271,21 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > * **Default value:** `{}`
 > * Liveness: `True`
 
+<a id="confprop-object-storage-connections"></a>
+
+### object_storage_connections
+
+> Maximum number of S3 connections per shard for each connection pool, as a map from the pool name to a positive count.     A scheduling group uses the pool named after it, except that every service-level group uses service_levels and a group     with no pool of its own uses general, which logs a warning naming that group. Entries override the built-in values.
+
+> * **Type:** `std::unordered_map<sstring, unsigned>`
+> * **Default value:** `{}`
+> * Liveness: `True`
+
 <a id="confprop-object-storage-connections-per-shard"></a>
 
 ### object_storage_connections_per_shard
 
-> Maximum number of object storage connections per shard.     Connections are distributed proportionally across scheduling groups based on their shares.
+> Deprecated, superseded by object_storage_connections. This set one budget for the whole shard, which was     split across the scheduling groups by their shares. Setting it at all is still honored as a shard ceiling:     the built-in per-pool values are scaled to land on that total, up or down, keeping their proportions and     at least one connection per pool. Ignored once object_storage_connections names any pool, which gives     the caps itself.
 
 > * **Type:** `unsigned`
 > * **Default value:** `128`

@@ -567,6 +567,16 @@ at that scope even if a broader scope enabled it, whereas <code class="docutils 
 falls back to the broader scope. See
 <a class="reference internal" href="../operating-scylla/procedures/maintenance/automatic-scrub.html"><span class="doc">Automatic Scrub</span></a>.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">repair_hints_batchlog_flush_timeout_in_seconds</span></code></p></td>
+<td><p>integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CLUSTER</span></code></p></td>
+<td><p>A repair of a table with <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> in <code class="docutils literal notranslate"><span class="pre">repair</span></code> mode first asks every node to flush
+its hints and replay its batchlog, and gives up on a node that has not finished within this
+many seconds. Raise it when nodes accumulate hints faster than they can replay them within
+the default, for example after a node stayed down for a long time. Must be between <code class="docutils literal notranslate"><span class="pre">1</span></code>
+and <code class="docutils literal notranslate"><span class="pre">315360000</span></code> (ten years). Default: <code class="docutils literal notranslate"><span class="pre">300</span></code>, in effect once every node runs a version
+that knows the option.</p></td>
+</tr>
 </tbody>
 </table>
 <section id="options-also-set-in-scylla-yaml">
@@ -1258,7 +1268,7 @@ a stored value, each node uses its <code class="docutils literal notranslate"><s
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Oct 2026.
+                        Last updated on 08 Oct 2026.
                     
                 </div>
             

@@ -20,9 +20,12 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
 
    ### 2026.3.5
 
-   | Image Name        |            Image ID |
-   |-------------------|---------------------|
-   | scylladb-2026-3-5 | 7390148619193292802 |
+   | Image Name                |            Image ID |
+   |---------------------------|---------------------|
+   | scylladb-2026-3-5         | 7390148619193292802 |
+   | scylladb-2026-3-5-aarch64 | 5098196607956687281 |
+
+   For Arm-based machine types, such as C4A, use the arm64 image (its name ends in `-aarch64`).
 3. Launch a ScyllaDB instance on GCP with `gcloud` using the information from the previous step. Use the following syntax:
    ```console
    gcloud compute instances create <name of new instance> --image <ScyllaDB image name> --image-project < ScyllaDB project name> --local-ssd interface=nvme --zone=<GCP zone - optional> --machine-type=<machine type>
@@ -37,6 +40,18 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
    command will launch a VM with 4 SSD, and 1.5TB of data (4 \* [375 GB](https://cloud.google.com/compute/docs/disks/local-ssd)):
    ```console
    gcloud compute instances create scylla-node1 --image scylladb-2026-1-11 --image-project scylla-images --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --machine-type=n1-highmem-8
+   ```
+
+   Z3 machine types (such as `z3-highmem-8-highlssd`) and C4 machine types whose names end in
+   `-lssd` come with local SSD attached automatically. For those, leave out the `--local-ssd`
+   options. For example:
+   ```console
+   gcloud compute instances create scylla-node1 --image <ScyllaDB image name> --image-project scylla-images --machine-type=c4-highmem-16-lssd
+   ```
+
+   C4A is Arm-based, so it needs the arm64 image. For example:
+   ```console
+   gcloud compute instances create scylla-node1 --image <ScyllaDB arm64 image name> --image-project scylla-images --machine-type=c4a-highmem-16-lssd
    ```
 
    For more information about GCP image create see the [Google Cloud SDK documentation](https://cloud.google.com/sdk/gcloud/reference/compute/images/create).

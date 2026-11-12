@@ -69,7 +69,7 @@ In addition, you can read our [blog](https://www.scylladb.com/blog/) and attend 
 # Upgrade ScyllaDB
 
 * [Upgrade Guides](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/index.md)
-  * [ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md)
+  * [ScyllaDB 2026.x to ScyllaDB 2026.4](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/index.md)
   * [ScyllaDB 2026.x Patch Upgrades](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md)
   * [ScyllaDB Image](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/ami-upgrade.md)
 
@@ -412,7 +412,7 @@ Learn more about these topics in the [ScyllaDB University: Architecture lesson](
 
 # Upgrade ScyllaDB
 
-* [ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/index.md)
+* [ScyllaDB 2026.x to ScyllaDB 2026.4](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/index.md)
 * [ScyllaDB 2026.x Patch Upgrades](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md)
   * [Upgrade Procedure](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md#upgrade-procedure)
   * [Upgrade Steps](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x.y-to-2026.x.z.md#upgrade-steps)
@@ -434,10 +434,10 @@ Learn more about these topics in the [ScyllaDB University: Architecture lesson](
 
 # index.md
 
-# Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.3
+# Upgrade - ScyllaDB 2026.x to ScyllaDB 2026.4
 
-* [Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/upgrade-guide-from-2026.x-to-2026.3.md)
-* [Metrics Update Between 2026.x and 2026.3](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.md)
+* [Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.4](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/upgrade-guide-from-2026.x-to-2026.4.md)
+* [Metrics Update Between 2026.x and 2026.4](https://docs.scylladb.com/manual/master/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.4/metric-update-2026.x-to-2026.4.md)
 
 
 # index.md
@@ -2082,10 +2082,11 @@ the S3 client has no file-based credentials provider.
 
 ### Tuning options
 
-| Option                                 | Default   | Description                                                                                                                                                                                                                                                             |
-|----------------------------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `object_storage_endpoints`             | empty     | The list of endpoints described above. Live-updateable: endpoints can be<br/>added without restarting the node.                                                                                                                                                         |
-| `object_storage_connections_per_shard` | 128       | Maximum number of connections per shard for **S3** endpoints, distributed<br/>across scheduling groups in proportion to their shares so that compaction<br/>and streaming traffic does not starve user reads. Live-updateable. The<br/>GCS backend ignores this option. |
+| Option                                 | Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+|----------------------------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `object_storage_endpoints`             | empty     | The list of endpoints described above. Live-updateable: endpoints can be<br/>added without restarting the node.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `object_storage_connections`           | empty     | Maximum number of connections per shard for **S3** endpoints, per connection<br/>pool, as a map from the pool name to a positive count. A scheduling group uses<br/>the pool named after it, except that every service-level group uses<br/>`service_levels` and a group with no pool of its own uses `general`; the<br/>node then logs a warning naming that group and counts it in<br/>`scylla_s3_unclassified_groups`. Entries override the built-in values:<br/>`service_levels: 128`, `memtable: 16`, `memtable_to_cache: 8`,<br/>`compaction: 16`, `maintenance_compaction: 16`, `streaming: 64`,<br/>`backup: 32`, `maintenance: 16`, `general: 16`.<br/>Live-updateable; removing an entry keeps the cap of a pool that already<br/>exists. The GCS backend ignores this option.                                                                                                                   |
+| `object_storage_connections_per_shard` | 128       | Deprecated, superseded by `object_storage_connections`. This set one<br/>budget for the whole shard, which was split across the scheduling groups<br/>by their shares. Setting it at all still honors it as a shard ceiling: the<br/>built-in per-pool values are scaled to land on that total exactly, up or<br/>down, keeping their proportions and at least one connection per pool. The<br/>built-in values total 312, so a node configured with 512 gets<br/>`service_levels` 207 and `streaming` 104, and one configured with 128<br/>gets `service_levels` 50 and `streaming` 26. A budget below the number<br/>of pools cannot be honored: every pool keeps one connection and the node<br/>logs that the total exceeds the budget. Naming any pool in<br/>`object_storage_connections` replaces this entirely: the caps come from<br/>there and the old budget is not consulted. Live-updateable. |
 
 <a id="admin-oci-object-storage"></a>
 
@@ -10060,6 +10061,20 @@ and [n2-highmem](https://cloud.google.com/compute/docs/general-purpose-machines#
 * Processors: Ice Lake (the default for larger machine types) and Cascade Lake
   (the default for machine types up to 80 vCPUs).
 
+<a id="system-requirements-gcp-c4"></a>
+
+### C4 machine series
+
+The ScyllaDB GCE image supports all of the C4 machine series:
+[C4, C4A, and C4D](https://cloud.google.com/compute/docs/general-purpose-machines#c4_series).
+C4A is Arm-based (Google Axion), so it needs the arm64 ScyllaDB GCE image;
+see [GCP Images](https://docs.scylladb.com/manual/master/reference/gcp-images.md).
+
+ScyllaDB needs local SSDs, so use the `-lssd` machine types
+(for example, `c4-standard-8-lssd`, `c4a-highmem-16-lssd`, or `c4d-highmem-32-lssd`),
+which come with Titanium local SSD attached. Do not pass `--local-ssd` when you
+create these instances; see [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-gcp.md).
+
 <a id="system-requirements-azure"></a>
 
 ## Microsoft Azure
@@ -10269,6 +10284,7 @@ the target cluster may not support; replaying such a statement fails instead of 
 | `auto_repair_threshold_in_seconds`                     | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. `0` disables time-based<br/>automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option.                                                         |
 | `repair_hints_batchlog_flush_discard_unreplayed_hints` | boolean | `CLUSTER`                      | A repair of a table with `tombstone_gc` in `repair` mode waits for the hints written<br/>before it to be sent, and records no repair time if that times out. With this option on,<br/>such a timeout discards those hints, so that the next repair does not wait for them again.<br/>This drops every regular hint on the node, for all tables and destinations; a write<br/>acknowledged at consistency level `ANY` that only hints hold is lost. Hints for<br/>materialized views are never discarded. Default: `true`, in effect once every node knows<br/>the option. |
 | `auto_scrub_period_seconds`                            | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Schedule every sstable written or validated more than this many seconds ago for scrub.<br/>Accepts `0` or `3600` to `4294967295`. Default: `0`. `0` disables automatic scrub<br/>at that scope even if a broader scope enabled it, whereas `NULL` removes the value and<br/>falls back to the broader scope. See<br/>[Automatic Scrub](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/automatic-scrub.md).                                                                                                                               |
+| `repair_hints_batchlog_flush_timeout_in_seconds`       | integer | `CLUSTER`                      | A repair of a table with `tombstone_gc` in `repair` mode first asks every node to flush<br/>its hints and replay its batchlog, and gives up on a node that has not finished within this<br/>many seconds. Raise it when nodes accumulate hints faster than they can replay them within<br/>the default, for example after a node stayed down for a long time. Must be between `1`<br/>and `315360000` (ten years). Default: `300`, in effect once every node runs a version<br/>that knows the option.                                                                    |
 
 <a id="cql-cluster-config-yaml-options"></a>
 
@@ -11660,7 +11676,17 @@ not yet supported by Scylla. The BillingMode and ProvisionedThroughput options
 on a table need to be valid but are ignored, and ScyllaDB behaves like DynamoDB’s
 `BillingMode=PAY_PER_REQUEST`: All requests are accepted without a per-table
 throughput cap. The values provisioned for a table and for each of its GSIs
-are remembered and returned by `DescribeTable`, but are not enforced.
+are remembered and returned by `DescribeTable`, but are not enforced. Unlike
+DynamoDB, which requires at least 1, Alternator also accepts zero capacities
+for a GSI. `DescribeTable` reports zeros for a GSI of a `PAY_PER_REQUEST`
+table, and for a GSI created before Alternator stored GSI capacities, so a
+description copied back into `CreateTable` is accepted. On a
+`PAY_PER_REQUEST` table, zeros count as no throughput at all.
+
+`UpdateTable` can switch a table to `BillingMode=PAY_PER_REQUEST`, and
+`DescribeTable` then reports zero capacities for the table and for its GSIs.
+The switch to `BillingMode=PROVISIONED` is not supported yet
+([https://github.com/scylladb/scylladb/issues/19718](https://github.com/scylladb/scylladb/issues/19718)).
 
 ## Load balancing
 
@@ -12138,10 +12164,12 @@ they should be easy to detect. Here is a list of these unimplemented features:
 * Alternator does not support the table option WarmThroughput that can be
   used to check or guarantee that the database has “warmed” to handle a
   particular throughput. Alternator has no throughput caps and nothing to
-  pre-warm, so a table’s WarmThroughput is remembered and returned by
-  `DescribeTable` but otherwise ignored; a table which never set one reports
-  zero units, as does each of its active GSIs. This table option was added to
-  DynamoDB in November 2024.
+  pre-warm, so a WarmThroughput set on a table or on any of its GSIs is
+  remembered and returned by `DescribeTable` but otherwise ignored; a table or
+  an active GSI which never set one reports zero units. An UpdateTable request
+  can change the WarmThroughput of only one GSI, while DynamoDB accepts several
+  GSI updates in one request. This table option was added to DynamoDB in
+  November 2024.
   [https://github.com/scylladb/scylladb/issues/21853](https://github.com/scylladb/scylladb/issues/21853)
 * Alternator does not support the table option MultiRegionConsistency
   that can be used to achieve consistent reads on global (multi-region) tables.
@@ -14067,7 +14095,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### repair_hints_batchlog_flush_cache_time_in_ms
 
-> The repair hints and batchlog flush request cache time. Setting 0 disables the flush cache. The cache reduces the number of hints and batchlog flushes during repair when tombstone_gc is set to repair mode. When the cache is on, a slightly smaller repair time will be used with the benefits of dropped hints and batchlog flushes.
+> The repair hints and batchlog flush request cache time. Setting 0 disables the flush cache. The cache reduces the number of hints and batchlog flushes during repair when tombstone_gc is set to repair mode. When the cache is on, a slightly smaller repair time will be used with the benefits of dropped hints and batchlog flushes. The topology coordinator also reuses one flush across tablet repairs for this long, or for up to this plus the flush timeout while a new flush runs.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `60 * 1000`
@@ -15617,11 +15645,21 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > * **Default value:** `{}`
 > * Liveness: `True`
 
+<a id="confprop-object-storage-connections"></a>
+
+### object_storage_connections
+
+> Maximum number of S3 connections per shard for each connection pool, as a map from the pool name to a positive count.     A scheduling group uses the pool named after it, except that every service-level group uses service_levels and a group     with no pool of its own uses general, which logs a warning naming that group. Entries override the built-in values.
+
+> * **Type:** `std::unordered_map<sstring, unsigned>`
+> * **Default value:** `{}`
+> * Liveness: `True`
+
 <a id="confprop-object-storage-connections-per-shard"></a>
 
 ### object_storage_connections_per_shard
 
-> Maximum number of object storage connections per shard.     Connections are distributed proportionally across scheduling groups based on their shares.
+> Deprecated, superseded by object_storage_connections. This set one budget for the whole shard, which was     split across the scheduling groups by their shares. Setting it at all is still honored as a shard ceiling:     the built-in per-pool values are scaled to land on that total, up or down, keeping their proportions and     at least one connection per pool. Ignored once object_storage_connections names any pool, which gives     the caps itself.
 
 > * **Type:** `unsigned`
 > * **Default value:** `128`
@@ -24189,7 +24227,7 @@ EOF
 ```
 
 Pinning may be particularly useful when you want to downgrade ScyllaDB or upgrade to a version that is not the latest
-available version. See [this article](https://help.ubuntu.com/community/PinningHowto) for details about pinning on Debian-based systems.
+available version. See [AptConfiguration](https://wiki.debian.org/AptConfiguration) for details about pinning on Debian-based systems.
 
 Alternatively, you can explicitly install **all** the ScyllaDB packages for the desired non-latest version. For example:
 
@@ -25195,13 +25233,17 @@ The operations that generate tombstones are:
 
 # GCP Images
 
+Image names ending in `-aarch64` are arm64 images. Use them with Arm-based machine types,
+such as C4A (Google Axion).
+
 <!-- -*- mode: rst -*- -->
 
 ## 2026.3.5
 
-| Image Name        |            Image ID |
-|-------------------|---------------------|
-| scylladb-2026-3-5 | 7390148619193292802 |
+| Image Name                |            Image ID |
+|---------------------------|---------------------|
+| scylladb-2026-3-5         | 7390148619193292802 |
+| scylladb-2026-3-5-aarch64 | 5098196607956687281 |
 <!-- -*- mode: rst -*- -->
 
 ## 2026.3.4
@@ -28702,9 +28744,12 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
 
    ### 2026.3.5
 
-   | Image Name        |            Image ID |
-   |-------------------|---------------------|
-   | scylladb-2026-3-5 | 7390148619193292802 |
+   | Image Name                |            Image ID |
+   |---------------------------|---------------------|
+   | scylladb-2026-3-5         | 7390148619193292802 |
+   | scylladb-2026-3-5-aarch64 | 5098196607956687281 |
+
+   For Arm-based machine types, such as C4A, use the arm64 image (its name ends in `-aarch64`).
 3. Launch a ScyllaDB instance on GCP with `gcloud` using the information from the previous step. Use the following syntax:
    ```console
    gcloud compute instances create <name of new instance> --image <ScyllaDB image name> --image-project < ScyllaDB project name> --local-ssd interface=nvme --zone=<GCP zone - optional> --machine-type=<machine type>
@@ -28719,6 +28764,18 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
    command will launch a VM with 4 SSD, and 1.5TB of data (4 \* [375 GB](https://cloud.google.com/compute/docs/disks/local-ssd)):
    ```console
    gcloud compute instances create scylla-node1 --image scylladb-2026-1-11 --image-project scylla-images --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --machine-type=n1-highmem-8
+   ```
+
+   Z3 machine types (such as `z3-highmem-8-highlssd`) and C4 machine types whose names end in
+   `-lssd` come with local SSD attached automatically. For those, leave out the `--local-ssd`
+   options. For example:
+   ```console
+   gcloud compute instances create scylla-node1 --image <ScyllaDB image name> --image-project scylla-images --machine-type=c4-highmem-16-lssd
+   ```
+
+   C4A is Arm-based, so it needs the arm64 image. For example:
+   ```console
+   gcloud compute instances create scylla-node1 --image <ScyllaDB arm64 image name> --image-project scylla-images --machine-type=c4a-highmem-16-lssd
    ```
 
    For more information about GCP image create see the [Google Cloud SDK documentation](https://cloud.google.com/sdk/gcloud/reference/compute/images/create).
@@ -30771,90 +30828,166 @@ SCYLLA_ARGS="--log-to-syslog 1 --log-to-stdout 0 --default-log-level info --netw
 # Messaging Service
 
 
-# metric-update-2026.x-to-2026.3.md
+# metric-update-2026.x-to-2026.4.md
 
-# Metrics Update Between 2026.x and 2026.3
+# Metrics Update Between 2026.x and 2026.4
 
-ScyllaDB 2026.3 Dashboards are available as part of the latest [Scylla Monitoring Stack](https://monitoring.docs.scylladb.com).
+ScyllaDB 2026.4 Dashboards are available as part of the latest [Scylla Monitoring Stack](https://monitoring.docs.scylladb.com).
 
-## New Metrics in 2026.3
+## New Metrics in 2026.4
 
-The following metrics are new in ScyllaDB 2026.3 compared to 2026.2.
+The following metrics are new in ScyllaDB 2026.4 compared to 2026.3.
 
-| Metric                                                      | Description                                                                                                                                                                                                    |
-|-------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| scylla_alternator_conditional_check_failed                  | The number of conditional requests whose condition was false (ConditionalCheckFailedException).                                                                                                                |
-| scylla_alternator_returned_items                            | The number of items returned by Query and Scan operations (not other operations).                                                                                                                              |
-| scylla_alternator_returned_items_histogram                  | A histogram of the number of items returned per Query or Scan operation.                                                                                                                                       |
-| scylla_alternator_returned_records                          | The number of stream records returned by GetRecords operations.                                                                                                                                                |
-| scylla_alternator_system_errors                             | The number of HTTP 500 internal server error responses.                                                                                                                                                        |
-| scylla_alternator_user_errors                               | The number of HTTP 400 client error responses, excluding ConditionalCheckFailedException.                                                                                                                      |
-| scylla_alternator_vector_search_query                       | The number of Query operations with VectorSearch.                                                                                                                                                              |
-| scylla_alternator_vector_search_query_items_from_base_table | The total number of items read from the base table by Vector Search queries.                                                                                                                                   |
-| scylla_alternator_vector_search_query_items_from_vs         | The total number of nearest neighbors found by the vector store (some may be post-filtered and not returned).                                                                                                  |
-| scylla_alternator_vector_search_query_returned_items        | The total number of items returned by Query operations with Vector Search.                                                                                                                                     |
-| scylla_database_large_cell_exceeding_threshold              | The number of large cells exceeding `compaction_large_cell_warning_threshold_mb`.<br/>Large cells have performance impact and should be avoided.                                                               |
-| scylla_database_large_collection_exceeding_threshold        | The number of large collections exceeding `compaction_collection_elements_count_warning_threshold`.<br/>Large collections have performance impact and should be avoided.                                       |
-| scylla_database_large_rows_exceeding_threshold              | The number of large rows exceeding `compaction_large_row_warning_threshold_mb`.<br/>Large rows have performance impact and should be avoided.                                                                  |
-| scylla_database_reads_memory_borrowed_from_shared_pool      | The current amount of memory borrowed from the shared pool.                                                                                                                                                    |
-| scylla_database_reads_shared_pool_available_memory          | The current amount of available memory in the shared reader concurrency semaphore pool.                                                                                                                        |
-| scylla_database_reads_shared_pool_total_memory              | The total memory of the shared reader concurrency semaphore pool.                                                                                                                                              |
-| scylla_group_name_rebuilds_produced                         | The number of rebuilds produced by the load balancer.                                                                                                                                                          |
-| scylla_group_name_repairs_produced                          | The number of repairs produced by the load balancer.                                                                                                                                                           |
-| scylla_logstor_sm_separator_buffers_in_use                  | The current number of separator buffers in use.                                                                                                                                                                |
-| scylla_memory_logstor_bytes                                 | The current size of memory used by logstor in bytes.                                                                                                                                                           |
-| scylla_s3_integrated_request_queue_length                   | The number of queued HTTP requests integrated over time (measured in request-seconds).                                                                                                                         |
-| scylla_s3_total_connect_latency_sec                         | The total time in seconds spent in HTTP CONNECT requests.                                                                                                                                                      |
-| scylla_s3_total_connect_requests                            | The total number of HTTP CONNECT requests.                                                                                                                                                                     |
-| scylla_s3_total_connect_retries                             | The total number of HTTP CONNECT retries.                                                                                                                                                                      |
-| scylla_s3_total_delete_latency_sec                          | The total time in seconds spent in HTTP DELETE requests.                                                                                                                                                       |
-| scylla_s3_total_delete_requests                             | The total number of HTTP DELETE requests.                                                                                                                                                                      |
-| scylla_s3_total_delete_retries                              | The total number of HTTP DELETE retries.                                                                                                                                                                       |
-| scylla_s3_total_get_latency_sec                             | The total time in seconds spent in HTTP GET requests                                                                                                                                                           |
-| scylla_s3_total_get_requests                                | The total number of HTTP GET requests.                                                                                                                                                                         |
-| scylla_s3_total_get_retries                                 | The total number of HTTP GET retries.                                                                                                                                                                          |
-| scylla_s3_total_head_latency_sec                            | The total time in seconds spent in HTTP HEAD requests.                                                                                                                                                         |
-| scylla_s3_total_head_requests                               | The total number of HTTP HEAD requests.                                                                                                                                                                        |
-| scylla_s3_total_head_retries                                | The total number of HTTP HEAD retries.                                                                                                                                                                         |
-| scylla_s3_total_options_latency_sec                         | The total time in seconds spent in HTTP OPTIONS requests.                                                                                                                                                      |
-| scylla_s3_total_options_requests                            | The total number of HTTP OPTIONS requests.                                                                                                                                                                     |
-| scylla_s3_total_options_retries                             | The total number of HTTP OPTIONS retries.                                                                                                                                                                      |
-| scylla_s3_total_patch_latency_sec                           | The total time in seconds spent in HTTP PATCH requests.                                                                                                                                                        |
-| scylla_s3_total_patch_requests                              | The total number of HTTP PATCH requests.                                                                                                                                                                       |
-| scylla_s3_total_patch_retries                               | The total number of HTTP PATCH retries.                                                                                                                                                                        |
-| scylla_s3_total_post_latency_sec                            | The total time in seconds spent in HTTP POST requests.                                                                                                                                                         |
-| scylla_s3_total_post_requests                               | The total number of HTTP POST requests.                                                                                                                                                                        |
-| scylla_s3_total_post_retries                                | The total number of HTTP POST retries.                                                                                                                                                                         |
-| scylla_s3_total_put_latency_sec                             | The total time in seconds spent in HTTP PUT requests.                                                                                                                                                          |
-| scylla_s3_total_put_requests                                | The total number of HTTP PUT requests.                                                                                                                                                                         |
-| scylla_s3_total_put_retries                                 | The total number of HTTP PUT retries.                                                                                                                                                                          |
-| scylla_s3_total_trace_latency_sec                           | The total time in seconds spent in HTTP TRACE requests.                                                                                                                                                        |
-| scylla_s3_total_trace_requests                              | The total number of HTTP TRACE requests.                                                                                                                                                                       |
-| scylla_s3_total_trace_retries                               | The total number of HTTP TRACE retries.                                                                                                                                                                        |
-| scylla_service_level_workload_type                          | The  workload type configured for each service level. 0 - unspecified, 1 - batch, 2 - interactive.                                                                                                             |
-| scylla_strong_consistency_coordinator_read_errors           | The number of strong consistency read requests that failed.                                                                                                                                                    |
-| scylla_strong_consistency_coordinator_read_latency          | A strong consistency read latency histogram.                                                                                                                                                                   |
-| scylla_strong_consistency_coordinator_read_latency_summary  | A strong consistency read latency summary.                                                                                                                                                                     |
-| scylla_strong_consistency_coordinator_read_node_bounces     | The number of strong consistency read requests bounced to another node.                                                                                                                                        |
-| scylla_strong_consistency_coordinator_read_shard_bounces    | The number of strong consistency read requests bounced to another shard.                                                                                                                                       |
-| scylla_strong_consistency_coordinator_write_errors          | The number of strong consistency write requests that failed.                                                                                                                                                   |
-| scylla_strong_consistency_coordinator_write_latency         | A strong consistency write latency histogram.                                                                                                                                                                  |
-| scylla_strong_consistency_coordinator_write_latency_summary | A strong consistency write latency summary.                                                                                                                                                                    |
-| scylla_strong_consistency_coordinator_write_node_bounces    | The vnumber of strong consistency write requests bounced to another node.                                                                                                                                      |
-| scylla_strong_consistency_coordinator_write_shard_bounces   | The number of strong consistency write requests bounced to another shard.                                                                                                                                      |
-| scylla_transport_cql_client_timestamp_drift_histogram       | A histogram of the drift in microseconds between the client-provided CQL<br/>timestamp and the server time at request arrival. Useful for detecting<br/>transport delays before requests reach the CQL server. |
-| scylla_transport_cql_request_latency_histogram              | A histogram of transport-level CQL request latencies (in microseconds),<br/>measuring from the start of request processing until the response is<br/>written to the socket.                                    |
+| Metric                                                         | Description                                                                                                                                                                                                                                                                                                                                                                                             |
+|----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| scylla_column_family_logstor_segments                          | Number of logstor segments owned by this table.                                                                                                                                                                                                                                                                                                                                                         |
+| scylla_column_family_sstables_per_read                         | Number of sstables accessed to serve a single-partition read.                                                                                                                                                                                                                                                                                                                                           |
+| scylla_cql_select_paging_plan_rederivations                    | Counts the pages of a prepared SELECT re-derived, each paying a re-parse, because the paging state pinned another query plan.                                                                                                                                                                                                                                                                           |
+| scylla_encryption_key_attr_cache_blocked                       | Number of key cache blocking load resolves.                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_encryption_key_attr_cache_evictions                     | Number of key cache evictions.                                                                                                                                                                                                                                                                                                                                                                          |
+| scylla_encryption_key_attr_cache_hits                          | Number of key cache hits.                                                                                                                                                                                                                                                                                                                                                                               |
+| scylla_encryption_key_attr_cache_misses                        | Number of key cache misses.                                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_encryption_key_attr_cache_privileged_evictions          | Number of privileged key cache evictions.                                                                                                                                                                                                                                                                                                                                                               |
+| scylla_encryption_key_attr_cache_unprivileged_evictions        | Number of unprivileged key cache evictions.                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_encryption_key_id_cache_blocked                         | Number of key cache blocking load resolves.                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_encryption_key_id_cache_evictions                       | Number of key cache evictions.                                                                                                                                                                                                                                                                                                                                                                          |
+| scylla_encryption_key_id_cache_hits                            | Number of key cache hits.                                                                                                                                                                                                                                                                                                                                                                               |
+| scylla_encryption_key_id_cache_misses                          | Number of key cache misses.                                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_encryption_key_id_cache_privileged_evictions            | Number of privileged key cache evictions.                                                                                                                                                                                                                                                                                                                                                               |
+| scylla_encryption_key_id_cache_unprivileged_evictions          | Number of unprivileged key cache evictions.                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_hints_for_views_manager_discarded_segments              | Number of hints files that were discarded without being replayed.                                                                                                                                                                                                                                                                                                                                       |
+| scylla_hints_manager_discarded_segments                        | Number of hints files that were discarded without being replayed.                                                                                                                                                                                                                                                                                                                                       |
+| scylla_load_balancer_auto_repair_enabled_nr                    | Number of tablets with auto repair enabled.                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_load_balancer_auto_repair_needs_repair_nr               | Number of tablets with auto repair enabled that currently needs repair.                                                                                                                                                                                                                                                                                                                                 |
+| scylla_load_balancer_calls                                     | Number of calls to the load balancer.                                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_load_balancer_cross_rack_collocations                   | Number of co-locating migrations which move replica across racks.                                                                                                                                                                                                                                                                                                                                       |
+| scylla_load_balancer_load                                      | Node load during last load balancing.                                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_load_balancer_migrations_produced                       | Number of migrations produced by the load balancer.                                                                                                                                                                                                                                                                                                                                                     |
+| scylla_load_balancer_migrations_skipped                        | Number of migrations skipped by the load balancer due to load limits.                                                                                                                                                                                                                                                                                                                                   |
+| scylla_load_balancer_rebuilds_produced                         | Number of rebuilds produced by the load balancer.                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_load_balancer_repairs_produced                          | Number of repairs produced by the load balancer.                                                                                                                                                                                                                                                                                                                                                        |
+| scylla_load_balancer_resizes_emitted                           | Number of resizes produced by the load balancer.                                                                                                                                                                                                                                                                                                                                                        |
+| scylla_load_balancer_resizes_finalized                         | Number of resizes finalized by the load balancer.                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_load_balancer_resizes_revoked                           | Number of resizes revoked by the load balancer.                                                                                                                                                                                                                                                                                                                                                         |
+| scylla_logstor_queued_write_count                              | Number of writes currently queued in the write buffer.                                                                                                                                                                                                                                                                                                                                                  |
+| scylla_logstor_sm_compaction_buffer_allocation_waits           | Counts number of times a compaction had to wait for a write buffer to become available.                                                                                                                                                                                                                                                                                                                 |
+| scylla_logstor_sm_compaction_buffers_dropped                   | Counts number of write buffers permanently removed from the pool after they could not be reclaimed.                                                                                                                                                                                                                                                                                                     |
+| scylla_logstor_sm_compaction_buffers_in_use                    | Counts number of write buffers currently held by compaction. The pool size is the cap on concurrent compactions.                                                                                                                                                                                                                                                                                        |
+| scylla_logstor_sm_compaction_bytes_read                        | Counts number of bytes read by compaction.                                                                                                                                                                                                                                                                                                                                                              |
+| scylla_logstor_sm_compaction_failures                          | Counts number of logstor compaction failures.                                                                                                                                                                                                                                                                                                                                                           |
+| scylla_logstor_sm_live_record_bytes                            | Counts the durable live record bytes currently referenced by the primary index.                                                                                                                                                                                                                                                                                                                         |
+| scylla_logstor_sm_live_record_count                            | Counts the durable live records currently referenced by the primary index.                                                                                                                                                                                                                                                                                                                              |
+| scylla_logstor_sm_owned_segments_live_record_bytes             | Record bytes of the live records in the segments that the compaction groups of this shard own. Dead records use the remaining space of these segments. Compaction frees that space.                                                                                                                                                                                                                     |
+| scylla_logstor_sm_segment_free_failures                        | Counts number of logstor segment references that failed to free the segment.                                                                                                                                                                                                                                                                                                                            |
+| scylla_logstor_sm_segment_utilization                          | Distribution by utilization of the segments that the compaction groups of this shard own. The utilization of a segment is the record bytes of its live records divided by the segment size.                                                                                                                                                                                                             |
+| scylla_logstor_sm_separator_buffer_allocation_waits            | Counts number of times the separator had to wait for a write buffer to become available.                                                                                                                                                                                                                                                                                                                |
+| scylla_logstor_sm_separator_buffer_pool_capacity               | Number of write buffers the separator can hold at once, which follows the number of compaction groups.                                                                                                                                                                                                                                                                                                  |
+| scylla_logstor_sm_separator_buffers_allocated                  | Counts number of write buffers the separator buffer pool holds the memory of, including the ones it keeps for reuse.                                                                                                                                                                                                                                                                                    |
+| scylla_logstor_sm_separator_buffers_dropped                    | Counts number of separator write buffers permanently removed from the pool after they could not be reclaimed.                                                                                                                                                                                                                                                                                           |
+| scylla_logstor_sm_separator_flush_failures                     | Counts number of logstor separator flush failures.                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_logstor_sm_separator_task_failures                      | Counts number of logstor separator task failures.                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_logstor_sm_separator_task_queue_size                    | Current number of pending tasks in the separator task queue.                                                                                                                                                                                                                                                                                                                                            |
+| scylla_logstor_sm_write_failures                               | Counts number of write failures when appending to a logstor segment.                                                                                                                                                                                                                                                                                                                                    |
+| scylla_logstor_write_failures                                  | Number of writes that failed to be persisted.                                                                                                                                                                                                                                                                                                                                                           |
+| scylla_memory_logstor_index_entries_bytes                      | Bytes of memory that the logstor primary index entries take, without the nodes and buckets of the B+trees.                                                                                                                                                                                                                                                                                              |
+| scylla_object_storage_integrated_request_queue_length          | The number of queued HTTP requests integrated over time (measured in request-seconds).                                                                                                                                                                                                                                                                                                                  |
+| scylla_object_storage_nr_active_connections                    | Total number of connections with running requests.                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_object_storage_nr_connections                           | Total number of connections.                                                                                                                                                                                                                                                                                                                                                                            |
+| scylla_object_storage_total_connect_latency_sec                | Total time in seconds spent in HTTP CONNECT requests.                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_object_storage_total_connect_requests                   | Total number of HTTP CONNECT requests.                                                                                                                                                                                                                                                                                                                                                                  |
+| scylla_object_storage_total_connect_retries                    | Total number of HTTP CONNECT retries.                                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_object_storage_total_delete_latency_sec                 | Total time in seconds spent in HTTP DELETE requests.                                                                                                                                                                                                                                                                                                                                                    |
+| scylla_object_storage_total_delete_requests                    | Total number of HTTP DELETE requests.                                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_object_storage_total_delete_retries                     | Total number of HTTP DELETE retries.                                                                                                                                                                                                                                                                                                                                                                    |
+| scylla_object_storage_total_get_latency_sec                    | Total time in seconds spent in HTTP GET requests.                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_object_storage_total_get_requests                       | Total number of HTTP GET requests.                                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_object_storage_total_get_retries                        | Total number of HTTP GET retries.                                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_object_storage_total_head_latency_sec                   | Total time in seconds spent in HTTP HEAD requests.                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_object_storage_total_head_requests                      | Total number of HTTP HEAD requests.                                                                                                                                                                                                                                                                                                                                                                     |
+| scylla_object_storage_total_head_retries                       | Total number of HTTP HEAD retries.                                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_object_storage_total_new_connections                    | Total number of new connections created so far.                                                                                                                                                                                                                                                                                                                                                         |
+| scylla_object_storage_total_options_latency_sec                | Total time in seconds spent in HTTP OPTIONS requests.                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_object_storage_total_options_requests                   | Total number of HTTP OPTIONS requests.                                                                                                                                                                                                                                                                                                                                                                  |
+| scylla_object_storage_total_options_retries                    | Total number of HTTP OPTIONS retries.                                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_object_storage_total_patch_latency_sec                  | Total time in seconds spent in HTTP PATCH requests.                                                                                                                                                                                                                                                                                                                                                     |
+| scylla_object_storage_total_patch_requests                     | Total number of HTTP PATCH requests.                                                                                                                                                                                                                                                                                                                                                                    |
+| scylla_object_storage_total_patch_retries                      | Total number of HTTP PATCH retries.                                                                                                                                                                                                                                                                                                                                                                     |
+| scylla_object_storage_total_post_latency_sec                   | Total time in seconds spent in HTTP POST requests.                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_object_storage_total_post_requests                      | Total number of HTTP POST requests.                                                                                                                                                                                                                                                                                                                                                                     |
+| scylla_object_storage_total_post_retries                       | Total number of HTTP POST retries.                                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_object_storage_total_put_latency_sec                    | Total time in seconds spent in HTTP PUT requests.                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_object_storage_total_put_requests                       | Total number of HTTP PUT requests.                                                                                                                                                                                                                                                                                                                                                                      |
+| scylla_object_storage_total_put_retries                        | Total number of HTTP PUT retries.                                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_object_storage_total_read_bytes                         | Total number of bytes read from objects.                                                                                                                                                                                                                                                                                                                                                                |
+| scylla_object_storage_total_read_latency_sec                   | Total time spent reading data from objects.                                                                                                                                                                                                                                                                                                                                                             |
+| scylla_object_storage_total_read_requests                      | Total number of object read requests.                                                                                                                                                                                                                                                                                                                                                                   |
+| scylla_object_storage_total_trace_latency_sec                  | Total time in seconds spent in HTTP TRACE requests.                                                                                                                                                                                                                                                                                                                                                     |
+| scylla_object_storage_total_trace_requests                     | Total number of HTTP TRACE requests.                                                                                                                                                                                                                                                                                                                                                                    |
+| scylla_object_storage_total_trace_retries                      | Total number of HTTP TRACE retries.                                                                                                                                                                                                                                                                                                                                                                     |
+| scylla_object_storage_total_write_bytes                        | Total number of bytes written to objects.                                                                                                                                                                                                                                                                                                                                                               |
+| scylla_object_storage_total_write_latency_sec                  | Total time spent writing data to objects.                                                                                                                                                                                                                                                                                                                                                               |
+| scylla_object_storage_total_write_requests                     | Total number of object write requests.                                                                                                                                                                                                                                                                                                                                                                  |
+| scylla_raft_blocked_followers                                  | Number of followers the leader cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight), snapshot (waiting for a snapshot transfer) or log_full (the follower reported that its log is full); followers the failure detector reports down are not counted.                    |
+| scylla_raft_group0_append_entries_in_flight_bytes              | Bytes of append requests currently being sent, as charged against the in-flight memory limit.                                                                                                                                                                                                                                                                                                           |
+| scylla_raft_group0_append_entries_memory_waiters               | Number of append requests currently waiting for the memory of other in-flight append requests to be released.                                                                                                                                                                                                                                                                                           |
+| scylla_raft_group0_append_entries_memory_waits                 | Number of append requests that had to wait for the memory of other in-flight append requests to be released.                                                                                                                                                                                                                                                                                            |
+| scylla_raft_log_full                                           | 1 if the in-memory log reached `max_follower_log_size`, so entries from a leader are being refused.                                                                                                                                                                                                                                                                                                     |
+| scylla_raft_log_limiter_waiters                                | Number of entries currently waiting for the in-memory log to shrink below `max_log_size`.                                                                                                                                                                                                                                                                                                               |
+| scylla_raft_log_limiter_waits                                  | Number of times appending an entry had to wait for the in-memory log to shrink below `max_log_size`; an entry waiting for its turn to be appended is counted only if it still has to wait once its turn comes.                                                                                                                                                                                          |
+| scylla_s3_refused_request_ratio                                | Smoothed share of S3 requests the endpoint is refusing.                                                                                                                                                                                                                                                                                                                                                 |
+| scylla_s3_send_freezes                                         | Times sending was held back after a throttling response.                                                                                                                                                                                                                                                                                                                                                |
+| scylla_s3_throttles                                            | Total number of throttling responses (503 SlowDown etc.) from S3.                                                                                                                                                                                                                                                                                                                                       |
+| scylla_storage_proxy_coordinator_read_repairs_diff_found_total | Number of read repairs in which the full-data reconciliation found actual differences between replicas and repair mutations were sent.                                                                                                                                                                                                                                                                  |
+| scylla_strong_consistency_raft_add_entries                     | Number of entries added on this node, the log_entry_type label can be command, dummy or config.                                                                                                                                                                                                                                                                                                         |
+| scylla_strong_consistency_raft_append_entries_in_flight_bytes  | Bytes of append requests currently being sent, as charged against the in-flight memory limit.                                                                                                                                                                                                                                                                                                           |
+| scylla_strong_consistency_raft_append_entries_memory_waiters   | Number of append requests currently waiting for the memory of other in-flight append requests to be released.                                                                                                                                                                                                                                                                                           |
+| scylla_strong_consistency_raft_append_entries_memory_waits     | Number of append requests that had to wait for the memory of other in-flight append requests to be released.                                                                                                                                                                                                                                                                                            |
+| scylla_strong_consistency_raft_applied_entries                 | Number of log entries applied.                                                                                                                                                                                                                                                                                                                                                                          |
+| scylla_strong_consistency_raft_blocked_followers               | Number of followers the tablet raft group leaders cannot send entries to, the reason label can be probe (waiting for the reply to a probe of the follower’s log), pipeline_full (the maximal number of append requests is in flight), snapshot (waiting for a snapshot transfer) or log_full (the follower reported that its log is full); followers the failure detector reports down are not counted. |
+| scylla_strong_consistency_raft_full_logs                       | Number of raft logs of the table which reached `max_follower_log_size`, so entries from a leader are being refused.                                                                                                                                                                                                                                                                                     |
+| scylla_strong_consistency_raft_in_memory_log_size              | Number of entries in the in-memory part of the raft logs of the table.                                                                                                                                                                                                                                                                                                                                  |
+| scylla_strong_consistency_raft_leaders                         | Number of tablet raft groups of the table led by this node.                                                                                                                                                                                                                                                                                                                                             |
+| scylla_strong_consistency_raft_log_limiter_waiters             | Number of entries currently waiting for an in-memory raft log of the table to shrink below `max_log_size`.                                                                                                                                                                                                                                                                                              |
+| scylla_strong_consistency_raft_log_limiter_waits               | Number of times appending an entry had to wait for the in-memory log to shrink below `max_log_size`; an entry waiting for its turn to be appended is counted only if it still has to wait once its turn comes.                                                                                                                                                                                          |
+| scylla_strong_consistency_raft_log_memory_usage                | Bytes used by the in-memory part of the raft logs of the table.                                                                                                                                                                                                                                                                                                                                         |
+| scylla_strong_consistency_raft_messages_received               | Number of messages received, the message_type determines the type of message.                                                                                                                                                                                                                                                                                                                           |
+| scylla_strong_consistency_raft_messages_sent                   | Number of messages sent, the message_type determines the type of message.                                                                                                                                                                                                                                                                                                                               |
+| scylla_strong_consistency_raft_persisted_log_entries           | Number of log entries persisted.                                                                                                                                                                                                                                                                                                                                                                        |
+| scylla_strong_consistency_raft_polls                           | Number of times raft state machine polled.                                                                                                                                                                                                                                                                                                                                                              |
+| scylla_strong_consistency_raft_queue_entries_for_apply         | Number of log entries scheduled to be applied.                                                                                                                                                                                                                                                                                                                                                          |
+| scylla_strong_consistency_raft_sm_load_snapshot                | Number of times user state machine reloaded with a snapshot.                                                                                                                                                                                                                                                                                                                                            |
+| scylla_strong_consistency_raft_snapshots_taken                 | Number of times user’s state machine snapshotted.                                                                                                                                                                                                                                                                                                                                                       |
+| scylla_strong_consistency_raft_store_snapshot                  | Number of snapshots persisted.                                                                                                                                                                                                                                                                                                                                                                          |
+| scylla_strong_consistency_raft_store_term_and_vote             | Number of times term and vote persisted.                                                                                                                                                                                                                                                                                                                                                                |
+| scylla_strong_consistency_raft_truncate_persisted_log          | Number of times log truncated on storage.                                                                                                                                                                                                                                                                                                                                                               |
+| scylla_strong_consistency_raft_unapplied_entries               | Number of committed raft log entries of the table not applied yet.                                                                                                                                                                                                                                                                                                                                      |
+| scylla_strong_consistency_raft_uncommitted_entries             | Number of raft log entries of the table not committed yet.                                                                                                                                                                                                                                                                                                                                              |
+| scylla_strong_consistency_raft_waiter_awoken                   | Number of waiters that got result back.                                                                                                                                                                                                                                                                                                                                                                 |
+| scylla_strong_consistency_raft_waiter_dropped                  | Number of waiters that did not get result back.                                                                                                                                                                                                                                                                                                                                                         |
+| scylla_tablet_ops_cancelled_transitions                        | Number of tablet transitions which were cancelled and rolled back. Counted by the topology coordinator, so it restarts when the coordinator changes.                                                                                                                                                                                                                                                    |
 
-## Renamed Metrics in 2026.3
+## Renamed Metrics in 2026.4
 
-The following metrics are renamed in ScyllaDB 2026.3 compared to 2026.2.
+The following metrics are renamed in ScyllaDB 2026.4 compared to 2026.3.
 
-| Metric Name in 2026.2                 | Metric Name in 2026.3                           |
-|---------------------------------------|-------------------------------------------------|
-| scylla_s3_downloads_blocked_on_memory | scylla_s3_downloads_starving_on_max_concurrency |
+| Metric Name in 2026.3                                       | Metric Name in 2026.4                                 |
+|-------------------------------------------------------------|-------------------------------------------------------|
+| scylla_alternator_vector_search_query_items_from_base_table | scylla_alternator_vector_search_items_from_base_table |
+| scylla_alternator_vector_search_query_items_from_vs         | scylla_alternator_vector_search_items_from_vs         |
+| scylla_alternator_vector_search_query_returned_items        | scylla_alternator_vector_search_returned_items        |
+| scylla_logstor_sm_segments_compacted                        | scylla_logstor_sm_compaction_segments_in              |
+| scylla_logstor_sm_compaction_segments_freed                 | scylla_logstor_sm_compaction_segments_out             |
+
+## Removed Metrics in 2026.4
+
+The following metrics are removed in ScyllaDB 2026.4.
+
+* scylla_alternator_vector_search_query
+* scylla_logstor_sm_separator_flow_control_delay
 
 ## New and Updated Metrics in Previous 2026.x Releases
 
+* [Metrics Update Between 2026.x and 2026.3](https://docs.scylladb.com/manual/branch-2026.3/upgrade/upgrade-guides/upgrade-guide-from-2026.x-to-2026.3/metric-update-2026.x-to-2026.3.html)
 * [Metrics Update Between 2026.1 and 2026.2](https://docs.scylladb.com/manual/branch-2026.2/upgrade/upgrade-guides/upgrade-guide-from-2026.1-to-2026.2/metric-update-2026.1-to-2026.2.html)
 
 
@@ -45781,7 +45914,7 @@ ScyllaDB tries to maximize the resource usage of all system components. The shar
 
 #### CPU
 
-ScyllaDB requires modern Intel/AMD CPUs that support the x86-64-v3 instruction set level (AVX2, BMI2, FMA and the rest) and PCLMUL, and will not boot without them.
+On x86_64, ScyllaDB requires modern Intel/AMD CPUs that support the x86-64-v3 instruction set level (AVX2, BMI2, FMA and the rest) and PCLMUL, and will not boot without them.
 
 ScyllaDB supports the following CPUs:
 
@@ -45791,6 +45924,7 @@ ScyllaDB supports the following CPUs:
 * Apple M1 and M2
 * Ampere Altra
 * AWS Graviton, Graviton2, Graviton3
+* Google Axion
 
 In terms of the number of cores, any number will work since ScyllaDB scales up with the number of cores.
 A practical approach is to use a large number of cores as long as the hardware price remains reasonable.
@@ -48371,12 +48505,12 @@ Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apach
 <!-- limitations under the License. -->
 
 
-# upgrade-guide-from-2026.x-to-2026.3.md
+# upgrade-guide-from-2026.x-to-2026.4.md
 
-# Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3
+# Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.4
 
 This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.x
-to ScyllaDB 2026.3 and rollback to version 2026.x if necessary.
+to ScyllaDB 2026.4 and rollback to version 2026.x if necessary.
 
 This guide covers upgrading ScyllaDB on Red Hat Enterprise Linux (RHEL), CentOS, Debian,
 and Ubuntu. See [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html)
@@ -48424,7 +48558,7 @@ validating that the node you upgraded is up and running the new version.
 
 **During** the rolling upgrade, it is highly recommended:
 
-* Not to use the new 2026.3 features.
+* Not to use the new 2026.4 features.
 * Not to run administration functions, such as repairs, refresh, rebuild, or add
   or remove nodes. See [sctool](https://manager.docs.scylladb.com/stable/sctool/) for suspending
   ScyllaDB Manager’s scheduled or running repairs.
@@ -48494,7 +48628,7 @@ You should take note of the current version in case you want to [rollback](#roll
 
 Debian/Ubuntu
 
-1. Update the ScyllaDB deb repo to 2026.3.
+1. Update the ScyllaDB deb repo to 2026.4.
    > ```console
    > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.3.list
    > ```
@@ -48509,7 +48643,7 @@ Answer ‘y’ to the first two questions.
 
 RHEL/CentOS
 
-1. Update the ScyllaDB rpm repo to 2026.3.
+1. Update the ScyllaDB rpm repo to 2026.4.
    > ```console
    > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.3.repo
    > ```
@@ -48562,16 +48696,16 @@ Once you are sure the node upgrade was successful, move to the next node in the 
 
 #### WARNING
 The rollback procedure can be applied **only** if some nodes have not been
-upgraded to 2026.3 yet. As soon as the last node in the rolling upgrade
-procedure is started with 2026.3, rollback becomes impossible. At that
+upgraded to 2026.4 yet. As soon as the last node in the rolling upgrade
+procedure is started with 2026.4, rollback becomes impossible. At that
 point, the only way to restore a cluster to 2026.x is by restoring it
 from backup.
 
-The following procedure describes a rollback from ScyllaDB 2026.3 to
+The following procedure describes a rollback from ScyllaDB 2026.4 to
 2026.x. Apply this procedure if an upgrade from 2026.x to
-2026.3 fails before completing on all nodes.
+2026.4 fails before completing on all nodes.
 
-* Use this procedure only on the nodes you upgraded to 2026.3.
+* Use this procedure only on the nodes you upgraded to 2026.4.
 * Execute the following commands one node at a time, moving to the next node
   only after the rollback procedure is completed successfully.
 
@@ -48665,7 +48799,7 @@ you need to additionally restore the `scylla-machine-image` package.
 
 ```sh
 sudo rm -rf /etc/scylla/scylla.yaml
-sudo cp /etc/scylla/scylla.yaml-backup /etc/scylla/scylla.yaml
+sudo cp /etc/scylla/scylla.yaml.backup /etc/scylla/scylla.yaml
 ```
 
 ### Reload systemd configuration

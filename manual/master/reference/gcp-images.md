@@ -1,12 +1,16 @@
 # GCP Images
 
+Image names ending in `-aarch64` are arm64 images. Use them with Arm-based machine types,
+such as C4A (Google Axion).
+
 <!-- -*- mode: rst -*- -->
 
 ## 2026.3.5
 
-| Image Name        |            Image ID |
-|-------------------|---------------------|
-| scylladb-2026-3-5 | 7390148619193292802 |
+| Image Name                |            Image ID |
+|---------------------------|---------------------|
+| scylladb-2026-3-5         | 7390148619193292802 |
+| scylladb-2026-3-5-aarch64 | 5098196607956687281 |
 <!-- -*- mode: rst -*- -->
 
 ## 2026.3.4

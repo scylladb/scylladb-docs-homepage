@@ -402,7 +402,7 @@ For earlier releases, see <a class="reference internal" href="../../reference/gc
 <section id="id1">
 <h3>2026.3.5<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <div class="sphinx_collapse docutils">
-<input checked="checked" class="sphinx_collapse__input" id="8d0760d7-fb0a-49ed-9485-2deb33127f88" name="8d0760d7-fb0a-49ed-9485-2deb33127f88" type="checkbox"><label class="sphinx_collapse__label" for="8d0760d7-fb0a-49ed-9485-2deb33127f88"><i class="sphinx_collapse__icon"></i>View image details</label><div class="sphinx_collapse__content docutils">
+<input checked="checked" class="sphinx_collapse__input" id="a75b69ef-3521-4f56-9c8c-a59f77ab943e" name="a75b69ef-3521-4f56-9c8c-a59f77ab943e" type="checkbox"><label class="sphinx_collapse__label" for="a75b69ef-3521-4f56-9c8c-a59f77ab943e"><i class="sphinx_collapse__icon"></i>View image details</label><div class="sphinx_collapse__content docutils">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Image Name</p></th>
@@ -413,11 +413,15 @@ For earlier releases, see <a class="reference internal" href="../../reference/gc
 <tr class="row-even"><td><p>scylladb-2026-3-5</p></td>
 <td><p>7390148619193292802</p></td>
 </tr>
+<tr class="row-odd"><td><p>scylladb-2026-3-5-aarch64</p></td>
+<td><p>5098196607956687281</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 </div>
 </section>
+<p>For Arm-based machine types, such as C4A, use the arm64 image (its name ends in <code class="docutils literal notranslate"><span class="pre">-aarch64</span></code>).</p>
 </li>
 <li><p>Launch a ScyllaDB instance on GCP with <code class="docutils literal notranslate"><span class="pre">gcloud</span></code> using the information from the previous step. Use the following syntax:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create &lt;name of new instance&gt; --image &lt;ScyllaDB image name&gt; --image-project &lt; ScyllaDB project name&gt; --local-ssd interface=nvme --zone=&lt;GCP zone - optional&gt; --machine-type=&lt;machine type&gt;</span>
@@ -430,6 +434,16 @@ For earlier releases, see <a class="reference internal" href="../../reference/gc
 <p>To add more storage to the VM, add multiple <code class="docutils literal notranslate"><span class="pre">--local-ssd</span> <span class="pre">interface=nvme</span></code> options to the command. For example, the following
 command will launch a VM with 4 SSD, and 1.5TB of data (4 * <a class="reference external" href="https://cloud.google.com/compute/docs/disks/local-ssd">375 GB</a>):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create scylla-node1 --image scylladb-2026-1-11 --image-project scylla-images --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --machine-type=n1-highmem-8</span>
+</pre></div>
+</div>
+<p>Z3 machine types (such as <code class="docutils literal notranslate"><span class="pre">z3-highmem-8-highlssd</span></code>) and C4 machine types whose names end in
+<code class="docutils literal notranslate"><span class="pre">-lssd</span></code> come with local SSD attached automatically. For those, leave out the <code class="docutils literal notranslate"><span class="pre">--local-ssd</span></code>
+options. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create scylla-node1 --image &lt;ScyllaDB image name&gt; --image-project scylla-images --machine-type=c4-highmem-16-lssd</span>
+</pre></div>
+</div>
+<p>C4A is Arm-based, so it needs the arm64 image. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create scylla-node1 --image &lt;ScyllaDB arm64 image name&gt; --image-project scylla-images --machine-type=c4a-highmem-16-lssd</span>
 </pre></div>
 </div>
 <p>For more information about GCP image <cite>create</cite> see the <a class="reference external" href="https://cloud.google.com/sdk/gcloud/reference/compute/images/create">Google Cloud SDK documentation</a>.</p>
@@ -1237,7 +1251,7 @@ network interface, and
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 Jul 2026.
+                        Last updated on 04 Nov 2026.
                     
                 </div>
             

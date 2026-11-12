@@ -1,7 +1,7 @@
-# Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.3
+# Upgrade from ScyllaDB 2026.x to ScyllaDB 2026.4
 
 This document describes a step-by-step procedure for upgrading from ScyllaDB 2026.x
-to ScyllaDB 2026.3 and rollback to version 2026.x if necessary.
+to ScyllaDB 2026.4 and rollback to version 2026.x if necessary.
 
 This guide covers upgrading ScyllaDB on Red Hat Enterprise Linux (RHEL), CentOS, Debian,
 and Ubuntu. See [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html)
@@ -49,7 +49,7 @@ validating that the node you upgraded is up and running the new version.
 
 **During** the rolling upgrade, it is highly recommended:
 
-* Not to use the new 2026.3 features.
+* Not to use the new 2026.4 features.
 * Not to run administration functions, such as repairs, refresh, rebuild, or add
   or remove nodes. See [sctool](https://manager.docs.scylladb.com/stable/sctool/) for suspending
   ScyllaDB Manager’s scheduled or running repairs.
@@ -119,7 +119,7 @@ You should take note of the current version in case you want to [rollback](#roll
 
 Debian/Ubuntu
 
-1. Update the ScyllaDB deb repo to 2026.3.
+1. Update the ScyllaDB deb repo to 2026.4.
    > ```console
    > sudo wget -O /etc/apt/sources.list.d/scylla.list https://downloads.scylladb.com/deb/debian/scylla-2026.3.list
    > ```
@@ -134,7 +134,7 @@ Answer ‘y’ to the first two questions.
 
 RHEL/CentOS
 
-1. Update the ScyllaDB rpm repo to 2026.3.
+1. Update the ScyllaDB rpm repo to 2026.4.
    > ```console
    > sudo curl -o /etc/yum.repos.d/scylla.repo -L https://downloads.scylladb.com/rpm/centos/scylla-2026.3.repo
    > ```
@@ -187,16 +187,16 @@ Once you are sure the node upgrade was successful, move to the next node in the 
 
 #### WARNING
 The rollback procedure can be applied **only** if some nodes have not been
-upgraded to 2026.3 yet. As soon as the last node in the rolling upgrade
-procedure is started with 2026.3, rollback becomes impossible. At that
+upgraded to 2026.4 yet. As soon as the last node in the rolling upgrade
+procedure is started with 2026.4, rollback becomes impossible. At that
 point, the only way to restore a cluster to 2026.x is by restoring it
 from backup.
 
-The following procedure describes a rollback from ScyllaDB 2026.3 to
+The following procedure describes a rollback from ScyllaDB 2026.4 to
 2026.x. Apply this procedure if an upgrade from 2026.x to
-2026.3 fails before completing on all nodes.
+2026.4 fails before completing on all nodes.
 
-* Use this procedure only on the nodes you upgraded to 2026.3.
+* Use this procedure only on the nodes you upgraded to 2026.4.
 * Execute the following commands one node at a time, moving to the next node
   only after the rollback procedure is completed successfully.
 
@@ -290,7 +290,7 @@ you need to additionally restore the `scylla-machine-image` package.
 
 ```sh
 sudo rm -rf /etc/scylla/scylla.yaml
-sudo cp /etc/scylla/scylla.yaml-backup /etc/scylla/scylla.yaml
+sudo cp /etc/scylla/scylla.yaml.backup /etc/scylla/scylla.yaml
 ```
 
 ### Reload systemd configuration

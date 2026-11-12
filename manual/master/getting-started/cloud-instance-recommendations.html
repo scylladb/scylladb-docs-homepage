@@ -820,6 +820,17 @@ partitions each for a total of <a class="reference external" href="https://cloud
 <li><p>Processors: Ice Lake (the default for larger machine types) and Cascade Lake
 (the default for machine types up to 80 vCPUs).</p></li>
 </ul>
+<section id="c4-machine-series">
+<span id="system-requirements-gcp-c4"></span><h3>C4 machine series<a class="headerlink" href="#c4-machine-series" title="Link to this heading">¶</a></h3>
+<p>The ScyllaDB GCE image supports all of the C4 machine series:
+<a class="reference external" href="https://cloud.google.com/compute/docs/general-purpose-machines#c4_series">C4, C4A, and C4D</a>.
+C4A is Arm-based (Google Axion), so it needs the arm64 ScyllaDB GCE image;
+see <a class="reference internal" href="../reference/gcp-images.html"><span class="doc">GCP Images</span></a>.</p>
+<p>ScyllaDB needs local SSDs, so use the <code class="docutils literal notranslate"><span class="pre">-lssd</span></code> machine types
+(for example, <code class="docutils literal notranslate"><span class="pre">c4-standard-8-lssd</span></code>, <code class="docutils literal notranslate"><span class="pre">c4a-highmem-16-lssd</span></code>, or <code class="docutils literal notranslate"><span class="pre">c4d-highmem-32-lssd</span></code>),
+which come with Titanium local SSD attached. Do not pass <code class="docutils literal notranslate"><span class="pre">--local-ssd</span></code> when you
+create these instances; see <a class="reference internal" href="install-scylla/launch-on-gcp.html"><span class="doc">Launch ScyllaDB on GCP</span></a>.</p>
+</section>
 </section>
 <section id="microsoft-azure">
 <span id="system-requirements-azure"></span><h2>Microsoft Azure<a class="headerlink" href="#microsoft-azure" title="Link to this heading">¶</a></h2>
@@ -1031,7 +1042,10 @@ For Intel Xeon processors, each OCPU corresponds to two hardware execution threa
 <li><a class="reference internal" href="#im4gn-and-is4gen-instances">Im4gn and Is4gen instances</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#google-compute-engine-gce">Google Compute Engine (GCE)</a></li>
+<li><a class="reference internal" href="#google-compute-engine-gce">Google Compute Engine (GCE)</a><ul>
+<li><a class="reference internal" href="#c4-machine-series">C4 machine series</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#microsoft-azure">Microsoft Azure</a></li>
 <li><a class="reference internal" href="#oracle-cloud-infrastructure-oci">Oracle Cloud Infrastructure (OCI)</a></li>
 </ul>
@@ -1552,7 +1566,7 @@ For Intel Xeon processors, each OCPU corresponds to two hardware execution threa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Aug 2026.
+                        Last updated on 04 Nov 2026.
                     
                 </div>
             

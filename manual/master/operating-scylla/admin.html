@@ -734,12 +734,34 @@ the S3 client has no file-based credentials provider.</p>
 <td><p>The list of endpoints described above. Live-updateable: endpoints can be
 added without restarting the node.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">object_storage_connections_per_shard</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">object_storage_connections</span></code></p></td>
+<td><p>empty</p></td>
+<td><p>Maximum number of connections per shard for <strong>S3</strong> endpoints, per connection
+pool, as a map from the pool name to a positive count. A scheduling group uses
+the pool named after it, except that every service-level group uses
+<code class="docutils literal notranslate"><span class="pre">service_levels</span></code> and a group with no pool of its own uses <code class="docutils literal notranslate"><span class="pre">general</span></code>; the
+node then logs a warning naming that group and counts it in
+<code class="docutils literal notranslate"><span class="pre">scylla_s3_unclassified_groups</span></code>. Entries override the built-in values:
+<code class="docutils literal notranslate"><span class="pre">service_levels:</span> <span class="pre">128</span></code>, <code class="docutils literal notranslate"><span class="pre">memtable:</span> <span class="pre">16</span></code>, <code class="docutils literal notranslate"><span class="pre">memtable_to_cache:</span> <span class="pre">8</span></code>,
+<code class="docutils literal notranslate"><span class="pre">compaction:</span> <span class="pre">16</span></code>, <code class="docutils literal notranslate"><span class="pre">maintenance_compaction:</span> <span class="pre">16</span></code>, <code class="docutils literal notranslate"><span class="pre">streaming:</span> <span class="pre">64</span></code>,
+<code class="docutils literal notranslate"><span class="pre">backup:</span> <span class="pre">32</span></code>, <code class="docutils literal notranslate"><span class="pre">maintenance:</span> <span class="pre">16</span></code>, <code class="docutils literal notranslate"><span class="pre">general:</span> <span class="pre">16</span></code>.
+Live-updateable; removing an entry keeps the cap of a pool that already
+exists. The GCS backend ignores this option.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">object_storage_connections_per_shard</span></code></p></td>
 <td><p>128</p></td>
-<td><p>Maximum number of connections per shard for <strong>S3</strong> endpoints, distributed
-across scheduling groups in proportion to their shares so that compaction
-and streaming traffic does not starve user reads. Live-updateable. The
-GCS backend ignores this option.</p></td>
+<td><p>Deprecated, superseded by <code class="docutils literal notranslate"><span class="pre">object_storage_connections</span></code>. This set one
+budget for the whole shard, which was split across the scheduling groups
+by their shares. Setting it at all still honors it as a shard ceiling: the
+built-in per-pool values are scaled to land on that total exactly, up or
+down, keeping their proportions and at least one connection per pool. The
+built-in values total 312, so a node configured with 512 gets
+<code class="docutils literal notranslate"><span class="pre">service_levels</span></code> 207 and <code class="docutils literal notranslate"><span class="pre">streaming</span></code> 104, and one configured with 128
+gets <code class="docutils literal notranslate"><span class="pre">service_levels</span></code> 50 and <code class="docutils literal notranslate"><span class="pre">streaming</span></code> 26. A budget below the number
+of pools cannot be honored: every pool keeps one connection and the node
+logs that the total exceeds the budget. Naming any pool in
+<code class="docutils literal notranslate"><span class="pre">object_storage_connections</span></code> replaces this entirely: the caps come from
+there and the old budget is not consulted. Live-updateable.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1918,7 +1940,7 @@ with the ScyllaDB REST API.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Sep 2026.
+                        Last updated on 08 Oct 2026.
                     
                 </div>
             
