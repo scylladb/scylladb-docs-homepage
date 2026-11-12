@@ -15,3 +15,4 @@ and use it as the database for your application.
    learn-resources/index
    build-with-ai/index
    gui-clients/index
+   integrations/index
