@@ -43,8 +43,8 @@
 * [Customizing CPUSET](https://docs.scylladb.com/manual/master/kb/customizing-cpuset.md)
 * [Recreate RAID devices](https://docs.scylladb.com/manual/master/kb/raid-device.md) - How to recreate your RAID devices without running scylla-setup
 * [Configure ScyllaDB Networking with Multiple NIC/IP Combinations](https://docs.scylladb.com/manual/master/kb/yaml-address.md) - examples for setting the different IP addresses in scylla.yaml
-* [Kafka Sink Connector Quickstart](https://docs.scylladb.com/manual/master/using-scylla/integrations/kafka-connector.md)
-* [Kafka Sink Connector Configuration](https://docs.scylladb.com/manual/master/using-scylla/integrations/sink-config.md)
+* [Kafka Sink Connector Quickstart](https://docs.scylladb.com/stable/get-started/integrations/kafka-connector.html)
+* [Kafka Sink Connector Configuration](https://docs.scylladb.com/stable/get-started/integrations/sink-config.html)
 
 </div></div>
             <div class="cell my-panel">

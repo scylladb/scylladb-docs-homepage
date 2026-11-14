@@ -23,7 +23,7 @@
             * [Go (scylla-cdc-go)](https://github.com/scylladb/scylla-cdc-go)
 * [Java (scylla-cdc-java)](https://github.com/scylladb/scylla-cdc-java)
 * [Rust (scylla-cdc-rust)](https://github.com/scylladb/scylla-cdc-rust)
-* [CDC Source Connector (compatible with Kafka Connect)](https://docs.scylladb.com/manual/master/using-scylla/integrations/scylla-cdc-source-connector.md)
-* [CDC Source Connector Quickstart](https://docs.scylladb.com/manual/master/using-scylla/integrations/scylla-cdc-source-connector-quickstart.md)
+* [CDC Source Connector (compatible with Kafka Connect)](https://docs.scylladb.com/stable/get-started/integrations/scylla-cdc-source-connector.html)
+* [CDC Source Connector Quickstart](https://docs.scylladb.com/stable/get-started/integrations/scylla-cdc-source-connector-quickstart.html)
 
 </div></div>

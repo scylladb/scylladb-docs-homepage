@@ -31,7 +31,6 @@
                 <div class="panel">
                     <h5 class="panel_\_title">Use ScyllaDB with Third-party Solutions</h5>
             * [Migrate to ScyllaDB](https://docs.scylladb.com/manual/master/using-scylla/migrate-scylla.md) - How to migrate your current database to ScyllaDB
-* [Integrate with ScyllaDB](https://docs.scylladb.com/manual/master/using-scylla/integrations/index.md) - Integration solutions with ScyllaDB
 
 </div></div>
             <div class="cell my-panel">

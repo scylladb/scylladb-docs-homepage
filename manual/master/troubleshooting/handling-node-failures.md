@@ -87,26 +87,27 @@ will leave the recovery mode and remove the obsolete internal Raft data.
 
 **Procedure**
 
-1. Perform a [rolling restart](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/rolling-restart.md) of your live nodes.
-2. Find the group 0 ID by performing the following query on any live node, using e.g. `cqlsh`:
+1. Find the group 0 ID by performing the following query on any live node, using e.g. `cqlsh`:
    ```cql
    cqlsh> SELECT value FROM system.scylla_local WHERE key = 'raft_group0_id';
    ```
 
    The group 0 ID is needed in the following steps.
-3. Find `commit_idx` of all live nodes by performing the following query on **every live node**:
-   ```cql
-   cqlsh> SELECT commit_idx FROM system.raft WHERE group_id = <group 0 ID>;
+2. Send the following REST API request to **every live node**:
+   ```console
+   $ curl -X POST "http://<node's REST API address>:10000/raft/wait_for_apply_committed"
    ```
 
-   Choose a node with the largest `commit_idx`. If there are multiple such nodes, choose any of them.
+   The node applies all group 0 changes it knows to be committed and returns the index of the last such change.
+
+   Choose a node with the largest returned index. If there are multiple such nodes, choose any of them.
    The chosen node will be the *recovery leader*.
-4. Perform the following queries on **every live node**:
+3. Perform the following queries on **every live node**:
    ```cql
    cqlsh> TRUNCATE TABLE system.discovery;
    cqlsh> DELETE value FROM system.scylla_local WHERE key = 'raft_group0_id';
    ```
-5. Perform a [rolling restart](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/rolling-restart.md) of all live nodes,
+4. Perform a [rolling restart](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/rolling-restart.md) of all live nodes,
    but:
    * **restart the recovery leader first**,
    * before restarting each node, add the `recovery_leader` property to its `scylla.yaml` file and set it to the
@@ -120,7 +121,7 @@ will leave the recovery mode and remove the obsolete internal Raft data.
    > ```
 
    After completing this step, Raft should be fully functional.
-6. Replace all dead nodes in the cluster using the
+5. Replace all dead nodes in the cluster using the
    [node replacement procedure](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/replace-dead-node.md).
 
    #### NOTE
@@ -128,9 +129,9 @@ will leave the recovery mode and remove the obsolete internal Raft data.
    [node removal procedure](https://docs.scylladb.com/manual/master/operating-scylla/procedures/cluster-management/remove-node.md) is also possible,
    but it may require decreasing RF of your keyspaces. With tablets enabled, `nodetool removenode` is rejected
    if there are not enough nodes to satisfy RF of any tablet keyspace in the node’s datacenter.
-7. Remove the `recovery_leader` property from the `scylla.yaml` file on all nodes. Send the `SIGHUP` signal to all
+6. Remove the `recovery_leader` property from the `scylla.yaml` file on all nodes. Send the `SIGHUP` signal to all
    ScyllaDB processes to ensure the change is applied.
-8. Perform the following queries on **every live node**:
+7. Perform the following queries on **every live node**:
    ```cql
    cqlsh> DELETE FROM system.raft WHERE group_id = <group 0 ID>;
    cqlsh> DELETE FROM system.raft_snapshots WHERE group_id = <group 0 ID>;
