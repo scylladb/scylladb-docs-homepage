@@ -39,6 +39,9 @@ versions.
 
         Java Driver 3.x
 
+        Deprecated: critical fixes only from 2027-01-01, end of life in
+        2027 Q2. Migrate to Java Driver 4.x.
+
         * 3.12
         * 3.11
     * - `Go Driver <https://gocql-driver.docs.scylladb.com/>`_
