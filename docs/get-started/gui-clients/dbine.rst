@@ -3,8 +3,7 @@ DBine
 =====
 
 `DBine <https://dbine.com>`_ is a free, open source (Apache 2.0) desktop database
-manager for Windows, macOS, and Linux. It works with ScyllaDB alongside 130+
-databases and cloud services in the same window.
+manager for Windows, macOS, and Linux.
 
 Prerequisites
 -------------
