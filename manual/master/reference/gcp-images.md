@@ -5,6 +5,14 @@ such as C4A (Google Axion).
 
 <!-- -*- mode: rst -*- -->
 
+## 2026.3.6
+
+| Image Name                |            Image ID |
+|---------------------------|---------------------|
+| scylladb-2026-3-6         | 4459325501191178509 |
+| scylladb-2026-3-6-aarch64 | 1922823553973438109 |
+<!-- -*- mode: rst -*- -->
+
 ## 2026.3.5
 
 | Image Name                |            Image ID |

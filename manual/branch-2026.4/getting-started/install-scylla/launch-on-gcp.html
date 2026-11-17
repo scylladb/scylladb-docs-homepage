@@ -398,7 +398,9 @@ as-a-service, see <a class="reference external" href="https://cloud.docs.scyllad
 <p>Other instance types will work, but with lesser performance. If you choose an instance type other than the recommended ones, make sure to run the <a class="reference internal" href="../system-configuration.html#system-configuration-scripts"><span class="std std-ref">scylla_setup</span></a> script.</p>
 </li>
 <li><p>See the following table to obtain image information for the latest patch release.
-For earlier releases, see <a class="reference internal" href="../../reference/gcp-images.html"><span class="doc">GCP Images</span></a></p></li>
+For earlier releases, see <a class="reference internal" href="../../reference/gcp-images.html"><span class="doc">GCP Images</span></a></p>
+<p>For Arm-based machine types, such as C4A, use the arm64 image (its name ends in <code class="docutils literal notranslate"><span class="pre">-aarch64</span></code>).</p>
+</li>
 <li><p>Launch a ScyllaDB instance on GCP with <code class="docutils literal notranslate"><span class="pre">gcloud</span></code> using the information from the previous step. Use the following syntax:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create &lt;name of new instance&gt; --image &lt;ScyllaDB image name&gt; --image-project &lt; ScyllaDB project name&gt; --local-ssd interface=nvme --zone=&lt;GCP zone - optional&gt; --machine-type=&lt;machine type&gt;</span>
 </pre></div>
@@ -410,6 +412,16 @@ For earlier releases, see <a class="reference internal" href="../../reference/gc
 <p>To add more storage to the VM, add multiple <code class="docutils literal notranslate"><span class="pre">--local-ssd</span> <span class="pre">interface=nvme</span></code> options to the command. For example, the following
 command will launch a VM with 4 SSD, and 1.5TB of data (4 * <a class="reference external" href="https://cloud.google.com/compute/docs/disks/local-ssd">375 GB</a>):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create scylla-node1 --image scylladb-2026-1-11 --image-project scylla-images --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --local-ssd interface=nvme --machine-type=n1-highmem-8</span>
+</pre></div>
+</div>
+<p>Z3 machine types (such as <code class="docutils literal notranslate"><span class="pre">z3-highmem-8-highlssd</span></code>) and C4 machine types whose names end in
+<code class="docutils literal notranslate"><span class="pre">-lssd</span></code> come with local SSD attached automatically. For those, leave out the <code class="docutils literal notranslate"><span class="pre">--local-ssd</span></code>
+options. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create scylla-node1 --image &lt;ScyllaDB image name&gt; --image-project scylla-images --machine-type=c4-highmem-16-lssd</span>
+</pre></div>
+</div>
+<p>C4A is Arm-based, so it needs the arm64 image. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gcloud compute instances create scylla-node1 --image &lt;ScyllaDB arm64 image name&gt; --image-project scylla-images --machine-type=c4a-highmem-16-lssd</span>
 </pre></div>
 </div>
 <p>For more information about GCP image <cite>create</cite> see the <a class="reference external" href="https://cloud.google.com/sdk/gcloud/reference/compute/images/create">Google Cloud SDK documentation</a>.</p>
@@ -1130,6 +1142,7 @@ network interface, and
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
@@ -1216,7 +1229,7 @@ network interface, and
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 Jul 2026.
+                        Last updated on 04 Nov 2026.
                     
                 </div>
             

@@ -18,12 +18,12 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
    For earlier releases, see [GCP Images](https://docs.scylladb.com/manual/stable/reference/gcp-images.md)
    <!-- -*- mode: rst -*- -->
 
-   ### 2026.3.5
+   ### 2026.3.6
 
    | Image Name                |            Image ID |
    |---------------------------|---------------------|
-   | scylladb-2026-3-5         | 7390148619193292802 |
-   | scylladb-2026-3-5-aarch64 | 5098196607956687281 |
+   | scylladb-2026-3-6         | 4459325501191178509 |
+   | scylladb-2026-3-6-aarch64 | 1922823553973438109 |
 3. Launch a ScyllaDB instance on GCP with `gcloud` using the information from the previous step. Use the following syntax:
    ```console
    gcloud compute instances create <name of new instance> --image <ScyllaDB image name> --image-project < ScyllaDB project name> --local-ssd interface=nvme --zone=<GCP zone - optional> --machine-type=<machine type>

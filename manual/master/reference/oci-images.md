@@ -9,6 +9,15 @@ This page lists ScyllaDB image OCIDs for Oracle Cloud Infrastructure (OCI).
 <!-- Copyright (C) 2026 ScyllaDB -->
 <!-- SPDX-License-Identifier: LicenseRef-ScyllaDB-Source-Available-1.1 -->
 
+## 2026.3.6
+
+| Image Name        | Image OCID                                                                       |
+|-------------------|----------------------------------------------------------------------------------|
+| ScyllaDB 2026.3.6 | ocid1.image.oc1.phx.aaaaaaaacj753t4fhilknnl7svlexzk77mont4dlb6up4olxngx3eihqhpma |
+<!-- -*- mode: rst -*- -->
+<!-- Copyright (C) 2026 ScyllaDB -->
+<!-- SPDX-License-Identifier: LicenseRef-ScyllaDB-Source-Available-1.1 -->
+
 ## 2026.3.5
 
 | Image Name        | Image OCID                                                                       |

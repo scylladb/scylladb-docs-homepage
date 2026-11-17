@@ -18,12 +18,12 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
    For earlier releases, see [GCP Images](https://docs.scylladb.com/manual/master/reference/gcp-images.md)
    <!-- -*- mode: rst -*- -->
 
-   ### 2026.3.5
+   ### 2026.3.6
 
    | Image Name                |            Image ID |
    |---------------------------|---------------------|
-   | scylladb-2026-3-5         | 7390148619193292802 |
-   | scylladb-2026-3-5-aarch64 | 5098196607956687281 |
+   | scylladb-2026-3-6         | 4459325501191178509 |
+   | scylladb-2026-3-6-aarch64 | 1922823553973438109 |
 
    For Arm-based machine types, such as C4A, use the arm64 image (its name ends in `-aarch64`).
 3. Launch a ScyllaDB instance on GCP with `gcloud` using the information from the previous step. Use the following syntax:
