@@ -46,8 +46,12 @@ Click the documentation link to view the documentation for each driver.
           asynchronous support, automatic query paging, and advanced load
           balancing policies.
         | There are two driver families, 4.x and 3.x, and the support policy
-          applies separately to each family, covering the two latest minor
-          versions within 4.x and the two latest minor versions within 3.x.
+          applies separately to each family, covering its two latest minor
+          versions. Java Driver 3.x is deprecated: from 2027-01-01 it
+          receives critical fixes only, and it reaches end of life in
+          2027 Q2. Use 4.x for new applications, and see the `migration guide
+          <https://java-driver.docs.scylladb.com/stable/upgrade_guide/from_3x/>`_
+          to move an existing application off 3.x.
 
         `Java Driver documentation <https://java-driver.docs.scylladb.com/>`_
     * - Go Driver
