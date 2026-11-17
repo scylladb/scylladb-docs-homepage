@@ -39,8 +39,10 @@ versions.
 
         Java Driver 3.x
 
-        Deprecated: critical fixes only from 2027-01-01, end of life in
-        2027 Q2. Migrate to Java Driver 4.x.
+        | **Deprecated** - `Migrate to Java Driver 4.x
+          <https://java-driver.docs.scylladb.com/stable/upgrade_guide/from_3x/>`_
+        | Critical fixes only from January 1, 2027
+        | End of life: Q2 2027
 
         * 3.12
         * 3.11
