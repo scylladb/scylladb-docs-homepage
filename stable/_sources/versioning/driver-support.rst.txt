@@ -44,8 +44,8 @@ versions.
         | Critical fixes only from January 1, 2027
         | End of life: Q2 2027
 
+        * 3.13
         * 3.12
-        * 3.11
     * - `Go Driver <https://gocql-driver.docs.scylladb.com/>`_
       - * 1.20
         * 1.19
