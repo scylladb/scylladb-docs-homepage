@@ -2506,11 +2506,14 @@ for a complete list of internode compression options.
 # Air-gapped Server Installation
 
 An air-gapped server is a server without any access to external repositories or connections to any network, including the internet.
-To install ScyllaDB on an air-gapped server, you first need to download the relevant files from a server that is not air-gapped and then and move the files to the air-gapped servers to complete the installation.
+To install ScyllaDB on an air-gapped server, you first need to download the relevant files from a server that is not air-gapped and then move the files to the air-gapped servers to complete the installation.
 
 There are two ways to install ScyllaDB on an air-gapped server:
 
-- With root privileges (recommended): download the OS specific packages (rpms and debs) and install them with the package manager (dnf and apt). See [Install ScyllaDB on an Air-gapped Server Using the Packages (Option 2)](https://www.scylladb.com/download/?platform=tar).
+- With root privileges (recommended): on a server with internet access, download the OS-specific packages (rpms and debs)
+  from the ScyllaDB repository, move them to the air-gapped server, and install them with the package manager (dnf and apt).
+  See [Install ScyllaDB Linux Packages](https://docs.scylladb.com/manual/master/getting-started/install-scylla/install-on-linux.md) for the repository
+  configuration for your platform.
 - Without root privileges: using the [ScyllaDB Unified Installer](https://docs.scylladb.com/manual/master/getting-started/installation-common/unified-installer.md).
 
 
@@ -4125,8 +4128,8 @@ Automatic repair is controlled by two [cluster configuration options](https://do
 * `auto_repair_enabled` (boolean): whether tablets of a table are scheduled for automatic repair.
 * `auto_repair_threshold_in_seconds` (integer, seconds): a tablet becomes eligible for automatic repair when this
   much time has passed since the start of its last successful repair. A repair restricted to some hosts or
-  datacenters does not count, and a tablet that was never repaired is eligible immediately. `0` disables
-  time-based automatic repair at that scope.
+  datacenters does not count, and a tablet that was never repaired is eligible immediately. Must be `0` or
+  greater; `0` disables time-based automatic repair at that scope.
 
 Both can be set for the whole cluster, for a keyspace, or for a single table. A value set for a table
 overrides the keyspace value, which overrides the cluster value:
@@ -10282,7 +10285,7 @@ the target cluster may not support; replaying such a statement fails instead of 
 | Option                                                 | Type    | Scopes                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |--------------------------------------------------------|---------|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `auto_repair_enabled`                                  | boolean | `CLUSTER`, `KEYSPACE`, `TABLE` | Enable [automatic repair](https://docs.scylladb.com/manual/master/features/automatic-repair.md) for tablet-based tables. Default:<br/>`false`. Until the deprecated `auto_repair_enabled_default` option is removed, a node<br/>that sets it in `scylla.yaml` uses that value when no scope sets this option.                                                                                                                                                                                                                                                             |
-| `auto_repair_threshold_in_seconds`                     | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. `0` disables time-based<br/>automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option.                                                         |
+| `auto_repair_threshold_in_seconds`                     | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Time in seconds since the start of the last successful repair of a tablet after which it is<br/>eligible for automatic repair. A repair restricted to some hosts or datacenters does not count,<br/>and a tablet that was never repaired is eligible immediately. Must be `0` or greater;<br/>`0` disables time-based automatic repair. Default: `86400`. Until the deprecated<br/>`auto_repair_threshold_default_in_seconds` option is removed, a node that sets it in<br/>`scylla.yaml` uses that value when no scope sets this option.                                 |
 | `repair_hints_batchlog_flush_discard_unreplayed_hints` | boolean | `CLUSTER`                      | A repair of a table with `tombstone_gc` in `repair` mode waits for the hints written<br/>before it to be sent, and records no repair time if that times out. With this option on,<br/>such a timeout discards those hints, so that the next repair does not wait for them again.<br/>This drops every regular hint on the node, for all tables and destinations; a write<br/>acknowledged at consistency level `ANY` that only hints hold is lost. Hints for<br/>materialized views are never discarded. Default: `true`, in effect once every node knows<br/>the option. |
 | `auto_scrub_period_seconds`                            | integer | `CLUSTER`, `KEYSPACE`, `TABLE` | Schedule every sstable written or validated more than this many seconds ago for scrub.<br/>Accepts `0` or `3600` to `4294967295`. Default: `0`. `0` disables automatic scrub<br/>at that scope even if a broader scope enabled it, whereas `NULL` removes the value and<br/>falls back to the broader scope. See<br/>[Automatic Scrub](https://docs.scylladb.com/manual/master/operating-scylla/procedures/maintenance/automatic-scrub.md).                                                                                                                               |
 | `repair_hints_batchlog_flush_timeout_in_seconds`       | integer | `CLUSTER`                      | A repair of a table with `tombstone_gc` in `repair` mode first asks every node to flush<br/>its hints and replay its batchlog, and gives up on a node that has not finished within this<br/>many seconds. Raise it when nodes accumulate hints faster than they can replay them within<br/>the default, for example after a node stayed down for a long time. Must be between `1`<br/>and `315360000` (ten years). Default: `300`, in effect once every node runs a version<br/>that knows the option.                                                                    |
@@ -24721,7 +24724,7 @@ FTS queries enforce the following rules:
 | Single ordering only                                          | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns.<br/>To rank the rows by several searches, fuse them in a<br/>[hybrid query](https://docs.scylladb.com/manual/master/cql/dml/select.md#hybrid-queries).                                                                                                                               |
 | Paging not supported                                          | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                                                                                                                                    |
 | Grouping not supported                                        | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                                                                                                                          |
-| `DISTINCT` not supported                                      | `SELECT DISTINCT` is not supported in FTS queries. It is currently<br/>accepted, but does not remove duplicate partition keys: one row is<br/>returned per matching row.                                                                                                                                                                                 |
+| `DISTINCT` not supported                                      | FTS queries cannot use `SELECT DISTINCT`.                                                                                                                                                                                                                                                                                                                |
 
 
 # functions.md
@@ -40179,8 +40182,7 @@ SELECT image_id FROM ImageEmbeddings
 #### NOTE
 Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
 Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and `SELECT DISTINCT`).
-`SELECT DISTINCT` is currently accepted in queries ordered by `ANN OF` or `ANN()`, but does not remove
-duplicate partition keys. More information about Vector Search is available in the
+More information about Vector Search is available in the
 [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/vector-search/).
 
 <a id="fulltext-queries"></a>
@@ -40228,8 +40230,7 @@ full-text and a vector search, fuse them into one ordering in a
 A `LIMIT` clause is mandatory; queries without `LIMIT` are rejected. The
 specified value must not exceed 1000.
 
-`SELECT DISTINCT` is not supported in queries ordered by `BM25()`. It is
-currently accepted, but does not remove duplicate partition keys.
+`SELECT DISTINCT` is not supported in queries ordered by `BM25()`.
 
 **Examples:**
 

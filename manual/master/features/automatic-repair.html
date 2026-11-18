@@ -385,8 +385,8 @@ Repairs are spread over time and among nodes and shards, to avoid load spikes or
 <li><p><code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code> (boolean): whether tablets of a table are scheduled for automatic repair.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">auto_repair_threshold_in_seconds</span></code> (integer, seconds): a tablet becomes eligible for automatic repair when this
 much time has passed since the start of its last successful repair. A repair restricted to some hosts or
-datacenters does not count, and a tablet that was never repaired is eligible immediately. <code class="docutils literal notranslate"><span class="pre">0</span></code> disables
-time-based automatic repair at that scope.</p></li>
+datacenters does not count, and a tablet that was never repaired is eligible immediately. Must be <code class="docutils literal notranslate"><span class="pre">0</span></code> or
+greater; <code class="docutils literal notranslate"><span class="pre">0</span></code> disables time-based automatic repair at that scope.</p></li>
 </ul>
 <p>Both can be set for the whole cluster, for a keyspace, or for a single table. A value set for a table
 overrides the keyspace value, which overrides the cluster value:</p>
@@ -1054,7 +1054,7 @@ option to <code class="docutils literal notranslate"><span class="pre">NULL</spa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Sep 2026.
+                        Last updated on 13 Nov 2026.
                     
                 </div>
             
