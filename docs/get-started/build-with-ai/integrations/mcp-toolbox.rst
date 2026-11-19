@@ -15,7 +15,7 @@ Prerequisites
 -------------------
 
 Install MCP Toolbox for Databases following the
-`official installation guide <https://mcp-toolbox.dev/documentation/getting-started/introduction/>`_.
+`official installation guide <https://mcp-toolbox.dev/documentation/introduction/>`_.
 
 Configure a ScyllaDB Source
 ------------------------------
