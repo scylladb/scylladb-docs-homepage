@@ -382,12 +382,11 @@
                     <section id="scylladb-read-repair">
 <h1>ScyllaDB Read Repair<a class="headerlink" href="#scylladb-read-repair" title="Link to this heading">¶</a></h1>
 <p>Read repair serves as an anti-entropy mechanism during read path.</p>
-<p>On read operations, ScyllaDB runs a process called <a class="reference internal" href="../../reference/glossary.html#term-Read-Repair"><span class="xref std std-term">read repair</span></a>, to ensure that replicas are updated with most recently updated data. Such repairs during read path run automatically, asynchronously, and in the background.</p>
-<p>Note however, that if digest mismatch is detected before consistency level is reached, that repair will run in the foreground.</p>
+<p>On read operations, ScyllaDB runs a process called <a class="reference internal" href="../../reference/glossary.html#term-Read-Repair"><span class="xref std std-term">read repair</span></a>, to ensure that replicas are updated with most recently updated data. Such repairs run automatically, as part of the read, when the digests of the replies that satisfied the consistency level do not match.</p>
 <p>A normal read operation works according to the scenarios described in our <a class="reference internal" href="../architecture-fault-tolerance.html"><span class="doc">Fault Tolerance documentation</span></a>.</p>
 <section id="read-request">
 <h2>Read Request<a class="headerlink" href="#read-request" title="Link to this heading">¶</a></h2>
-<p>This image illustrates the flow of a read request, when data is out of sync, and a background read repair process is triggered.</p>
+<p>This image illustrates the flow of a read request, when data is out of sync, and a read repair is triggered.</p>
 <img alt="../../_images/1_read_repair.png" src="../../_images/1_read_repair.png" />
 <ol class="arabic simple">
 <li><p>Our coordinator, <em>V</em>,  <strong>requests data</strong> (including digest) from one node, <em>W</em>, which is out of date.</p></li>
@@ -1045,7 +1044,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Jul 2024.
+                        Last updated on 08 Nov 2026.
                     
                 </div>
             

@@ -15665,7 +15665,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### object_storage_endpoints
 
-> Object storage endpoints configuration.
+> Object storage endpoints configuration.     In YAML, use a list of maps. On the command line or in an update of the system.config table, use the same list in YAML or JSON syntax, as a single string.
 
 > * **Type:** `std::vector<object_storage_endpoint_param>`
 > * **Default value:** `{}`
@@ -16484,8 +16484,7 @@ Output:
      Processing a statement [shard 3]                                         | 2017-09-20 18:44:10.926538 | 172.17.0.4 | 97
      Creating read executor for token -4069959284402364209                    | 2017-09-20 18:44:10.926606 | 172.17.0.4 | 165
        with all: {172.17.0.4, 172.17.0.2, 172.17.0.3}                         |                            |            |
-       targets: {172.17.0.4, 172.17.0.2, 172.17.0.3}                          |                            |            |
-       repair decision: DC_LOCAL [shard 3]                                    |                            |            |
+       targets: {172.17.0.4, 172.17.0.2, 172.17.0.3} [shard 3]                |                            |            |
      read_digest: sending a message to /172.17.0.3 [shard 3]                  | 2017-09-20 18:44:10.926634 | 172.17.0.4 | 193
      read_data: querying locally [shard 3]                                    | 2017-09-20 18:44:10.926664 | 172.17.0.4 | 223
      read_data: sending a message to /172.17.0.2 [shard 3]                    | 2017-09-20 18:44:10.926711 | 172.17.0.4 | 270
@@ -28734,6 +28733,25 @@ and memory requirements and limits.
 | Blob size                                          | 2 GB ( less than 1 MB is recommended)                                                                     |
 | Dimension of a vector                              | 16000 (according to OpenSearch limitations)                                                               |
 
+<a id="limits-system"></a>
+
+## System Limits
+
+When ScyllaDB runs as a systemd service, the following resource limits are
+set in the `/lib/systemd/system/scylla-server.service` unit file.
+
+| Name           | Value      | Description                                                                                        |
+|----------------|------------|----------------------------------------------------------------------------------------------------|
+| `LimitCORE`    | `infinity` | Maximum core dump size                                                                             |
+| `LimitMEMLOCK` | `infinity` | Maximum locked-in-memory address space                                                             |
+| `LimitNOFILE`  | `infinity` | Maximum number of open file descriptors (resolved by systemd to<br/>the `fs.nr_open` sysctl value) |
+| `LimitAS`      | `infinity` | Address space limit                                                                                |
+| `LimitNPROC`   | `8096`     | Maximum number of processes                                                                        |
+
+Limits configured in `/etc/security/limits.d` do not apply to systemd
+services. To override the default values, see
+[Increase ScyllaDB resource limits over systemd](https://docs.scylladb.com/manual/master/kb/scylla-limits-systemd.md).
+
 
 # list.md
 
@@ -33025,15 +33043,13 @@ LIST ROLES OF mary;
 
 Read repair serves as an anti-entropy mechanism during read path.
 
-On read operations, ScyllaDB runs a process called [read repair](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Read-Repair), to ensure that replicas are updated with most recently updated data. Such repairs during read path run automatically, asynchronously, and in the background.
-
-Note however, that if digest mismatch is detected before consistency level is reached, that repair will run in the foreground.
+On read operations, ScyllaDB runs a process called [read repair](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Read-Repair), to ensure that replicas are updated with most recently updated data. Such repairs run automatically, as part of the read, when the digests of the replies that satisfied the consistency level do not match.
 
 A normal read operation works according to the scenarios described in our [Fault Tolerance documentation](https://docs.scylladb.com/manual/master/architecture/architecture-fault-tolerance.md).
 
 ## Read Request
 
-This image illustrates the flow of a read request, when data is out of sync, and a background read repair process is triggered.
+This image illustrates the flow of a read request, when data is out of sync, and a read repair is triggered.
 
 ![image](architecture/anti-entropy/1_read_repair.png)
 1. Our coordinator, *V*,  **requests data** (including digest) from one node, *W*, which is out of date.

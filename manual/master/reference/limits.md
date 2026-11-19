@@ -36,3 +36,22 @@ and memory requirements and limits.
 | Collection (Map)                                   | Number of keys: 65535 (2^16-1)                                                                            |
 | Blob size                                          | 2 GB ( less than 1 MB is recommended)                                                                     |
 | Dimension of a vector                              | 16000 (according to OpenSearch limitations)                                                               |
+
+<a id="limits-system"></a>
+
+## System Limits
+
+When ScyllaDB runs as a systemd service, the following resource limits are
+set in the `/lib/systemd/system/scylla-server.service` unit file.
+
+| Name           | Value      | Description                                                                                        |
+|----------------|------------|----------------------------------------------------------------------------------------------------|
+| `LimitCORE`    | `infinity` | Maximum core dump size                                                                             |
+| `LimitMEMLOCK` | `infinity` | Maximum locked-in-memory address space                                                             |
+| `LimitNOFILE`  | `infinity` | Maximum number of open file descriptors (resolved by systemd to<br/>the `fs.nr_open` sysctl value) |
+| `LimitAS`      | `infinity` | Address space limit                                                                                |
+| `LimitNPROC`   | `8096`     | Maximum number of processes                                                                        |
+
+Limits configured in `/etc/security/limits.d` do not apply to systemd
+services. To override the default values, see
+[Increase ScyllaDB resource limits over systemd](https://docs.scylladb.com/manual/master/kb/scylla-limits-systemd.md).

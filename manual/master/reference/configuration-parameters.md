@@ -3287,7 +3287,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### object_storage_endpoints
 
-> Object storage endpoints configuration.
+> Object storage endpoints configuration.     In YAML, use a list of maps. On the command line or in an update of the system.config table, use the same list in YAML or JSON syntax, as a single string.
 
 > * **Type:** `std::vector<object_storage_endpoint_param>`
 > * **Default value:** `{}`
