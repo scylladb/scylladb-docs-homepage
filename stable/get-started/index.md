@@ -9,5 +9,5 @@ and use it as the database for your application.
 * [Data Modeling](https://docs.scylladb.com/stable/get-started/data-modeling/index.md)
 * [Learn to Use ScyllaDB](https://docs.scylladb.com/stable/get-started/learn-resources/index.md)
 * [Build with AI](https://docs.scylladb.com/stable/get-started/build-with-ai/index.md)
-* [GUI Clients](https://docs.scylladb.com/stable/get-started/gui-clients/index.md)
+* [Visual Database Management Tools](https://docs.scylladb.com/stable/get-started/gui-clients/index.md)
 * [Integrations and Connectors](https://docs.scylladb.com/stable/get-started/integrations/index.md)

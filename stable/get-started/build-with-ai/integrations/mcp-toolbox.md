@@ -10,7 +10,7 @@ statements against a ScyllaDB cluster via the `scylladb-cql` tool type.
 ## Prerequisites
 
 Install MCP Toolbox for Databases following the
-[official installation guide](https://mcp-toolbox.dev/documentation/getting-started/introduction/).
+[official installation guide](https://mcp-toolbox.dev/documentation/introduction/).
 
 ## Configure a ScyllaDB Source
 

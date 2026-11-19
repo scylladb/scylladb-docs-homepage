@@ -1,7 +1,7 @@
-# GUI Clients
+# Visual Database Management Tools
 
-GUI clients let you browse keyspaces and tables, and run CQL queries against
-ScyllaDB from a graphical interface.
+Visual database management tools let you browse keyspaces and tables, and run
+CQL queries against ScyllaDB from a graphical interface.
 
 * [DBeaver](https://docs.scylladb.com/stable/get-started/gui-clients/dbeaver.md)
 * [DBine](https://docs.scylladb.com/stable/get-started/gui-clients/dbine.md)
