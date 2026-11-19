@@ -65,9 +65,12 @@ epub3: setup
 	@echo
 	@echo "Build finished. The epub3 file is in $(BUILDDIR)/epub3."
 
+# After the build, replace the root llms.txt (copied from stable by the theme)
+# with the index of all ScyllaDB documentation projects.
 .PHONY: multiversion
 multiversion: setup
 	$(UV) run sphinx-multiversion $(SOURCEDIR) $(BUILDDIR)/dirhtml $(PROD_OPTS)
+	cp _utils/llms.txt $(BUILDDIR)/dirhtml/llms.txt
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/dirhtml."
 
@@ -76,7 +79,6 @@ redirects: setup
 	$(UV) run redirects-cli fromfile --yaml-file ./_utils/redirects.yaml --output-dir $(BUILDDIR)/dirhtml
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/dirhtml."
-
 
 .PHONY: check-redirects
 check-redirects: setup
