@@ -7,7 +7,4 @@ An example of such a third-party integration uses Chronicle as follows:
 
 ![image](get-started/integrations/images/iota.png)
 
-The list below contains integration projects using ScyllaDB with IOTA Chronicle.
 If you have tested your application with ScyllaDB and want to publish the results, contact us using the [community forum](https://forum.scylladb.com).
-
-* [Chronicle](https://docs.iota.org/docs/node-software/0.1/chronicle/introduction/overview) - links to blog on IOTA.org’s site
