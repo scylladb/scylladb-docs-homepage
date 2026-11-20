@@ -6,9 +6,7 @@
                     <h5 class="panel_\_title">Planning and Setup</h5>
             * [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/master/kb/seed-nodes.md) - Introduction on the purpose and role of Seed Nodes in ScyllaDB as well as configuration tips.
 * [Compaction](https://docs.scylladb.com/manual/master/kb/compaction.md) - To free up disk space and speed up reads, ScyllaDB must do compaction operations.
-* [DPDK mode](https://docs.scylladb.com/manual/master/kb/dpdk-hardware.md) - Learn to select and configure networking for DPDK mode
-* [POSIX networking for ScyllaDB](https://docs.scylladb.com/manual/master/kb/posix.md) - ScyllaDB’s POSIX mode works on all physical and virtual network devices and is useful for development work.
-* [System Limits](https://docs.scylladb.com/manual/master/kb/system-limits.md) - Outlines the system limits which should be set or removed
+* [Increase ScyllaDB resource limits over systemd](https://docs.scylladb.com/manual/master/kb/scylla-limits-systemd.md) - How to override the resource limits ScyllaDB runs with under systemd.
 * [Run ScyllaDB as a custom user:group](https://docs.scylladb.com/manual/master/kb/custom-user.md) - Configure the ScyllaDB and supporting services to run as a custom user:group.
 * [How to Set up a Swap Space Using a File](https://docs.scylladb.com/manual/master/kb/set-up-swap.md) - Outlines the steps you need to take to set up a swap space.
 
@@ -24,7 +22,6 @@
 * [Snapshots and Disk Utilization](https://docs.scylladb.com/manual/master/kb/disk-utilization.md) - How snapshots affect disk utilization
 * [ScyllaDB Snapshots](https://docs.scylladb.com/manual/master/kb/snapshots.md) - What ScyllaDB snapshots are, what they are used for, and how they get created and removed.
 * [How does ScyllaDB LWT Differ from Apache Cassandra ?](https://docs.scylladb.com/manual/master/kb/lwt-differences.md) - How does ScyllaDB’s implementation of lightweight transactions differ from Apache Cassandra?
-* [If a query does not reveal enough results](https://docs.scylladb.com/manual/master/kb/cqlsh-results.md)
 * [How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/master/kb/gc-grace-seconds.md) - How to change the `gc_grace_seconds` parameter and prevent data resurrection.
 * [How to flush old tombstones from a table](https://docs.scylladb.com/manual/master/kb/tombstones-flush.md) - How to remove old tombstones from SSTables.
 * [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/master/kb/rf-increase.md)
@@ -38,7 +35,6 @@
                 <div class="panel">
                     <h5 class="panel_\_title">Configuring and Integrating ScyllaDB</h5>
             * [NTP configuration for ScyllaDB](https://docs.scylladb.com/manual/master/kb/ntp.md) - ScyllaDB depends on an accurate system clock. Learn to configure NTP for your data store and applications.
-* [ScyllaDB and Spark integration](https://docs.scylladb.com/manual/master/kb/scylla-and-spark-integration.md) - How to run an example Spark application that uses ScyllaDB to store data?
 * [Map CPUs to ScyllaDB Shards](https://docs.scylladb.com/manual/master/kb/map-cpu.md) - Mapping between CPUs and ScyllaDB shards
 * [Customizing CPUSET](https://docs.scylladb.com/manual/master/kb/customizing-cpuset.md)
 * [Recreate RAID devices](https://docs.scylladb.com/manual/master/kb/raid-device.md) - How to recreate your RAID devices without running scylla-setup

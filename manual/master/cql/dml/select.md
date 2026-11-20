@@ -69,7 +69,7 @@ and returns them as a single row (see [SELECT without FROM](#select-without-from
 [limit](#limit-clause) the results. Lastly, [queries that require filtering](#allow-filtering) can be allowed
 if the `ALLOW FILTERING` flag is provided.
 
-If your `SELECT` query results in what appears to be missing data, see this [KB Article](https://docs.scylladb.com/manual/master/kb/cqlsh-results.md) for information.
+If your `SELECT` query results in what appears to be missing data, see this [KB Article](https://docs.scylladb.com/manual/master/kb/cqlsh-more.md) for information.
 
 <a id="selection-clause"></a>
 

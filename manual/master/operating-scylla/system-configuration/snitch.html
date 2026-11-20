@@ -405,14 +405,20 @@ Other snitches are limited and will make it harder for you to add a Data Center 
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Do not disable access to instance metadata if you’re using Ec2Snitch or Ec2MultiRegionSnitch. With access to medatata disabled,
+<p>Do not disable access to instance metadata if you’re using Ec2Snitch or Ec2MultiRegionSnitch. With access to metadata disabled,
 the information about datacenter names and racks may be missing or incorrect, or the instance may fail to boot.</p>
 </div>
 <section id="simplesnitch">
 <span id="snitch-simple-snitch"></span><h2>SimpleSnitch<a class="headerlink" href="#simplesnitch" title="Link to this heading">¶</a></h2>
-<p>Use the SimpleSnitch when working with single cluster deployments and all the nodes are under the same datacenter.
-The SimpleSnitch binds all the nodes to the same Rack and datacenter and is recommended to be used only in single datacenter deployments.</p>
-<p>The name of the datacenter is set to <code class="docutils literal notranslate"><span class="pre">datacenter1</span></code>, while the name of the rack—to <code class="docutils literal notranslate"><span class="pre">rack1</span></code>.</p>
+<p>The SimpleSnitch binds all the nodes to the same rack and datacenter.
+The name of the datacenter is set to <code class="docutils literal notranslate"><span class="pre">datacenter1</span></code>, while the name of the rack—to <code class="docutils literal notranslate"><span class="pre">rack1</span></code>.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Do not use the SimpleSnitch in production. Because all the nodes are placed in a single datacenter and rack,
+you cannot add a datacenter or distribute replicas across racks later.
+Use the SimpleSnitch only for testing or development.
+For production clusters, use <code class="docutils literal notranslate"><span class="pre">GossipingPropertyFileSnitch</span></code> or <code class="docutils literal notranslate"><span class="pre">Ec2MultiRegionSnitch</span></code>.</p>
+</div>
 </section>
 <section id="rackinferringsnitch">
 <span id="snitch-rack-inferring-snitch"></span><h2>RackInferringSnitch<a class="headerlink" href="#rackinferringsnitch" title="Link to this heading">¶</a></h2>
@@ -1168,17 +1174,14 @@ UN<span class="w">  </span><span class="m">192</span>.0.2.5<span class="w">     
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../kb/index.html">Knowledge Base</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/cdc-experimental-upgrade.html">Upgrading from experimental CDC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/compaction.html">Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/consistency.html">Consistency in ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/count-all-rows.html">Counting all rows in a table is slow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/cqlsh-more.html">CQL Query Does Not Display Entire Result Set</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/cqlsh-results.html">When CQLSh query returns partial results with followed by “More”</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/custom-user.html">Run ScyllaDB and supporting services as a custom user:group</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/customizing-cpuset.html">Customizing CPUSET</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/decode-stack-trace.html">Decoding Stack Traces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/disk-utilization.html">Snapshots and Disk Utilization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/dpdk-hardware.html">DPDK mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/flamegraph.html">Debug your database with Flame Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/garbage-collection-ics.html">Efficient Tombstone Garbage Collection in ICS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/gc-grace-seconds.html">How to Change gc_grace_seconds for a Table</a></li>
@@ -1187,18 +1190,15 @@ UN<span class="w">  </span><span class="m">192</span>.0.2.5<span class="w">     
 <li class="toctree-l2"><a class="reference internal" href="../../kb/map-cpu.html">Map CPUs to ScyllaDB Shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/memory-usage.html">ScyllaDB Memory Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/ntp.html">NTP Configuration for ScyllaDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/posix.html">POSIX networking for ScyllaDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/quiz-administrators.html">ScyllaDB consistency quiz for administrators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/raid-device.html">Recreate RAID devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/rf-increase.html">How to Safely Increase the Replication Factor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/scylla-and-spark-integration.html">ScyllaDB and Spark integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/scylla-limits-systemd.html">Increase ScyllaDB resource limits over systemd</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/seed-nodes.html">ScyllaDB Seed Nodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/set-up-swap.html">How to Set up a Swap Space</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/snapshots.html">ScyllaDB Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/static-columns.html">ScyllaDB payload sent duplicated static columns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/stop-local-repair.html">Stopping a local repair</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../kb/system-limits.html">System Limits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/tombstones-flush.html">How to flush old tombstones from a table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/ttl-facts.html">Time to Live (TTL) and Compaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../kb/unresponsive-nodes.html">ScyllaDB Nodes are Unresponsive</a></li>
@@ -1298,7 +1298,7 @@ UN<span class="w">  </span><span class="m">192</span>.0.2.5<span class="w">     
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 27 Aug 2025.
+                        Last updated on 03 Nov 2026.
                     
                 </div>
             

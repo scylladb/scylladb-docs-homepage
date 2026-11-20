@@ -1,5 +1,8 @@
 # Full-Text Search in ScyllaDB
 
+#### NOTE
+This feature is currently available only in [ScyllaDB Cloud](https://cloud.docs.scylladb.com/).
+
 ## What Is Full-Text Search
 
 Full-Text Search (FTS) lets you find rows that contain specific words or

@@ -23,17 +23,21 @@ For production clusters, it is strongly recommended to use `GossipingPropertyFil
 Other snitches are limited and will make it harder for you to add a Data Center (DC) later.
 
 #### WARNING
-Do not disable access to instance metadata if you’re using Ec2Snitch or Ec2MultiRegionSnitch. With access to medatata disabled,
+Do not disable access to instance metadata if you’re using Ec2Snitch or Ec2MultiRegionSnitch. With access to metadata disabled,
 the information about datacenter names and racks may be missing or incorrect, or the instance may fail to boot.
 
 <a id="snitch-simple-snitch"></a>
 
 ## SimpleSnitch
 
-Use the SimpleSnitch when working with single cluster deployments and all the nodes are under the same datacenter.
-The SimpleSnitch binds all the nodes to the same Rack and datacenter and is recommended to be used only in single datacenter deployments.
-
+The SimpleSnitch binds all the nodes to the same rack and datacenter.
 The name of the datacenter is set to `datacenter1`, while the name of the rack—to `rack1`.
+
+#### CAUTION
+Do not use the SimpleSnitch in production. Because all the nodes are placed in a single datacenter and rack,
+you cannot add a datacenter or distribute replicas across racks later.
+Use the SimpleSnitch only for testing or development.
+For production clusters, use `GossipingPropertyFileSnitch` or `Ec2MultiRegionSnitch`.
 
 <a id="snitch-rack-inferring-snitch"></a>
 

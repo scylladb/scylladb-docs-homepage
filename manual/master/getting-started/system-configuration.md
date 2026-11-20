@@ -150,6 +150,8 @@ Huge page configuration is written to `/etc/sysconfig/scylla-server` by the scri
 
 ## Related Topics
 
-[System Limits](https://docs.scylladb.com/manual/master/kb/system-limits.md) - outlines the system limits which should be set or removed.
+[System Limits](https://docs.scylladb.com/manual/master/reference/limits.md#limits-system) - lists the resource limits ScyllaDB runs with under systemd.
+
+[Increase ScyllaDB resource limits over systemd](https://docs.scylladb.com/manual/master/kb/scylla-limits-systemd.md) - explains how to override them.
 
 [Getting Started](https://docs.scylladb.com/manual/master/getting-started/index.md)

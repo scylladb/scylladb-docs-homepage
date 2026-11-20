@@ -1,5 +1,8 @@
 # Pattern Search in ScyllaDB
 
+#### NOTE
+This feature is currently available only in [ScyllaDB Cloud](https://cloud.docs.scylladb.com/).
+
 ## What Is Pattern Search
 
 Pattern Search finds the rows whose text column matches a `LIKE`
