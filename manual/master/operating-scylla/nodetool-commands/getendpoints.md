@@ -1,7 +1,7 @@
 # Nodetool getendpoints
 
 **getendpoints** - `<keyspace>` `<table>` `<key>`- Print the end-points IP or name of the nodes that own the partition key.
-**getendpoints** - `<keyspace>` `<table>` `<key-components>` - Print the end-points IP or name of the nodes that own the partition key.
+**getendpoints** - `<keyspace>` `<table>` `--key-components <component>` [`--key-components <component>` …] - Print the end-points IP or name of the nodes that own the partition key.
 
 Use this command to know which node holds the specific partition key.
 
@@ -37,7 +37,7 @@ CREATE TABLE superheroes (
 ```
 
 ```bash
-nodetool getendpoints "superheroes" "peter"
+nodetool getendpoints "mykeyspace" "superheroes" "peter"
 ```
 
 This retrieves the nodes responsible for the partition key `peter` in the `superheroes` table.

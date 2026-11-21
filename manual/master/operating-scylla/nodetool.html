@@ -387,7 +387,9 @@
 <section id="nodetool-generic-options">
 <span id="id1"></span><h2>Nodetool generic options<a class="headerlink" href="#nodetool-generic-options" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">&lt;port&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">&lt;port&gt;</span></code> - The port of the REST API of the ScyllaDB node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-h</span> <span class="pre">&lt;host&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">--host</span> <span class="pre">&lt;host&gt;</span></code> - The hostname or IP address of the ScyllaDB node (default: <code class="docutils literal notranslate"><span class="pre">localhost</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">&lt;port&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">&lt;port&gt;</span></code> - The port of the REST API of the ScyllaDB node (default: <code class="docutils literal notranslate"><span class="pre">10000</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--rest-api-port</span> <span class="pre">&lt;port&gt;</span></code> - The port of the REST API of the ScyllaDB node; takes precedence over <code class="docutils literal notranslate"><span class="pre">--port</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--</span></code> - Separates command-line options from the list of argument(useful when an argument might be mistaken for a command-line option).</p></li>
 </ul>
 </section>
@@ -430,14 +432,15 @@
 <li><p><a class="reference internal" href="nodetool-commands/help.html"><span class="doc">help</span></a> - Display list of available nodetool commands.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/info.html"><span class="doc">info</span></a> - Print node information</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/listsnapshots.html"><span class="doc">listsnapshots</span></a> - Lists all the snapshots along with the size on disk and true size.</p></li>
-<li><p><strong>move</strong> <code class="code docutils literal notranslate"><span class="pre">&lt;new</span> <span class="pre">token&gt;</span></code>- Move node on the token ring to a new token</p></li>
+<li><p><a class="reference internal" href="procedures/config-change/migrate-vnodes-to-tablets.html"><span class="doc">migrate-to-tablets</span></a> - Manage vnodes-to-tablets migration (subcommands: start, upgrade, downgrade, status, finalize).</p></li>
+<li><p><strong>move</strong> - Not supported.</p></li>
 <li><p><strong>netstats</strong> - Print network information on provided host (connecting node by default)</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/proxyhistograms.html"><span class="doc">proxyhistograms</span></a> - Print statistic histograms for network operations</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/rebuild.html"><span class="doc">rebuild</span></a> <code class="code docutils literal notranslate"><span class="pre">[&lt;src-dc-name&gt;]</span></code>- Rebuild data by streaming from other nodes</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/refresh.html"><span class="doc">refresh</span></a>- Load newly placed SSTables to the system without restart</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/removenode.html"><span class="doc">removenode</span></a>- Remove node with the provided ID</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/repair.html"><span class="doc">repair</span></a>  <code class="code docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> <code class="code docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> - Repair one or more vnode tables.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/resetlocalschema.html"><span class="doc">resetlocalschema</span></a> - Reset the node’s local schema.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/resetlocalschema.html"><span class="doc">resetlocalschema</span></a> - Reset the node’s local schema (no longer supported).</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/restore.html"><span class="doc">restore</span></a> - Load SSTables from a designated bucket in object store into a specified keyspace or table</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/ring.html"><span class="doc">ring</span></a> - The nodetool ring command display the token ring information.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/scrub.html"><span class="doc">scrub</span></a> <code class="code docutils literal notranslate"><span class="pre">[-m</span> <span class="pre">mode]</span> <span class="pre">[--no-snapshot]</span> <span class="pre">&lt;keyspace&gt;</span> <span class="pre">[&lt;table&gt;...]</span></code> - Scrub the SSTable files in the specified keyspace or table(s)</p></li>
@@ -455,9 +458,9 @@
 <li><p><strong>tablehistograms</strong> see <a class="reference internal" href="nodetool-commands/cfhistograms.html"><span class="doc">cfhistograms</span></a></p></li>
 <li><p><a class="reference internal" href="nodetool-commands/tablestats.html"><span class="doc">tablestats</span></a> - Provides in-depth diagnostics regard table.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/tasks/index.html"><span class="doc">tasks</span></a> - Manage tasks manager tasks.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/toppartitions.html"><span class="doc">toppartitions</span></a> - Samples cluster writes and reads and reports the most active partitions in a specified table and time frame.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/toppartitions.html"><span class="doc">toppartitions</span></a> - Samples the writes and reads on the node and reports the most active partitions in the specified table(s) and time frame.</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/upgradesstables.html"><span class="doc">upgradesstables</span></a> - Upgrades each table that is not running the latest ScyllaDB version, by rewriting SSTables.</p></li>
-<li><p><a class="reference internal" href="nodetool-commands/version.html"><span class="doc">version</span></a> - Print the DB version.</p></li>
+<li><p><a class="reference internal" href="nodetool-commands/version.html"><span class="doc">version</span></a> - Print the Apache Cassandra version that ScyllaDB is most compatible with (not the ScyllaDB version).</p></li>
 <li><p><a class="reference internal" href="nodetool-commands/viewbuildstatus.html"><span class="doc">viewbuildstatus</span></a> - Shows the progress of a materialized view build.</p></li>
 </ul>
 </section>
@@ -1080,7 +1083,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Oct 2026.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

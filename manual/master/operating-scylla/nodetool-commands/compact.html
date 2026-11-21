@@ -404,6 +404,10 @@ If a keyspace is provided, the compaction will run on all of the tables within t
 </section>
 <section id="options">
 <h2>Options<a class="headerlink" href="#options" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--flush-memtables</span> <span class="pre">&lt;true|false&gt;</span></code> - Control flushing of tables before major compaction (<code class="docutils literal notranslate"><span class="pre">true</span></code> by default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--consider-only-existing-data</span> <span class="pre">&lt;true|false&gt;</span></code> - Check only the SSTables being compacted to garbage collect the tombstones and do not check memtables, commit log and other uncompacting SSTables (<code class="docutils literal notranslate"><span class="pre">false</span></code> by default). Enabling this will also force flush all memtables before starting major compaction.</p></li>
+</ul>
 <p>The following options are available in Cassandra’s nodetool, but are NOT implemented in ScyllaDB’s nodetool:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">-st</span></code> or <code class="docutils literal notranslate"><span class="pre">--start-token</span></code></p></li>
@@ -1048,7 +1052,7 @@ nodetool<span class="w"> </span>compact<span class="w"> </span>keyspace1<span cl
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 01 Jul 2024.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

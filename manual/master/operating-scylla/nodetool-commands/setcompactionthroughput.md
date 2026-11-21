@@ -1,6 +1,6 @@
 # Nodetool setcompactionthroughput
 
-**setcompactionthroughput** - Print the throughput cap for compaction in the system
+**setcompactionthroughput** - Set the throughput cap for compaction in the system, in MiB/s
 
 Setting zero throughput disables capping
 

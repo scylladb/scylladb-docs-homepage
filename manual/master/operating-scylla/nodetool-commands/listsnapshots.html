@@ -388,16 +388,17 @@
                     <section id="nodetool-listsnapshots">
 <h1>Nodetool listsnapshots<a class="headerlink" href="#nodetool-listsnapshots" title="Link to this heading">¶</a></h1>
 <p><strong>listsnapshots</strong> - Lists all the snapshots along with the size on disk and true size.
-Dropped tables (column family) will not be part of the <code class="docutils literal notranslate"><span class="pre">listsnapshots</span></code>.</p>
+Snapshots of dropped tables (for example, the automatic snapshot taken on <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">TABLE</span></code>) are also listed.</p>
 <p>For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>listsnapshots
 
 Snapshot<span class="w"> </span>Details:
-Snapshot<span class="w"> </span>Name<span class="w">  </span>Keyspace<span class="w">   </span>Column<span class="w"> </span>Family<span class="w">  </span>True<span class="w"> </span>Size<span class="w">   </span>Size<span class="w"> </span>on<span class="w"> </span>Disk
+Snapshot<span class="w"> </span>name<span class="w"> </span>Keyspace<span class="w"> </span>name<span class="w"> </span>Column<span class="w"> </span>family<span class="w"> </span>name<span class="w"> </span>True<span class="w"> </span>size<span class="w"> </span>Size<span class="w"> </span>on<span class="w"> </span>disk
+<span class="m">5487138454987</span><span class="w"> </span>nba<span class="w">           </span>player_name<span class="w">        </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">308</span>.66<span class="w"> </span>MiB
+<span class="m">2157384283120</span><span class="w"> </span>nba<span class="w">           </span>player_team<span class="w">        </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">107</span>.21<span class="w"> </span>MiB
+<span class="m">4824891793663</span><span class="w"> </span>nba<span class="w">           </span>player_stats<span class="w">       </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">41</span>.69<span class="w"> </span>MiB
 
-<span class="m">5487138454987</span><span class="w">  </span>nba<span class="w">        </span>player_name<span class="w">    </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">     </span><span class="m">308</span>.66<span class="w"> </span>MiB
-<span class="m">2157384283120</span><span class="w">  </span>nba<span class="w">        </span>player_team<span class="w">    </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">     </span><span class="m">107</span>.21<span class="w"> </span>MiB
-<span class="m">4824891793663</span><span class="w">  </span>nba<span class="w">        </span>player_stats<span class="w">   </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">      </span><span class="m">41</span>.69<span class="w"> </span>MiB
+Total<span class="w"> </span>TrueDiskSpaceUsed:<span class="w"> </span><span class="m">0</span><span class="w"> </span>bytes
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -407,19 +408,19 @@ Snapshot<span class="w"> </span>Name<span class="w">  </span>Keyspace<span class
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Snapshot Name</p></td>
+<tr class="row-even"><td><p>Snapshot name</p></td>
 <td><p>Name of the snapshot</p></td>
 </tr>
-<tr class="row-odd"><td><p>Keyspace</p></td>
+<tr class="row-odd"><td><p>Keyspace name</p></td>
 <td><p>Keyspace name</p></td>
 </tr>
-<tr class="row-even"><td><p>Column Family</p></td>
+<tr class="row-even"><td><p>Column family name</p></td>
 <td><p>Column Family (table) name</p></td>
 </tr>
-<tr class="row-odd"><td><p>True Size</p></td>
-<td><p>Total size of all SSTables which are not backed up to disk</p></td>
+<tr class="row-odd"><td><p>True size</p></td>
+<td><p>Total size of the snapshot files that are not shared with the table’s current SSTables, i.e. disk space used only by the snapshot</p></td>
 </tr>
-<tr class="row-even"><td><p>Size on Disk</p></td>
+<tr class="row-even"><td><p>Size on disk</p></td>
 <td><p>Total size of the snapshot on disk</p></td>
 </tr>
 </tbody>
@@ -1034,7 +1035,7 @@ Snapshot<span class="w"> </span>Name<span class="w">  </span>Keyspace<span class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 Aug 2026.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

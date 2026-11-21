@@ -397,7 +397,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">[upgrade</span> <span class="pre">target]</span></code> indicates what you are upgrading and can be any of the following:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--include-all-sstables</span> <span class="pre">|</span> <span class="pre">-a</span></code> - Upgrades all SSTables by force, including those already in the new SSTable format.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--jobs</span> <span class="pre">&lt;jobs&gt;</span> <span class="pre">|</span> <span class="pre">-j</span> <span class="pre">&lt;jobs&gt;</span></code> - Indicates the number of SSTables you want to upgrade simultaneously. Setting this parameter to <code class="docutils literal notranslate"><span class="pre">0</span></code> uses all available compaction threads.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--jobs</span> <span class="pre">&lt;jobs&gt;</span> <span class="pre">|</span> <span class="pre">-j</span> <span class="pre">&lt;jobs&gt;</span></code> - Accepted for compatibility, ignored.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">keyspace-name</span></code> - Updates all SSTables for all tables in the indicated keyspace</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">table-name</span></code> - Updates all SSTables for the indicated table or tables, with each table separated by a space. To specify a table, you must include the <code class="docutils literal notranslate"><span class="pre">keyspace-name</span></code> and the <code class="docutils literal notranslate"><span class="pre">table-name</span></code> separated by a space.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--</span></code> Separator which can be used to separate an option from an argument. For example, if you are using the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag, use the separator between the flag and the <code class="docutils literal notranslate"><span class="pre">keyspace-name</span></code></p></li>
@@ -414,9 +414,9 @@
 <p>To upgrade all three tables (A, B, and E) you add the <cite>-a</cite> flag which forces an upgrade to tableE:</p>
 <p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">-a</span> <span class="pre">--</span> <span class="pre">KeyspaceA</span></code></p>
 <p>To upgrade all old format tables in both keyspaces:</p>
-<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">KeyspaceA</span> <span class="pre">KeyspaceB</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">KeyspaceA</span></code> and <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">KeyspaceB</span></code></p>
 <p>To upgrade all tables (old and new format) in both keyspaces:</p>
-<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">-a</span> <span class="pre">--</span> <span class="pre">KeyspaceA</span> <span class="pre">KeyspaceB</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">-a</span> <span class="pre">--</span> <span class="pre">KeyspaceA</span></code> and <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">upgradesstables</span> <span class="pre">-a</span> <span class="pre">--</span> <span class="pre">KeyspaceB</span></code></p>
 </section>
 <section id="additional-references">
 <h2>Additional References<a class="headerlink" href="#additional-references" title="Link to this heading">¶</a></h2>
@@ -1042,7 +1042,7 @@
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 08 Jan 2025.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

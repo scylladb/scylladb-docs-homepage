@@ -5,6 +5,14 @@ Keep your versions up-to-date. The two latest versions are supported. Also, alwa
 
             <div class="cell my-panel">
                 <div class="panel">
+                    <h5 class="panel_\_title">Managed Deployment</h5>
+            
+To run ScyllaDB as a fully managed service without installing it yourself, use ScyllaDB Cloud.
+See the [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/).
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
                     <h5 class="panel_\_title">Cloud Deployment</h5>
             * [Launch ScyllaDB on AWS](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-aws.md)
 * [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/master/getting-started/install-scylla/launch-on-gcp.md)

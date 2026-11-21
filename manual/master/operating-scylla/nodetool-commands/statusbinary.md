@@ -6,8 +6,9 @@ For example:
 
 ```default
 nodetool statusbinary
-Result can be one of the following:running Ornot running
 ```
+
+The result can be one of the following: `running` or `not running`.
 
 See also
 

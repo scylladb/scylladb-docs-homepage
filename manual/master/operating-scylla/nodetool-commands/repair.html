@@ -420,14 +420,14 @@ of the nodes in the cluster, and <a class="reference internal" href="cluster/rep
 </div>
 </div>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-et</span></code> <code class="docutils literal notranslate"><span class="pre">--end-token</span></code> executes a repair on the specified node/s starting with the first token and ending with the specified UUID token.</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">-et</span></code> <code class="docutils literal notranslate"><span class="pre">--end-token</span></code> executes a repair on the specified node/s starting with the first token and ending with the specified token.</p>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">repair</span> <span class="o">-</span><span class="n">et</span> <span class="mi">90874935784</span>
 <span class="n">nodetool</span> <span class="n">repair</span> <span class="o">--</span><span class="n">end</span><span class="o">-</span><span class="n">token</span> <span class="mi">90874935784</span>
 </pre></div>
 </div>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-hosts</span></code> <code class="docutils literal notranslate"><span class="pre">--in-hosts</span></code> syncs the <strong>repair master</strong> data subset only between a list of nodes, using host ID or Address. The list <em>must</em> include the <strong>repair master</strong>.</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">-hosts</span></code> <code class="docutils literal notranslate"><span class="pre">--in-hosts</span></code> syncs the <strong>repair master</strong> data subset only between a list of nodes, using their IP addresses. The list <em>must</em> include the <strong>repair master</strong>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>this command leaves part of the data subset (on nodes that are <em>not</em> listed) out of sync.</p>
@@ -435,7 +435,6 @@ of the nodes in the cluster, and <a class="reference internal" href="cluster/rep
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">repair</span> <span class="o">-</span><span class="n">hosts</span> <span class="mf">172.17.0.2</span><span class="p">,</span><span class="mf">172.17.0.3</span><span class="p">,</span><span class="mf">172.17.0.4</span>
 <span class="n">nodetool</span> <span class="n">repair</span> <span class="o">--</span><span class="ow">in</span><span class="o">-</span><span class="n">hosts</span> <span class="mf">172.17.0.2</span><span class="p">,</span><span class="mf">172.17.0.3</span><span class="p">,</span><span class="mf">172.17.0.4</span>
-<span class="n">nodetool</span> <span class="n">repair</span> <span class="o">--</span><span class="ow">in</span><span class="o">-</span><span class="n">hosts</span> <span class="n">cdc295d7</span><span class="o">-</span><span class="n">c076</span><span class="o">-</span><span class="mi">4</span><span class="n">b07</span><span class="o">-</span><span class="n">af69</span><span class="o">-</span><span class="mi">1385</span><span class="n">fefdb40b</span><span class="p">,</span><span class="mi">2</span><span class="n">dbdf288</span><span class="o">-</span><span class="mf">9e73</span><span class="o">-</span><span class="mi">11</span><span class="n">ea</span><span class="o">-</span><span class="n">bb37</span><span class="o">-</span><span class="mi">0242</span><span class="n">ac130002</span><span class="p">,</span><span class="mi">3</span><span class="n">a5993f8</span><span class="o">-</span><span class="mf">9e73</span><span class="o">-</span><span class="mi">11</span><span class="n">ea</span><span class="o">-</span><span class="n">bb37</span><span class="o">-</span><span class="mi">0242</span><span class="n">ac130002</span>
 </pre></div>
 </div>
 </li>
@@ -446,7 +445,7 @@ of the nodes in the cluster, and <a class="reference internal" href="cluster/rep
 </pre></div>
 </div>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-pr</span></code> <code class="docutils literal notranslate"><span class="pre">--partitioner-range</span></code> executes a repair only on the primary replica returned by the partitioner.</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">-pr</span></code> <code class="docutils literal notranslate"><span class="pre">--partitioner-range</span></code> repairs only the token ranges for which this node is the primary replica. Run it on all nodes to repair the whole cluster.</p>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">repair</span> <span class="o">-</span><span class="n">pr</span>
 <span class="n">nodetool</span> <span class="n">repair</span> <span class="o">--</span><span class="n">partitioner</span><span class="o">-</span><span class="nb">range</span>
@@ -456,7 +455,7 @@ of the nodes in the cluster, and <a class="reference internal" href="cluster/rep
 <li><p><code class="docutils literal notranslate"><span class="pre">-st</span></code> <code class="docutils literal notranslate"><span class="pre">--start-token</span></code> executes a repair on a range of node/s starting with the start token (the token specified).</p>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">repair</span> <span class="o">-</span><span class="n">st</span> <span class="mi">10474535988</span>
-<span class="n">nodetool</span> <span class="n">repair</span> <span class="o">--</span><span class="n">start</span><span class="o">-</span><span class="n">token</span>
+<span class="n">nodetool</span> <span class="n">repair</span> <span class="o">--</span><span class="n">start</span><span class="o">-</span><span class="n">token</span> <span class="mi">10474535988</span>
 </pre></div>
 </div>
 </li>
@@ -1082,7 +1081,7 @@ of the nodes in the cluster, and <a class="reference internal" href="cluster/rep
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 24 Feb 2025.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

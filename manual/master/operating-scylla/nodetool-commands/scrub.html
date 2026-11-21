@@ -402,7 +402,8 @@ Remove faulty data, eliminate tombstoned rows that have surpassed the table’s 
 <span class="w">                </span><span class="o">[(</span>-m<span class="w"> </span>&lt;scrub_mode&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--mode<span class="w"> </span>&lt;scrub_mode&gt;<span class="o">)]</span>
 <span class="w">                </span><span class="o">[(</span>-q<span class="w"> </span>&lt;quarantine_mode&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--quarantine-mode<span class="w"> </span>&lt;quarantine_mode&gt;<span class="o">)]</span>
 <span class="w">                </span><span class="o">[</span>--drop-unfixable-sstables<span class="o">]</span>
-<span class="w">                </span><span class="o">[</span>--<span class="o">]</span><span class="w"> </span>&lt;keyspace&gt;<span class="w"> </span><span class="o">[</span>&lt;table...&gt;<span class="o">]</span>
+<span class="w">                </span><span class="o">[</span>--quarantine-invalid-sstables<span class="w"> </span>&lt;true<span class="p">|</span>false&gt;<span class="o">]</span>
+<span class="w">                </span><span class="o">[</span>--<span class="o">]</span><span class="w"> </span><span class="o">[</span>&lt;keyspace&gt;<span class="w"> </span><span class="o">[</span>&lt;table...&gt;<span class="o">]]</span>
 
 Supported<span class="w"> </span>scrub<span class="w"> </span>modes:<span class="w"> </span>VALIDATE,<span class="w"> </span>ABORT,<span class="w"> </span>SKIP,<span class="w"> </span>SEGREGATE
 Supported<span class="w"> </span>quarantine<span class="w"> </span>modes:<span class="w"> </span>INCLUDE,<span class="w"> </span>EXCLUDE,<span class="w"> </span>ONLY
@@ -440,7 +441,7 @@ Supported<span class="w"> </span>quarantine<span class="w"> </span>modes:<span c
 </tbody>
 </table>
 <p><code class="docutils literal notranslate"><span class="pre">--</span></code> This option can be used to separate command-line options from the list of argument, (useful when arguments might be mistaken for command-line options.</p>
-<p><code class="docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> The keyspace to scrub.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;keyspace&gt;</span></code> The keyspace to scrub. By default, all keyspaces are scrubbed.</p>
 <p><code class="docutils literal notranslate"><span class="pre">[&lt;table...&gt;]</span></code> Optional. One or more tables to scrub.  By default, all tables in the keyspace are scrubbed.</p>
 </section>
 <section id="scrub-modes">
@@ -551,7 +552,7 @@ Quarantined SSTables are handled distinctly:</p>
 the purpose of tombstone-gc.</p></li>
 </ul>
 <p>The purpose of the quarantine is to keep corrupt SSTables out of compaction, which can spread the compaction or can get in a fail-retry loop. It also makes corrupt SSTables easy to find and retrieve for investigation.</p>
-<p>It is possible to opt-out from quarantining SSTables by passing <code class="docutils literal notranslate"><span class="pre">--quarantine-invalid-sstables=false</span></code> to nodetool.</p>
+<p>It is possible to opt-out from quarantining SSTables by passing <code class="docutils literal notranslate"><span class="pre">--mode=VALIDATE</span> <span class="pre">--quarantine-invalid-sstables=false</span></code> to nodetool.</p>
 <p><strong>Step 2</strong> (Optional): Preserve quarantined SSTables for analysis:</p>
 <p>Before permanently dropping the corrupted SSTables, consider copying some or all of them aside,
 somewhere outside of the ScyllaDB data directory, so they are preserved for later investigation by the ScyllaDB R&amp;D team,
@@ -1198,7 +1199,7 @@ to determine the root cause of the corruption.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 29 Sep 2026.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

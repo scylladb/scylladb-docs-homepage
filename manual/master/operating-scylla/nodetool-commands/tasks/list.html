@@ -397,7 +397,7 @@
 An operation may be repeated if appropriate flags are set.</p>
 <section id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Link to this heading">¶</a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tasks list &lt;module&gt; [--internal] [(--keyspace &lt;keyspace&gt; | -ks &lt;keyspace&gt;)]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tasks list &lt;module&gt; [--internal] [--keyspace &lt;keyspace&gt;]</span>
 <span class="go">[(--table &lt;table&gt; | -t &lt;table&gt;)] [--interval &lt;time_in_seconds&gt;] [(--iterations &lt;number&gt; | -i &lt;number&gt;)]</span>
 </pre></div>
 </div>
@@ -407,18 +407,18 @@ An operation may be repeated if appropriate flags are set.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--internal</span></code> - if set, internal tasks are listed. Internal tasks are the ones that
 have a parent or cover an operation that is invoked internally.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> or <code class="docutils literal notranslate"><span class="pre">-ks</span></code> - shows only tasks on the specified keyspace.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> - shows only tasks on the specified keyspace.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--table</span></code> or <code class="docutils literal notranslate"><span class="pre">-t</span></code> - shows only tasks on the specified table.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--interval</span></code> - repeats the operation periodically at specified time intervals.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--iterations</span></code> or <code class="docutils literal notranslate"><span class="pre">-i</span></code> - repeats the operation specified number of times.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--interval</span></code> - interval in seconds between repetitions (default 10); only takes effect with <code class="docutils literal notranslate"><span class="pre">--iterations</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--iterations</span></code> or <code class="docutils literal notranslate"><span class="pre">-i</span></code> - number of times to re-print the list (default 0).</p></li>
 </ul>
 <p>For example:</p>
 <p>Shows all repair tasks on keyspace <cite>myks</cite> and table <cite>mytable</cite>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>list<span class="w"> </span>repair<span class="w"> </span>--internal<span class="w"> </span>-ks<span class="w"> </span>myks<span class="w"> </span>--table<span class="w"> </span>mytable
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>list<span class="w"> </span>repair<span class="w"> </span>--internal<span class="w"> </span>--keyspace<span class="w"> </span>myks<span class="w"> </span>--table<span class="w"> </span>mytable
 </pre></div>
 </div>
 <p>Shows all non-internal compaction tasks and repeats the operation 3 times every 5 seconds:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>list<span class="w"> </span>compaction<span class="w"> </span>--interval<span class="w"> </span><span class="m">5</span><span class="w"> </span>--i<span class="w"> </span><span class="m">3</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>tasks<span class="w"> </span>list<span class="w"> </span>compaction<span class="w"> </span>--interval<span class="w"> </span><span class="m">5</span><span class="w"> </span>-i<span class="w"> </span><span class="m">3</span>
 </pre></div>
 </div>
 </section>
@@ -1068,7 +1068,7 @@ d8926ee7-0faf-47b7-bfeb-82477e0c7b33<span class="w"> </span>repair<span class="w
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 16 Jan 2025.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

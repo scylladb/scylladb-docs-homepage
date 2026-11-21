@@ -13,7 +13,14 @@
                 <div class="panel">
                     <h5 class="panel_\_title">Migration Tools</h5>
             * [Migration tools overview](https://docs.scylladb.com/manual/master/using-scylla/mig-tool-review.md) - Overview of all tools available.
-* [Spark Migrator](https://github.com/scylladb/scylla-migrator) - for  migrating from CQL to CQL
+* [ScyllaDB Migrator](https://migrator.docs.scylladb.com/) - for migrating from CQL to CQL and from DynamoDB to ScyllaDB Alternator
 * [SSTable Loader](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/sstableloader.md) - for migrating SSTables to CQL
+
+</div></div>
+            <div class="cell my-panel">
+                <div class="panel">
+                    <h5 class="panel_\_title">Migrate from DynamoDB</h5>
+            * [Migrate from DynamoDB to ScyllaDB](https://developers.scylladb.com/stable/getting-started/dynamodb/guides/migration/index.html) - Migration guide for moving DynamoDB applications to ScyllaDB Alternator
+* [Migrate from DynamoDB with ScyllaDB Migrator](https://migrator.docs.scylladb.com/stable/migrate-from-dynamodb.html) - How to migrate DynamoDB tables to ScyllaDB Alternator with ScyllaDB Migrator
 
 </div></div>

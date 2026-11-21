@@ -15,12 +15,13 @@ When you run a restore operation, it always executes as a background task. You h
 
 ```console
 nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)]
-            --endpoint <endpoint> --bucket <bucket>
+            restore --endpoint <endpoint> --bucket <bucket>
             --prefix <prefix>
             --keyspace <keyspace>
             --table <table>
             [--nowait]
             [--scope <scope>]
+            [--primary-replica-only]
             [--sstables-file-list <file>]
             <sstables>...
 ```

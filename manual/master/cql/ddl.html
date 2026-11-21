@@ -409,6 +409,12 @@ size to 192 characters (that limit exists mostly to avoid filenames, which may i
 over the limits of certain file systems). By default, keyspace and table names are case insensitive (<code class="docutils literal notranslate"><span class="pre">myTable</span></code> is
 equivalent to <code class="docutils literal notranslate"><span class="pre">mytable</span></code>), but case sensitivity can be forced by using double-quotes (<code class="docutils literal notranslate"><span class="pre">&quot;myTable&quot;</span></code> is different from
 <code class="docutils literal notranslate"><span class="pre">mytable</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We recommend using lowercase keyspace and table names. If you create a keyspace or table with a quoted name
+that contains uppercase letters (for example, <code class="docutils literal notranslate"><span class="pre">&quot;MyKeyspace&quot;</span></code>), you need to use double quotes and the exact
+case every time you refer to it, and some tools and drivers may not handle such names correctly.</p>
+</div>
 <p>Further, a table is always part of a keyspace, and a table name can be provided fully-qualified by the keyspace it is
 part of. If it is not fully-qualified, the table is assumed to be in the <em>current</em> keyspace (see <a class="reference internal" href="#use-statement"><span class="std std-ref">USE statement</span></a>).</p>
 <p>Further, valid column names are simply defined as:</p>
@@ -429,7 +435,7 @@ part of. If it is not fully-qualified, the table is assumed to be in the <em>cur
 </pre></div>
 </div>
 <p>For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">Excalibur</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">KEYSPACE</span> <span class="n">excalibur</span>
 <span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'NetworkTopologyStrategy'</span><span class="p">,</span> <span class="s1">'DC1'</span> <span class="p">:</span> <span class="p">[</span><span class="s1">'RAC1'</span><span class="p">,</span> <span class="s1">'RAC2'</span><span class="p">,</span> <span class="s1">'RAC3'</span><span class="p">],</span> <span class="s1">'DC2'</span> <span class="p">:</span> <span class="mf">3</span><span class="p">}</span>
 <span class="k">AND</span> <span class="n">durable_writes</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
 </pre></div>
@@ -2361,7 +2367,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 03 Oct 2026.
+                        Last updated on 19 Nov 2026.
                     
                 </div>
             

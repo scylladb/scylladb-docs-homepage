@@ -6,7 +6,9 @@ The `nodetool` utility provides a simple command-line interface to the following
 
 ## Nodetool generic options
 
-* `-p <port>` or `--port <port>` - The port of the REST API of the ScyllaDB node.
+* `-h <host>` or `--host <host>` - The hostname or IP address of the ScyllaDB node (default: `localhost`).
+* `-p <port>` or `--port <port>` - The port of the REST API of the ScyllaDB node (default: `10000`).
+* `--rest-api-port <port>` - The port of the REST API of the ScyllaDB node; takes precedence over `--port`.
 * `--` - Separates command-line options from the list of argument(useful when an argument might be mistaken for a command-line option).
 
 ## Supported Nodetool operations
@@ -48,14 +50,15 @@ Operations that are not listed below are currently not available.
 * [help](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/help.md) - Display list of available nodetool commands.
 * [info](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/info.md) - Print node information
 * [listsnapshots](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/listsnapshots.md) - Lists all the snapshots along with the size on disk and true size.
-* **move** `<new token>`- Move node on the token ring to a new token
+* [migrate-to-tablets](https://docs.scylladb.com/manual/master/operating-scylla/procedures/config-change/migrate-vnodes-to-tablets.md) - Manage vnodes-to-tablets migration (subcommands: start, upgrade, downgrade, status, finalize).
+* **move** - Not supported.
 * **netstats** - Print network information on provided host (connecting node by default)
 * [proxyhistograms](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/proxyhistograms.md) - Print statistic histograms for network operations
 * [rebuild](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/rebuild.md) `[<src-dc-name>]`- Rebuild data by streaming from other nodes
 * [refresh](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/refresh.md)- Load newly placed SSTables to the system without restart
 * [removenode](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/removenode.md)- Remove node with the provided ID
 * [repair](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/repair.md)  `<keyspace>` `<table>` - Repair one or more vnode tables.
-* [resetlocalschema](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/resetlocalschema.md) - Reset the node’s local schema.
+* [resetlocalschema](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/resetlocalschema.md) - Reset the node’s local schema (no longer supported).
 * [restore](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/restore.md) - Load SSTables from a designated bucket in object store into a specified keyspace or table
 * [ring](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/ring.md) - The nodetool ring command display the token ring information.
 * [scrub](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/scrub.md) `[-m mode] [--no-snapshot] <keyspace> [<table>...]` - Scrub the SSTable files in the specified keyspace or table(s)
@@ -73,7 +76,7 @@ Operations that are not listed below are currently not available.
 * **tablehistograms** see [cfhistograms](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/cfhistograms.md)
 * [tablestats](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tablestats.md) - Provides in-depth diagnostics regard table.
 * [tasks](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/tasks/index.md) - Manage tasks manager tasks.
-* [toppartitions](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/toppartitions.md) - Samples cluster writes and reads and reports the most active partitions in a specified table and time frame.
+* [toppartitions](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/toppartitions.md) - Samples the writes and reads on the node and reports the most active partitions in the specified table(s) and time frame.
 * [upgradesstables](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/upgradesstables.md) - Upgrades each table that is not running the latest ScyllaDB version, by rewriting SSTables.
-* [version](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/version.md) - Print the DB version.
+* [version](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/version.md) - Print the Apache Cassandra version that ScyllaDB is most compatible with (not the ScyllaDB version).
 * [viewbuildstatus](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/viewbuildstatus.md) - Shows the progress of a materialized view build.

@@ -434,10 +434,10 @@ If <code class="docutils literal notranslate"><span class="pre">--nowait</span><
 <h2>Syntax<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool [(-h &lt;host&gt; | --host &lt;host&gt;)] [(-p &lt;port&gt; | --port &lt;port&gt;)] cluster backup</span>
 <span class="go">            [--keyspaces &lt;keyspace&gt;]...</span>
-<span class="go">            [--table &lt;table&gt;]</span>
-<span class="go">            [--snapshot &lt;snapshot&gt;]</span>
-<span class="go">            --location &lt;dc&gt;,&lt;endpoint&gt;,&lt;bucket&gt;(,&lt;prefix&gt;)</span>
-<span class="go">            [--location &lt;dc2&gt;,&lt;endpoint2&gt;,&lt;bucket2&gt;(,&lt;prefix2&gt;)]...</span>
+<span class="go">            [--table &lt;table&gt;[,&lt;table&gt;...]]</span>
+<span class="go">            [(-s &lt;snapshot&gt; | --snapshot &lt;snapshot&gt;)]</span>
+<span class="go">            (-l | --location) &lt;dc&gt;,&lt;endpoint&gt;,&lt;bucket&gt;[,&lt;prefix&gt;]</span>
+<span class="go">            [(-l | --location) &lt;dc2&gt;,&lt;endpoint2&gt;,&lt;bucket2&gt;[,&lt;prefix2&gt;]]...</span>
 <span class="go">            [--nowait]</span>
 <span class="go">            [--move-files]</span>
 </pre></div>
@@ -453,10 +453,10 @@ If <code class="docutils literal notranslate"><span class="pre">--nowait</span><
 <h2>Options<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">-h</span> <span class="pre">&lt;host&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">--host</span> <span class="pre">&lt;host&gt;</span></code> - Node hostname or IP address.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--keyspaces</span></code> - Name of a keyspace to copy SSTables from. Repeat for each keyspace. By default, all keyspaces are backed up</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--table</span></code> - Name of a table to copy SSTables from, or a comma-separated list of tables. Requires exactly one keyspace</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--snapshot</span></code> - Name of a snapshot to copy sstables from. If it does not exist, it is taken first</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--location</span></code> - Tuple of &lt;dc&gt;,&lt;endpoint&gt;,&lt;bucket&gt; and optional &lt;prefix&gt; which to write the backup. Repeat for each DC
+<li><p><code class="docutils literal notranslate"><span class="pre">--keyspaces</span></code> - Keyspace to back up. Repeat for each keyspace. If omitted, all keyspaces are backed up.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--table</span></code> - Table(s) to back up, multiple ones can be joined with <code class="docutils literal notranslate"><span class="pre">,</span></code>. Requires exactly one keyspace to be specified.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-s</span></code> or <code class="docutils literal notranslate"><span class="pre">--snapshot</span></code> - Name of the snapshot to back up. It is created if it does not exist. If omitted, a new snapshot, named after the current timestamp, is taken.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-l</span></code> or <code class="docutils literal notranslate"><span class="pre">--location</span></code> - Tuple of &lt;dc&gt;,&lt;endpoint&gt;,&lt;bucket&gt; and optional &lt;prefix&gt; which to write the backup to. Required; repeat it for each DC.
 Endpoints should be configured as per <a class="reference internal" href="../admin.html#object-storage-configuration"><span class="std std-ref">the object storage configuration instructions</span></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--nowait</span></code> - Don’t wait on the backup process</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--move-files</span></code> - Move files instead of copying them. This will delete the files from the local disk after they are uploaded to the object storage.</p></li>
@@ -1091,7 +1091,7 @@ Endpoints should be configured as per <a class="reference internal" href="../adm
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Oct 2026.
+                        Last updated on 28 Oct 2026.
                     
                 </div>
             

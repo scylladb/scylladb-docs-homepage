@@ -10,10 +10,10 @@
 nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)]
      [(-pp | --print-port)] [(-pw <password> | --password <password>)]
      [(-pwf <passwordFilePath> | --password-file <passwordFilePath>)]
-     [(-u <username> | --username <username>)] [cluster] snapshot
+     [(-u <username> | --username <username>)] snapshot
      [(-cf <table> | --column-family <table> | --table <table>)]
      [(-kc <kclist> | --kc.list <kclist>)]
-     [(-sf | --skip-flush)] [(-t <tag> | --tag <tag>)] [--ttl <ttl>] [--] [<keyspaces...>]
+     [--skip-flush] [(-t <tag> | --tag <tag>)] [--ttl <ttl>] [--] [<keyspaces...>]
 ```
 
 ## OPTIONS
@@ -22,9 +22,9 @@ nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)]
 |--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `-cf <table>` / `--column-family <table>`, `--table <table>` | The table name (you must specify one and only one keyspace for using this option).<br/>The table can be a regular table, a materialized view, or an index. For an index,<br/>the name of the materialized view backing the index should be used. |
 | `-h <host>` / `--host <host>`                                | Node hostname or ip address                                                                                                                                                                                                                      |
-| `-kc <ktlist>`, `--kc.list <ktlist>`                         | The list of Keyspaces to take snapshot                                                                                                                                                                                                           |
+| `-kc <ktlist>`, `--kc.list <ktlist>`                         | A comma-separated list of keyspaces to snapshot, or a single `<keyspace>.<table>` pair                                                                                                                                                           |
 | `-p <port>` / `--port <port>`                                | The port of the REST API of the ScyllaDB node.                                                                                                                                                                                                   |
-| `-sf` / `--skip-flush`                                       | Do not flush memtables before snapshotting (snapshot will not contain unflushed data)                                                                                                                                                            |
+| `--skip-flush`                                               | Do not flush memtables before snapshotting (snapshot will not contain unflushed data)                                                                                                                                                            |
 | `-t <tag>` / `--tag <tag>`                                   | The name of the snapshot                                                                                                                                                                                                                         |
 | `--ttl <ttl>`                                                | The time-to-live for the snapshot, optionally followed by:<br/>‘s’ for seconds (the default), ‘m’ for minutes, ‘h’ for hours, or ‘d’ for days.<br/>Missing TTL, or 0, means no TTL                                                               |
 
@@ -33,7 +33,12 @@ nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)]
 `[<keyspaces...>]` List of keyspaces. By default, all keyspaces.
 
 The ‘cluster snapshot’ version of this command will issue the snapshot on all nodes in the cluster, whereas
-the non-cluster version only operates on the destination node.
+the non-cluster version only operates on the destination node. The ‘cluster snapshot’ version supports only the
+`--table` and `-t`/`--tag` options and the list of keyspaces:
+
+```shell
+nodetool cluster snapshot [--table <table>] [(-t <tag> | --tag <tag>)] [<keyspaces...>]
+```
 
 ## Examples
 
@@ -41,31 +46,31 @@ Snapshot **all** the keyspaces
 
 ```shell
 > nodetool snapshot
-Requested creating snapshot(s) for [all keyspaces] with snapshot name [1564577645291] and options {skipFlush=false}
+Requested creating snapshot(s) for [all keyspaces] with snapshot name [1564577645291] and options {skipFlush=false, ttl=0}
 Snapshot directory: 1564577645291
 ```
 
 Snapshot **a** keyspace (mykeyspace)
 
 ```shell
-> nodetool snapshot mykeyspace;
-Requested creating snapshot(s) for [mykeyspace] with snapshot name [1564577611409] and options {skipFlush=false}
+> nodetool snapshot mykeyspace
+Requested creating snapshot(s) for [mykeyspace] with snapshot name [1564577611409] and options {skipFlush=false, ttl=0}
 Snapshot directory: 1564577611409
 ```
 
 Snapshot a **list** of keyspaces
 
 ```shell
->nodetool snapshot -kc mykeyspace,yourkeyspace
-Requested creating snapshot(s) for [mykeyspace,yourkeyspace] with snapshot name [1564639559884] and options {skipFlush=false}
+> nodetool snapshot -kc mykeyspace,yourkeyspace
+Requested creating snapshot(s) for [mykeyspace,yourkeyspace] with snapshot name [1564639559884] and options {skipFlush=false, ttl=0}
 Snapshot directory: 1564639559884
 ```
 
 Snapshot **a** table (heartrate)
 
 ```shell
-> nodetool snapshot --table heartrate mykeyspace;
-Requested creating snapshot(s) for [mykeyspace] with snapshot name [1564577586524] and options {skipFlush=false}
+> nodetool snapshot --table heartrate mykeyspace
+Requested creating snapshot(s) for [mykeyspace] with snapshot name [1564577586524] and options {skipFlush=false, ttl=0}
 Snapshot directory: 1564577586524
 ```
 
@@ -78,7 +83,7 @@ The snapshot is created in a `snapshot` directory in the table SSTable data dire
 1564577586524  1564577611409  1564577645291
 ```
 
-Each of the snapshots is a **hardlink** to to the SSTable directory.
+Each of the snapshots is a **hardlink** to the SSTable directory.
 
 ```shell
 > ls -1a /var/lib/scylla/data/mykeyspace/heartrate-07669030b39211e9a057000000000000/snapshots/1564577586524

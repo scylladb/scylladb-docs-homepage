@@ -394,7 +394,7 @@
 <span id="nodetool-refresh-local"></span><h2>Local refresh<a class="headerlink" href="#local-refresh" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This mode is not supported for <a class="reference internal" href="../../architecture/tablets.html"><span class="doc">tablets</span></a>.</p>
+<p>This mode is not supported for <a class="reference internal" href="../../architecture/tablets.html"><span class="doc">tablets</span></a>. For tablet keyspaces, <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code> automatically uses <a class="reference internal" href="#nodetool-refresh-load-and-stream"><span class="std std-ref">load-and-stream</span></a> instead.</p>
 </div>
 <p>SSTables are copied from the upload directory to the table’s data directory and added to the table’s SSTable registry.</p>
 <p>After the upload, ScyllaDB will run cleanup on the uploaded SSTables, to remove any partition which is not owned by the target node.
@@ -420,7 +420,7 @@ Use local upload if you are certain that uploaded SSTables contain data only for
 Each SSTable has to be uploaded only once, as <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> will ensure that all partitions reach their respective replicas.
 The <code class="docutils literal notranslate"><span class="pre">--scope</span></code> and <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> options can be used to filter the set of target replicas for each partition.</p>
 <p>Syntax:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[(</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">)</span> <span class="p">[[(</span><span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="n">replica</span><span class="o">-</span><span class="n">only</span> <span class="o">|</span> <span class="o">-</span><span class="n">pro</span><span class="p">)]</span> <span class="o">|</span> <span class="p">[</span><span class="o">--</span><span class="n">scope</span> <span class="o">&lt;</span><span class="n">scope</span><span class="o">&gt;</span><span class="p">]]]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[(</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">)</span> <span class="p">[(</span><span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="n">replica</span><span class="o">-</span><span class="n">only</span> <span class="o">|</span> <span class="o">-</span><span class="n">pro</span><span class="p">)]</span> <span class="p">[</span><span class="o">--</span><span class="n">scope</span> <span class="o">&lt;</span><span class="n">scope</span><span class="o">&gt;</span><span class="p">]]</span>
 </pre></div>
 </div>
 <section id="filter-target-replicas">
@@ -429,7 +429,7 @@ The <code class="docutils literal notranslate"><span class="pre">--scope</span><
 This can be inefficient in a large cluster, especially if there are multiple Datacenters.
 Constraining the subset of replicas where data will be streamed to allows orchestrating concurrent upload to multiple nodes without duplicate work – the same partition being streamed to a replica from multiple source nodes.</p>
 <p>There are two options available to manipulate the replica(s) to stream data to: <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> and <code class="docutils literal notranslate"><span class="pre">--scope</span></code>.
-The two are mutually exclusive.</p>
+The two can be combined, in which case each partition is streamed to its primary replica within the given scope. <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> cannot be combined with <code class="docutils literal notranslate"><span class="pre">--scope</span> <span class="pre">node</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> (or <code class="docutils literal notranslate"><span class="pre">-pro</span></code>) option makes ScyllaDB only stream each partition to its primary replica.
 After all SSTables are uploaded to the cluster, a repair is required to replicate data to all replicas.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">--scope</span></code> parameter allows for more advanced constraining of the subset of nodes where data will be streamed:</p>
@@ -1092,7 +1092,7 @@ Before doing so, it is important to confirm that the cause of the digest mismatc
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 14 Aug 2026.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

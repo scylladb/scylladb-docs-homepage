@@ -390,7 +390,7 @@
 <p>Provides statistics about one or more tables.</p>
 <section id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Link to this heading">¶</a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tablestats [&lt;keyspace.cfname&gt;...]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool tablestats [(-i | --ignore)] [(-H | --human-readable)] [(-F | --format) &lt;format&gt;] [&lt;keyspace.cfname&gt;...]</span>
 </pre></div>
 </div>
 <p>Typically, the keyspace and cfname are separated by a dot character. However, if either of them contains a dot, you can
@@ -406,49 +406,63 @@ the slash refers to a keyspace. For example:</p>
 </div>
 <p>If you don’t add <code class="docutils literal notranslate"><span class="pre">/</span></code>, nodetool will assume that “my” is the keyspace and “keyspace” is the cfname.</p>
 </section>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-i</span></code> or <code class="docutils literal notranslate"><span class="pre">--ignore</span></code> - Ignore the listed tables/keyspaces and display all the remaining ones.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-H</span></code> or <code class="docutils literal notranslate"><span class="pre">--human-readable</span></code> - Display bytes in human readable form, i.e. KiB, MiB, GiB, TiB.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-F</span></code> or <code class="docutils literal notranslate"><span class="pre">--format</span></code> - Output format: <code class="docutils literal notranslate"><span class="pre">plain</span></code> (default), <code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">yaml</span></code>.</p></li>
+</ul>
+</section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>tablestats
 </pre></div>
 </div>
 <p>Example output:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Keyspace:<span class="w"> </span>keyspace1
-Read<span class="w"> </span>Count:<span class="w"> </span><span class="m">0</span>
-Read<span class="w"> </span>Latency:<span class="w"> </span>NaN<span class="w"> </span>ms.
-Write<span class="w"> </span>Count:<span class="w"> </span><span class="m">41656</span>
-Write<span class="w"> </span>Latency:<span class="w"> </span><span class="m">0</span>.016199467063568274<span class="w"> </span>ms.
-Pending<span class="w"> </span>Flushes:<span class="w"> </span><span class="m">0</span>
-Table:<span class="w"> </span>standard1
-SSTable<span class="w"> </span>count:<span class="w"> </span><span class="m">17</span>
-SSTables<span class="w"> </span><span class="k">in</span><span class="w"> </span>each<span class="w"> </span>level:<span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="o">]</span>
-Space<span class="w"> </span>used<span class="w"> </span><span class="o">(</span>live<span class="o">)</span>:<span class="w"> </span><span class="m">28331544</span>
-Space<span class="w"> </span>used<span class="w"> </span><span class="o">(</span>total<span class="o">)</span>:<span class="w"> </span><span class="m">38060888</span>
-Space<span class="w"> </span>used<span class="w"> </span>by<span class="w"> </span>snapshots<span class="w"> </span><span class="o">(</span>total<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>
-Off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used<span class="w"> </span><span class="o">(</span>total<span class="o">)</span>:<span class="w"> </span><span class="m">5505072</span>
-SSTable<span class="w"> </span>Compression<span class="w"> </span>Ratio:<span class="w"> </span><span class="m">0</span>.0
-Number<span class="w"> </span>of<span class="w"> </span>partitions<span class="w"> </span><span class="o">(</span>estimate<span class="o">)</span>:<span class="w"> </span><span class="m">26829</span>
-Memtable<span class="w"> </span>cell<span class="w"> </span>count:<span class="w"> </span><span class="m">4868</span>
-Memtable<span class="w"> </span>data<span class="w"> </span>size:<span class="w"> </span><span class="m">4128083</span>
-Memtable<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">4980736</span>
-Memtable<span class="w"> </span>switch<span class="w"> </span>count:<span class="w"> </span><span class="m">0</span>
-Local<span class="w"> </span><span class="nb">read</span><span class="w"> </span>count:<span class="w"> </span><span class="m">0</span>
-Local<span class="w"> </span><span class="nb">read</span><span class="w"> </span>latency:<span class="w"> </span>NaN<span class="w"> </span>ms
-Local<span class="w"> </span>write<span class="w"> </span>count:<span class="w"> </span><span class="m">41656</span>
-Local<span class="w"> </span>write<span class="w"> </span>latency:<span class="w"> </span><span class="m">0</span>.014<span class="w"> </span>ms
-Pending<span class="w"> </span>flushes:<span class="w"> </span><span class="m">0</span>
-Bloom<span class="w"> </span>filter<span class="w"> </span><span class="nb">false</span><span class="w"> </span>positives:<span class="w"> </span><span class="m">0</span>
-Bloom<span class="w"> </span>filter<span class="w"> </span><span class="nb">false</span><span class="w"> </span>ratio:<span class="w"> </span><span class="m">0</span>.00000
-Bloom<span class="w"> </span>filter<span class="w"> </span>space<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>
-Bloom<span class="w"> </span>filter<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">524336</span>
-Index<span class="w"> </span>summary<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>
-Compression<span class="w"> </span>metadata<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>
-Compacted<span class="w"> </span>partition<span class="w"> </span>minimum<span class="w"> </span>bytes:<span class="w"> </span><span class="m">259</span>
-Compacted<span class="w"> </span>partition<span class="w"> </span>maximum<span class="w"> </span>bytes:<span class="w"> </span><span class="m">310</span>
-Compacted<span class="w"> </span>partition<span class="w"> </span>mean<span class="w"> </span>bytes:<span class="w"> </span><span class="m">310</span>
-Average<span class="w"> </span>live<span class="w"> </span>cells<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>.0
-Maximum<span class="w"> </span>live<span class="w"> </span>cells<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>.0
-Average<span class="w"> </span>tombstones<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>.0
-Maximum<span class="w"> </span>tombstones<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>.0
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Total<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>tables:<span class="w"> </span><span class="m">1</span>
+----------------
+Keyspace<span class="w"> </span>:<span class="w"> </span>keyspace1
+<span class="w">    </span>Read<span class="w"> </span>Count:<span class="w"> </span><span class="m">0</span>
+<span class="w">    </span>Read<span class="w"> </span>Latency:<span class="w"> </span>NAN<span class="w"> </span>ms
+<span class="w">    </span>Write<span class="w"> </span>Count:<span class="w"> </span><span class="m">41656</span>
+<span class="w">    </span>Write<span class="w"> </span>Latency:<span class="w"> </span><span class="m">1</span>.619946706356827E-02<span class="w"> </span>ms
+<span class="w">    </span>Pending<span class="w"> </span>Flushes:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Table:<span class="w"> </span>standard1
+<span class="w">        </span>SSTable<span class="w"> </span>count:<span class="w"> </span><span class="m">17</span>
+<span class="w">        </span>SSTables<span class="w"> </span><span class="k">in</span><span class="w"> </span>each<span class="w"> </span>level:<span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="o">]</span>
+<span class="w">        </span>Space<span class="w"> </span>used<span class="w"> </span><span class="o">(</span>live<span class="o">)</span>:<span class="w"> </span><span class="m">28331544</span>
+<span class="w">        </span>Space<span class="w"> </span>used<span class="w"> </span><span class="o">(</span>total<span class="o">)</span>:<span class="w"> </span><span class="m">38060888</span>
+<span class="w">        </span>Space<span class="w"> </span>used<span class="w"> </span>by<span class="w"> </span>snapshots<span class="w"> </span><span class="o">(</span>total<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used<span class="w"> </span><span class="o">(</span>total<span class="o">)</span>:<span class="w"> </span><span class="m">5505072</span>
+<span class="w">        </span>SSTable<span class="w"> </span>Compression<span class="w"> </span>Ratio:<span class="w"> </span><span class="m">0</span>.00
+<span class="w">        </span>Number<span class="w"> </span>of<span class="w"> </span>partitions<span class="w"> </span><span class="o">(</span>estimate<span class="o">)</span>:<span class="w"> </span><span class="m">26829</span>
+<span class="w">        </span>Memtable<span class="w"> </span>cell<span class="w"> </span>count:<span class="w"> </span><span class="m">4868</span>
+<span class="w">        </span>Memtable<span class="w"> </span>data<span class="w"> </span>size:<span class="w"> </span><span class="m">4128083</span>
+<span class="w">        </span>Memtable<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">4980736</span>
+<span class="w">        </span>Memtable<span class="w"> </span>switch<span class="w"> </span>count:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Local<span class="w"> </span><span class="nb">read</span><span class="w"> </span>count:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Local<span class="w"> </span><span class="nb">read</span><span class="w"> </span>latency:<span class="w"> </span>nan<span class="w"> </span>ms
+<span class="w">        </span>Local<span class="w"> </span>write<span class="w"> </span>count:<span class="w"> </span><span class="m">41656</span>
+<span class="w">        </span>Local<span class="w"> </span>write<span class="w"> </span>latency:<span class="w"> </span><span class="m">0</span>.014<span class="w"> </span>ms
+<span class="w">        </span>Pending<span class="w"> </span>flushes:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Percent<span class="w"> </span>repaired:<span class="w"> </span><span class="m">0</span>.0
+<span class="w">        </span>Bloom<span class="w"> </span>filter<span class="w"> </span><span class="nb">false</span><span class="w"> </span>positives:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Bloom<span class="w"> </span>filter<span class="w"> </span><span class="nb">false</span><span class="w"> </span>ratio:<span class="w"> </span><span class="m">0</span>.00000
+<span class="w">        </span>Bloom<span class="w"> </span>filter<span class="w"> </span>space<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Bloom<span class="w"> </span>filter<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">524336</span>
+<span class="w">        </span>Index<span class="w"> </span>summary<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Compression<span class="w"> </span>metadata<span class="w"> </span>off<span class="w"> </span>heap<span class="w"> </span>memory<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Compacted<span class="w"> </span>partition<span class="w"> </span>minimum<span class="w"> </span>bytes:<span class="w"> </span><span class="m">259</span>
+<span class="w">        </span>Compacted<span class="w"> </span>partition<span class="w"> </span>maximum<span class="w"> </span>bytes:<span class="w"> </span><span class="m">310</span>
+<span class="w">        </span>Compacted<span class="w"> </span>partition<span class="w"> </span>mean<span class="w"> </span>bytes:<span class="w"> </span><span class="m">310</span>
+<span class="w">        </span>Average<span class="w"> </span>live<span class="w"> </span>cells<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>.0
+<span class="w">        </span>Maximum<span class="w"> </span>live<span class="w"> </span>cells<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Average<span class="w"> </span>tombstones<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>.0
+<span class="w">        </span>Maximum<span class="w"> </span>tombstones<span class="w"> </span>per<span class="w"> </span>slice<span class="w"> </span><span class="o">(</span>last<span class="w"> </span>five<span class="w"> </span>minutes<span class="o">)</span>:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Dropped<span class="w"> </span>Mutations:<span class="w"> </span><span class="m">0</span>
+
+----------------
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -549,13 +563,13 @@ Maximum<span class="w"> </span>tombstones<span class="w"> </span>per<span class=
 <td><p>Off heap memory used for metadata compression</p></td>
 </tr>
 <tr class="row-even"><td><p>Compacted partition minimum bytes</p></td>
-<td><p>Minimum bytes used for partition compression</p></td>
+<td><p>Size of the smallest partition, in bytes</p></td>
 </tr>
 <tr class="row-odd"><td><p>Compacted partition maximum bytes</p></td>
-<td><p>Maximum bytes used for partition compression</p></td>
+<td><p>Size of the largest partition, in bytes</p></td>
 </tr>
 <tr class="row-even"><td><p>Compacted partition mean bytes</p></td>
-<td><p>Mean bytes used for partition compression</p></td>
+<td><p>Mean partition size, in bytes</p></td>
 </tr>
 <tr class="row-odd"><td><p>Average live cells per slice (last five minutes)</p></td>
 <td><p>Average live cells per slice</p></td>
@@ -697,6 +711,7 @@ Maximum<span class="w"> </span>tombstones<span class="w"> </span>per<span class=
             <ul>
 <li><a class="reference internal" href="#">Nodetool tablestats</a><ul>
 <li><a class="reference internal" href="#syntax">Syntax</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
@@ -1192,7 +1207,7 @@ Maximum<span class="w"> </span>tombstones<span class="w"> </span>per<span class=
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jul 2022.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

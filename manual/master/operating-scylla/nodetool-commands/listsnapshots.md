@@ -1,7 +1,7 @@
 # Nodetool listsnapshots
 
 **listsnapshots** - Lists all the snapshots along with the size on disk and true size.
-Dropped tables (column family) will not be part of the `listsnapshots`.
+Snapshots of dropped tables (for example, the automatic snapshot taken on `DROP TABLE`) are also listed.
 
 For example:
 
@@ -9,20 +9,21 @@ For example:
 nodetool listsnapshots
 
 Snapshot Details:
-Snapshot Name  Keyspace   Column Family  True Size   Size on Disk
+Snapshot name Keyspace name Column family name True size Size on disk
+5487138454987 nba           player_name        0 bytes   308.66 MiB
+2157384283120 nba           player_team        0 bytes   107.21 MiB
+4824891793663 nba           player_stats       0 bytes   41.69 MiB
 
-5487138454987  nba        player_name    0 bytes     308.66 MiB
-2157384283120  nba        player_team    0 bytes     107.21 MiB
-4824891793663  nba        player_stats   0 bytes      41.69 MiB
+Total TrueDiskSpaceUsed: 0 bytes
 ```
 
-| Parameter     | Description                                                |
-|---------------|------------------------------------------------------------|
-| Snapshot Name | Name of the snapshot                                       |
-| Keyspace      | Keyspace name                                              |
-| Column Family | Column Family (table) name                                 |
-| True Size     | Total size of all SSTables which are not backed up to disk |
-| Size on Disk  | Total size of the snapshot on disk                         |
+| Parameter          | Description                                                                                                                       |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Snapshot name      | Name of the snapshot                                                                                                              |
+| Keyspace name      | Keyspace name                                                                                                                     |
+| Column family name | Column Family (table) name                                                                                                        |
+| True size          | Total size of the snapshot files that are not shared with the table’s current SSTables, i.e. disk space used only by the snapshot |
+| Size on disk       | Total size of the snapshot on disk                                                                                                |
 
 For example:
 

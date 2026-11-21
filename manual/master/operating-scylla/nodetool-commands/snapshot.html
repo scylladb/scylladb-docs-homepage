@@ -396,10 +396,10 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span><span class="o">[(</span>-h<span class="w"> </span>&lt;host&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--host<span class="w"> </span>&lt;host&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[(</span>-p<span class="w"> </span>&lt;port&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--port<span class="w"> </span>&lt;port&gt;<span class="o">)]</span>
 <span class="w">     </span><span class="o">[(</span>-pp<span class="w"> </span><span class="p">|</span><span class="w"> </span>--print-port<span class="o">)]</span><span class="w"> </span><span class="o">[(</span>-pw<span class="w"> </span>&lt;password&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--password<span class="w"> </span>&lt;password&gt;<span class="o">)]</span>
 <span class="w">     </span><span class="o">[(</span>-pwf<span class="w"> </span>&lt;passwordFilePath&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--password-file<span class="w"> </span>&lt;passwordFilePath&gt;<span class="o">)]</span>
-<span class="w">     </span><span class="o">[(</span>-u<span class="w"> </span>&lt;username&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--username<span class="w"> </span>&lt;username&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[</span>cluster<span class="o">]</span><span class="w"> </span>snapshot
+<span class="w">     </span><span class="o">[(</span>-u<span class="w"> </span>&lt;username&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--username<span class="w"> </span>&lt;username&gt;<span class="o">)]</span><span class="w"> </span>snapshot
 <span class="w">     </span><span class="o">[(</span>-cf<span class="w"> </span>&lt;table&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--column-family<span class="w"> </span>&lt;table&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--table<span class="w"> </span>&lt;table&gt;<span class="o">)]</span>
 <span class="w">     </span><span class="o">[(</span>-kc<span class="w"> </span>&lt;kclist&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--kc.list<span class="w"> </span>&lt;kclist&gt;<span class="o">)]</span>
-<span class="w">     </span><span class="o">[(</span>-sf<span class="w"> </span><span class="p">|</span><span class="w"> </span>--skip-flush<span class="o">)]</span><span class="w"> </span><span class="o">[(</span>-t<span class="w"> </span>&lt;tag&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--tag<span class="w"> </span>&lt;tag&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[</span>--ttl<span class="w"> </span>&lt;ttl&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--<span class="o">]</span><span class="w"> </span><span class="o">[</span>&lt;keyspaces...&gt;<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span>--skip-flush<span class="o">]</span><span class="w"> </span><span class="o">[(</span>-t<span class="w"> </span>&lt;tag&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--tag<span class="w"> </span>&lt;tag&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[</span>--ttl<span class="w"> </span>&lt;ttl&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--<span class="o">]</span><span class="w"> </span><span class="o">[</span>&lt;keyspaces...&gt;<span class="o">]</span>
 </pre></div>
 </div>
 </section>
@@ -421,12 +421,12 @@ the name of the materialized view backing the index should be used.</p></td>
 <td><p>Node hostname or ip address</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-kc</span> <span class="pre">&lt;ktlist&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">--kc.list</span> <span class="pre">&lt;ktlist&gt;</span></code></p></td>
-<td><p>The list of Keyspaces to take snapshot</p></td>
+<td><p>A comma-separated list of keyspaces to snapshot, or a single <code class="docutils literal notranslate"><span class="pre">&lt;keyspace&gt;.&lt;table&gt;</span></code> pair</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">&lt;port&gt;</span></code> / <code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">&lt;port&gt;</span></code></p></td>
 <td><p>The port of the REST API of the ScyllaDB node.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-sf</span></code> / <code class="docutils literal notranslate"><span class="pre">--skip-flush</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--skip-flush</span></code></p></td>
 <td><p>Do not flush memtables before snapshotting (snapshot will not contain unflushed data)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">&lt;tag&gt;</span></code> / <code class="docutils literal notranslate"><span class="pre">--tag</span> <span class="pre">&lt;tag&gt;</span></code></p></td>
@@ -442,31 +442,35 @@ Missing TTL, or 0, means no TTL</p></td>
 <p><code class="docutils literal notranslate"><span class="pre">--</span></code> This option can be used to separate command-line options from the list of argument, (useful when arguments might be mistaken for command-line options.</p>
 <p><code class="docutils literal notranslate"><span class="pre">[&lt;keyspaces...&gt;]</span></code> List of keyspaces. By default, all keyspaces.</p>
 <p>The ‘cluster snapshot’ version of this command will issue the snapshot on all nodes in the cluster, whereas
-the non-cluster version only operates on the destination node.</p>
+the non-cluster version only operates on the destination node. The ‘cluster snapshot’ version supports only the
+<code class="docutils literal notranslate"><span class="pre">--table</span></code> and <code class="docutils literal notranslate"><span class="pre">-t</span></code>/<code class="docutils literal notranslate"><span class="pre">--tag</span></code> options and the list of keyspaces:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>cluster<span class="w"> </span>snapshot<span class="w"> </span><span class="o">[</span>--table<span class="w"> </span>&lt;table&gt;<span class="o">]</span><span class="w"> </span><span class="o">[(</span>-t<span class="w"> </span>&lt;tag&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>--tag<span class="w"> </span>&lt;tag&gt;<span class="o">)]</span><span class="w"> </span><span class="o">[</span>&lt;keyspaces...&gt;<span class="o">]</span>
+</pre></div>
+</div>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
 <p>Snapshot <strong>all</strong> the keyspaces</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>snapshot
-Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>all<span class="w"> </span>keyspaces<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564577645291</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false<span class="o">}</span>
+Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>all<span class="w"> </span>keyspaces<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564577645291</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false,<span class="w"> </span><span class="nv">ttl</span><span class="o">=</span><span class="m">0</span><span class="o">}</span>
 Snapshot<span class="w"> </span>directory:<span class="w"> </span><span class="m">1564577645291</span>
 </pre></div>
 </div>
 <p>Snapshot <strong>a</strong> keyspace (mykeyspace)</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>snapshot<span class="w"> </span>mykeyspace<span class="p">;</span>
-Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>mykeyspace<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564577611409</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false<span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>snapshot<span class="w"> </span>mykeyspace
+Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>mykeyspace<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564577611409</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false,<span class="w"> </span><span class="nv">ttl</span><span class="o">=</span><span class="m">0</span><span class="o">}</span>
 Snapshot<span class="w"> </span>directory:<span class="w"> </span><span class="m">1564577611409</span>
 </pre></div>
 </div>
 <p>Snapshot a <strong>list</strong> of keyspaces</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;nodetool<span class="w"> </span>snapshot<span class="w"> </span>-kc<span class="w"> </span>mykeyspace,yourkeyspace
-Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>mykeyspace,yourkeyspace<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564639559884</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false<span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>snapshot<span class="w"> </span>-kc<span class="w"> </span>mykeyspace,yourkeyspace
+Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>mykeyspace,yourkeyspace<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564639559884</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false,<span class="w"> </span><span class="nv">ttl</span><span class="o">=</span><span class="m">0</span><span class="o">}</span>
 Snapshot<span class="w"> </span>directory:<span class="w"> </span><span class="m">1564639559884</span>
 </pre></div>
 </div>
 <p>Snapshot <strong>a</strong> table (heartrate)</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>snapshot<span class="w"> </span>--table<span class="w"> </span>heartrate<span class="w"> </span>mykeyspace<span class="p">;</span>
-Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>mykeyspace<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564577586524</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false<span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>snapshot<span class="w"> </span>--table<span class="w"> </span>heartrate<span class="w"> </span>mykeyspace
+Requested<span class="w"> </span>creating<span class="w"> </span>snapshot<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">[</span>mykeyspace<span class="o">]</span><span class="w"> </span>with<span class="w"> </span>snapshot<span class="w"> </span>name<span class="w"> </span><span class="o">[</span><span class="m">1564577586524</span><span class="o">]</span><span class="w"> </span>and<span class="w"> </span>options<span class="w"> </span><span class="o">{</span><span class="nv">skipFlush</span><span class="o">=</span>false,<span class="w"> </span><span class="nv">ttl</span><span class="o">=</span><span class="m">0</span><span class="o">}</span>
 Snapshot<span class="w"> </span>directory:<span class="w"> </span><span class="m">1564577586524</span>
 </pre></div>
 </div>
@@ -478,7 +482,7 @@ Snapshot<span class="w"> </span>directory:<span class="w"> </span><span class="m
 <span class="m">1564577586524</span><span class="w">  </span><span class="m">1564577611409</span><span class="w">  </span><span class="m">1564577645291</span>
 </pre></div>
 </div>
-<p>Each of the snapshots is a <strong>hardlink</strong> to to the SSTable directory.</p>
+<p>Each of the snapshots is a <strong>hardlink</strong> to the SSTable directory.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>ls<span class="w"> </span>-1a<span class="w"> </span>/var/lib/scylla/data/mykeyspace/heartrate-07669030b39211e9a057000000000000/snapshots/1564577586524
 la-1-big-CompressionInfo.db
 la-1-big-Data.db
@@ -1128,7 +1132,7 @@ manifest.json
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Jun 2026.
+                        Last updated on 17 Nov 2026.
                     
                 </div>
             

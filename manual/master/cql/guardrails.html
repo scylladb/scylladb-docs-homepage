@@ -586,6 +586,9 @@ for affected writes. Enable this guardrail selectively on tables where the
 protection from large data shapes is worth the additional write-path overhead.</p>
 <p>Hard-limit violations reject the write. Hard-limit failures are
 returned to the client as an <code class="docutils literal notranslate"><span class="pre">InvalidRequestException</span></code>.</p>
+<p>A hint for a write that a replica rejects is discarded instead of being
+retried. If other replicas accepted the write, repair copies it to the
+replica that rejected it.</p>
 <p>Soft-limit violations are logged by the <code class="docutils literal notranslate"><span class="pre">large_data</span></code> logger. If
 <code class="docutils literal notranslate"><span class="pre">large_data_cql_warnings</span></code> is enabled, ScyllaDB also returns a CQL protocol
 warning to the client. The warning identifies the violated category, for
@@ -1393,7 +1396,7 @@ applications during a migration). For details on the <code class="docutils liter
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 Oct 2026.
+                        Last updated on 02 Nov 2026.
                     
                 </div>
             

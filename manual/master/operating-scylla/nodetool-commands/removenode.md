@@ -48,8 +48,6 @@ To only mark the node as permanently down without doing actual removal, use [nod
 nodetool excludenode <Host ID of the node>
 ```
 
-<a id="removenode-ignore-dead-nodes"></a>
-
 It’s allowed to invoke `nodetool removenode` on multiple nodes in parallel. This will be faster than doing
 it sequentially if there is significant amount of data in tablet-based keyspaces, because
 tablets which belong to removed nodes will be rebuilt in parallel. Node removal first migrates tablets to new
@@ -60,6 +58,8 @@ those from other removenode operations.
 Removenode which is still in the tablet rebuild phase can be canceled using Task Manager API.
 Tablets which are already rebuilt will remain on their new replicas.
 See [Task manager](https://docs.scylladb.com/manual/master/operating-scylla/admin-tools/task-manager.md).
+
+<a id="removenode-ignore-dead-nodes"></a>
 
 ## Ignoring Dead Nodes
 

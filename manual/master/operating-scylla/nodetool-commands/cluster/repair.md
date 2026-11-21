@@ -29,7 +29,7 @@ ScyllaDB nodetool cluster repair command supports the following options:
   For example:
   ```default
   nodetool cluster repair -dc US_DC
-  nodetool cluster repair --in-dc US_DC, EU_DC
+  nodetool cluster repair --in-dc US_DC,EU_DC
   ```
 - `-hosts` `--in-hosts` syncs the data only between a list of nodes, using host ID.
 
@@ -44,7 +44,7 @@ ScyllaDB nodetool cluster repair command supports the following options:
 - `--tablet-tokens` selects which tablets to repair. When the listed token belongs to a tablet, the whole tablet that owns the token will be repaired. By default, all tablets are repaired.
 
   #### WARNING
-  this command leaves part of the data subset (on nodes that are *not* listed) out of sync.
+  this command leaves the data of tablets that are *not* selected out of sync.
 
   For example:
   ```default

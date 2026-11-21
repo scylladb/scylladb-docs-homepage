@@ -3,7 +3,11 @@
 **status** - This command prints the cluster information for a single keyspace or all keyspaces.
 
 The keyspace argument is required to calculate effective ownership information (`Owns` column).
-For tablet keyspaces, a table is also required for effective ownership.
+For tablet keyspaces, a table is also required for effective ownership and for the token count (`Tokens` column).
+
+Syntax: `nodetool status [(-r | --resolve-ip)] [<keyspace> [<table>]]`
+
+* `-r` or `--resolve-ip` - Show node domain names instead of IP addresses.
 
 For example:
 
@@ -32,7 +36,7 @@ XN  127.0.0.4  149.07 MiB  256     32.3%             dd961642-c7c6-4962-9f5a-ea7
 | State       | `N` - Normal<br/><br/>`L` - Leaving<br/><br/>`J` - Joining<br/><br/>`M` - Moving                                                                                                                                                                 |
 | Address     | The IP address of the node.                                                                                                                                                                                                                      |
 | Load        | The size on disk the ScyllaDB data<br/>: takes up (updates every 60 seconds).                                                                                                                                                                    |
-| Tokens      | The number of tokens per node.                                                                                                                                                                                                                   |
+| Tokens      | The number of tokens per node.<br/>For a tablet keyspace with a table specified, the number of<br/>tablets for which the node is the primary replica; `?` if<br/>no table is given.                                                              |
 | Owns        | The percentage of data owned by<br/>the node (per datacenter) multiplied by<br/>the replication factor you are using.<br/><br/>For example, if the node owns 25% of<br/>the data and the replication factor<br/>is 4, the value will equal 100%. |
 | Host ID     | The unique identifier (UUID)<br/>automatically assigned to the node.                                                                                                                                                                             |
 | Rack        | The name of the rack.                                                                                                                                                                                                                            |

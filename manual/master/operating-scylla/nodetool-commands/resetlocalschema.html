@@ -387,15 +387,9 @@
 
                     <section id="nodetool-resetlocalschema">
 <h1>Nodetool resetlocalschema<a class="headerlink" href="#nodetool-resetlocalschema" title="Link to this heading">¶</a></h1>
-<p>This command reloads in-memory schema objects from disk. It recalculates
-the per-node and per-table schema versions. This can help you solve some
-cases of schema version disagreement that would otherwise require a node restart.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This command cannot be used to hot-update the node’s schema from manually
-placed schema SStables. If the schema on disk doesn’t match the schema in
-memory, such reload will likely fail.</p>
-</div>
+<p>This command is no longer supported. Schema version recalculation was removed
+from ScyllaDB, and the command fails with
+<code class="docutils literal notranslate"><span class="pre">Schema</span> <span class="pre">version</span> <span class="pre">recalculation</span> <span class="pre">is</span> <span class="pre">no</span> <span class="pre">longer</span> <span class="pre">supported</span></code>.</p>
 <section id="syntax">
 <h2>Syntax<a class="headerlink" href="#syntax" title="Link to this heading">¶</a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool [(-h &lt;host&gt; | --host &lt;host&gt;)] [(-p &lt;port&gt; | --port &lt;port&gt;)]</span>
@@ -1031,7 +1025,7 @@ memory, such reload will likely fail.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 15 Jan 2024.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

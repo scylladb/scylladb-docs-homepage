@@ -388,15 +388,30 @@
                     <section id="nodetool-compactionstats">
 <h1>Nodetool compactionstats<a class="headerlink" href="#nodetool-compactionstats" title="Link to this heading">¶</a></h1>
 <p><strong>compactionstats</strong> - Displays statistics for compactions. Each row represents a running compaction.</p>
+<section id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Link to this heading">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nodetool compactionstats [(-H | --human-readable)]</span>
+</pre></div>
+</div>
+</section>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-H</span></code> or <code class="docutils literal notranslate"><span class="pre">--human-readable</span></code> - Display bytes in human readable form, i.e. KiB, MiB, GiB, TiB.</p></li>
+</ul>
 <p>For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>compactionstats
 </pre></div>
 </div>
 <p>Example output:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pending<span class="w"> </span>tasks:<span class="w"> </span><span class="m">2</span>
-compaction<span class="w"> </span><span class="nb">type</span><span class="w">  </span>keyspace<span class="w">   </span>column<span class="w"> </span>family<span class="w">   </span>completed<span class="w">      </span>total<span class="w">         </span>unit<span class="w">   </span>progress
-major<span class="w">            </span>nba<span class="w">        </span>player_name<span class="w">     </span><span class="m">5770708712</span><span class="w">     </span><span class="m">55239418023</span><span class="w">   </span>bytes<span class="w">  </span><span class="m">10</span>.11%
-minor<span class="w">            </span>nba<span class="w">        </span>player_stats<span class="w">    </span><span class="m">18569428</span><span class="w">       </span><span class="m">3610548974</span><span class="w">    </span>bytes<span class="w">  </span><span class="m">51</span>.43%
+-<span class="w"> </span>nba.player_name:<span class="w"> </span><span class="m">1</span>
+-<span class="w"> </span>nba.player_stats:<span class="w"> </span><span class="m">1</span>
+
+id<span class="w">                                   </span>compaction<span class="w"> </span><span class="nb">type</span><span class="w"> </span>keyspace<span class="w"> </span>table<span class="w">        </span>completed<span class="w">  </span>total<span class="w">       </span>unit<span class="w">  </span>progress
+9a1b2c30-5358-11e6-9d5f-000000000000<span class="w"> </span>MAJOR<span class="w">           </span>nba<span class="w">      </span>player_name<span class="w">  </span><span class="m">5770708712</span><span class="w"> </span><span class="m">55239418023</span><span class="w"> </span>bytes<span class="w"> </span><span class="m">10</span>.45%
+9a1b2c31-5358-11e6-9d5f-000000000000<span class="w"> </span>COMPACTION<span class="w">      </span>nba<span class="w">      </span>player_stats<span class="w"> </span><span class="m">18569428</span><span class="w">   </span><span class="m">3610548974</span><span class="w">  </span>bytes<span class="w"> </span><span class="m">0</span>.51%
+Active<span class="w"> </span>compaction<span class="w"> </span>remaining<span class="w"> </span><span class="nb">time</span><span class="w"> </span>:<span class="w">        </span>n/a
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -407,32 +422,39 @@ minor<span class="w">            </span>nba<span class="w">        </span>player
 </thead>
 <tbody>
 <tr class="row-even"><td><p>pending tasks</p></td>
-<td><p>Number of pending compactions</p></td>
+<td><p>Number of pending compactions, followed by the number of pending compactions per table</p></td>
 </tr>
-<tr class="row-odd"><td><p>compaction type</p></td>
+<tr class="row-odd"><td><p>id</p></td>
+<td><p>The ID of the compaction task</p></td>
+</tr>
+<tr class="row-even"><td><p>compaction type</p></td>
 <td><p>Type of compaction</p></td>
 </tr>
-<tr class="row-even"><td><p>keyspace</p></td>
+<tr class="row-odd"><td><p>keyspace</p></td>
 <td><p>The keyspace name</p></td>
 </tr>
-<tr class="row-odd"><td><p>column family (table)</p></td>
-<td><p>The column family (table) name</p></td>
+<tr class="row-even"><td><p>table</p></td>
+<td><p>The table name</p></td>
 </tr>
-<tr class="row-even"><td><p>completed</p></td>
+<tr class="row-odd"><td><p>completed</p></td>
 <td><p>Completed bytes out of the total</p></td>
 </tr>
-<tr class="row-odd"><td><p>total</p></td>
+<tr class="row-even"><td><p>total</p></td>
 <td><p>Total size of the compaction</p></td>
 </tr>
-<tr class="row-even"><td><p>unit</p></td>
+<tr class="row-odd"><td><p>unit</p></td>
 <td><p>Compaction unit type</p></td>
 </tr>
-<tr class="row-odd"><td><p>progress</p></td>
+<tr class="row-even"><td><p>progress</p></td>
 <td><p>Compaction progress %</p></td>
+</tr>
+<tr class="row-odd"><td><p>Active compaction remaining time</p></td>
+<td><p>Estimated time to finish the running compactions at the configured compaction throughput (<code class="docutils literal notranslate"><span class="pre">n/a</span></code> if unthrottled)</p></td>
 </tr>
 </tbody>
 </table>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
+</section>
 </section>
 
                 </div>
@@ -551,6 +573,18 @@ minor<span class="w">            </span>nba<span class="w">        </span>player
         
     </ul>
 
+    
+        <div class="secondary-side-nav__content">
+            <p class="topic-title">On this page</p>
+            <ul>
+<li><a class="reference internal" href="#">Nodetool compactionstats</a><ul>
+<li><a class="reference internal" href="#syntax">Syntax</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
     
 </div>
                     </div>
@@ -1040,7 +1074,7 @@ minor<span class="w">            </span>nba<span class="w">        </span>player
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 05 Jul 2022.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

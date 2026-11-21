@@ -387,8 +387,8 @@
 
                     <section id="nodetool-toppartitions">
 <h1>Nodetool toppartitions<a class="headerlink" href="#nodetool-toppartitions" title="Link to this heading">¶</a></h1>
-<p><strong>toppartitions</strong> &lt;keyspace&gt; &lt;table&gt; &lt;duration&gt; - Samples cluster writes and reads and reports the most active partitions in a specified table and time frame.</p>
-<p><strong>toppartitions</strong>  [&lt;–ks-filters ks&gt;] [&lt;–cf-filters tables&gt;] [&lt;-d duration&gt;] [&lt;-s|–capacity capacity&gt;] [&lt;-a|–samplers samplers&gt;]</p>
+<p><strong>toppartitions</strong> &lt;keyspace&gt; &lt;table&gt; &lt;duration&gt; - Samples the writes and reads on the node and reports the most active partitions in the specified table(s) and time frame.</p>
+<p><strong>toppartitions</strong> <code class="docutils literal notranslate"><span class="pre">[--ks-filters</span> <span class="pre">&lt;keyspaces&gt;]</span> <span class="pre">[--cf-filters</span> <span class="pre">&lt;tables&gt;]</span> <span class="pre">[-d|--duration</span> <span class="pre">&lt;duration&gt;]</span> <span class="pre">[-s|--capacity</span> <span class="pre">&lt;capacity&gt;]</span> <span class="pre">[-k|--size</span> <span class="pre">&lt;size&gt;]</span> <span class="pre">[-a|--samplers</span> <span class="pre">&lt;samplers&gt;]</span></code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The command needs to be run while there are writes and reads operations.</p>
@@ -407,7 +407,7 @@
 <td><p>The table name</p></td>
 </tr>
 <tr class="row-even"><td><p>duration</p></td>
-<td><p>The duration in milliseconds (requires a <code class="docutils literal notranslate"><span class="pre">-d</span></code> prefix)</p></td>
+<td><p>The duration in milliseconds. Given positionally together with keyspace and table, or with <code class="docutils literal notranslate"><span class="pre">-d</span></code>/<code class="docutils literal notranslate"><span class="pre">--duration</span></code> (default 5000) when no positional arguments are used.</p></td>
 </tr>
 <tr class="row-odd"><td><p>ks-filters</p></td>
 <td><p>List of keyspaces</p></td>
@@ -418,7 +418,10 @@
 <tr class="row-odd"><td><p>capacity</p></td>
 <td><p>The capacity of the sampler; higher values increase accuracy at the cost of memory (default 256 keys).</p></td>
 </tr>
-<tr class="row-even"><td><p>samplers</p></td>
+<tr class="row-even"><td><p>size</p></td>
+<td><p>The number of top partitions to list (default 10); must be smaller than capacity.</p></td>
+</tr>
+<tr class="row-odd"><td><p>samplers</p></td>
 <td><p>The samplers to use; <code class="docutils literal notranslate"><span class="pre">WRITES</span></code>, <code class="docutils literal notranslate"><span class="pre">READS</span></code>, or both (default).</p></td>
 </tr>
 </tbody>
@@ -436,31 +439,31 @@
 <li><p>combining lists of keyspaces and tables <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">toppartitions</span> <span class="pre">--ks-filters</span> <span class="pre">ks</span> <span class="pre">--cf-filters</span> <span class="pre">system:local</span></code></p></li>
 </ul>
 <p>Example output:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>WRITES<span class="w"> </span>Sampler:
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>READS<span class="w"> </span>Sampler:
 <span class="w">  </span>Cardinality:<span class="w"> </span>~5<span class="w"> </span><span class="o">(</span><span class="m">256</span><span class="w"> </span>capacity<span class="o">)</span>
 <span class="w">  </span>Top<span class="w"> </span><span class="m">10</span><span class="w"> </span>partitions:
-<span class="w">         </span>Partition<span class="w">                </span>Count<span class="w">       </span>+/-
-<span class="w">         </span>Russell<span class="w"> </span>Westbrook<span class="w">         </span><span class="m">100</span><span class="w">         </span><span class="m">0</span>
-<span class="w">         </span>Jermi<span class="w"> </span>Grant<span class="w">               </span><span class="m">25</span><span class="w">          </span><span class="m">0</span>
-<span class="w">         </span>Victor<span class="w"> </span>Oladipo<span class="w">            </span><span class="m">17</span><span class="w">          </span><span class="m">0</span>
-<span class="w">         </span>Andre<span class="w"> </span>Roberson<span class="w">            </span><span class="m">1</span><span class="w">           </span><span class="m">0</span>
-<span class="w">         </span>Steven<span class="w"> </span>Adams<span class="w">              </span><span class="m">1</span><span class="w">           </span><span class="m">0</span>
+<span class="w">        </span>Partition<span class="w">                               </span>Count<span class="w">       </span>+/-
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Russell<span class="w"> </span>Westbrook<span class="w">       </span><span class="m">100</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Victor<span class="w"> </span>Oladipo<span class="w">           </span><span class="m">17</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Jermi<span class="w"> </span>Grant<span class="w">              </span><span class="m">12</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Andre<span class="w"> </span>Roberson<span class="w">            </span><span class="m">5</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Steven<span class="w"> </span>Adams<span class="w">              </span><span class="m">1</span><span class="w">         </span><span class="m">0</span>
 
-READS<span class="w"> </span>Sampler:
+WRITES<span class="w"> </span>Sampler:
 <span class="w">  </span>Cardinality:<span class="w"> </span>~5<span class="w"> </span><span class="o">(</span><span class="m">256</span><span class="w"> </span>capacity<span class="o">)</span>
 <span class="w">  </span>Top<span class="w"> </span><span class="m">10</span><span class="w"> </span>partitions:
-<span class="w">         </span>Partition<span class="w">                </span>Count<span class="w">       </span>+/-
-<span class="w">         </span>Russell<span class="w"> </span>Westbrook<span class="w">         </span><span class="m">100</span><span class="w">         </span><span class="m">0</span>
-<span class="w">         </span>Victor<span class="w"> </span>Oladipo<span class="w">            </span><span class="m">17</span><span class="w">          </span><span class="m">0</span>
-<span class="w">         </span>Jermi<span class="w"> </span>Grant<span class="w">               </span><span class="m">12</span><span class="w">          </span><span class="m">0</span>
-<span class="w">         </span>Andre<span class="w"> </span>Roberson<span class="w">            </span><span class="m">5</span><span class="w">           </span><span class="m">0</span>
-<span class="w">         </span>Steven<span class="w"> </span>Adams<span class="w">              </span><span class="m">1</span><span class="w">           </span><span class="m">0</span>
+<span class="w">        </span>Partition<span class="w">                               </span>Count<span class="w">       </span>+/-
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Russell<span class="w"> </span>Westbrook<span class="w">       </span><span class="m">100</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Jermi<span class="w"> </span>Grant<span class="w">              </span><span class="m">25</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Victor<span class="w"> </span>Oladipo<span class="w">           </span><span class="m">17</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Andre<span class="w"> </span>Roberson<span class="w">            </span><span class="m">1</span><span class="w">         </span><span class="m">0</span>
+<span class="w">        </span><span class="o">(</span>nba:team_roster<span class="o">)</span><span class="w"> </span>Steven<span class="w"> </span>Adams<span class="w">              </span><span class="m">1</span><span class="w">         </span><span class="m">0</span>
 </pre></div>
 </div>
 <p>In this example, we can see that for the <code class="docutils literal notranslate"><span class="pre">Partition</span></code> with <code class="docutils literal notranslate"><span class="pre">Partition</span> <span class="pre">Key</span></code> “Russell Westbrook”, 100 writes and 100 read operations were done during the set duration.</p>
 <p>For each of the samplers (WRITES and READS in this specific example), nodetool toppartitions reports:</p>
 <ul class="simple">
-<li><p>The cardinality of the sampled operations (number of unique operations in the sample set).</p></li>
+<li><p>The cardinality of the sampled operations (number of distinct partitions sampled, bounded by the capacity).</p></li>
 <li><p>The number of partitions in a specified table that had the most traffic in a specified time period.</p></li>
 </ul>
 <section id="output">
@@ -480,12 +483,6 @@ READS<span class="w"> </span>Sampler:
 </tr>
 <tr class="row-even"><td><p>+/-</p></td>
 <td><p>The margin of error for the Count statistic</p></td>
-</tr>
-<tr class="row-odd"><td><p>Write Count</p></td>
-<td><p>The total number of writes since last boot</p></td>
-</tr>
-<tr class="row-even"><td><p>Write Latency</p></td>
-<td><p>The average read latency</p></td>
 </tr>
 </tbody>
 </table>
@@ -1127,7 +1124,7 @@ the <code class="docutils literal notranslate"><span class="pre">--capacity</spa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Jun 2026.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

@@ -389,7 +389,11 @@
 <h1>Nodetool status<a class="headerlink" href="#nodetool-status" title="Link to this heading">¶</a></h1>
 <p><strong>status</strong> - This command prints the cluster information for a single keyspace or all keyspaces.</p>
 <p>The keyspace argument is required to calculate effective ownership information (<code class="docutils literal notranslate"><span class="pre">Owns</span></code> column).
-For tablet keyspaces, a table is also required for effective ownership.</p>
+For tablet keyspaces, a table is also required for effective ownership and for the token count (<code class="docutils literal notranslate"><span class="pre">Tokens</span></code> column).</p>
+<p>Syntax: <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">status</span> <span class="pre">[(-r</span> <span class="pre">|</span> <span class="pre">--resolve-ip)]</span> <span class="pre">[&lt;keyspace&gt;</span> <span class="pre">[&lt;table&gt;]]</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-r</span></code> or <code class="docutils literal notranslate"><span class="pre">--resolve-ip</span></code> - Show node domain names instead of IP addresses.</p></li>
+</ul>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">status</span> <span class="n">my_keyspace</span>
 </pre></div>
@@ -441,7 +445,10 @@ the information.</p></td>
 </td>
 </tr>
 <tr class="row-odd"><td><p>Tokens</p></td>
-<td><p>The number of tokens per node.</p></td>
+<td><p>The number of tokens per node.
+For a tablet keyspace with a table specified, the number of
+tablets for which the node is the primary replica; <code class="docutils literal notranslate"><span class="pre">?</span></code> if
+no table is given.</p></td>
 </tr>
 <tr class="row-even"><td><p>Owns</p></td>
 <td><p>The percentage of data owned by
@@ -1072,7 +1079,7 @@ See <a class="reference internal" href="excludenode.html"><span class="doc">node
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 Aug 2026.
+                        Last updated on 27 Oct 2026.
                     
                 </div>
             

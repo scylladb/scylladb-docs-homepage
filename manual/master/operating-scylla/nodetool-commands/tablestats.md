@@ -5,7 +5,7 @@ Provides statistics about one or more tables.
 ## Syntax
 
 ```console
-nodetool tablestats [<keyspace.cfname>...]
+nodetool tablestats [(-i | --ignore)] [(-H | --human-readable)] [(-F | --format) <format>] [<keyspace.cfname>...]
 ```
 
 Typically, the keyspace and cfname are separated by a dot character. However, if either of them contains a dot, you can
@@ -25,6 +25,12 @@ nodetool tablestats my.keyspace/
 
 If you don’t add `/`, nodetool will assume that “my” is the keyspace and “keyspace” is the cfname.
 
+## Options
+
+* `-i` or `--ignore` - Ignore the listed tables/keyspaces and display all the remaining ones.
+* `-H` or `--human-readable` - Display bytes in human readable form, i.e. KiB, MiB, GiB, TiB.
+* `-F` or `--format` - Output format: `plain` (default), `json` or `yaml`.
+
 ## Example
 
 ```shell
@@ -34,43 +40,49 @@ nodetool tablestats
 Example output:
 
 ```shell
-Keyspace: keyspace1
-Read Count: 0
-Read Latency: NaN ms.
-Write Count: 41656
-Write Latency: 0.016199467063568274 ms.
-Pending Flushes: 0
-Table: standard1
-SSTable count: 17
-SSTables in each level: [ ]
-Space used (live): 28331544
-Space used (total): 38060888
-Space used by snapshots (total): 0
-Off heap memory used (total): 5505072
-SSTable Compression Ratio: 0.0
-Number of partitions (estimate): 26829
-Memtable cell count: 4868
-Memtable data size: 4128083
-Memtable off heap memory used: 4980736
-Memtable switch count: 0
-Local read count: 0
-Local read latency: NaN ms
-Local write count: 41656
-Local write latency: 0.014 ms
-Pending flushes: 0
-Bloom filter false positives: 0
-Bloom filter false ratio: 0.00000
-Bloom filter space used: 0
-Bloom filter off heap memory used: 524336
-Index summary off heap memory used: 0
-Compression metadata off heap memory used: 0
-Compacted partition minimum bytes: 259
-Compacted partition maximum bytes: 310
-Compacted partition mean bytes: 310
-Average live cells per slice (last five minutes): 0.0
-Maximum live cells per slice (last five minutes): 0.0
-Average tombstones per slice (last five minutes): 0.0
-Maximum tombstones per slice (last five minutes): 0.0
+Total number of tables: 1
+----------------
+Keyspace : keyspace1
+    Read Count: 0
+    Read Latency: NAN ms
+    Write Count: 41656
+    Write Latency: 1.619946706356827E-02 ms
+    Pending Flushes: 0
+        Table: standard1
+        SSTable count: 17
+        SSTables in each level: [ ]
+        Space used (live): 28331544
+        Space used (total): 38060888
+        Space used by snapshots (total): 0
+        Off heap memory used (total): 5505072
+        SSTable Compression Ratio: 0.00
+        Number of partitions (estimate): 26829
+        Memtable cell count: 4868
+        Memtable data size: 4128083
+        Memtable off heap memory used: 4980736
+        Memtable switch count: 0
+        Local read count: 0
+        Local read latency: nan ms
+        Local write count: 41656
+        Local write latency: 0.014 ms
+        Pending flushes: 0
+        Percent repaired: 0.0
+        Bloom filter false positives: 0
+        Bloom filter false ratio: 0.00000
+        Bloom filter space used: 0
+        Bloom filter off heap memory used: 524336
+        Index summary off heap memory used: 0
+        Compression metadata off heap memory used: 0
+        Compacted partition minimum bytes: 259
+        Compacted partition maximum bytes: 310
+        Compacted partition mean bytes: 310
+        Average live cells per slice (last five minutes): 0.0
+        Maximum live cells per slice (last five minutes): 0
+        Average tombstones per slice (last five minutes): 0.0
+        Maximum tombstones per slice (last five minutes): 0
+        Dropped Mutations: 0
+
+----------------
 ```
 
 | Parameter                                        | Description                                                                       |
@@ -105,9 +117,9 @@ Maximum tombstones per slice (last five minutes): 0.0
 | Bloom filter off heap memory used                | In scylla all memory is off heap                                                  |
 | Index summary off heap memory used               | Memory taken by the Index summary                                                 |
 | Compression metadata off heap memory used        | Off heap memory used for metadata compression                                     |
-| Compacted partition minimum bytes                | Minimum bytes used for partition compression                                      |
-| Compacted partition maximum bytes                | Maximum bytes used for partition compression                                      |
-| Compacted partition mean bytes                   | Mean bytes used for partition compression                                         |
+| Compacted partition minimum bytes                | Size of the smallest partition, in bytes                                          |
+| Compacted partition maximum bytes                | Size of the largest partition, in bytes                                           |
+| Compacted partition mean bytes                   | Mean partition size, in bytes                                                     |
 | Average live cells per slice (last five minutes) | Average live cells per slice                                                      |
 | Maximum live cells per slice (last five minutes) | Maximum live cells per slice                                                      |
 | Average tombstones per slice (last five minutes) | Average tombstones per slice                                                      |
