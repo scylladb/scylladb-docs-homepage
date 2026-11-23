@@ -24,14 +24,17 @@ ScyllaDB follows the MAJOR.MINOR.PATCH `semantic versioning <https://semver.org/
 LTS vs. Feature Releases
 ----------------------------
 
-Long-Term Support (LTS)
+Long-Term Support (LTS) releases:
 
 * Released approximately once a year.
 * Two last LTS versions are supported.
 
-Feature releases:
+Feature releases, also called Short-Term Support (STS) releases:
 
 * 2-4 feature releases per year.
+* Supported for a shorter period than LTS releases: only the last two
+  *major.minor* versions are supported (see :ref:`version-support-policy`).
+  An STS release reaches end of life when two newer releases are available.
 
 You can only use LTS releases (upgrading to the latest patch release for
 the greatest stability) or follow the feature and LTS releases for the latest
