@@ -836,7 +836,7 @@ following in KMIP host(s) section:</p>
 <span class="w">       </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;password&gt; (optional)</span>
 <span class="w">       </span><span class="nt">max_command_retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;int&gt; (optional; default 3)</span>
 <span class="w">       </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt;</span>
-<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt;</span>
+<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt;</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -857,8 +857,8 @@ but you can customize it with <code class="docutils literal notranslate"><span c
 <li><p><code class="docutils literal notranslate"><span class="pre">username</span></code> - The KMIP server user name.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">password</span></code> - The KMIP server password.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_command_retries</span></code> - The number of attempts to connect to the KMIP server before trying the next host in the list.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from server. Default is 30s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 100s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 100s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 30s.</p></li>
 </ul>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kmip_hosts</span><span class="p">:</span>
@@ -925,7 +925,7 @@ following in KMS host(s) section:</p>
 <span class="w">       </span><span class="nt">truststore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;truststore for SSL connection&gt; (optional)</span>
 <span class="w">       </span><span class="nt">priority_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;KMS TLS priority string&gt; (optional)</span>
 <span class="w">       </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt;</span>
-<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt;</span>
+<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt;</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -948,8 +948,8 @@ read the key and encrypt data using that key. This parameter is required.</p></l
 <li><p><code class="docutils literal notranslate"><span class="pre">keyfile</span></code> - The name of the key for the certificate. It is generated together with the certificate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">truststore</span></code> - The location and key for the truststore to present to the KMS server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">priority_string</span></code> - The KMS TLS priority string.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from server. Default is 600s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 300s.</p></li>
 </ul>
 <p>Examples:</p>
 <div class="sphinx-tabs docutils container">
@@ -1064,7 +1064,7 @@ following in KMS host(s) section:</p>
 <span class="w">       </span><span class="nt">truststore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;truststore for SSL connection&gt; (optional)</span>
 <span class="w">       </span><span class="nt">priority_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;KMS TLS priority string&gt; (optional)</span>
 <span class="w">       </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt;</span>
-<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt;</span>
+<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt;</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -1081,8 +1081,8 @@ to encrypt and decrypt data using that key. This parameter is required.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">keyfile</span></code> - The name of the key for the certificate. It is generated together with the certificate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">truststore</span></code> - The location and key for the truststore to present to the KMS server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">priority_string</span></code> - The KMS TLS priority string.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from server. Default is 600s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 300s.</p></li>
 </ul>
 <p>Examples:</p>
 <div class="sphinx-tabs docutils container">
@@ -1193,7 +1193,7 @@ following in the Azure host(s) section:</p>
 <span class="w">      </span><span class="nt">truststore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;PEM file with CA certificates for TLS&gt; (optional)</span>
 <span class="w">      </span><span class="nt">priority_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;TLS priority string&gt; (optional)</span>
 <span class="w">      </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt; (optional)</span>
-<span class="w">      </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt; (optional)</span>
+<span class="w">      </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt; (optional)</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -1207,8 +1207,8 @@ following in the Azure host(s) section:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">master_key</span></code> - The &lt;vaultname&gt;/&lt;keyname&gt; of your key. This parameter is required.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">truststore</span></code> - Path to a PEM file with CA certificates to validate the server’s TLS certificate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">priority_string</span></code> - The TLS priority string for TLS handshakes.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from Azure Key Vault. Default is 600s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which the cache is checked for expired entries. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 300s.</p></li>
 </ul>
 <p>Example:</p>
 <div class="sphinx-tabs docutils container">
@@ -2323,9 +2323,11 @@ encryption operations when refreshing its key cache. However, ScyllaDB
 will still be able to use this key to decrypt old data.</p></li>
 <li><p>Clear the old key from the key cache:</p>
 <ul>
-<li><p>You can choose to wait for the KMIP host’s <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>
-interval (default is 30 seconds), after which ScyllaDB will
-automatically clear the key cache, or</p></li>
+<li><p>You can wait for the key cache to pick up the new key. Cached keys
+are reloaded in the background between one and two
+<code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> periods after they were loaded, so the new key
+is picked up within about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> (2 minutes
+with the default of 30s), or</p></li>
 <li><p>You can clear the key cache of each node manually by draining the node
 with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>
 and then restarting the scylla-server service:</p>
@@ -2367,15 +2369,15 @@ and the AWS KMS will detect and use the appropriate key version when
 decrypting old data.</p>
 <p>When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-<code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:</p>
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>). The cached data
+encryption keys are replaced on their next background reload (within
+about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:</p>
 <ol class="arabic">
 <li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>.</p></li>
 <li><p>Restart the scylla-server service to discard any cached data encryption
@@ -2407,15 +2409,15 @@ and the Google Cloud KMS will detect and use the appropriate key version
 when decrypting old data.</p>
 <p>When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-<code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:</p>
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>). The cached data
+encryption keys are replaced on their next background reload (within
+about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:</p>
 <ol class="arabic">
 <li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>.</p></li>
 <li><p>Restart the scylla-server service to discard any cached data encryption
@@ -2449,15 +2451,15 @@ SSTable and commitlog metadata, which allows it to track the exact version
 used for encryption.</p>
 <p>When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-<code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:</p>
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>). The cached data
+encryption keys are replaced on their next background reload (within
+about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:</p>
 <ol class="arabic">
 <li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>.</p></li>
 <li><p>Restart the scylla-server service to discard any cached data encryption
@@ -3149,7 +3151,7 @@ data encrypted with that key will be unreadable.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Nov 2025.
+                        Last updated on 21 Oct 2026.
                     
                 </div>
             

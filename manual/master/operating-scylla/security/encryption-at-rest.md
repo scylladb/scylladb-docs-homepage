@@ -426,7 +426,7 @@ to encrypt tables or system information, add the KMIP server information to the
           password: <password> (optional)
           max_command_retries: <int> (optional; default 3)
           key_cache_expiry: <key cache expiry period>
-          key_cache_refresh: <key cache refresh/prune period>
+          key_cache_refresh: <key cache refresh period>
    #   <name>:
    ```
 
@@ -446,8 +446,8 @@ to encrypt tables or system information, add the KMIP server information to the
    * `username` - The KMIP server user name.
    * `password` - The KMIP server password.
    * `max_command_retries` - The number of attempts to connect to the KMIP server before trying the next host in the list.
-   * `key_cache_expiry` - Key cache expiry period, after which keys will be re-requested from server. Default is 30s.
-   * `key_cache_refresh` - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 100s.
+   * `key_cache_expiry` - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 100s.
+   * `key_cache_refresh` - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of `key_cache_expiry`. Default is 30s.
 
    Example:
    ```yaml
@@ -516,7 +516,7 @@ Before configuring AWS KMS integration, ensure you have:
           truststore: <truststore for SSL connection> (optional)
           priority_string: <KMS TLS priority string> (optional)
           key_cache_expiry: <key cache expiry period>
-          key_cache_refresh: <key cache refresh/prune period>
+          key_cache_refresh: <key cache refresh period>
    #   <name>:
    ```
 
@@ -538,8 +538,8 @@ Before configuring AWS KMS integration, ensure you have:
    * `keyfile` - The name of the key for the certificate. It is generated together with the certificate.
    * `truststore` - The location and key for the truststore to present to the KMS server.
    * `priority_string` - The KMS TLS priority string.
-   * `key_cache_expiry` - Key cache expiry period, after which keys will be re-requested from server. Default is 600s.
-   * `key_cache_refresh` - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 1200s.
+   * `key_cache_expiry` - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.
+   * `key_cache_refresh` - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of `key_cache_expiry`. Default is 300s.
 
    Examples:
 
@@ -656,7 +656,7 @@ Before configuring GCP KMS integration, ensure you have:
           truststore: <truststore for SSL connection> (optional)
           priority_string: <KMS TLS priority string> (optional)
           key_cache_expiry: <key cache expiry period>
-          key_cache_refresh: <key cache refresh/prune period>
+          key_cache_refresh: <key cache refresh period>
    #   <name>:
    ```
 
@@ -672,8 +672,8 @@ Before configuring GCP KMS integration, ensure you have:
    * `keyfile` - The name of the key for the certificate. It is generated together with the certificate.
    * `truststore` - The location and key for the truststore to present to the KMS server.
    * `priority_string` - The KMS TLS priority string.
-   * `key_cache_expiry` - Key cache expiry period, after which keys will be re-requested from server. Default is 600s.
-   * `key_cache_refresh` - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 1200s.
+   * `key_cache_expiry` - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.
+   * `key_cache_refresh` - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of `key_cache_expiry`. Default is 300s.
 
    Examples:
 
@@ -782,7 +782,7 @@ but this is offered only for testing purposes.
          truststore: <PEM file with CA certificates for TLS> (optional)
          priority_string: <TLS priority string> (optional)
          key_cache_expiry: <key cache expiry period> (optional)
-         key_cache_refresh: <key cache refresh/prune period> (optional)
+         key_cache_refresh: <key cache refresh period> (optional)
    #   <name>:
    ```
 
@@ -795,8 +795,8 @@ but this is offered only for testing purposes.
    * `master_key` - The <vaultname>/<keyname> of your key. This parameter is required.
    * `truststore` - Path to a PEM file with CA certificates to validate the server’s TLS certificate.
    * `priority_string` - The TLS priority string for TLS handshakes.
-   * `key_cache_expiry` - Key cache expiry period, after which keys will be re-requested from Azure Key Vault. Default is 600s.
-   * `key_cache_refresh` - Key cache refresh period - the frequency at which the cache is checked for expired entries. Default is 1200s.
+   * `key_cache_expiry` - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.
+   * `key_cache_refresh` - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of `key_cache_expiry`. Default is 300s.
 
    Example:
 
@@ -1998,9 +1998,11 @@ KMIP Key Provider
    encryption operations when refreshing its key cache. However, ScyllaDB
    will still be able to use this key to decrypt old data.
 3. Clear the old key from the key cache:
-   * You can choose to wait for the KMIP host’s `key_cache_expiry`
-     interval (default is 30 seconds), after which ScyllaDB will
-     automatically clear the key cache, or
+   * You can wait for the key cache to pick up the new key. Cached keys
+     are reloaded in the background between one and two
+     `key_cache_refresh` periods after they were loaded, so the new key
+     is picked up within about four times `key_cache_refresh` (2 minutes
+     with the default of 30s), or
    * You can clear the key cache of each node manually by draining the node
      with [nodetool drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/drain.md)
      and then restarting the scylla-server service:
@@ -2059,15 +2061,15 @@ decrypting old data.
 
 When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-`key_cache_expiry` option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see `key_cache_refresh`). The cached data
+encryption keys are replaced on their next background reload (within
+about four times `key_cache_refresh`) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:
 
 1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/drain.md).
 2. Restart the scylla-server service to discard any cached data encryption
@@ -2119,15 +2121,15 @@ when decrypting old data.
 
 When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-`key_cache_expiry` option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see `key_cache_refresh`). The cached data
+encryption keys are replaced on their next background reload (within
+about four times `key_cache_refresh`) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:
 
 1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/drain.md).
 2. Restart the scylla-server service to discard any cached data encryption
@@ -2181,15 +2183,15 @@ used for encryption.
 
 When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-`key_cache_expiry` option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see `key_cache_refresh`). The cached data
+encryption keys are replaced on their next background reload (within
+about four times `key_cache_refresh`) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:
 
 1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/drain.md).
 2. Restart the scylla-server service to discard any cached data encryption
