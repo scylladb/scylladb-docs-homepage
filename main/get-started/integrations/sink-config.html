@@ -579,12 +579,13 @@ This is used once to enable delivery to ScyllaDB.</p>
 <section id="scylladb-consistency-level">
 <h3>scylladb.consistency.level<a class="headerlink" href="#scylladb-consistency-level" title="Link to this heading">¶</a></h3>
 <p>The requested consistency level to use when writing to ScyllaDB.
-The Consistency Level (CL) determines how many replicas in a cluster that must acknowledge read or write operations before it is considered successful.</p>
+The Consistency Level (CL) determines how many replicas in a cluster that must acknowledge read or write operations before it is considered successful.
+SERIAL and LOCAL_SERIAL apply only to conditional updates, which the connector does not write, so the connector rejects them.</p>
 <ul class="simple">
 <li><p>Type: String</p></li>
 <li><p>Importance: High</p></li>
 <li><p>Default Value: LOCAL_QUORUM</p></li>
-<li><p>Valid Values: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE</p></li>
+<li><p>Valid Values: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, LOCAL_ONE</p></li>
 </ul>
 </section>
 <section id="scylladb-deletes-enabled">
@@ -1042,7 +1043,7 @@ Since these servers are just used for the initial connection to discover the ful
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 12 Nov 2026.
+                        Last updated on 23 Nov 2026.
                     
                 </div>
             
