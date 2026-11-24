@@ -213,11 +213,12 @@ scylladb.consistency.level
 
 The requested consistency level to use when writing to ScyllaDB.
 The Consistency Level (CL) determines how many replicas in a cluster that must acknowledge read or write operations before it is considered successful.
+SERIAL and LOCAL_SERIAL apply only to conditional updates, which the connector does not write, so the connector rejects them.
 
 * Type: String
 * Importance: High
 * Default Value: LOCAL_QUORUM
-* Valid Values: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE
+* Valid Values: ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, LOCAL_ONE
 
 scylladb.deletes.enabled 
 ^^^^^^^^^^^^^^^^^^^^^^^^
