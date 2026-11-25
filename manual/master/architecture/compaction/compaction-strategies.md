@@ -69,7 +69,7 @@ For more information, see the [Compaction KB Article](https://docs.scylladb.com/
 
 ## Time-window Compaction Strategy (TWCS)
 
-Time-Window Compaction Strategy compacts SSTables within each time window using size-tiered compaction.
+Time-Window Compaction Strategy compacts SSTables within each time window using incremental compaction.
 SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
 
 #### CAUTION
@@ -120,11 +120,6 @@ STCS over ICS. See [Incremental Compaction Strategy (ICS)]() for the principles
 of operation, the benefits and the disadvantages, and
 [Incremental Compaction](https://docs.scylladb.com/manual/master/kb/compaction.md#incremental-compaction-strategy-ics) for the
 parameters to set.
-
-Note that size-tiered compaction is still used internally, per time window, by
-[Time-window Compaction Strategy (TWCS)]() and for level 0 by
-[Leveled Compaction Strategy (LCS)](). That use is unrelated to the deprecated
-`SizeTieredCompactionStrategy` class name.
 
 <a id="which-strategy-is-best"></a>
 

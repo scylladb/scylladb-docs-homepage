@@ -393,10 +393,10 @@ Snapshots of dropped tables (for example, the automatic snapshot taken on <code 
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nodetool<span class="w"> </span>listsnapshots
 
 Snapshot<span class="w"> </span>Details:
-Snapshot<span class="w"> </span>name<span class="w"> </span>Keyspace<span class="w"> </span>name<span class="w"> </span>Column<span class="w"> </span>family<span class="w"> </span>name<span class="w"> </span>True<span class="w"> </span>size<span class="w"> </span>Size<span class="w"> </span>on<span class="w"> </span>disk
-<span class="m">5487138454987</span><span class="w"> </span>nba<span class="w">           </span>player_name<span class="w">        </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">308</span>.66<span class="w"> </span>MiB
-<span class="m">2157384283120</span><span class="w"> </span>nba<span class="w">           </span>player_team<span class="w">        </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">107</span>.21<span class="w"> </span>MiB
-<span class="m">4824891793663</span><span class="w"> </span>nba<span class="w">           </span>player_stats<span class="w">       </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">41</span>.69<span class="w"> </span>MiB
+Snapshot<span class="w"> </span>name<span class="w"> </span>Keyspace<span class="w"> </span>name<span class="w"> </span>Column<span class="w"> </span>family<span class="w"> </span>name<span class="w"> </span>True<span class="w"> </span>size<span class="w"> </span>Size<span class="w"> </span>on<span class="w"> </span>disk<span class="w"> </span>Creation<span class="w"> </span><span class="nb">time</span><span class="w">        </span>Expiration<span class="w"> </span><span class="nb">time</span>
+<span class="m">5487138454987</span><span class="w"> </span>nba<span class="w">           </span>player_name<span class="w">        </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">308</span>.66<span class="w"> </span>MiB<span class="w">   </span><span class="m">2023</span>-10-25T12:18:09Z<span class="w"> </span><span class="m">2023</span>-10-26T12:18:09Z
+<span class="m">2157384283120</span><span class="w"> </span>nba<span class="w">           </span>player_team<span class="w">        </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">107</span>.21<span class="w"> </span>MiB<span class="w">   </span><span class="m">2023</span>-10-25T12:18:09Z
+<span class="m">4824891793663</span><span class="w"> </span>nba<span class="w">           </span>player_stats<span class="w">       </span><span class="m">0</span><span class="w"> </span>bytes<span class="w">   </span><span class="m">41</span>.69<span class="w"> </span>MiB<span class="w">    </span><span class="m">2023</span>-10-25T12:18:09Z
 
 Total<span class="w"> </span>TrueDiskSpaceUsed:<span class="w"> </span><span class="m">0</span><span class="w"> </span>bytes
 </pre></div>
@@ -422,6 +422,14 @@ Total<span class="w"> </span>TrueDiskSpaceUsed:<span class="w"> </span><span cla
 </tr>
 <tr class="row-even"><td><p>Size on disk</p></td>
 <td><p>Total size of the snapshot on disk</p></td>
+</tr>
+<tr class="row-odd"><td><p>Creation time</p></td>
+<td><p>The time, in UTC, at which the snapshot was taken. Empty if it was taken by a
+version that did not record it</p></td>
+</tr>
+<tr class="row-even"><td><p>Expiration time</p></td>
+<td><p>The time, in UTC, at which the snapshot is automatically deleted. Empty if the
+snapshot was taken with no TTL, so it never expires</p></td>
 </tr>
 </tbody>
 </table>
@@ -1035,7 +1043,7 @@ Total<span class="w"> </span>TrueDiskSpaceUsed:<span class="w"> </span><span cla
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 27 Oct 2026.
+                        Last updated on 03 Nov 2026.
                     
                 </div>
             

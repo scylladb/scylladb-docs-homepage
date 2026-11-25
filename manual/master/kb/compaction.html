@@ -414,7 +414,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental compaction strategy (ICS)</span></a> - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.</p></li>
 <li><p><a class="reference internal" href="#id2">Leveled compaction strategy (LCS)</a> - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.</p></li>
-<li><p><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> - designed for time series data and puts data in time order. TWCS uses size-tiered compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.</p></li>
+<li><p><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> - designed for time series data and puts data in time order. TWCS uses incremental compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to a single SSTable run.</p></li>
 <li><p><a class="reference internal" href="#id1">Size-tiered compaction strategy (STCS)</a> - deprecated. <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is now an alias of ICS.</p></li>
 </ul>
 <section id="how-to-set-a-compaction-strategy">
@@ -486,7 +486,7 @@ Following the compaction, the tables are merged, resulting in one larger SSTable
 </section>
 <section id="temporary-fallback-to-stcs">
 <span id="id3"></span><h3>Temporary Fallback to STCS<a class="headerlink" href="#temporary-fallback-to-stcs" title="Link to this heading">¶</a></h3>
-<p>When new data is written very quickly, the Leveled Compaction strategy may be temporarily unable to keep up with the demand. This can result in an accumulation of a large number of SSTables in L0 which in turn create very slow reads as all read requests read from all SSTables in L0. So as an emergency measure, when the number of SSTables in L0 grows to 32, LCS falls back to STCS to quickly reduce the number of SSTables in L0. Eventually, LCS will move this data again to fixed-sized SSTables in higher levels.</p>
+<p>When new data is written very quickly, the Leveled Compaction strategy may be temporarily unable to keep up with the demand. This can result in an accumulation of a large number of SSTables in L0 which in turn create very slow reads as all read requests read from all SSTables in L0. So as an emergency measure, when the number of SSTables in L0 grows to 32, LCS falls back to size-tiered compaction of L0, using <a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">ICS</span></a>, to quickly reduce the number of SSTables in L0. Eventually, LCS will move this data again to fixed-sized SSTables in higher levels.</p>
 <p>Likewise, when <a class="reference internal" href="../reference/glossary.html#term-Bootstrap"><span class="xref std std-term">bootstrapping</span></a> a new node, SSTables are streamed from other nodes. The level of the remote SSTable is kept to avoid many compactions until after the bootstrap is done. During the bootstrap, the new node receives regular write requests while it is streaming the data from the remote node. Just like any other write, these writes are flushed to L0. If ScyllaDB did an LCS compaction on these L0 SSTables and created SSTables in higher level, this could have blocked the remote SSTables from going to the correct level (remember that SSTables in a run must not have overlapping key ranges). To remedy this from happening, ScyllaDB compacts the tables using STCS only in L0 until the bootstrap process is complete. Once done, all resumes as normal under LCS.</p>
 </section>
 </section>
@@ -538,7 +538,7 @@ These tombstones are kept on disk while there are SSTables containing data that 
 </section>
 <section id="time-window-compaction-strategy-twcs">
 <span id="time-window-compactionstrategy-twcs"></span><h2>Time-window Compaction Strategy (TWCS)<a class="headerlink" href="#time-window-compaction-strategy-twcs" title="Link to this heading">¶</a></h2>
-<p>Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using <a class="reference internal" href="#id1">Size-tiered Compaction Strategy (STCS)</a>. SSTables from different time windows are never compacted together.</p>
+<p>Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using <a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental Compaction Strategy (ICS)</span></a>. SSTables from different time windows are never compacted together.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <ul class="simple">
@@ -555,11 +555,11 @@ These tombstones are kept on disk while there are SSTables containing data that 
 <p>The strategy works as follows:</p>
 <ol class="arabic simple">
 <li><p>A time window is configured. The window is determined by the compaction window size <a class="reference internal" href="../cql/compaction.html#twcs-options"><span class="std std-ref">compaction_window_size</span></a>  and the time unit (<a class="reference internal" href="../cql/compaction.html#twcs-options"><span class="std std-ref">compaction_window_unit</span></a>).</p></li>
-<li><p>SSTables created within the time window are compacted using <a class="reference internal" href="#id1">Size-tiered Compaction Strategy (STCS)</a>.</p></li>
-<li><p>Once a time window ends, take all SSTables which were created during the time window and compact the data into one SSTable.</p></li>
-<li><p>The final resulting SSTable is never compacted with other time-windows’ SSTables.</p></li>
+<li><p>SSTables created within the time window are compacted using <a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental Compaction Strategy (ICS)</span></a>.</p></li>
+<li><p>Once a time window ends, take all SSTables which were created during the time window and compact the data into one SSTable run, made of fragments of up to <code class="docutils literal notranslate"><span class="pre">sstable_size_in_mb</span></code>.</p></li>
+<li><p>The final resulting SSTable run is never compacted with other time-windows’ SSTables.</p></li>
 </ol>
-<p>With this explanation, if the time window was for one day, at the end of the day, the SSTables accumulated for that day only would be compacted into one SSTable.</p>
+<p>With this explanation, if the time window was for one day, at the end of the day, the SSTables accumulated for that day only would be compacted into one SSTable run.</p>
 <section id="when-time-series-data-gets-out-of-order">
 <h3>When time-series data gets out of order<a class="headerlink" href="#when-time-series-data-gets-out-of-order" title="Link to this heading">¶</a></h3>
 <p>The primary motivation for TWCS is to separate data on disk by timestamp and to allow fully expired SSTables to drop more efficiently. This efficiency stops when data is written to SSTables out of order, with new data and old data in the same SSTable. Out of order data can appear in the same SSTable in two ways:</p>
@@ -1271,7 +1271,7 @@ and when it is completed.</p></li>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 18 Sep 2023.
+                        Last updated on 09 Oct 2026.
                     
                 </div>
             

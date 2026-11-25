@@ -450,6 +450,9 @@ If you are unsure which strategy to use or want general information on the compa
   <span class="s1">'sstable_size_in_mb'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">}</span>
 </pre></div>
 </div>
+<p>When Level 0 falls behind, it is compacted using incremental compaction, so LCS also takes the
+<code class="docutils literal notranslate"><span class="pre">bucket_low</span></code>, <code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> and <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> options of <a class="reference internal" href="#ics-options"><span class="std std-ref">ICS</span></a>,
+which apply to Level 0.</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">sstable_size_in_mb</span></code> (default: 160)</dt><dd><p>This is the target size in megabytes, that will be used as the goal for an SSTable size following a compression.
 Although SSTable sizes should be less or equal to sstable_size_in_mb, it is possible that compaction could produce a larger SSTable during compaction. This occurs when data for a given partition key is exceptionally large.</p>
@@ -578,9 +581,17 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
   <span class="s1">'compaction_window_size'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
   <span class="s1">'expired_sstable_check_frequency_seconds'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
   <span class="s1">'min_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
-  <span class="s1">'max_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">}</span>
+  <span class="s1">'max_threshold'</span> <span class="p">:</span> <span class="n">num_sstables</span><span class="p">,</span>
+  <span class="s1">'sstable_size_in_mb'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="s1">'bucket_low'</span> <span class="p">:</span> <span class="nb">double</span><span class="p">,</span>
+  <span class="s1">'bucket_high'</span> <span class="p">:</span> <span class="nb">double</span><span class="p">,</span>
+  <span class="s1">'min_sstable_size'</span> <span class="p">:</span> <span class="nb">int</span><span class="p">}</span>
 </pre></div>
 </div>
+<p>SSTables within a time window are compacted using incremental compaction, so TWCS also takes the
+<code class="docutils literal notranslate"><span class="pre">sstable_size_in_mb</span></code>, <code class="docutils literal notranslate"><span class="pre">bucket_low</span></code>, <code class="docutils literal notranslate"><span class="pre">bucket_high</span></code> and <code class="docutils literal notranslate"><span class="pre">min_sstable_size</span></code> options of
+<a class="reference internal" href="#ics-options"><span class="std std-ref">ICS</span></a>, which apply within each window. <code class="docutils literal notranslate"><span class="pre">space_amplification_goal</span></code> is not
+supported, as it applies across size tiers rather than within a window.</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">compaction_window_unit</span></code> (default: DAYS)</dt><dd><p>A time unit used to determine the window size which can be one of the following:</p>
 <ul class="simple">
@@ -602,7 +613,7 @@ the <code class="docutils literal notranslate"><span class="pre">space_amplifica
 </dl>
 <hr class="docutils" />
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> (default: 4)</dt><dd><p>Minimum number of SSTables that need to belong to the same size bucket before compaction is triggered on that bucket.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">min_threshold</span></code> (default: 4)</dt><dd><p>Minimum number of SSTable runs that need to belong to the same size bucket before compaction is triggered on that bucket.</p>
 </dd>
 </dl>
 <hr class="docutils" />
@@ -1284,7 +1295,7 @@ It is accepted, and ignored.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Oct 2026.
+                        Last updated on 09 Oct 2026.
                     
                 </div>
             

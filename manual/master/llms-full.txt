@@ -4933,6 +4933,10 @@ so that it can be recreated before the data is restored.
 
 ### Cluster-wide backup
 
+#### NOTE
+Cluster-wide backup is a **Preview** feature: it is available for evaluation,
+but is not generally available and is not recommended for production workloads.
+
 The whole cluster can be snapshotted and backed up from one node, with
 [nodetool cluster snapshot](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/snapshot.md) and [nodetool cluster backup](https://docs.scylladb.com/manual/master/operating-scylla/nodetool-commands/backup.md).
 The cluster snapshot is taken on all nodes and recorded in the `system_distributed` keyspace, and the backup then has each node upload its own SSTables
@@ -10867,7 +10871,7 @@ For more information, see the [Compaction KB Article](https://docs.scylladb.com/
 
 ## Time-window Compaction Strategy (TWCS)
 
-Time-Window Compaction Strategy compacts SSTables within each time window using size-tiered compaction.
+Time-Window Compaction Strategy compacts SSTables within each time window using incremental compaction.
 SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/master/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
 
 #### CAUTION
@@ -10918,11 +10922,6 @@ STCS over ICS. See [Incremental Compaction Strategy (ICS)]() for the principles
 of operation, the benefits and the disadvantages, and
 [Incremental Compaction](https://docs.scylladb.com/manual/master/kb/compaction.md#incremental-compaction-strategy-ics) for the
 parameters to set.
-
-Note that size-tiered compaction is still used internally, per time window, by
-[Time-window Compaction Strategy (TWCS)]() and for level 0 by
-[Leveled Compaction Strategy (LCS)](). That use is unrelated to the deprecated
-`SizeTieredCompactionStrategy` class name.
 
 <a id="which-strategy-is-best"></a>
 
@@ -11030,7 +11029,7 @@ A compaction strategy is what determines which of the SSTables will be compacted
 
 * [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics) - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.
-* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses size-tiered compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.
+* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses incremental compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to a single SSTable run.
 * [Size-tiered compaction strategy (STCS)]() - deprecated. `SizeTieredCompactionStrategy` is now an alias of ICS.
 
 ### How to Set a Compaction Strategy
@@ -11101,7 +11100,7 @@ The compaction method works as follows:
 
 ### Temporary Fallback to STCS
 
-When new data is written very quickly, the Leveled Compaction strategy may be temporarily unable to keep up with the demand. This can result in an accumulation of a large number of SSTables in L0 which in turn create very slow reads as all read requests read from all SSTables in L0. So as an emergency measure, when the number of SSTables in L0 grows to 32, LCS falls back to STCS to quickly reduce the number of SSTables in L0. Eventually, LCS will move this data again to fixed-sized SSTables in higher levels.
+When new data is written very quickly, the Leveled Compaction strategy may be temporarily unable to keep up with the demand. This can result in an accumulation of a large number of SSTables in L0 which in turn create very slow reads as all read requests read from all SSTables in L0. So as an emergency measure, when the number of SSTables in L0 grows to 32, LCS falls back to size-tiered compaction of L0, using [ICS](#incremental-compaction-strategy-ics), to quickly reduce the number of SSTables in L0. Eventually, LCS will move this data again to fixed-sized SSTables in higher levels.
 
 Likewise, when [bootstrapping](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Bootstrap) a new node, SSTables are streamed from other nodes. The level of the remote SSTable is kept to avoid many compactions until after the bootstrap is done. During the bootstrap, the new node receives regular write requests while it is streaming the data from the remote node. Just like any other write, these writes are flushed to L0. If ScyllaDB did an LCS compaction on these L0 SSTables and created SSTables in higher level, this could have blocked the remote SSTables from going to the correct level (remember that SSTables in a run must not have overlapping key ranges). To remedy this from happening, ScyllaDB compacts the tables using STCS only in L0 until the bootstrap process is complete. Once done, all resumes as normal under LCS.
 
@@ -11154,7 +11153,7 @@ For example, when compacting two SSTables (or SSTable runs) holding 7GB each: in
 
 ## Time-window Compaction Strategy (TWCS)
 
-Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)](). SSTables from different time windows are never compacted together.
+Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using [Incremental Compaction Strategy (ICS)](#incremental-compaction-strategy-ics). SSTables from different time windows are never compacted together.
 
 #### CAUTION
 * We strongly recommend using a single TTL value for any given table.
@@ -11168,11 +11167,11 @@ Avoid overwriting data and deleting data explicitly at all costs, as this can po
 The strategy works as follows:
 
 1. A time window is configured. The window is determined by the compaction window size [compaction_window_size](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options)  and the time unit ([compaction_window_unit](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options)).
-2. SSTables created within the time window are compacted using [Size-tiered Compaction Strategy (STCS)]().
-3. Once a time window ends, take all SSTables which were created during the time window and compact the data into one SSTable.
-4. The final resulting SSTable is never compacted with other time-windows’ SSTables.
+2. SSTables created within the time window are compacted using [Incremental Compaction Strategy (ICS)](#incremental-compaction-strategy-ics).
+3. Once a time window ends, take all SSTables which were created during the time window and compact the data into one SSTable run, made of fragments of up to `sstable_size_in_mb`.
+4. The final resulting SSTable run is never compacted with other time-windows’ SSTables.
 
-With this explanation, if the time window was for one day, at the end of the day, the SSTables accumulated for that day only would be compacted into one SSTable.
+With this explanation, if the time window was for one day, at the end of the day, the SSTables accumulated for that day only would be compacted into one SSTable run.
 
 ### When time-series data gets out of order
 
@@ -11333,6 +11332,10 @@ compaction = {
   'sstable_size_in_mb' : int}
 ```
 
+When Level 0 falls behind, it is compacted using incremental compaction, so LCS also takes the
+`bucket_low`, `bucket_high` and `min_sstable_size` options of [ICS](#ics-options),
+which apply to Level 0.
+
 `sstable_size_in_mb` (default: 160)
 : This is the target size in megabytes, that will be used as the goal for an SSTable size following a compression.
   Although SSTable sizes should be less or equal to sstable_size_in_mb, it is possible that compaction could produce a larger SSTable during compaction. This occurs when data for a given partition key is exceptionally large.
@@ -11473,8 +11476,17 @@ compaction = {
   'compaction_window_size' : int,
   'expired_sstable_check_frequency_seconds' : int,
   'min_threshold' : num_sstables,
-  'max_threshold' : num_sstables}
+  'max_threshold' : num_sstables,
+  'sstable_size_in_mb' : int,
+  'bucket_low' : double,
+  'bucket_high' : double,
+  'min_sstable_size' : int}
 ```
+
+SSTables within a time window are compacted using incremental compaction, so TWCS also takes the
+`sstable_size_in_mb`, `bucket_low`, `bucket_high` and `min_sstable_size` options of
+[ICS](#ics-options), which apply within each window. `space_amplification_goal` is not
+supported, as it applies across size tiers rather than within a window.
 
 `compaction_window_unit` (default: DAYS)
 : A time unit used to determine the window size which can be one of the following:
@@ -11496,7 +11508,7 @@ compaction = {
 ---
 
 `min_threshold` (default: 4)
-: Minimum number of SSTables that need to belong to the same size bucket before compaction is triggered on that bucket.
+: Minimum number of SSTable runs that need to belong to the same size bucket before compaction is triggered on that bucket.
 
 ---
 
@@ -13040,7 +13052,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > Granularity of the index of rows within a partition. For huge rows, decrease this setting to improve seek time. If you use key cache, be careful not to make this setting too large because key cache will be overwhelmed. If you’re unsure of the size of the rows, it’s best to use the default setting.
 
 > * **Type:** `uint32_t`
-> * **Default value:** `64`
+> * **Default value:** `1`
 > * Liveness: `False`
 
 <a id="confprop-column-index-auto-scale-threshold-in-kb"></a>
@@ -14462,7 +14474,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > Default sstable file format
 
 > * **Type:** `sstring`
-> * **Default value:** `"me"`
+> * **Default value:** `"mt"`
 > * Liveness: `True`
 
 <a id="confprop-sstable-compression-user-table-options"></a>
@@ -18816,6 +18828,7 @@ The supported `options` are:
 | `durable_writes` | *simple* | no          | true      | Whether to use the commit log for updates on this keyspace<br/>(disable this option at your own risk!). Disabling it can break<br/>LWT linearizability on tablet-based tables, see<br/>[Paxos State Tables](https://docs.scylladb.com/manual/master/features/lwt.md#paxos-state-tables). |
 | `tablets`        | *map*    | no          |           | Enables or disables tablets for the keyspace (see [tablets](#tablets))                                                                                                                                                                                                                   |
 | `consistency`    | *simple* | no          | eventual  | Configures consistency mode for the keyspace (see [consistency](#consistency-option)).                                                                                                                                                                                                   |
+| `preferred_rack` | *map*    | no          |           | The rack whose replicas should lead the keyspace’s tablets (see<br/>[preferred_rack](#preferred-rack-option)).                                                                                                                                                                           |
 
 A keyspace also accepts the options that can be set through CQL at the `KEYSPACE` scope, such as
 `auto_repair_enabled` and `auto_repair_threshold_in_seconds`; setting one to `NULL` removes it from the keyspace. See
@@ -19012,6 +19025,80 @@ only for operations going to the same DC and global means that strong
 consistency is guaranteed for operations going to all DCs. Note that
 local or global consistencies are guaranteed only for requests that
 are going to the same partition.
+
+The `consistency` option cannot be changed after the keyspace is created. To change
+it, recreate the keyspace. `ALTER KEYSPACE` accepts the current value and rejects any
+other.
+
+<a id="preferred-rack-option"></a>
+
+### Keyspace `preferred_rack` option Experimental
+
+`preferred_rack` names the rack whose replicas should lead the tablets of a strongly
+consistent keyspace:
+
+```cql
+CREATE KEYSPACE ks
+ WITH replication = { 'class': 'NetworkTopologyStrategy', 'dc1': ['rack1', 'rack2', 'rack3'] }
+ AND consistency = 'global'
+ AND preferred_rack = { 'dc1': 'rack1' };
+```
+
+Each tablet of a strongly consistent keyspace is a Raft group with one leader. The
+leader executes strongly consistent writes and reads at `QUORUM` or `LOCAL_QUORUM`.
+Reads at `ONE` or `LOCAL_ONE` can be served by any replica. A rack list places one
+replica of each tablet in every listed rack, so each tablet has exactly one replica in
+the preferred rack. That replica is preferred as the leader: it becomes the leader of a
+new tablet, and it is the first to start an election when the tablet loses its leader.
+
+The preference is not a guarantee. When the replica in the preferred rack is
+unavailable, for example during a rolling restart or a rack outage, another replica
+leads the tablet. The keyspace stays available; only the benefit of the preferred rack
+is lost. When the replica is back and has caught up, the leadership moves back to it
+automatically, usually within seconds. Writes to the tablet pause briefly while the
+leadership moves.
+
+Benefits and costs of `preferred_rack`:
+
+- A client in the preferred rack reaches the leader without leaving its rack. The leader
+  still needs a majority of the replicas to commit a write or confirm a read, so the
+  request crosses racks once. When leaders are spread across all racks, most requests
+  cross racks twice. This lowers latency and cross-zone traffic, which cloud providers
+  usually charge for. Clients in other racks gain nothing.
+- All leader-executed requests of the keyspace are handled by the nodes of one rack, so
+  their throughput is limited by that rack. With three racks of equal size, that is
+  about a third of the cluster’s capacity.
+
+The preferred rack handles all of the keyspace’s strongly consistent traffic, so size it
+for that traffic and add nodes to it when the traffic grows. The leaders are balanced
+across the rack’s nodes, like the tablets themselves. If the preferred rack goes down,
+the other racks take over its traffic. Make sure they can handle it, or expect lower
+throughput until the rack is back.
+
+Use `preferred_rack` for latency- or cost-sensitive workloads whose clients run in a
+single rack, for example one availability zone. For throughput-bound workloads, or
+clients in several racks, leave it unset, and leadership is spread across all replicas.
+
+`preferred_rack` requires:
+
+- `consistency = 'global'`, and tablets;
+- exactly one entry: one datacenter with one rack;
+- the datacenter to be in the `replication` options, replicated with a
+  [rack list](#rack-list-rf) rather than a numeric replication factor;
+- the rack to be in that rack list.
+
+The preferred rack can be changed, and an empty map unsets it:
+
+```cql
+ALTER KEYSPACE ks WITH preferred_rack = { 'dc1': 'rack2' };
+ALTER KEYSPACE ks WITH preferred_rack = {};
+```
+
+The leadership then moves to the new rack within seconds. `preferred_rack` can be
+altered together with `replication`, in which case it takes effect once the new
+replication does. It can’t be altered while a replication change of the keyspace is in
+progress, and the preferred rack can’t be removed from the rack list unless
+`preferred_rack` is changed or unset in the same statement.
 
 <a id="use-statement"></a>
 
@@ -24556,7 +24643,7 @@ explicitly and does generate a CDC event.
 ## Querying with BM25
 
 FTS queries use the `BM25()` function to score rows against a search term.
-`BM25()` takes two arguments: a column name and a query string.
+`BM25()` takes two arguments: a column name and a search term.
 
 A full-text search query must use `BM25()` in **both** of these clauses, on
 the **same** column and with the **same** search term:
@@ -24623,6 +24710,51 @@ The rank is the position in the index’s result, not in the result set. If the 
 that is no longer in the base table, that row’s rank is missing from the result and the ranks after
 it are not renumbered.
 
+<a id="fulltext-search-term"></a>
+
+### Search term syntax
+
+The search term is a query, not plain text. Some characters, such as `'`,
+`"`, `:`, `~`, `*`, `^`, `+`, `-` and parentheses, have a special
+meaning. Ordinary text, especially user input, may then be rejected or match
+unexpected rows.
+
+Words separated by whitespace are combined with `OR`: a row that contains any
+of them matches. The operators `AND`, `OR` and `NOT` combine words, and
+parentheses group them:
+
+```default
+SELECT * FROM ks.t
+    WHERE BM25(v, '(jupiter OR saturn) AND planet NOT rings') > 0
+    ORDER BY BM25(v, '(jupiter OR saturn) AND planet NOT rings')
+    LIMIT 10;
+```
+
+The operators are recognized only in upper case. A lowercase `and`, `or` or
+`not` is not an operator.
+
+A `-` before a word excludes it, like `NOT`. A `+` before a word makes
+that word required, but the other words stay optional, so it is not the same as
+`AND`: `planet +jupiter` matches every row that contains *jupiter*, while
+`planet AND jupiter` matches only the rows that contain both words.
+
+To search for text that contains special characters, wrap it in double quotes.
+Inside the double quotes they have no special meaning, and the text is searched
+as a phrase: the words must appear next to each other, in the same order. Write
+`\"` for a double quote and `\\` for a backslash.
+Inside a CQL string literal, a single quote is written as `''`:
+
+```default
+SELECT * FROM ks.t
+    WHERE BM25(v, '"don''t panic"') > 0
+    ORDER BY BM25(v, '"don''t panic"')
+    LIMIT 10;
+```
+
+A phrase of several words needs token positions, which the index stores by
+default. On an index created with `'positions': 'false'`, such a phrase is
+rejected.
+
 <a id="fulltext-highlighting"></a>
 
 ### Highlighting
@@ -24663,7 +24795,7 @@ combined filtering is planned for a future release.
 
 ### Using bind markers
 
-The query term can be supplied with a bind marker in prepared statements:
+The search term can be supplied with a bind marker in prepared statements:
 
 ```default
 SELECT * FROM ks.t
@@ -28816,21 +28948,23 @@ For example:
 nodetool listsnapshots
 
 Snapshot Details:
-Snapshot name Keyspace name Column family name True size Size on disk
-5487138454987 nba           player_name        0 bytes   308.66 MiB
-2157384283120 nba           player_team        0 bytes   107.21 MiB
-4824891793663 nba           player_stats       0 bytes   41.69 MiB
+Snapshot name Keyspace name Column family name True size Size on disk Creation time        Expiration time
+5487138454987 nba           player_name        0 bytes   308.66 MiB   2023-10-25T12:18:09Z 2023-10-26T12:18:09Z
+2157384283120 nba           player_team        0 bytes   107.21 MiB   2023-10-25T12:18:09Z
+4824891793663 nba           player_stats       0 bytes   41.69 MiB    2023-10-25T12:18:09Z
 
 Total TrueDiskSpaceUsed: 0 bytes
 ```
 
-| Parameter          | Description                                                                                                                       |
-|--------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| Snapshot name      | Name of the snapshot                                                                                                              |
-| Keyspace name      | Keyspace name                                                                                                                     |
-| Column family name | Column Family (table) name                                                                                                        |
-| True size          | Total size of the snapshot files that are not shared with the table’s current SSTables, i.e. disk space used only by the snapshot |
-| Size on disk       | Total size of the snapshot on disk                                                                                                |
+| Parameter          | Description                                                                                                                            |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| Snapshot name      | Name of the snapshot                                                                                                                   |
+| Keyspace name      | Keyspace name                                                                                                                          |
+| Column family name | Column Family (table) name                                                                                                             |
+| True size          | Total size of the snapshot files that are not shared with the table’s current SSTables, i.e. disk space used only by the snapshot      |
+| Size on disk       | Total size of the snapshot on disk                                                                                                     |
+| Creation time      | The time, in UTC, at which the snapshot was taken. Empty if it was taken by a<br/>version that did not record it                       |
+| Expiration time    | The time, in UTC, at which the snapshot is automatically deleted. Empty if the<br/>snapshot was taken with no TTL, so it never expires |
 
 For example:
 
@@ -39809,8 +39943,12 @@ For more information, see the [Full-Text Search documentation](https://docs.scyl
 
 The `BM25()` function enables full-text search queries over text columns that
 have a [full-text index](https://docs.scylladb.com/manual/master/cql/secondary-indexes.md#create-fulltext-index-statement) created with
-`USING 'fulltext_index'`. `BM25()` takes a column name and a query string
+`USING 'fulltext_index'`. `BM25()` takes a column name and a search term
 and scores rows using the BM25 ranking algorithm.
+
+The search term is a query, not plain text, so some characters have a special
+meaning. Inside double quotes they lose that meaning, and the text is searched
+as a phrase. See [Search term syntax](https://docs.scylladb.com/manual/master/features/fulltext-search.md#fulltext-search-term).
 
 A full-text search query must contain **both** of the following clauses,
 referencing the **same** column and the **same** search term:
@@ -39857,7 +39995,7 @@ SELECT * FROM articles
     LIMIT 10;
 ```
 
-Use bind markers for the query term:
+Use bind markers for the search term:
 
 ```cql
 SELECT * FROM articles

@@ -431,7 +431,7 @@
 </section>
 <section id="time-window-compaction-strategy-twcs">
 <span id="twcs1"></span><h2>Time-window Compaction Strategy (TWCS)<a class="headerlink" href="#time-window-compaction-strategy-twcs" title="Link to this heading">¶</a></h2>
-<p>Time-Window Compaction Strategy compacts SSTables within each time window using size-tiered compaction.
+<p>Time-Window Compaction Strategy compacts SSTables within each time window using incremental compaction.
 SSTables from different time windows are never compacted together. You set the <a class="reference internal" href="../../kb/compaction.html#time-window-compactionstrategy-twcs"><span class="std std-ref">TimeWindowCompactionStrategy</span></a> parameters when you create a table using a CQL command.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
@@ -485,10 +485,6 @@ STCS over ICS. See <a class="reference internal" href="#incremental-compaction-s
 of operation, the benefits and the disadvantages, and
 <a class="reference internal" href="../../kb/compaction.html#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental Compaction</span></a> for the
 parameters to set.</p>
-<p>Note that size-tiered compaction is still used internally, per time window, by
-<a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window Compaction Strategy (TWCS)</a> and for level 0 by
-<a class="reference internal" href="#leveled-compaction-strategy-lcs">Leveled Compaction Strategy (LCS)</a>. That use is unrelated to the deprecated
-<code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> class name.</p>
 </section>
 <section id="which-strategy-is-best">
 <span id="id1"></span><h2>Which strategy is best<a class="headerlink" href="#which-strategy-is-best" title="Link to this heading">¶</a></h2>
@@ -1208,7 +1204,7 @@ The deprecated Size-tiered strategy is not listed, as it is an alias of Incremen
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Aug 2026.
+                        Last updated on 09 Oct 2026.
                     
                 </div>
             

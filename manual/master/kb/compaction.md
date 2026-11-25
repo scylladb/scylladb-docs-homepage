@@ -36,7 +36,7 @@ A compaction strategy is what determines which of the SSTables will be compacted
 
 * [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics) - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.
-* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses size-tiered compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.
+* [Time-window compaction strategy (TWCS)]() - designed for time series data and puts data in time order. TWCS uses incremental compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to a single SSTable run.
 * [Size-tiered compaction strategy (STCS)]() - deprecated. `SizeTieredCompactionStrategy` is now an alias of ICS.
 
 ### How to Set a Compaction Strategy
@@ -107,7 +107,7 @@ The compaction method works as follows:
 
 ### Temporary Fallback to STCS
 
-When new data is written very quickly, the Leveled Compaction strategy may be temporarily unable to keep up with the demand. This can result in an accumulation of a large number of SSTables in L0 which in turn create very slow reads as all read requests read from all SSTables in L0. So as an emergency measure, when the number of SSTables in L0 grows to 32, LCS falls back to STCS to quickly reduce the number of SSTables in L0. Eventually, LCS will move this data again to fixed-sized SSTables in higher levels.
+When new data is written very quickly, the Leveled Compaction strategy may be temporarily unable to keep up with the demand. This can result in an accumulation of a large number of SSTables in L0 which in turn create very slow reads as all read requests read from all SSTables in L0. So as an emergency measure, when the number of SSTables in L0 grows to 32, LCS falls back to size-tiered compaction of L0, using [ICS](#incremental-compaction-strategy-ics), to quickly reduce the number of SSTables in L0. Eventually, LCS will move this data again to fixed-sized SSTables in higher levels.
 
 Likewise, when [bootstrapping](https://docs.scylladb.com/manual/master/reference/glossary.md#term-Bootstrap) a new node, SSTables are streamed from other nodes. The level of the remote SSTable is kept to avoid many compactions until after the bootstrap is done. During the bootstrap, the new node receives regular write requests while it is streaming the data from the remote node. Just like any other write, these writes are flushed to L0. If ScyllaDB did an LCS compaction on these L0 SSTables and created SSTables in higher level, this could have blocked the remote SSTables from going to the correct level (remember that SSTables in a run must not have overlapping key ranges). To remedy this from happening, ScyllaDB compacts the tables using STCS only in L0 until the bootstrap process is complete. Once done, all resumes as normal under LCS.
 
@@ -160,7 +160,7 @@ For example, when compacting two SSTables (or SSTable runs) holding 7GB each: in
 
 ## Time-window Compaction Strategy (TWCS)
 
-Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)](). SSTables from different time windows are never compacted together.
+Time-Window Compaction Strategy is designed for handling time series workloads. It compacts SSTables within each time window using [Incremental Compaction Strategy (ICS)](#incremental-compaction-strategy-ics). SSTables from different time windows are never compacted together.
 
 #### CAUTION
 * We strongly recommend using a single TTL value for any given table.
@@ -174,11 +174,11 @@ Avoid overwriting data and deleting data explicitly at all costs, as this can po
 The strategy works as follows:
 
 1. A time window is configured. The window is determined by the compaction window size [compaction_window_size](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options)  and the time unit ([compaction_window_unit](https://docs.scylladb.com/manual/master/cql/compaction.md#twcs-options)).
-2. SSTables created within the time window are compacted using [Size-tiered Compaction Strategy (STCS)]().
-3. Once a time window ends, take all SSTables which were created during the time window and compact the data into one SSTable.
-4. The final resulting SSTable is never compacted with other time-windows’ SSTables.
+2. SSTables created within the time window are compacted using [Incremental Compaction Strategy (ICS)](#incremental-compaction-strategy-ics).
+3. Once a time window ends, take all SSTables which were created during the time window and compact the data into one SSTable run, made of fragments of up to `sstable_size_in_mb`.
+4. The final resulting SSTable run is never compacted with other time-windows’ SSTables.
 
-With this explanation, if the time window was for one day, at the end of the day, the SSTables accumulated for that day only would be compacted into one SSTable.
+With this explanation, if the time window was for one day, at the end of the day, the SSTables accumulated for that day only would be compacted into one SSTable run.
 
 ### When time-series data gets out of order
 

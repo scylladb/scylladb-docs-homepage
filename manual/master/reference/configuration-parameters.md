@@ -634,7 +634,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > Granularity of the index of rows within a partition. For huge rows, decrease this setting to improve seek time. If you use key cache, be careful not to make this setting too large because key cache will be overwhelmed. If you’re unsure of the size of the rows, it’s best to use the default setting.
 
 > * **Type:** `uint32_t`
-> * **Default value:** `64`
+> * **Default value:** `1`
 > * Liveness: `False`
 
 <a id="confprop-column-index-auto-scale-threshold-in-kb"></a>
@@ -2056,7 +2056,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 > Default sstable file format
 
 > * **Type:** `sstring`
-> * **Default value:** `"me"`
+> * **Default value:** `"mt"`
 > * Liveness: `True`
 
 <a id="confprop-sstable-compression-user-table-options"></a>

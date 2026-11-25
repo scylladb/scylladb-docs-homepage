@@ -789,8 +789,11 @@ For more information, see the <a class="reference internal" href="../../features
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> function enables full-text search queries over text columns that
 have a <a class="reference internal" href="../secondary-indexes.html#create-fulltext-index-statement"><span class="std std-ref">full-text index</span></a> created with
-<code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">'fulltext_index'</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> takes a column name and a query string
+<code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">'fulltext_index'</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> takes a column name and a search term
 and scores rows using the BM25 ranking algorithm.</p>
+<p>The search term is a query, not plain text, so some characters have a special
+meaning. Inside double quotes they lose that meaning, and the text is searched
+as a phrase. See <a class="reference internal" href="../../features/fulltext-search.html#fulltext-search-term"><span class="std std-ref">Search term syntax</span></a>.</p>
 <p>A full-text search query must contain <strong>both</strong> of the following clauses,
 referencing the <strong>same</strong> column and the <strong>same</strong> search term:</p>
 <ul class="simple">
@@ -826,7 +829,7 @@ specified value must not exceed 1000.</p>
     <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Use bind markers for the query term:</p>
+<p>Use bind markers for the search term:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">articles</span>
     <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="o">?</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
     <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="o">?</span><span class="p">)</span>
