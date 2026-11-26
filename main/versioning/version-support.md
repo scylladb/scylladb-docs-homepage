@@ -4,8 +4,9 @@
 
 | Version                                                                                                 | Released       | Status        | End of Life (EOL)                                                                  |
 |---------------------------------------------------------------------------------------------------------|----------------|---------------|------------------------------------------------------------------------------------|
+| [ScyllaDB 2026.4](https://docs.scylladb.com/manual/branch-2026.4/getting-started/install-scylla/)       | December 2026  | Supported     | After 2027.2 is released   (see [Version Support Policy](#version-support-policy)) |
 | [ScyllaDB 2026.3](https://docs.scylladb.com/manual/branch-2026.3/getting-started/install-scylla/)       | September 2026 | Supported     | After 2027.1 is released   (see [Version Support Policy](#version-support-policy)) |
-| [ScyllaDB 2026.2](https://docs.scylladb.com/manual/branch-2026.2/getting-started/install-scylla/)       | June 2026      | Supported     | After 2026.4 is released   (see [Version Support Policy](#version-support-policy)) |
+| ScyllaDB 2026.2                                                                                         | June 2026      | Not supported | December 2026                                                                      |
 | [ScyllaDB 2026.1 (LTS)](https://docs.scylladb.com/manual/branch-2026.1/getting-started/install-scylla/) | March 2026     | Supported     | After 2028.1 is released   (see [Version Support Policy](#version-support-policy)) |
 | ScyllaDB 2025.4                                                                                         | December 2025  | Not supported | June 2026                                                                          |
 | ScyllaDB 2025.3                                                                                         | September 2025 | Not supported | March 2026                                                                         |
