@@ -2,7 +2,7 @@
 
 ScyllaDB Web Installer is a platform-agnostic installation script you can run with `curl` to install ScyllaDB on Linux.
 
-See [Install ScyllaDB Linux Packages](https://docs.scylladb.com/manual/branch-2026.4/getting-started/install-scylla/install-on-linux.md) for information on manually installing ScyllaDB with platform-specific installation packages.
+See [Install ScyllaDB Linux Packages](https://docs.scylladb.com/manual/stable/getting-started/install-scylla/install-on-linux.md) for information on manually installing ScyllaDB with platform-specific installation packages.
 
 ## Prerequisites
 
@@ -61,7 +61,7 @@ curl -sSf get.scylladb.com/server | sudo bash -s -- --tarball --scylla-version |
 On Linux distributions not supported via native packages, the Web Installer
 automatically falls back to tarball installation.
 
-See [Install ScyllaDB Without root Privileges](https://docs.scylladb.com/manual/branch-2026.4/getting-started/installation-common/unified-installer.md) for more information on the tarball-based (unified) installer.
+See [Install ScyllaDB Without root Privileges](https://docs.scylladb.com/manual/stable/getting-started/installation-common/unified-installer.md) for more information on the tarball-based (unified) installer.
 
 ## Install ScyllaDB Manager with Web Installer
 
@@ -104,12 +104,12 @@ see [ScyllaDB Manager Docs](https://manager.docs.scylladb.com/).
    sudo scylla_setup
    ```
 
-   * The script invokes a set of [scripts](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md#system-configuration-scripts) to configure several operating system settings; for example, it sets
+   * The script invokes a set of [scripts](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md#system-configuration-scripts) to configure several operating system settings; for example, it sets
      RAID0 and XFS filesystem.
    * The script runs a short (up to a few minutes) benchmark on your storage and generates the `/etc/scylla.d/io.conf`
      configuration file. When the file is ready, you can start ScyllaDB. ScyllaDB will not run without XFS
      or `io.conf` file.
-   * You can bypass this check by running ScyllaDB in [developer mode](https://docs.scylladb.com/manual/branch-2026.4/getting-started/installation-common/dev-mod.md).
+   * You can bypass this check by running ScyllaDB in [developer mode](https://docs.scylladb.com/manual/stable/getting-started/installation-common/dev-mod.md).
      We recommend against enabling developer mode in production environments to ensure ScyllaDB’s maximum performance.
 3. Run ScyllaDB as a service (if not already running).
    ```console

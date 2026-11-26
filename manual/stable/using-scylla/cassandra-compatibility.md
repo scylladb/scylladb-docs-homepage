@@ -39,13 +39,14 @@ The tools are based on Apache Cassandra 3.11.
 * [ScyllaDB Types](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
 * [cassandra-stress](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
 * scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
-* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb collectd/prometheus metrics.
+* [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb Prometheus metrics.
 * [scylla_dev_mode_setup](https://docs.scylladb.com/manual/stable/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
 * [perftune](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/perftune.md) - performance configuration.
 * [Reading mutation fragments](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.
 * [Maintenance socket](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-socket.md) - a Unix domain socket for full-permission CQL connection.
 * [Maintenance mode](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-mode.md) - a mode for performing maintenance tasks on an offline ScyllaDB node.
 * [Task manager](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/task-manager.md) - a tool for tracking long-running background operations.
+* [Compression Advisor](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/compression-advisor.md) - analyzes a table’s compression configuration and recommends LZ4/ZSTD settings that reduce on-disk size.
 
 Run each tool with `-h`, `--help` for full options description.
 
@@ -222,14 +223,16 @@ SAI on `ENTRIES(map)` is rewritten to a regular secondary index
 
 #### Create Table Compaction
 
-| Feature                                                                                               | Support                                                                      |
-|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| DateTieredCompactionStrategy (DTCS)                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub> |
-| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
+| Feature                                                                                               | Support                                                                       |
+|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>     <sub>\*\*</sub> |
+| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                     |
+| DateTieredCompactionStrategy (DTCS)                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub>  |
+| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                     |
 
 <sub>\*</sub> No longer supported. Use TimeWindowCompactionStrategy (TWCS) instead.
+
+<sub>\*\*</sub> Deprecated. It is accepted, but it is an alias of [IncrementalCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#ics) (ICS).
 
 #### Create Table Compression
 

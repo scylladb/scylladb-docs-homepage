@@ -2,19 +2,19 @@
 
 ## Prerequisites
 
-* Make sure that all the [ports](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#cqlsh-networking) are open.
+* Make sure that all the [ports](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#cqlsh-networking) are open.
 * Obtain the IP addresses of all nodes that have been created for the cluster.
 * Choose one of the nodes to be a seed node. You’ll need to provide the IP
   of that node using the seeds parameter in the scylla.yaml configuration file on each node.
 * Select a unique name as `cluster_name` for the cluster (identical for all the nodes in the cluster).
-* Choose which [snitch](https://docs.scylladb.com/manual/stable/faq.md#faq-snitch-strategy) to use (identical for all the nodes in the cluster). For a production system, it is recommended to use a DC-aware snitch, which can support the `NetworkTopologyStrategy` [replication strategy](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-keyspace-statement) for your keyspaces.
+* Choose which [snitch](https://docs.scylladb.com/manual/branch-2026.3/faq.md#faq-snitch-strategy) to use (identical for all the nodes in the cluster). For a production system, it is recommended to use a DC-aware snitch, which can support the `NetworkTopologyStrategy` [replication strategy](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#create-keyspace-statement) for your keyspaces.
 
 ## Procedure
 
-1. Install ScyllaDB on the nodes you want to add to the cluster. See [Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md) for further instructions.
+1. Install ScyllaDB on the nodes you want to add to the cluster. See [Getting Started](https://docs.scylladb.com/manual/branch-2026.3/getting-started/index.md) for further instructions.
 Follow the ScyllaDB install procedure up to `scylla.yaml` configuration phase.
 
-In case the node starts during the process, follow [these instructions](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/clear-data.md)
+In case the node starts during the process, follow [these instructions](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/clear-data.md)
 
 2. On each node, edit the `scylla.yaml` file to configure the parameters listed below.
 The file can be found under `/etc/scylla/`.

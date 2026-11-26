@@ -39,7 +39,7 @@ The CQL language uses *identifiers* (or *names*) to identify tables, columns, an
 matching the regular expression `[a-zA-Z][a-zA-Z0-9_]*`.
 
 A number of such identifiers, like `SELECT` or `WITH`, are *keywords*. They have a fixed meaning for the language,
-and most are reserved. The list of those keywords can be found in [Appendix A: CQL Keywords](https://docs.scylladb.com/manual/stable/cql/appendices.md#appendix-a).
+and most are reserved. The list of those keywords can be found in [Appendix A: CQL Keywords](https://docs.scylladb.com/manual/branch-2026.3/cql/appendices.md#appendix-a).
 
 Identifiers and (unquoted) keywords are case insensitive. Thus `SELECT` is the same as `select` or `sElEcT`, and
 `myId` is the same than `myid` or `MYID`. A convention often used (in particular by the samples of this
@@ -109,7 +109,7 @@ In other words:
 - Blob content types are provided in hexadecimal and prefixed by `0x`.
 - The special `NULL` constant denotes the absence of value.
 
-For how these constants are typed, see the [data-types](https://docs.scylladb.com/manual/stable/cql/types.md) document.
+For how these constants are typed, see the [data-types](https://docs.scylladb.com/manual/branch-2026.3/cql/types.md) document.
 
 ## Terms
 
@@ -132,8 +132,8 @@ bind_marker: '?' | ':' `identifier`
 A term is thus one of:
 
 - A [constant](#constants).
-- A literal for either [a collection](https://docs.scylladb.com/manual/stable/cql/types.md#collections) (including usage of list_or_vector_literal
-  for [a vector](https://docs.scylladb.com/manual/stable/cql/types.md#vectors)), a user-defined type or a tuple (see the linked sections for details).
+- A literal for either [a collection](https://docs.scylladb.com/manual/branch-2026.3/cql/types.md#collections) (including usage of list_or_vector_literal
+  for [a vector](https://docs.scylladb.com/manual/branch-2026.3/cql/types.md#vectors)), a user-defined type or a tuple (see the linked sections for details).
 - An arithmetic operation between terms.
 - A *type hint* `(T)x`, which represents `x` as type `T` when that is lossless — a
   reinterpret between byte-compatible types (e.g. `(blob)int_value`) or a numeric widening
@@ -160,9 +160,9 @@ Multi-line comments are also supported through enclosure within `/*` and `*/` (b
 
 CQL consists of statements that can be divided into the following categories:
 
-- [Data Definition](https://docs.scylladb.com/manual/stable/cql/ddl.md) statements - to define and change how the data is stored (keyspaces and tables).
-- [Data Manipulation](https://docs.scylladb.com/manual/stable/cql/dml.md) statements - for selecting, inserting and deleting data.
-- [Permissions](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#cql-permissions) statements.
+- [Data Definition](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md) statements - to define and change how the data is stored (keyspaces and tables).
+- [Data Manipulation](https://docs.scylladb.com/manual/branch-2026.3/cql/dml.md) statements - for selecting, inserting and deleting data.
+- [Permissions](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#cql-permissions) statements.
 - cql-triggers statements.
 
 All the statements are listed below and are described in the rest of this documentation (see links above):
@@ -207,4 +207,4 @@ and then executed depends on the CQL driver used, and you should refer to your d
 
 © 2016, The Apache Software Foundation.
 
-[Apache Cassandra Query Language](https://docs.scylladb.com/manual/stable/cql/index.md)
+[Apache Cassandra Query Language](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)

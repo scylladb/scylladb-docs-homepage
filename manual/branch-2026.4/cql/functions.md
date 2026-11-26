@@ -32,7 +32,7 @@ See the `enable_user_defined_functions` in `scylla.yaml` to enable them.
 
 Additionally, user-defined functions are still experimental and need to be explicitly enabled by adding `udf` to the list of
 `experimental_features` configuration options in `scylla.yaml`, or turning on the `experimental` flag.
-See [Enabling Experimental Features](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#yaml-enabling-experimental-features) for details.
+See [Enabling Experimental Features](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#yaml-enabling-experimental-features) for details.
 
 <!-- A function is identifier by its name: -->
 <!-- .. code-block::
@@ -209,7 +209,7 @@ The supported functions for this type of query are:
 
 with the parameters of (`<vector>`, `<vector>`).
 
-The `vector` is either the name of the float vector column or [vector of floats](https://docs.scylladb.com/manual/branch-2026.4/cql/types.md#vectors).
+The `vector` is either the name of the float vector column or [vector of floats](https://docs.scylladb.com/manual/stable/cql/types.md#vectors).
 Both arguments must be of the same dimension.
 
 These functions return a `float` value representing the similarity between the given vectors for each row.
@@ -264,7 +264,7 @@ Behavior for null input values must be defined for each function:
 The `LANGUAGE` clause specifies the language of the function, and the `AS` clause defines the function body:
 
 * For Lua functions, the `LANGUAGE` is `lua` and the body is a string literal containing the Lua script.
-* For Wasm functions, the `LANGUAGE` is `wasm` and the body is a string literal containing a WebAssembly module in WebAssembly text format, which exports a function with the same name as specified in the `CREATE FUNCTION` statement. More details on generating the Wasm modules can be found [here](https://docs.scylladb.com/manual/branch-2026.4/cql/wasm.md).
+* For Wasm functions, the `LANGUAGE` is `wasm` and the body is a string literal containing a WebAssembly module in WebAssembly text format, which exports a function with the same name as specified in the `CREATE FUNCTION` statement. More details on generating the Wasm modules can be found [here](https://docs.scylladb.com/manual/stable/cql/wasm.md).
 
 If the function code contains single quotes, they must be escaped by doubling them, for example:
 
@@ -339,7 +339,7 @@ SELECT COUNT (scores) FROM plays;
 
 #### NOTE
 Counting all rows in a table may be time-consuming and exceed the default timeout. In such a case,
-see [Counting all rows in a table is slow](https://docs.scylladb.com/manual/branch-2026.4/kb/count-all-rows.md) for instructions.
+see [Counting all rows in a table is slow](https://docs.scylladb.com/manual/stable/kb/count-all-rows.md) for instructions.
 
 #### Max and Min
 
@@ -423,7 +423,7 @@ The `DROP AGGREGATE` statement removes an aggregate created using `CREATE AGGREG
 
 The `DROP AGGREGATE` command with the optional `IF EXISTS` keywords drops an aggregate if it exists, and does nothing if a function with the signature does not exist.
 
-[Apache Cassandra Query Language](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+[Apache Cassandra Query Language](https://docs.scylladb.com/manual/stable/cql/index.md)
 
 Copyright
 

@@ -1,6 +1,6 @@
 # ScyllaDB Anti-Entropy
 
-ScyllaDB replicates data according to [eventual consistency](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Eventual-Consistency).  This means that, in ScyllaDB, when considering the [CAP Theorem](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-CAP-Theorem), availability and partition tolerance are considered a higher priority over consistency. Although ScyllaDB’s tunable consistency allows users to make a tradeoff between availability and consistency,  ScyllaDB’s [consistency level](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Consistency-Level-CL) is tunable per query.
+ScyllaDB replicates data according to [eventual consistency](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Eventual-Consistency).  This means that, in ScyllaDB, when considering the [CAP Theorem](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-CAP-Theorem), availability and partition tolerance are considered a higher priority over consistency. Although ScyllaDB’s tunable consistency allows users to make a tradeoff between availability and consistency,  ScyllaDB’s [consistency level](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Consistency-Level-CL) is tunable per query.
 
 However, over time, there can be a number of reasons for data inconsistencies, including:
 
@@ -11,13 +11,13 @@ However, over time, there can be a number of reasons for data inconsistencies, i
 5. a replica that cannot write due to being out of resources;
 6. file corruption.
 
-To mitigate [entropy](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Entropy), or data inconsistency, ScyllaDB uses a few different processes.  The goal of ScyllaDB [anti-entropy](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Anti-entropy) - based on that of Apache Cassandra  -  is to compare data on all replicas, synchronize data between all replicas,  and, finally,  ensure each replica has the most recent data.
+To mitigate [entropy](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Entropy), or data inconsistency, ScyllaDB uses a few different processes.  The goal of ScyllaDB [anti-entropy](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Anti-entropy) - based on that of Apache Cassandra  -  is to compare data on all replicas, synchronize data between all replicas,  and, finally,  ensure each replica has the most recent data.
 
-Anti-entropy measures include *write-time* changes such as [hinted handoff](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Hinted-Handoff), *read-time* changes such as [read repair](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Read-Repair), and finally, periodic maintenance via [repair](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Repair).
+Anti-entropy measures include *write-time* changes such as [hinted handoff](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Hinted-Handoff), *read-time* changes such as [read repair](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Read-Repair), and finally, periodic maintenance via [repair](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Repair).
 
-* [ScyllaDB Hinted Handoff](https://docs.scylladb.com/manual/branch-2026.4/architecture/anti-entropy/hinted-handoff.md) - High-Level view of ScyllaDB Hinted Handoff
-* [ScyllaDB Read Repair](https://docs.scylladb.com/manual/branch-2026.4/architecture/anti-entropy/read-repair.md) - High-Level view of ScyllaDB Read Repair
-* [ScyllaDB Repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/maintenance/repair.md) - Description of ScyllaDB Repair
+* [ScyllaDB Hinted Handoff](https://docs.scylladb.com/manual/stable/architecture/anti-entropy/hinted-handoff.md) - High-Level view of ScyllaDB Hinted Handoff
+* [ScyllaDB Read Repair](https://docs.scylladb.com/manual/stable/architecture/anti-entropy/read-repair.md) - High-Level view of ScyllaDB Read Repair
+* [ScyllaDB Repair](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/maintenance/repair.md) - Description of ScyllaDB Repair
 
 Also learn more in the [Cluster Management, Repair and ScyllaDB Manager lesson](https://university.scylladb.com/courses/scylla-operations/lessons/cluster-management-repair-and-scylla-manager/topic/cluster-management-repair-and-scylla-manager/) on ScyllaDB University.
 

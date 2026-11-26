@@ -19,4 +19,4 @@ If you are using Red Hat Enterprise Linux or CentOS, use version 7.2 or higher o
 
 If you are using Ubuntu 14.04, install kernel package `linux-image-generic-lts-vivid`. This package contains a kernel that provides the necessary support
 
-[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)

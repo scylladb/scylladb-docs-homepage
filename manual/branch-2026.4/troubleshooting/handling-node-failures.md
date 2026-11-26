@@ -13,26 +13,26 @@ are down, depending on the number of nodes  and DCs in your cluster.
 
 #### Cluster A: 1 datacenter, 3 nodes
 
-| Failure   | Consequence                                                                         | Action to take                                                                                                                                                                                  |
-|-----------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1 node    | Schema and topology updates are possible and safe.                                  | Try restarting the node. If the node is dead, [replace it with a new node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md). |
-| 2 nodes   | Data is available for reads and writes; schema and topology changes are impossible. | Restart at least 1 of the 2 nodes that are down to regain quorum. If you can’t recover at least 1 of the 2 nodes, consult the [manual recovery section](#recovery-procedure).                   |
+| Failure   | Consequence                                                                         | Action to take                                                                                                                                                                           |
+|-----------|-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1 node    | Schema and topology updates are possible and safe.                                  | Try restarting the node. If the node is dead, [replace it with a new node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md). |
+| 2 nodes   | Data is available for reads and writes; schema and topology changes are impossible. | Restart at least 1 of the 2 nodes that are down to regain quorum. If you can’t recover at least 1 of the 2 nodes, consult the [manual recovery section](#recovery-procedure).            |
 
 #### Cluster B: 2 datacenters, 6  nodes (3 nodes per DC)
 
-| Failure   | Consequence                                                                         | Action to take                                                                                                                                                                                     |
-|-----------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1-2 nodes | Schema and topology updates are possible and safe.                                  | Try restarting the node(s). If the node is dead, [replace it with a new node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md). |
-| 3 nodes   | Data is available for reads and writes; schema and topology changes are impossible. | Restart 1 of the 3 nodes that are down to regain quorum. If you can’t recover at least 1 of the 3 failed nodes, consult the [manual recovery](#recovery-procedure) section.                        |
-| 1DC       | Data is available for reads and writes; schema and topology changes are impossible. | When the DCs come back online, restart the nodes. If the DC fails to come back online and the nodes are lost, consult the [manual recovery](#recovery-procedure) section.                          |
+| Failure   | Consequence                                                                         | Action to take                                                                                                                                                                              |
+|-----------|-------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1-2 nodes | Schema and topology updates are possible and safe.                                  | Try restarting the node(s). If the node is dead, [replace it with a new node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md). |
+| 3 nodes   | Data is available for reads and writes; schema and topology changes are impossible. | Restart 1 of the 3 nodes that are down to regain quorum. If you can’t recover at least 1 of the 3 failed nodes, consult the [manual recovery](#recovery-procedure) section.                 |
+| 1DC       | Data is available for reads and writes; schema and topology changes are impossible. | When the DCs come back online, restart the nodes. If the DC fails to come back online and the nodes are lost, consult the [manual recovery](#recovery-procedure) section.                   |
 
 #### Cluster C: 3 datacenter, 9  nodes (3 nodes per DC)
 
-| Failure   | Consequence                                                                         | Action to take                                                                                                                                                                                                                                            |
-|-----------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1-4 nodes | Schema and topology updates are possible and safe.                                  | Try restarting the nodes. If the nodes are dead, [replace them with new nodes](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node-or-more.md).                                               |
-| 1 DC      | Schema and topology updates are possible and safe.                                  | When the DC comes back online, try restarting the nodes in the cluster. If the nodes are dead, [add 3 new nodes in a new region](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md). |
-| 2 DCs     | Data is available for reads and writes, schema and topology changes are impossible. | When the DCs come back online, restart the nodes. If at least one DC fails to come back online and the nodes are lost, consult the [manual recovery](#recovery-procedure) section.                                                                        |
+| Failure   | Consequence                                                                         | Action to take                                                                                                                                                                                                                                     |
+|-----------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1-4 nodes | Schema and topology updates are possible and safe.                                  | Try restarting the nodes. If the nodes are dead, [replace them with new nodes](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node-or-more.md).                                               |
+| 1 DC      | Schema and topology updates are possible and safe.                                  | When the DC comes back online, try restarting the nodes in the cluster. If the nodes are dead, [add 3 new nodes in a new region](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md). |
+| 2 DCs     | Data is available for reads and writes, schema and topology changes are impossible. | When the DCs come back online, restart the nodes. If at least one DC fails to come back online and the nodes are lost, consult the [manual recovery](#recovery-procedure) section.                                                                 |
 
 <a id="recovery-procedure"></a>
 
@@ -43,14 +43,14 @@ This recovery procedure assumes that consistent topology changes are enabled for
 versions 2025.2 and later. If you failed to enable consistent topology changes during the upgrade to 2025.2, you need
 to follow the [previous recovery procedure](https://docs.scylladb.com/manual/branch-2025.1/troubleshooting/handling-node-failures.html#manual-recovery-procedure).
 
-See [Verifying that consistent topology changes are enabled](https://docs.scylladb.com/manual/branch-2026.4/architecture/raft.md#verifying-consistent-topology-changes-enabled).
+See [Verifying that consistent topology changes are enabled](https://docs.scylladb.com/manual/stable/architecture/raft.md#verifying-consistent-topology-changes-enabled).
 
 You can follow the manual recovery procedure when the majority of nodes (for example, 2 out of 3) failed and are irrecoverable.
 
 During the manual recovery procedure you’ll restart live nodes in a special recovery mode, which will cause the
 cluster to initialize the Raft algorithm from scratch. However, this time, faulty nodes will not participate in the
 algorithm. Then, you will replace all faulty nodes (using the standard
-[node replacement procedure](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md)). Finally, you
+[node replacement procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md)). Finally, you
 will leave the recovery mode and remove the obsolete internal Raft data.
 
 **Prerequisites**
@@ -64,22 +64,22 @@ will leave the recovery mode and remove the obsolete internal Raft data.
   to life and communicate with the rest of the cluster, setup firewall rules or otherwise
   isolate your alive nodes to reject any communication attempts from these dead nodes.
 * Ensure all live nodes are in the normal state using
-  [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md). If there is a node
+  [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md). If there is a node
   that is joining or leaving, it cannot be recovered. You must permanently stop it. After
   performing the recovery procedure, use
-  [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md) on any other node.
+  [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) on any other node.
   If the stopped node appears in the output, it means that other nodes still consider it
   a member of the cluster, and you should remove it with the
-  [node removal procedure](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/remove-node.md).
+  [node removal procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md).
 * Check if the cluster lost data. If the number of dead nodes is equal or larger than your
   keyspaces RF, then some of the data is lost, and you need to retrieve it from backup. After
   completing the manual recovery procedure
-  [restore the data from backup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/restore.md).
+  [restore the data from backup](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/restore.md).
 * Decide whether to shut down your service for the manual recovery procedure. ScyllaDB
   serves data queries during the procedure, however, you may not want to rely on it if:
   * you lost some data, or
   * restarting a single node could lead to unavailability of data queries (the procedure involves
-    a [rolling restart](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/config-change/rolling-restart.md)). For
+    a [rolling restart](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/rolling-restart.md)). For
     example, if you are using the standard RF=3, CL=QUORUM setup, you have two datacenters, all
     nodes in one of the datacenters are dead and one node in the other datacenter is dead,
     restarting another node in the other datacenter will cause temporary data query
@@ -87,7 +87,7 @@ will leave the recovery mode and remove the obsolete internal Raft data.
 
 **Procedure**
 
-1. Perform a [rolling restart](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/config-change/rolling-restart.md) of your live nodes.
+1. Perform a [rolling restart](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/rolling-restart.md) of your live nodes.
 2. Find the group 0 ID by performing the following query on any live node, using e.g. `cqlsh`:
    ```cql
    cqlsh> SELECT value FROM system.scylla_local WHERE key = 'raft_group0_id';
@@ -106,7 +106,7 @@ will leave the recovery mode and remove the obsolete internal Raft data.
    cqlsh> TRUNCATE TABLE system.discovery;
    cqlsh> DELETE value FROM system.scylla_local WHERE key = 'raft_group0_id';
    ```
-5. Perform a [rolling restart](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/config-change/rolling-restart.md) of all live nodes,
+5. Perform a [rolling restart](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/rolling-restart.md) of all live nodes,
    but:
    * **restart the recovery leader first**,
    * before restarting each node, add the `recovery_leader` property to its `scylla.yaml` file and set it to the
@@ -121,11 +121,11 @@ will leave the recovery mode and remove the obsolete internal Raft data.
 
    After completing this step, Raft should be fully functional.
 6. Replace all dead nodes in the cluster using the
-   [node replacement procedure](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md).
+   [node replacement procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md).
 
    #### NOTE
    Removing some of the dead nodes with the
-   [node removal procedure](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/remove-node.md) is also possible,
+   [node removal procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md) is also possible,
    but it may require decreasing RF of your keyspaces. With tablets enabled, `nodetool removenode` is rejected
    if there are not enough nodes to satisfy RF of any tablet keyspace in the node’s datacenter.
 7. Remove the `recovery_leader` property from the `scylla.yaml` file on all nodes. Send the `SIGHUP` signal to all

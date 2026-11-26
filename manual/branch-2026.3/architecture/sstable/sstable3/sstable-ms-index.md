@@ -38,4 +38,4 @@ after updating the node configuration.
 
 ## Related Topics
 
-* [SSTable 3.0 Format in ScyllaDB](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstable-format.md) - overview of 3.x format variants
+* [SSTable 3.0 Format in ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable3/sstable-format.md) - overview of 3.x format variants

@@ -50,7 +50,7 @@ In ScyllaDB CDC is optional and enabled on a per-table basis. The history of cha
 ## Terminology
 
 * **Base Table** - this is the original table, where all changes are made.
-* **Log Table** - this is the table associated to the base table which is created when CDC is enabled. Read about it in the [log table document](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-log-table.md).
+* **Log Table** - this is the table associated to the base table which is created when CDC is enabled. Read about it in the [log table document](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md).
 
 ## Enabling CDC
 

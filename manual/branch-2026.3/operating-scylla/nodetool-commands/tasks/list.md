@@ -57,4 +57,4 @@ d8926ee7-0faf-47b7-bfeb-82477e0c7b33 repair node keyspace running 5             
 
 ## See also
 
-- [tasks status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/status.md)
+- [tasks status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/tasks/status.md)

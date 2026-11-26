@@ -23,7 +23,7 @@ Then, node4 will be added to the cluster **without streaming any data**.
 
 **Lesson Learned** - To prevent new nodes from not bootstrapping, always configure the seed node (contact point) as an existing node in the cluster.
 
-**Procedure to Use** - [Add a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
+**Procedure to Use** - [Add a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
 
 ## Node Removal Error
 
@@ -41,7 +41,7 @@ Node3 is a dead node. If you do the following:
 
 **Lesson Learned** - Never reinstate a node that was removed.
 
-**Procedure to Use** - [Remove a Node from a ScyllaDB Cluster (Down Scale)](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/remove-node.md)
+**Procedure to Use** - [Remove a Node from a ScyllaDB Cluster (Down Scale)](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md)
 
 ## Decommission Error
 
@@ -60,7 +60,7 @@ Node2 is down. You login node3. You run `nodetool decommission` to remove n3 fro
 **Lesson Learned** -  It is best to fix dead nodes before a `nodetool decommission` operation so that every node knows which nodes are decommissioned.
 If there is no way to fix the dead node and decommission is performed without it, do not bring that dead node.
 
-**Procedure to Use** - [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md)
+**Procedure to Use** - [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md)
 
 ## Node Replacement Error
 
@@ -74,4 +74,4 @@ Node3 is dead. If you add node4 to replace node3 with the same IP address as nod
 
 **Lesson Learned** - Never reinstate a node that was removed.
 
-**Procedure to Use** - [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md)
+**Procedure to Use** - [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md)

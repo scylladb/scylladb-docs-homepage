@@ -21,4 +21,4 @@ nodetool [(-h <host> | --host <host>)] [(-p <port> | --port <port>)]
 ## Options
 
 * `-h <host>` or `--host <host>` - Node hostname or IP address.
-* For other options, see [Nodetool generic options](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md#nodetool-generic-options).
+* For other options, see [Nodetool generic options](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md#nodetool-generic-options).

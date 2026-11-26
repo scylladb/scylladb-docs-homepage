@@ -14,8 +14,8 @@ nodetool checkAndRepairCdcStreams
 
 ## See Also
 
-[Change Data Capture (CDC)](https://docs.scylladb.com/manual/stable/features/cdc/index.md)
+[Change Data Capture (CDC)](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/index.md)
 
-[Upgrading from experimental CDC](https://docs.scylladb.com/manual/stable/kb/cdc-experimental-upgrade.md)
+[Upgrading from experimental CDC](https://docs.scylladb.com/manual/branch-2026.3/kb/cdc-experimental-upgrade.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

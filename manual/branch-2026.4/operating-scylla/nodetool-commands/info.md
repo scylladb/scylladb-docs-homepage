@@ -51,4 +51,4 @@ Token                  : (invoke with -T/--tokens to see all 256 tokens)
 | Counter<br/>Cache                 | Not applicable with ScyllaDB                                                                                                                     |
 | Token                             | List of the node tokens                                                                                                                          |
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

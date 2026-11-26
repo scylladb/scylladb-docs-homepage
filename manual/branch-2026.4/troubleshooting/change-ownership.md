@@ -6,7 +6,7 @@ In cases where a ScyllaDB node fails to start because there is improper ownershi
 
 ScyllaDB node fails to start.
 
-In cases where the ScyllaDB node fails to start, check ScyllaDB [logs](https://docs.scylladb.com/manual/branch-2026.4/getting-started/logging.md). If you see the following error message:
+In cases where the ScyllaDB node fails to start, check ScyllaDB [logs](https://docs.scylladb.com/manual/stable/getting-started/logging.md). If you see the following error message:
 Could not access `<PATH>: Permission denied std::system_error (error system:13, Permission denied)`.
 
 For example:
@@ -77,4 +77,4 @@ Supported OS
 sudo systemctl status scylla-server
 ```
 
-[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)

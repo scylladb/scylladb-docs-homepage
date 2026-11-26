@@ -4,7 +4,7 @@ This procedure describes how to migrate an existing keyspace from vnodes
 to tablets. Tablets are designed to be the long-term replacement for vnodes,
 offering numerous benefits such as faster topology operations, automatic load
 balancing, automatic cleanups, and improved streaming performance. Migrating to
-tablets is strongly recommended. See [Data Distribution with Tablets](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md)
+tablets is strongly recommended. See [Data Distribution with Tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md)
 for details.
 
 ℹ️ The migration currently has some [Limitations](), which will be lifted in
@@ -46,7 +46,7 @@ tablet load balancer rebalances the data.
 
 * All nodes in the cluster must be **up and running**. You can check the status
   of all nodes with
-  [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md).
+  [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md).
 * All nodes must be running ScyllaDB 2026.2 or later.
 * Disk utilization on every node should be **below 50%**. This headroom helps
   prevent problems during the migration’s resharding phase, which temporarily
@@ -56,18 +56,18 @@ tablet load balancer rebalances the data.
 
 * The keyspace’s replication strategy must be the **NetworkTopologyStrategy**.
   To change it, see
-  [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md).
+  [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md).
 * In every datacenter, the keyspace’s replication factor must equal the number
   of racks in that datacenter, to ensure that the keyspace will be
-  [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace) after the migration.
-  Racks that contain only [zero-token nodes](https://docs.scylladb.com/manual/branch-2026.4/architecture/zero-token-nodes.md)
+  [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace) after the migration.
+  Racks that contain only [zero-token nodes](https://docs.scylladb.com/manual/stable/architecture/zero-token-nodes.md)
   are not counted. A datacenter can also have a replication factor of zero
   (RF=0), in which case it holds no replicas of the keyspace. For example, a
   keyspace with replication `{'dc1': 3, 'dc2': 2, 'dc3': 0}` can be migrated
   if `dc1` has three racks and `dc2` has two racks. An
-  [arbiter datacenter](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/arbiter-dc.md),
+  [arbiter datacenter](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/arbiter-dc.md),
   which contains only zero-token nodes, must have RF=0. To change the
-  replication factor, see [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/branch-2026.4/kb/rf-increase.md).
+  replication factor, see [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/stable/kb/rf-increase.md).
   If the keyspace has materialized views or secondary indexes, or the
   `rf_rack_valid_keyspaces` option is enabled, the migration refuses to
   start unless the keyspace is RF-rack-valid. Migration with the
@@ -76,11 +76,11 @@ tablet load balancer rebalances the data.
 * All tables, materialized views and secondary indexes in the keyspace should
   have `tombstone_gc` mode set to `repair` to prevent tombstone garbage
   collection from running during migration. For guidance, see
-  [Tombstone Garbage Collection](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#ddl-tombstones-gc).
+  [Tombstone Garbage Collection](https://docs.scylladb.com/manual/stable/cql/ddl.md#ddl-tombstones-gc).
 * All materialized views and secondary indexes in the keyspace must be
   **fully built** before the migration is started. Builds in progress are not
   carried over to tablets. Check the build status with
-  [nodetool viewbuildstatus](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/viewbuildstatus.md);
+  [nodetool viewbuildstatus](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/viewbuildstatus.md);
   for a secondary index, pass the name of its backing view, `<index name>_index`.
 
 ## Limitations
@@ -109,7 +109,7 @@ The current migration procedure has the following limitations:
   migrated. CDC tables and Alternator tables are not supported. Views whose
   partition key consists of exactly the base table’s partition key columns,
   in the same order, including the backing views of local secondary indexes,
-  are migrated as [co-located tables](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Colocated-Table) with their base
+  are migrated as [co-located tables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Colocated-Table) with their base
   table (sharing its tablets). Other views, including the backing views of
   global secondary indexes, get tablets of their own.
 * Tables with **counters** or **LWTs** cannot be migrated.
@@ -239,7 +239,7 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       ```
 
       (with *some-scylla* container already running)
-   6. Wait until the node is UP and has returned to the ScyllaDB cluster using [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md).
+   6. Wait until the node is UP and has returned to the ScyllaDB cluster using [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md).
       This operation may take a long time due to resharding. To monitor
       resharding progress, use the task manager API:
       ```console
@@ -325,7 +325,7 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Finalization switches co-located materialized views and local secondary
       indexes that use the `repair` `tombstone_gc` mode to `timeout`.
       After the migration they become
-      [co-located tables](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Colocated-Table), which do not support
+      [co-located tables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Colocated-Table), which do not support
       `repair`, and `timeout` is their default mode. Other views and the
       backing views of global secondary indexes keep their mode.
    2. Verify that the keyspace status changed to `tablets`:
@@ -387,14 +387,14 @@ vice versa. Do not confuse it with version upgrades/downgrades.
    [ScyllaDB Manager](https://manager.docs.scylladb.com/) run it for you.
 
    For vnode-based keyspaces, run
-   [nodetool repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/repair.md) on
+   [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on
    **every** node:
    ```console
    nodetool repair -pr
    ```
 
    For tablet-based keyspaces, including the one you just migrated, run
-   [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cluster/repair.md)
+   [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md)
    on **any** single node:
    ```console
    nodetool cluster repair
@@ -496,7 +496,7 @@ following:
          ```
 
          (with *some-scylla* container already running)
-      3. Wait until the node is UP and has returned to the ScyllaDB cluster using [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md).
+      3. Wait until the node is UP and has returned to the ScyllaDB cluster using [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md).
          This operation may take a long time due to resharding. To monitor
          resharding progress, use the task manager API:
          ```console
@@ -587,14 +587,14 @@ following:
    [ScyllaDB Manager](https://manager.docs.scylladb.com/) run it for you.
 
    For vnode-based keyspaces, including the one you just rolled back, run
-   [nodetool repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/repair.md) on
+   [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on
    **every** node:
    ```console
    nodetool repair -pr
    ```
 
    For tablet-based keyspaces, run
-   [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cluster/repair.md)
+   [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md)
    on **any** single node:
    ```console
    nodetool cluster repair
@@ -639,7 +639,7 @@ To migrate multiple keyspaces simultaneously, follow these steps:
 ## Replacing a Dead Node during Migration
 
 If a node fails during the migration, replace it using the standard procedure
-for [replacing a dead node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md).
+for [replacing a dead node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md).
 
 The replacing node must have the same shard count as the replaced node. If the
 shard count differs, the replacement will fail.

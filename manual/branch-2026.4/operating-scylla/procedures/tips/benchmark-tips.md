@@ -43,7 +43,7 @@ For example, with ScyllaDB Manager you can control the intensity of a repair, in
 
 Before running ScyllaDB, it is critical that the scylla_setup script has been executed.
 ScyllaDB doesn’t require manual optimization &emdash; it is the task of the scylla_setup script to determine the optimal configuration.
-But, if `scylla_setup` has not run, the system won’t be configured optimally. Refer to the [System Configuration](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md) guide for details.
+But, if `scylla_setup` has not run, the system won’t be configured optimally. Refer to the [System Configuration](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md) guide for details.
 
 ## Benchmarking Best Practices
 
@@ -59,7 +59,7 @@ But, if `scylla_setup` has not run, the system won’t be configured optimally. 
 
 ### Use a Representative Data Model
 
-Tools, such as [cassandra-stress](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/cassandra-stress.md), use a default data model that does not reflect the actions that you will perform in production.
+Tools, such as [cassandra-stress](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/cassandra-stress.md), use a default data model that does not reflect the actions that you will perform in production.
 For example, the cassandra-stress default data model has a replication factor set to 1 and uses the LOCAL_ONE as a consistency level.
 
 Although cassandra_stress is convenient to get some initial performance impressions, it is critical to benchmark the same/similar data model that is used in production.
@@ -137,7 +137,7 @@ A few of the most important tips:
 * Choose the right partition key and clustering keys. Reduce or even eliminate the amount of data that needs to be scanned.
 * Add indexes where appropriate.
 * Partitions that are accessed more than others (hot partitions) should be avoided because it causes load imbalances between CPUs and nodes.
-* [Large partitions](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/large-partition-table.md), [large rows and large cells](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/large-rows-large-cells-tables.md) should be avoided because it can cause high latencies.
+* [Large partitions](https://docs.scylladb.com/manual/stable/troubleshooting/large-partition-table.md), [large rows and large cells](https://docs.scylladb.com/manual/stable/troubleshooting/large-rows-large-cells-tables.md) should be avoided because it can cause high latencies.
 
 ### Use Prepared Statements
 
@@ -157,7 +157,7 @@ Read about [More Efficient Query Paging](https://www.scylladb.com/2018/07/13/eff
 In a typical application there are operational workloads that require low latency.
 Sometimes these run in parallel with analytic workloads that process high volumes of data and do not require low latency.
 With workload prioritization, one can prevent that the analytic workloads lead to an unwanted high latency on operational workload.
-See [Workload prioritization](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest.md).
+See [Workload prioritization](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md).
 
 ### Bypass Cache
 
@@ -167,13 +167,13 @@ By default ScyllaDB will try to use cache, but since the data won’t be used ag
 As a consequence it can lead to bad latency on operational workloads due to increased rate of cache misses.
 To prevent this problem, queries from analytical workloads can bypass the cache using the ‘bypass cache’ option.
 
-See [Bypass Cache](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#bypass-cache) for more information.
+See [Bypass Cache](https://docs.scylladb.com/manual/stable/cql/dml/select.md#bypass-cache) for more information.
 
 ### Batching
 
 Multiple CQL queries to the same partition can be batched into a single query.
 Imagine a query where the round trip time is 0.9 ms and the service time is  0.1 ms.
-Without [batching](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/batch.md#batch-statement) the total latency would be 10x(0.9+0.1)=10.0 ms.
+Without [batching](https://docs.scylladb.com/manual/stable/cql/dml/batch.md#batch-statement) the total latency would be 10x(0.9+0.1)=10.0 ms.
 But if you created a batch of 10 instructions, the total time would be 0.9+10\*0.1=1.9 ms.
 This is 19% of the latency compared to no batching.
 
@@ -201,7 +201,7 @@ So it is important to determine if a virtual CPU is the same as a physical CPU o
 
 ScyllaDB relies on temporarily spinning the CPU instead of blocking and waiting for data to arrive. This is done to reduce latency due to reduced context switching.
 The drawback is that the CPUs are 100% utilized and you might falsely conclude that ScyllaDB can’t keep up with the load.
-Read more about [ScyllaDB System Requirements](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-requirements.md).
+Read more about [ScyllaDB System Requirements](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md).
 
 ### Memory Guidelines
 
@@ -216,7 +216,7 @@ The max recommended ratio of storage/memory for good performance is 30:1.
 So for a system with 128 GB of memory, the recommended upper bound on the storage capacity is 3.8 TB per node of data.
 To store 6 TB of data per node, the minimum recommended amount of memory is 200 GB.
 
-Read more about  [ScyllaDB System Requirements](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-requirements.md) or [Starting ScyllaDB in a Shared Environment](https://docs.scylladb.com/manual/branch-2026.4/getting-started/scylla-in-a-shared-environment.md).
+Read more about  [ScyllaDB System Requirements](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md) or [Starting ScyllaDB in a Shared Environment](https://docs.scylladb.com/manual/stable/getting-started/scylla-in-a-shared-environment.md).
 
 ### Storage Guidelines
 
@@ -229,20 +229,20 @@ The recommended file system is XFS because of its asynchronous appending write s
 
 As SSD’s wear out over time, it is recommended to re-run the iotune tool every few months. This helps ScyllaDB’s IO scheduler to make the best performing choices.
 
-Read more about [ScyllaDB System Requirements](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-requirements.md).
+Read more about [ScyllaDB System Requirements](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md).
 
 ### Networking Guidelines
 
 For operational workloads the minimum recommended network bandwidth is 10 Gbps.
 The scylla_setup script takes care of optimizing the kernel parameters, IRQ handling etc.
 
-Read more about [ScyllaDB Network Requirements](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-requirements.md#system-requirements-network).
+Read more about [ScyllaDB Network Requirements](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md#system-requirements-network).
 
 ## Cloud Compute Instance Recommendations
 
 ScyllaDB is designed to utilize all hardware resources. Bare metal instances are preferred for best performance.
 
-Read more about [Starting ScyllaDB in a Shared Environment](https://docs.scylladb.com/manual/branch-2026.4/getting-started/scylla-in-a-shared-environment.md).
+Read more about [Starting ScyllaDB in a Shared Environment](https://docs.scylladb.com/manual/stable/getting-started/scylla-in-a-shared-environment.md).
 
 ### Image Guidelines
 
@@ -253,7 +253,7 @@ They have already been correctly configured for use in those public cloud enviro
 
 AWS EC2 i3, i3en, i4i and c5d bare metal instances are **highly recommended** because they are optimized for high I/O.
 
-Read more about [ScyllaDB Supported Platforms](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-requirements.md#system-requirements-supported-platforms).
+Read more about [ScyllaDB Supported Platforms](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md#system-requirements-supported-platforms).
 
 If bare metal isn’t an option, use Nitro based instances and run with ‘host’ as tenancy policy to prevent the instance being shared with other VM’s.
 If Nitro isn’t possible, then use instance storage over EBS.
@@ -270,7 +270,7 @@ Read more at: [https://docs.scylladb.com/getting-started/system-requirements/#go
 ### Azure
 
 For Azure we recommend the Lsv2 series. They feature high throughput and low latency and have local NVMe storage.
-Read more about [Azure Requirements](https://docs.scylladb.com/manual/branch-2026.4/getting-started/cloud-instance-recommendations.md#system-requirements-azure).
+Read more about [Azure Requirements](https://docs.scylladb.com/manual/stable/getting-started/cloud-instance-recommendations.md#system-requirements-azure).
 
 ### Docker
 
@@ -289,11 +289,11 @@ Read more about [Exploring ScyllaDB on Kubernetes](https://www.scylladb.com/2018
 When records get updated or deleted, the old data eventually needs to be deleted. This is done using compaction.
 The compaction settings can make a huge difference.
 
-* Use the following [Compaction Strategy Matrix](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md#csm1) to use the correct compaction strategy for your workload.
+* Use the following [Compaction Strategy Matrix](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md#csm1) to use the correct compaction strategy for your workload.
 * ICS is an incremental compaction strategy that combines the low space amplification of LCS with the low write amplification of STCS.
 * If you have time series data, the TWCS should be used.
 
-Read more about [Compaction Strategies](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md)
+Read more about [Compaction Strategies](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md)
 
 ## Consistency Level
 
@@ -305,7 +305,7 @@ For single data center setups a frequently used consistency level for both reads
 It gives a nice balance between consistency and availability/performance.
 For multi datacenter setups it is best to use LOCAL_QUORUM.
 
-Read more about [Fault Tolerance](https://docs.scylladb.com/manual/branch-2026.4/architecture/architecture-fault-tolerance.md)
+Read more about [Fault Tolerance](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md)
 
 ## Replication Factor
 

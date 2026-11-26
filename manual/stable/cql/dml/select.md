@@ -5,13 +5,14 @@
 Querying data from data is done using a `SELECT` statement:
 
 ```cql
-select_statement: SELECT [ DISTINCT ] ( `select_clause` | '*' )
-                : FROM `table_name`
+select_statement: SELECT [ JSON ] [ DISTINCT ] ( `select_clause` | '*' )
+                : [ FROM `table_name` ]
                 : [ WHERE `where_clause` ]
                 : [ GROUP BY `group_by_clause` ]
                 : [ ORDER BY `ordering_clause` ]
-                : [ ORDER BY `vector_column_name` ANN OF `vector` LIMIT `integer` ]
+                : [ ORDER BY ( `vector_column_name` ANN OF `vector` | ANN '(' `vector_column_name` ',' `vector` ')' ) LIMIT `integer` ]
                 : [ WHERE BM25 '(' `column_name` ',' `term` ')' '>' 0 ORDER BY BM25 '(' `column_name` ',' `term` ')' LIMIT `integer` ]
+                : [ ORDER BY `fusion_function` '(' `search` ( ',' `search` )+ ')' LIMIT `integer` ]
                 : [ PER PARTITION LIMIT (`integer` | `bind_marker`) ]
                 : [ LIMIT (`integer` | `bind_marker`) ]
                 : [ ALLOW FILTERING ]
@@ -31,6 +32,7 @@ group_by_clause: `column_name` (',' `column_name` )*
 relation: `column_name` `operator` `term`
         : '(' `column_name` ( ',' `column_name` )* ')' `operator` `tuple_literal`
         : TOKEN '(' `column_name` ( ',' `column_name` )* ')' `operator` `term`
+        : `column_name` IS [ NOT ] NULL
 operator: '=' | '<' | '>' | '<=' | '>=' | IN | NOT IN | CONTAINS | CONTAINS KEY
 ordering_clause: `column_name` [ ASC | DESC ] ( ',' `column_name` [ ASC | DESC ] )*
 timeout: `duration`
@@ -59,11 +61,13 @@ The `SELECT` statement reads one or more columns for one or more rows in a table
 matching the request, where each row contains the values for the selection corresponding to the query. Additionally,
 functions, including aggregation ones, can be applied to the result.
 
-A `SELECT` statement contains at least a [selection clause](#selection-clause) and the name of the table on which
-the selection is on (note that CQL does **not** support joins or sub-queries, and thus a select statement only applies to a single
-table). In most cases, a select will also have a [where clause](#where-clause) and it can optionally have additional
-clauses to [order](#ordering-clause) or [limit](#limit-clause) the results. Lastly, [queries that require
-filtering](#allow-filtering) can be allowed if the `ALLOW FILTERING` flag is provided.
+A `SELECT` statement contains at least a [selection clause](#selection-clause) and typically the name of the table
+on which the selection is on (note that CQL does **not** support joins or sub-queries, and thus a select statement only
+applies to a single table). The `FROM` clause may be omitted; the statement then evaluates the selected expressions
+and returns them as a single row (see [SELECT without FROM](#select-without-from)). In most cases, a select will also have a
+[where clause](#where-clause) and it can optionally have additional clauses to [order](#ordering-clause) or
+[limit](#limit-clause) the results. Lastly, [queries that require filtering](#allow-filtering) can be allowed
+if the `ALLOW FILTERING` flag is provided.
 
 If your `SELECT` query results in what appears to be missing data, see this [KB Article](https://docs.scylladb.com/manual/stable/kb/cqlsh-results.md) for information.
 
@@ -379,14 +383,19 @@ The `ORDER BY` clause can also be used with vector columns to perform the approx
 When using vector columns, the syntax is as follows:
 
 ```cql
-order_by_vector: ORDER BY `vector_column_name` ANN OF `vector` LIMIT `integer`
+order_by_vector: ORDER BY ( `vector_column_name` ANN OF `vector` | ANN '(' `vector_column_name` ',' `vector` ')' ) LIMIT `integer`
 ```
 
 Where `vector_column_name` is the name of the vector column,
 `vector` is the query [vector](https://docs.scylladb.com/manual/stable/cql/types.md#vectors), and `LIMIT` is a limit on the number of results to return.
 Vector queries can only be performed on a vector column that has a [vector index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement) created.
 
-The `ANN OF` clause orders the results by their distance to the provided query vector,
+The two forms are equivalent: `ORDER BY embedding ANN OF [0.1, 0.2]` and
+`ORDER BY ANN(embedding, [0.1, 0.2])` produce the same query. The function form is a
+ScyllaDB extension, and is consistent with how the [BM25](#fulltext-queries) scoring
+function is written; the `ANN OF` form is compatible with Apache Cassandra.
+
+The ANN ordering clause orders the results by their distance to the provided query vector,
 using the distance function defined for the vector column when
 [creating the vector index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement).
 The query vector must have the same dimension as the vector column.
@@ -403,14 +412,47 @@ SELECT image_id FROM ImageEmbeddings
 ```
 
 This query returns up to 5 rows with the closest distance of `embedding` vector to the provided query vector,
-in this case `[0.1, 0.2, 0.3, 0.4]`.
+in this case `[0.1, 0.2, 0.3, 0.4]`. Written with the function form, it is:
 
-There’s also possibility to return the similarity score along with the results by using the [similarity functions](https://docs.scylladb.com/manual/stable/cql/functions.md#vector-similarity-functions).
+```cql
+SELECT image_id FROM ImageEmbeddings
+  ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
+```
+
+`ANN()` may also be used as a selector. It returns a `tuple<float, int>`: the **similarity** the
+index gave the row, and the row’s **rank**, its position in the index’s result counted from 1:
+
+```cql
+SELECT image_id, ANN(embedding, [0.1, 0.2, 0.3, 0.4]) AS score_and_rank
+  FROM ImageEmbeddings
+  ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
+```
+
+`ANN_SCORE()` and `ANN_RANK()` return the two values on their own:
+
+```cql
+SELECT image_id, ANN_SCORE(embedding, [0.1, 0.2, 0.3, 0.4]) AS similarity
+  FROM ImageEmbeddings
+  ORDER BY ANN(embedding, [0.1, 0.2, 0.3, 0.4]) LIMIT 5;
+```
+
+All three describe the search the rows are ranked by, so each is only accepted in a query whose
+`ORDER BY` clause has an ANN search, in either form, on the same column, and every occurrence must
+use the same query vector as that search. A query using several of them still makes a single
+request.
+
+An index configured for [rescoring](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement) recomputes the similarity
+on the coordinator and reorders the rows by it, so the rank the Vector Store gave them no longer
+applies. `ANN_RANK()` and `ANN()` are rejected in the `SELECT` clause of such a query;
+`ANN_SCORE()` and the `ORDER BY` itself work as usual.
+
+To score rows against a vector other than the one being searched for, use the
+[similarity functions](https://docs.scylladb.com/manual/stable/cql/functions.md#vector-similarity-functions) directly.
 
 For example:
 
 ```cql
-SELECT image_id, similarity_cosine(embedding, [0.1, 0.2, 0.3, 0.4])
+SELECT image_id, similarity_cosine(embedding, [0.9, 0.8, 0.7, 0.6])
   FROM ImageEmbeddings
   ORDER BY embedding ANN OF [0.1, 0.2, 0.3, 0.4] LIMIT 5;
 ```
@@ -428,8 +470,9 @@ SELECT image_id FROM ImageEmbeddings
 
 #### NOTE
 Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
-about Vector Search is available in the
+Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and `SELECT DISTINCT`).
+`SELECT DISTINCT` is currently accepted in queries ordered by `ANN OF` or `ANN()`, but does not remove
+duplicate partition keys. More information about Vector Search is available in the
 [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/vector-search/).
 
 <a id="fulltext-queries"></a>
@@ -452,7 +495,8 @@ referencing the **same** column and the **same** search term:
 * An `ORDER BY BM25(column, 'term')` clause that ranks the matching rows.
 
 Neither clause is accepted on its own. A query that has only `WHERE BM25()` or
-only `ORDER BY BM25()` is rejected.
+only `ORDER BY BM25()` is rejected. The exception is a [hybrid query](#hybrid-queries),
+which ranks the rows by several searches at once and takes no `WHERE` clause.
 
 **Syntax:**
 
@@ -465,15 +509,19 @@ fts_query: SELECT ... FROM `table_name`
 
 In the `WHERE` clause, `>` is the only supported comparison operator, and the right-hand side must be
 the literal `0`. The column must be of type `text`, `varchar`, or `ascii`
-and have a `fulltext_index`; it may be a regular or clustering-key column, but
-not a partition-key column.
+and have a `fulltext_index`. Columns of the [primary key](https://docs.scylladb.com/manual/stable/cql/ddl.md#primary-key)
+and [static columns](https://docs.scylladb.com/manual/stable/cql/ddl.md#static-columns) cannot be indexed.
 
 `ORDER BY BM25()` must be the only ordering in the query - it cannot be combined
-with another `ORDER BY` column, a second `BM25()` ordering, or an `ANN`
-ordering.
+with another `ORDER BY` column. To rank the rows by several searches, such as a
+full-text and a vector search, fuse them into one ordering in a
+[hybrid query](#hybrid-queries).
 
 A `LIMIT` clause is mandatory; queries without `LIMIT` are rejected. The
 specified value must not exceed 1000.
+
+`SELECT DISTINCT` is not supported in queries ordered by `BM25()`. It is
+currently accepted, but does not remove duplicate partition keys.
 
 **Examples:**
 
@@ -495,16 +543,181 @@ SELECT * FROM articles
     LIMIT 10;
 ```
 
+Return the score and the rank of each row:
+
+```cql
+SELECT title, BM25(body, 'distributed database') AS score_and_rank FROM articles
+    WHERE BM25(body, 'distributed database') > 0
+    ORDER BY BM25(body, 'distributed database')
+    LIMIT 10;
+```
+
+`BM25()` returns a `tuple<float, int>`: the **score** the index gave the row, and the row’s
+**rank**, its position in the index’s result counted from 1. `BM25_SCORE()` and `BM25_RANK()`
+return the two values on their own.
+
+All three describe the search the rows are ranked by, so each is only accepted in a query whose
+`ORDER BY` clause has a BM25 search on the same column, and every occurrence must use the same
+search term as that search. `WHERE BM25(...) > 0` compares the score, and is the same as
+`WHERE BM25_SCORE(...) > 0`. `BM25_RANK()` cannot be used in the `WHERE` clause.
+
 The `BM25()` operator is not a reserved word. If a user-defined function named
 `bm25` exists in a keyspace, unqualified `BM25()` becomes ambiguous; qualify
 the built-in operator as `system.bm25(...)` to disambiguate it.
 
-#### NOTE
-`BM25()` is only valid in the `WHERE` and `ORDER BY` clauses.
-It cannot be used as a selector in the `SELECT` clause.
+# Selecting an excerpt
+
+`BM25_HIGHLIGHT(column, term)` returns an excerpt of the searched text as HTML,
+with the matched terms wrapped in `<b>` and `</b>` and the text around them
+escaped:
+
+```cql
+SELECT id, BM25_HIGHLIGHT(body, 'distributed database') AS excerpt FROM articles
+    WHERE BM25(body, 'distributed database') > 0
+    ORDER BY BM25(body, 'distributed database')
+    LIMIT 10;
+```
+
+It is accepted only in the `SELECT` clause, under the same rules as `BM25()`
+there. The result is of type `text` and is `null` for a row in which no
+fragment could be found; the row itself is still returned. See
+[Highlighting](https://docs.scylladb.com/manual/stable/features/fulltext-search.md#fulltext-highlighting) for the details.
 
 For the full list of query constraints and requirements, see
 [Full-Text Search](https://docs.scylladb.com/manual/stable/features/fulltext-search.md).
+
+<a id="hybrid-queries"></a>
+
+## Hybrid search queries ScyllaDB Cloud
+
+A hybrid query ranks the rows by several searches at once, typically a [vector search](#vector-queries) and a [full-text search](#fulltext-queries) over the same table. Its
+`ORDER BY` clause fuses the searches into one score:
+
+```cql
+hybrid_query: SELECT ... FROM `table_name`
+            :   ORDER BY `fusion_function` '(' `search` ( ',' `search` )+ ')'
+            :   LIMIT `integer`
+search: ANN '(' `vector_column_name` ',' `vector` ')'
+      : | BM25 '(' `column_name` ',' `term` ')'
+```
+
+For example:
+
+```cql
+SELECT id, title FROM articles
+    ORDER BY RRF(ANN(embedding, [0.1, 0.2, 0.3, 0.4]), BM25(body, 'distributed database'))
+    LIMIT 10;
+```
+
+The searches are sent to their indexes in parallel. A row is a candidate if any of them returned
+it. The candidates are read, scored by the fusion function, sorted by that score, highest first,
+and only then cut to the `LIMIT`.
+
+Each search passes the fusion function a `tuple<float, int>`: the score the index gave the row
+and the row’s rank, its position in the index’s result counted from 1. Where a search did not
+return the row, both are null. Scores of different searches are on different scales, so a BM25
+relevance and a vector similarity cannot be meaningfully added; ranks can be compared, so fusion
+usually goes by rank.
+
+`RRF()` is reciprocal rank fusion. A row scores `1 / (60 + rank)` for each search that returned
+it, summed over the searches. It takes any number of searches, at least two.
+
+A user-defined function can fuse the searches instead. It takes one `tuple<float, int>` argument
+per search and returns a `float`. For example, to weigh the vector search three times as much as
+the full-text one:
+
+```cql
+CREATE FUNCTION ks.weighted(a tuple<float, int>, b tuple<float, int>)
+    CALLED ON NULL INPUT RETURNS float LANGUAGE lua AS
+    'local function w(hit) if hit[2] == nil then return 0 end return 1 / hit[2] end
+     return 3 * w(a) + w(b)';
+
+SELECT id, title FROM articles
+    ORDER BY ks.weighted(ANN(embedding, [0.1, 0.2, 0.3, 0.4]), BM25(body, 'distributed database'))
+    LIMIT 10;
+```
+
+A search is identified by its kind and its column. Two calls on the same column are the same search
+and must use the same query vector or search term; several columns of one kind are several
+searches, so `RRF(BM25(title, 'database'), BM25(body, 'database'))` fuses two full-text searches.
+
+`ANN()`, `ANN_SCORE()`, `ANN_RANK()`, `BM25()`, `BM25_SCORE()` and `BM25_RANK()` may be
+selected to report what each search said about a row, provided the `ORDER BY` clause searches
+their column with the same query value. They return null for a row that search did not return:
+
+```cql
+SELECT id, ANN_RANK(embedding, [0.1, 0.2, 0.3, 0.4]) AS vector_rank,
+           BM25_RANK(body, 'distributed database') AS text_rank
+    FROM articles
+    ORDER BY RRF(ANN(embedding, [0.1, 0.2, 0.3, 0.4]), BM25(body, 'distributed database'))
+    LIMIT 10;
+```
+
+[BM25_HIGHLIGHT()](https://docs.scylladb.com/manual/stable/features/fulltext-search.md#fulltext-highlighting) may be selected too, and is null in the same way: only
+the text of the rows the full-text search returned is sent to the index for an excerpt.
+
+Hybrid queries have the following limitations:
+
+* A hybrid query takes no `WHERE` clause.
+* A `LIMIT` clause is mandatory, and must not exceed 1000. Only the first `LIMIT` rows of each
+  search’s answer are fused: a vector index with `oversampling` is asked for the `LIMIT` times
+  the oversampling factor, but its answer is cut to the `LIMIT` before the fusion.
+* A vector index configured for [rescoring](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement) cannot take part in
+  a hybrid query: the rescored order has no rank to fuse by. On such an index, `ORDER BY` accepts
+  only `ANN()` or `ANN_SCORE()` called directly.
+* The rank is the position in the index’s result, not in the result set. If an index returns a row
+  that is no longer in the base table, the ranks after it are not renumbered.
+* Paging is not supported: the whole result is returned at once, with a warning if a page size
+  smaller than the `LIMIT` was requested.
+
+<a id="pattern-queries"></a>
+
+## Indexed LIKE queries (pattern index) ScyllaDB Cloud
+
+#### NOTE
+Pattern Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For more information, see the [Pattern Search documentation](https://docs.scylladb.com/manual/stable/features/pattern-search.md).
+
+This section covers `LIKE` on a column that has a [pattern index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-pattern-index-statement).
+`LIKE` as a filter, available in every deployment, is described in [LIKE Operator](#like-operator).
+The two use the same pattern syntax but otherwise behave differently, for example in result order,
+paging, consistency and case sensitivity; see
+[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/stable/features/pattern-search.md#pattern-search-indexed-vs-filtered) for a comparison.
+
+On a column that has a pattern index, every `LIKE` restriction is served by the index instead of by
+filtering. Such a query does not need `ALLOW FILTERING`; if it is given, it is ignored and the index
+is still used:
+
+```cql
+pattern_query: SELECT ... FROM `table_name`
+               :   WHERE `column_name` LIKE `pattern`
+               :   LIMIT `integer`
+```
+
+Example:
+
+```cql
+SELECT id, code FROM parts
+    WHERE code LIKE '%024%'
+    LIMIT 10;
+```
+
+The rules are:
+
+* The pattern uses the [LIKE](#like-operator) syntax. Which patterns are supported depends on the
+  index node, and a pattern it does not support fails the query with an `InvalidRequest` error.
+* A bind marker may stand for the pattern (`LIKE ?`). The pattern must not be null.
+* `LIMIT` is mandatory and must not exceed 1000. `ORDER BY`, `PER PARTITION LIMIT`, `GROUP BY`,
+  aggregation and any further `WHERE` restriction, including one on the partition key, are not
+  supported.
+* The query is served by the index even with `ALLOW FILTERING`. When the index node is unavailable
+  or does not support the pattern, the query fails.
+
+#### WARNING
+A pattern index changes every `LIKE` on its column, from every application, for as long as the
+index exists: a `LIKE` that worked by filtering before the index was created can fail or return
+different rows afterwards. Dropping the index with [DROP INDEX](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#drop-index-statement) restores
+filtered `LIKE`.
 
 <a id="limit-clause"></a>
 
@@ -679,6 +892,31 @@ The server may use a different execution plan, as long as it arrives at the same
 example, conditions in the WHERE clause will limit the candidate row set first by looking up the
 primary index or a secondary index.
 
+<a id="select-without-from"></a>
+
+## `SELECT` without `FROM` ScyllaDB Extension
+
+The `FROM` clause is optional. When omitted, the `SELECT` statement evaluates the given
+expressions and returns them as a single row, which is useful for evaluating functions or
+computing constant expressions without needing a table. Internally, the statement runs as
+an ordinary select over `system.one_row`, a built-in table with exactly one row.
+
+`*` and `DISTINCT` are not allowed without `FROM`, and there are no columns in
+scope to reference. Aggregate functions operate on the single row, so, for example,
+`count(*)` returns 1.
+
+Examples:
+
+```cql
+SELECT 1 AS one, 'hello' AS greeting;
+SELECT toTimestamp(now()) AS ts;
+SELECT JSON 1, now();
+```
+
+#### NOTE
+`SELECT` without `FROM` is a ScyllaDB CQL extension and is not supported
+by Apache Cassandra.
+
 <a id="bypass-cache"></a>
 
 ## Bypass Cache
@@ -717,6 +955,13 @@ SELECT name, occupation FROM users WHERE userid IN (199, 200, 207) BYPASS CACHE 
 
 The `LIKE` operation on `SELECT` statements informs ScyllaDB that you are looking for a pattern match. The expression ‘column LIKE pattern’ yields true only if the entire column value matches the pattern.
 
+Without an index, `LIKE` is a filter: ScyllaDB reads the rows and checks each value against the
+pattern, so the query requires [ALLOW FILTERING](#allow-filtering). This section describes that
+filtered `LIKE`. On a column with a [pattern index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-pattern-index-statement), `LIKE`
+is served by the index instead, even with `ALLOW FILTERING`, and follows different rules; see
+[Indexed LIKE queries](#pattern-queries) and
+[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/stable/features/pattern-search.md#pattern-search-indexed-vs-filtered).
+
 The search pattern is a string of characters with two wildcards, as shown:
 
 * `_` matches any single character
@@ -728,19 +973,24 @@ The search pattern is a string of characters with two wildcards, as shown:
 #### NOTE
 Only string types (ascii, text, and varchar) are valid for matching
 
-Currently, the match is **case sensitive**. The entire column value must match the pattern.
+A filtered `LIKE` is always **case sensitive**. The entire column value must match the pattern.
 For example, consider the search pattern ‘M%n’ - this will match `Martin`, but will not match `Moonbeam` because the `m` at the end isn’t matched. In addition, `moon` is not matched because `M` is not the same as `m`. Both the pattern and the column value are assumed to be UTF-8 encoded.
+
+To match regardless of letter case, use a pattern index created with `'case_sensitive': 'false'`.
 
 A query can find all values containing some text fragment by matching to an appropriate `LIKE` pattern.
 
 **Differences Between ScyllaDB and Cassandra LIKE Operators**
 
-* In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter.
-* Consequently, ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.
+* In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter,
+  and can also serve it from a [pattern index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-pattern-index-statement).
+* Consequently, a filtered ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.
 * ScyllaDB treats underscore (_) as a wildcard; Cassandra doesn’t.
 * ScyllaDB treats percent (%) as a wildcard anywhere in the pattern; Cassandra only at the beginning/end
 * ScyllaDB interprets backslash (\\) as an escape character; Cassandra doesn’t.
-* Cassandra allows case-insensitive LIKE; ScyllaDB doesn’t (see [#4911](https://github.com/scylladb/scylla/issues/4911)).
+* Cassandra allows case-insensitive LIKE through an option of the SASI index. A filtered ScyllaDB LIKE is always
+  case-sensitive (see [#4911](https://github.com/scylladb/scylla/issues/4911)); case-insensitive matching needs a
+  pattern index created with `'case_sensitive': 'false'`.
 * ScyllaDB allows empty LIKE pattern; Cassandra doesn’t.
 
 **Example A**
@@ -815,6 +1065,106 @@ This table contains some commonly used `LIKE` filters and the matches you can ex
 | %abe%    | Babel, aberration, cabernet, scarabees |
 | \_0%     | 10%, 20%, 50%                          |
 | a%t      | asphalt, adapt, at                     |
+
+<a id="is-null-operator"></a>
+
+## IS NULL and IS NOT NULL Operators
+
+The `IS NULL` and `IS NOT NULL` operators allow you to filter rows based on whether a column value is present or absent.
+
+- `IS NULL` returns rows where the column has no value (is null).
+- `IS NOT NULL` returns rows where the column has a value.
+
+Whether these operators require `ALLOW FILTERING` depends on the column:
+
+- On a **partition key column**, `IS NOT NULL` never requires `ALLOW FILTERING`. Such a column can never be
+  null, so the restriction matches every row and is dropped entirely. Being dropped, it also doesn’t count as
+  restricting the partition key for the rules below. `IS NULL` on a partition key column matches no row, but it
+  is still a restriction, so it requires `ALLOW FILTERING`.
+- On a **clustering key column**, both operators are ordinary restrictions on that column and neither is dropped,
+  because a clustering key column *can* read as null - see below. They therefore need the partition key fully
+  restricted by `=` or `IN` (a `token()` range is not enough) and every preceding clustering key column
+  restricted; otherwise they require `ALLOW FILTERING`.
+- On any **other column** - regular or static - both operators require `ALLOW FILTERING`, because every row’s
+  value has to be inspected. This holds even when the column is indexed: the index is not consulted for a null
+  check.
+
+A clustering key column reads as null in one case: a partition that holds a static row but no clustering rows is
+returned as a single row whose clustering key columns are all null. So on a clustering key column `IS NULL`
+selects exactly those static-only rows, and `IS NOT NULL` selects exactly the clustering rows. In a table with
+no static columns there are no such rows, which makes `IS NULL` match nothing and `IS NOT NULL` match
+everything - but the two are still ordinary restrictions there, subject to the same rules.
+
+```cql
+CREATE TABLE events (p int, c int, v int, PRIMARY KEY (p, c));
+
+-- no ALLOW FILTERING needed: p is a partition key column, so IS NOT NULL is
+-- dropped and this is a full scan
+SELECT * FROM events WHERE p IS NOT NULL;
+
+-- no ALLOW FILTERING needed: the partition key is fixed, so IS [NOT] NULL on
+-- the clustering key is an ordinary clustering key restriction
+SELECT * FROM events WHERE p = 1 AND c IS NOT NULL;
+SELECT * FROM events WHERE p = 1 AND c IS NULL;
+
+-- ALLOW FILTERING needed: no partition key restriction to anchor the
+-- clustering key restriction
+SELECT * FROM events WHERE c IS NOT NULL ALLOW FILTERING;
+SELECT * FROM events WHERE c IS NULL ALLOW FILTERING;
+
+-- ALLOW FILTERING needed: v is a regular column
+SELECT * FROM events WHERE p = 1 AND v IS NULL ALLOW FILTERING;
+```
+
+Like other Scylla filtering predicates, they can also be combined with additional restrictions on the same column.
+The result follows ordinary conjunction semantics: contradictory predicates such as `x IS NULL AND x = 3` match
+no rows, while compatible predicates such as `x IS NOT NULL AND x = 3` work normally.
+
+#### NOTE
+In a materialized view definition `IS NOT NULL` on a base table primary key column is a no-op,
+because a view row is only ever built from a base clustering row, and such a row has a value for every one
+of the base table’s primary key columns. This is why a view definition may name those columns with
+`IS NOT NULL` freely. On a regular base table column
+promoted into the view’s primary key it is *not* a no-op - see **Usage in Materialized Views** below. For
+the `SELECT` rules, which differ between partition key and clustering key columns, see the list above
+rather than this note.
+
+Unlike the other filtering operators, `IS NULL` and `IS NOT NULL` may also be used on non-frozen collection
+columns, because they only test whether the column has a value rather than compare it against one. Note that a
+non-frozen collection with no elements is indistinguishable from a missing one, so an empty collection is
+considered null.
+
+**Example**
+
+```cql
+CREATE TABLE users (id int PRIMARY KEY, name text, email text);
+INSERT INTO users (id, name, email) VALUES (1, 'Alice', 'alice@example.com');
+INSERT INTO users (id, name) VALUES (2, 'Bob');
+
+SELECT * FROM users WHERE email IS NULL ALLOW FILTERING;
+
+ id | email | name
+----+-------+------
+  2 |  null |  Bob
+
+SELECT * FROM users WHERE email IS NOT NULL ALLOW FILTERING;
+
+ id | email             | name
+----+-------------------+-------
+  1 | alice@example.com | Alice
+```
+
+**Usage in Materialized Views**
+
+The `IS NOT NULL` restriction is required in materialized view definitions for all columns that are part of the
+view’s primary key, as primary key columns cannot be null. See [Materialized Views](https://docs.scylladb.com/manual/stable/cql/mv.md#materialized-views) for
+more details. This usage does not require `ALLOW FILTERING`. On a base table primary key column the restriction
+is a no-op, because a view row is only ever built from a base clustering row, and such a row has a value for every
+one of the base table’s primary key columns. On a regular base table column promoted into the view’s primary key it
+is not a no-op: it is what excludes the base rows where that column is null from the view.
+`IS NULL` is not supported in materialized view definitions, and neither operator can be used in a view
+definition on a column that is not part of the view’s primary key - views do not support filtering on non-key
+columns.
 
 [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
 

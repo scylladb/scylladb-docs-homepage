@@ -9,7 +9,7 @@ To avoid data resurrection, make sure that tables are repaired (either with node
 After the repair finishes, any tombstone older than the previous repair can be flushed.
 
 #### NOTE
-Use [this article](https://docs.scylladb.com/manual/stable/troubleshooting/large-partition-table.md) to help you find large partitions.
+Use [this article](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/large-partition-table.md) to help you find large partitions.
 
 ### Steps:
 
@@ -19,7 +19,7 @@ Use [this article](https://docs.scylladb.com/manual/stable/troubleshooting/large
 nodetool repair <options>;
 ```
 
-1. Set  the `gc_grace_seconds` to the time since last repair was started -  For instance, if the last repair was executed one day ago, then set `gc_grace_seconds` to one day (86400sec). For more information, please refer to [this KB article](https://docs.scylladb.com/manual/stable/kb/gc-grace-seconds.md).
+1. Set  the `gc_grace_seconds` to the time since last repair was started -  For instance, if the last repair was executed one day ago, then set `gc_grace_seconds` to one day (86400sec). For more information, please refer to [this KB article](https://docs.scylladb.com/manual/branch-2026.3/kb/gc-grace-seconds.md).
 
 #### NOTE
 To prevent the compaction of unsynched tombstones, it is important to get the timing correctly. If you are not sure what time should set, please contact [ScyllaDB support](https://www.scylladb.com/product/support/).
@@ -40,7 +40,7 @@ nodetool flush <keyspace> <mytable>;
 1. Run compaction (this will remove big partitions with tombstones from specified table)
 
 #### NOTE
-By default, major compaction runs on all the keyspaces and tables, so if we want to specyfy e.g. only one table, we should point at it using arguments: `<keyspace>.<mytable>`. For more information, please see [Nodetool compact](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/compact.md).
+By default, major compaction runs on all the keyspaces and tables, so if we want to specyfy e.g. only one table, we should point at it using arguments: `<keyspace>.<mytable>`. For more information, please see [Nodetool compact](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/compact.md).
 
 ```sh
 nodetool compact <keyspace> <mytable>;

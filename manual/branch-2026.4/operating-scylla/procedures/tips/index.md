@@ -7,10 +7,10 @@
             
 Best Practices for running ScyllaDB
 
-* [Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md)
-* [Production Readiness Guidelines](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/tips/production-readiness.md)
-* [How to Avoid Node Mismanagement](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/tips/avoid-node-mismanagement.md)
-* [Maximizing ScyllaDB Performance](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/tips/benchmark-tips.md)
+* [Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md)
+* [Production Readiness Guidelines](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/tips/production-readiness.md)
+* [How to Avoid Node Mismanagement](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/tips/avoid-node-mismanagement.md)
+* [Maximizing ScyllaDB Performance](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/tips/benchmark-tips.md)
 * [ScyllaDB Monitoring lesson](https://university.scylladb.com/courses/scylla-operations/lessons/scylla-monitoring/) on ScyllaDB University
 
 </div></div>

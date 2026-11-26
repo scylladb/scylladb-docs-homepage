@@ -8,7 +8,7 @@ client certificate Subject/Alt information.
 
 1. Enable authentication
 
-   Enable authentication and define authorized roles in the cluster as described in the [Enable Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authentication.md) document.
+   Enable authentication and define authorized roles in the cluster as described in the [Enable Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md) document.
 2. Enable CQL transport TLS using client certificate verification
 
    Enable CQL transport TLS using client certificate verification in each node by configuring the \`\` client_encryption_options\`\` option in the `/etc/scylla/scylla.yaml` file:
@@ -39,6 +39,6 @@ client certificate Subject/Alt information.
 
 ## Additional Resources
 
-* [Enable Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authentication.md)
-* [Enable Authorization](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/enable-authorization.md)
-* [Authorization](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authorization.md)
+* [Enable Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md)
+* [Enable Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md)
+* [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md)

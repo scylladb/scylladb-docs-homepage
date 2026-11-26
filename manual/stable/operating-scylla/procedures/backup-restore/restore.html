@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/restore.md" />
             
         
 
@@ -365,14 +365,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/procedures/backup-restore/restore.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/restore.md">https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/restore.md</a>.
                         </div>
                     
                     
@@ -390,11 +390,12 @@
 <h2>Choosing a restore method<a class="headerlink" href="#choosing-a-restore-method" title="Link to this heading">¶</a></h2>
 <p>ScyllaDB supports several restore methods. Choose the one that matches where your backup files are and whether the cluster topology changed since the backup was taken:</p>
 <ul class="simple">
+<li><p><a class="reference internal" href="#restore-cluster-backup"><span class="std std-ref">Restore a cluster backup</span></a> - restore a backup made with <a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool cluster backup</span></a> into a tablet-based table. Each replica downloads the SSTables of its own tablets straight from object storage, with no streaming between nodes. Runs on a running cluster.</p></li>
 <li><p><a class="reference internal" href="#restore-object-storage"><span class="std std-ref">Restore from object storage</span></a> - restore SSTables backed up to S3-compatible object storage with <a class="reference internal" href="../../nodetool-commands/backup.html"><span class="doc">nodetool backup</span></a>. Runs on a running cluster and works regardless of cluster topology changes since the backup.</p></li>
 <li><p><a class="reference internal" href="#restore-load-and-stream"><span class="std std-ref">Restore with load and stream</span></a> - upload backed-up SSTable files to a running cluster; the data is streamed to the nodes owning it. Works regardless of cluster topology changes since the backup.</p></li>
 <li><p><a class="reference internal" href="#restore-procedure"><span class="std std-ref">Restore to an identical cluster</span></a> - copy snapshot files back in place and restart the nodes. Requires a cluster with the same number of nodes and the same token distribution as at the time of the backup, and each node must be restored from the backup of the <strong>same node</strong>. Suitable for vnode-based keyspaces only.</p></li>
 </ul>
-<p>For cluster-wide backup and restore, use <a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a>, which orchestrates the process across the cluster.</p>
+<p><a class="reference external" href="https://manager.docs.scylladb.com/stable/restore/">ScyllaDB Manager</a> can also back up and restore the whole cluster, orchestrating the process across the nodes.</p>
 </section>
 <section id="prerequisites">
 <span id="restore-prerequisites"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
@@ -421,6 +422,46 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you are restoring <a class="reference internal" href="../../security/encryption-at-rest.html"><span class="doc">encrypted backup files</span></a>, make sure ScyllaDB is configured with the same keys that were used to encrypt the data before starting the restore process.</p>
+</div>
+</section>
+<section id="restore-a-cluster-backup">
+<span id="restore-cluster-backup"></span><h2>Restore a cluster backup<a class="headerlink" href="#restore-a-cluster-backup" title="Link to this heading">¶</a></h2>
+<p>Use this method to restore a backup made with <a class="reference internal" href="backup.html#backup-native-backup"><span class="std std-ref">nodetool cluster backup</span></a> into a tablet-based table.
+The restore runs as a topology operation: the replicas of each tablet download the SSTables that belong to the tablet
+directly from object storage and attach them, so no data is streamed between nodes. Repaired data that the backup
+stored as a single copy is restored to every replica it was taken from.</p>
+<p>The object storage endpoint must be configured on the nodes, as described in <a class="reference internal" href="../../admin.html#object-storage-configuration"><span class="std std-ref">Configuring Object Storage</span></a>.</p>
+<p>The backup holds the SSTables and their manifests only. It does not include the schema, so the keyspace and table
+must exist before the restore starts: recreate them from the schema backup taken with <code class="docutils literal notranslate"><span class="pre">DESC</span> <span class="pre">SCHEMA</span> <span class="pre">WITH</span> <span class="pre">INTERNALS</span> <span class="pre">AND</span> <span class="pre">PASSWORDS</span></code>,
+as described in the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a>.</p>
+<p>There is no nodetool command for this restore yet. It is started through the REST API
+(see the <a class="reference internal" href="../../../reference/api/storage-service.html"><span class="doc">storage_service API reference</span></a>), with
+<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/storage_service/tablets/restore</span></code>. The query parameters are the destination <code class="docutils literal notranslate"><span class="pre">keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">table</span></code>
+and the <code class="docutils literal notranslate"><span class="pre">snapshot</span></code> name. The request body is a JSON array with one entry per datacenter the keyspace replicates to,
+each giving the <code class="docutils literal notranslate"><span class="pre">datacenter</span></code>, the <code class="docutils literal notranslate"><span class="pre">endpoint</span></code>, <code class="docutils literal notranslate"><span class="pre">bucket</span></code> and <code class="docutils literal notranslate"><span class="pre">prefix</span></code> of the backup location, and <code class="docutils literal notranslate"><span class="pre">manifests</span></code>,
+the paths of the table’s backup manifests relative to that prefix.</p>
+<p><strong>Procedure</strong></p>
+<ol class="arabic">
+<li><p>Complete the <a class="reference internal" href="#restore-prerequisites"><span class="std std-ref">prerequisites</span></a>. The destination table must use tablets; restoring into a vnode-based table fails.</p></li>
+<li><p>Start the restore. For example, for a backup taken with <code class="docutils literal notranslate"><span class="pre">--location</span> <span class="pre">mydc,s3.us-east-2.amazonaws.com,bucket-foo,backups/mysnapshot</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s1">'http://&lt;node&gt;:10000/storage_service/tablets/restore?keyspace=mykeyspace&amp;table=team_roster&amp;snapshot=mysnapshot'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'[{"datacenter": "mydc",</span>
+<span class="s1">        "endpoint": "s3.us-east-2.amazonaws.com",</span>
+<span class="s1">        "bucket": "bucket-foo",</span>
+<span class="s1">        "prefix": "backups/mysnapshot",</span>
+<span class="s1">        "manifests": ["snapshots/mykeyspace/team_roster/mysnapshot/manifest.json"]}]'</span>
+</pre></div>
+</div>
+<p>The call returns the ID of the restore task.</p>
+</li>
+<li><p>Monitor the restore with the <a class="reference internal" href="../../nodetool-commands/tasks/index.html"><span class="doc">nodetool tasks</span></a> commands, for example
+<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">wait</span> <span class="pre">&lt;task</span> <span class="pre">ID&gt;</span></code> to wait for it to finish, or <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">tasks</span> <span class="pre">status</span> <span class="pre">&lt;task</span> <span class="pre">ID&gt;</span></code> to see its progress.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A replica that is down cannot restore its tablets, so the restore fails rather than wait for it.
+Bring the node back, or remove it from the cluster, and run the restore again.</p>
 </div>
 </section>
 <section id="restore-from-object-storage">
@@ -639,7 +680,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Restore from a Backup and Incremental Backup&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Restore from a Backup and Incremental Backup&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -708,7 +749,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Restore from a Backup and Incremental Backup&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Restore from a Backup and Incremental Backup&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/restore%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -730,6 +771,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li><a class="reference internal" href="#">Restore from a Backup and Incremental Backup</a><ul>
 <li><a class="reference internal" href="#choosing-a-restore-method">Choosing a restore method</a></li>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#restore-a-cluster-backup">Restore a cluster backup</a></li>
 <li><a class="reference internal" href="#restore-from-object-storage">Restore from object storage</a></li>
 <li><a class="reference internal" href="#restore-with-load-and-stream">Restore with load and stream</a></li>
 <li><a class="reference internal" href="#restore-to-an-identical-cluster">Restore to an identical cluster</a><ul>
@@ -784,7 +826,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -798,13 +840,13 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
             
                 
                     <li>
-                        <a href="../../../../branch-2026.4/operating-scylla/procedures/backup-restore/restore.html">2026.4</a>
+                        <a href="restore.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="restore.html">2026.3</a>
+                        <a href="../../../../branch-2026.3/operating-scylla/procedures/backup-restore/restore.html">2026.3</a>
                     </li>
                 
             
@@ -851,17 +893,16 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -910,7 +951,6 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l3"><a class="reference internal" href="../tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -923,6 +963,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l3"><a class="reference internal" href="../../security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -952,6 +993,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -989,6 +1031,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../cql/dml/delete.html">DELETE</a></li>
@@ -1005,6 +1048,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1015,6 +1059,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1042,6 +1087,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l2"><a class="reference internal" href="../../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1163,13 +1209,13 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1250,7 +1296,7 @@ drwx------<span class="w"> </span><span class="m">2</span><span class="w"> </spa
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 28 Aug 2026.
+                        Last updated on 23 Oct 2026.
                     
                 </div>
             

@@ -12,12 +12,12 @@ be run, unmodified, against ScyllaDB with Alternator enabled. Alternator’s
 compatibility with DynamoDB is fairly complete, but users should be aware
 of some differences and some unimplemented features. The extent of
 Alternator’s compatibility with DynamoDB is described in the
-[ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/stable/alternator/compatibility.md) document,
+[ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/branch-2026.3/alternator/compatibility.md) document,
 which is updated as the work on Alternator progresses and compatibility
 continues to improve.
 
 Alternator also adds several features and APIs that are not available in
-DynamoDB. These are described in [Alternator-specific APIs](https://docs.scylladb.com/manual/stable/alternator/new-apis.md).
+DynamoDB. These are described in [Alternator-specific APIs](https://docs.scylladb.com/manual/branch-2026.3/alternator/new-apis.md).
 
 ## Running Alternator
 
@@ -40,7 +40,7 @@ interfaces. To listen only on a specific interface, configure also the
 **alternator_address** option.
 
 The meaning of the **alternator_write_isolation** option is explained in the
-“Write isolation policies” section of [Alternator-specific APIs](https://docs.scylladb.com/manual/stable/alternator/new-apis.md).
+“Write isolation policies” section of [Alternator-specific APIs](https://docs.scylladb.com/manual/branch-2026.3/alternator/new-apis.md).
 Alternator has four different choices
 for the implementation of writes, each with different advantages. You should
 carefully consider which of the options makes more sense for your intended

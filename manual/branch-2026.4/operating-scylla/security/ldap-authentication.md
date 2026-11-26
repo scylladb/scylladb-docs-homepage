@@ -8,9 +8,9 @@ By configuring saslauthd correctly against your LDAP server, you enable Scylla t
 **Before You Begin**
 
 This procedure requires you to install and configure saslauthd.
-The general instructions are [here](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/saslauthd.md).
+The general instructions are [here](https://docs.scylladb.com/manual/stable/operating-scylla/security/saslauthd.md).
 
-1. Follow all of the steps in [this procedure](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/saslauthd.md) and use the code snippets below to list LDAP as the authentication mechanism.
+1. Follow all of the steps in [this procedure](https://docs.scylladb.com/manual/stable/operating-scylla/security/saslauthd.md) and use the code snippets below to list LDAP as the authentication mechanism.
 2. You must list LDAP as saslauthd’s authentication mechanism:
 
    rpm-based distros

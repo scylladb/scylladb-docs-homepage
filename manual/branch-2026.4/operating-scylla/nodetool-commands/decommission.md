@@ -11,7 +11,7 @@ Use the `nodetool netstats` command to monitor the progress of the token realloc
 #### NOTE
 You cannot decomission a node if any existing node is down.
 
-See [Remove a Node from a ScyllaDB Cluster (Down Scale)](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/remove-node.md)
+See [Remove a Node from a ScyllaDB Cluster (Down Scale)](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md)
 for procedure details.
 
 Before you run `nodetool decommission`:
@@ -35,13 +35,13 @@ part is done in parallel for all nodes being decommissioned. Then it does the vn
 this part is serialized with other vnode-based operations, including those from other decommission operations.
 
 Decommission which is still in the tablet draining phase can be canceled using Task Manager API.
-See [Task manager](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/task-manager.md).
+See [Task manager](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/task-manager.md).
 
 See also:
 
-* [Remove a Node from a ScyllaDB Cluster (Down Scale)](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/remove-node.md)
-* [Decommissioning a Data Center](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/decommissioning-data-center.md)
-* [Replace a Running Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-running-node.md)
-* [Failed Decommission Troubleshooting](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/failed-decommission.md)
+* [Remove a Node from a ScyllaDB Cluster (Down Scale)](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md)
+* [Decommissioning a Data Center](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/decommissioning-data-center.md)
+* [Replace a Running Node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-running-node.md)
+* [Failed Decommission Troubleshooting](https://docs.scylladb.com/manual/stable/troubleshooting/failed-decommission.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

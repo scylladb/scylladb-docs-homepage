@@ -4,7 +4,7 @@ ScyllaDB exposes a REST API to retrieve administrative information from a node a
 administrative operations. For example, it allows you to check or update configuration,
 retrieve cluster-level information, and more.
 
-The [nodetool](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md) CLI tool uses the REST API
+The [nodetool](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md) CLI tool uses the REST API
 to interact with the ScyllaDB process.
 
 You can interact with the REST API directly using `curl`, ScyllaDB’s CLI for REST API, or the Swagger UI.

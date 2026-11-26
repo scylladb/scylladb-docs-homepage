@@ -48,7 +48,7 @@ For example:
 
 **Procedure**
 
-1. Copy the stack from the [system log](https://docs.scylladb.com/manual/stable/getting-started/logging.md) and place it in a file (trace.txt, for example).
+1. Copy the stack from the [system log](https://docs.scylladb.com/manual/branch-2026.3/getting-started/logging.md) and place it in a file (trace.txt, for example).
    ```none
    Jul 14 16:56:50 hostname01 scylla: Aborting on shard 8.
    Jul 14 16:56:50 hostname01 scylla: Backtrace:

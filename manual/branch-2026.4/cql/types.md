@@ -53,7 +53,7 @@ native_type: ASCII
            : | VARINT
 ```
 
-The following table gives additional information on the native data types and which kind of [constants](https://docs.scylladb.com/manual/branch-2026.4/cql/definitions.md#constants) each type supports:
+The following table gives additional information on the native data types and which kind of [constants](https://docs.scylladb.com/manual/stable/cql/definitions.md#constants) each type supports:
 
 | type             | constants supported     | description                                                                                                                                                          |
 |------------------|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -83,7 +83,7 @@ The following table gives additional information on the native data types and wh
 ### Counters
 
 The `counter` type is used to define *counter columns*. A counter column is a column with a 64-bit signed
-integer value and on which two operations are supported: incrementing and decrementing (see the [UPDATE statement](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/update.md#update-statement) for syntax). Note that the value of a counter cannot be set: a counter does not exist until first
+integer value and on which two operations are supported: incrementing and decrementing (see the [UPDATE statement](https://docs.scylladb.com/manual/stable/cql/dml/update.md#update-statement) for syntax). Note that the value of a counter cannot be set: a counter does not exist until first
 incremented/decremented, and that first increment/decrement is made as if the prior value was 0.
 
 <a id="counter-limitations"></a>
@@ -93,7 +93,7 @@ Counters have a number of important limitations:
 - They cannot be used for columns part of the `PRIMARY KEY` of a table.
 - A table that contains a counter can only contain counters. In other words, either all the columns of a table outside
   the `PRIMARY KEY` have the `counter` type, or none of them have it.
-- Counters do not support expiring data with [Time to Live (TTL)](https://docs.scylladb.com/manual/branch-2026.4/cql/time-to-live.md).
+- Counters do not support expiring data with [Time to Live (TTL)](https://docs.scylladb.com/manual/stable/cql/time-to-live.md).
 - The deletion of counters is supported but is only guaranteed to work the first time you delete a counter. In other
   words, you should not re-update a counter that you have deleted (if you do, proper behavior is not guaranteed).
 - Counter updates are, by nature, **not** [idempotent](https://en.wikipedia.org/wiki/Idempotence). An important
@@ -674,7 +674,7 @@ about Vector Search is available in the
 <!-- other purpose, a value of a custom type is the same than that of a ``blob``, and can in particular be input using the -->
 <!-- :token:`blob` literal syntax. -->
 
-[Apache Cassandra Query Language](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+[Apache Cassandra Query Language](https://docs.scylladb.com/manual/stable/cql/index.md)
 
 Copyright
 

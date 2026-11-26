@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/ddl.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md">https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md">https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md</a>.
                         </div>
                     
                     
@@ -463,6 +463,9 @@ details below).</p></td>
 </tr>
 </tbody>
 </table>
+<p>A keyspace also accepts the options that can be set through CQL at the <code class="docutils literal notranslate"><span class="pre">KEYSPACE</span></code> scope, such as
+<code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code> and <code class="docutils literal notranslate"><span class="pre">auto_repair_threshold_in_seconds</span></code>; setting one to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> removes it from the keyspace. See
+<a class="reference internal" href="cluster-config.html"><span class="doc">configuring a cluster with CQL</span></a>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property is optional. Omitting it is equivalent to supplying an empty map (<code class="docutils literal notranslate"><span class="pre">replication</span> <span class="pre">=</span> <span class="pre">{}</span></code>),
 and default value will be applied for each sub-option.
 The <code class="docutils literal notranslate"><span class="pre">replication</span></code> property contains the <code class="docutils literal notranslate"><span class="pre">'class'</span></code> sub-option, which defines the replication strategy class to use.
@@ -1165,6 +1168,16 @@ it is an optimization to declare a descending clustering order.</p></li>
 <td><p>2048</p></td>
 <td><p>Not implemented (option value is ignored).</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">auto_repair_enabled</span></code></p></td>
+<td><p>simple</p></td>
+<td><p>inherited</p></td>
+<td><p>Enable automatic repair for tablet-based tables. When not set for the table, the keyspace or cluster value applies. Set to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> to remove the table setting. See <a class="reference internal" href="cluster-config.html"><span class="doc">configuring a cluster with CQL</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">auto_repair_threshold_in_seconds</span></code></p></td>
+<td><p>simple</p></td>
+<td><p>inherited</p></td>
+<td><p>Time in seconds since the start of the last successful repair of a tablet of the table after which it is eligible for automatic repair. A repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. <code class="docutils literal notranslate"><span class="pre">0</span></code> disables time-based automatic repair. When not set for the table, the keyspace or cluster value applies. Set to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> to remove the table setting. See <a class="reference internal" href="cluster-config.html"><span class="doc">configuring a cluster with CQL</span></a>.</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compaction</span></code></p></td>
 <td><p>map</p></td>
 <td><p>see below</p></td>
@@ -1241,15 +1254,23 @@ the coordinator queries an additional replica.</p></td>
 <p>This setting does not affect reads with consistency level <code class="docutils literal notranslate"><span class="pre">ALL</span></code> because they already query all replicas.</p>
 <p>Note that frequently reading from additional replicas can hurt cluster performance.
 When in doubt, keep the default <code class="docutils literal notranslate"><span class="pre">99PERCENTILE</span></code>.</p>
+<p>The default value for newly created tables which do not specify <code class="docutils literal notranslate"><span class="pre">speculative_retry</span></code>
+(<code class="docutils literal notranslate"><span class="pre">99PERCENTILE</span></code>) can be changed with the <code class="docutils literal notranslate"><span class="pre">speculative_retry_user_table_default</span></code>
+configuration option in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>. The option applies at table creation time
+only; changing it does not affect already existing tables. The value used for a new
+table is taken from the node that coordinates its creation, so the option should be
+set identically on all nodes.</p>
 </section>
 <section id="compaction-options">
 <span id="cql-compaction-options"></span><h5>Compaction options<a class="headerlink" href="#compaction-options" title="Link to this heading">¶</a></h5>
 <p>The <code class="docutils literal notranslate"><span class="pre">compaction</span></code> options must at least define the <code class="docutils literal notranslate"><span class="pre">'class'</span></code> sub-option, which defines the compaction strategy class
-to use. The default supported class are <code class="docutils literal notranslate"><span class="pre">'SizeTieredCompactionStrategy'</span></code>,
-<code class="docutils literal notranslate"><span class="pre">'LeveledCompactionStrategy'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'IncrementalCompactionStrategy'</span></code>.
+to use. The default supported class are <code class="docutils literal notranslate"><span class="pre">'IncrementalCompactionStrategy'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'LeveledCompactionStrategy'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'TimeWindowCompactionStrategy'</span></code>.
+<code class="docutils literal notranslate"><span class="pre">'SizeTieredCompactionStrategy'</span></code> is deprecated and is an alias of
+<code class="docutils literal notranslate"><span class="pre">'IncrementalCompactionStrategy'</span></code>.
 Custom strategy can be provided by specifying the full class name as a <a class="reference internal" href="definitions.html#constants"><span class="std std-ref">string constant</span></a>.</p>
 <p>All default strategies support a number of common options, as well as options specific to
-the strategy chosen (see the section corresponding to your strategy for details: <a class="reference internal" href="compaction.html#stcs-options"><span class="std std-ref">STCS</span></a>, <a class="reference internal" href="compaction.html#lcs-options"><span class="std std-ref">LCS</span></a>, <a class="reference internal" href="compaction.html#ics-options"><span class="std std-ref">ICS</span></a>, and <a class="reference internal" href="compaction.html#twcs-options"><span class="std std-ref">TWCS</span></a>).</p>
+the strategy chosen (see the section corresponding to your strategy for details: <a class="reference internal" href="compaction.html#ics-options"><span class="std std-ref">ICS</span></a>, <a class="reference internal" href="compaction.html#lcs-options"><span class="std std-ref">LCS</span></a>, <a class="reference internal" href="compaction.html#twcs-options"><span class="std std-ref">TWCS</span></a>, and <a class="reference internal" href="compaction.html#stcs-options"><span class="std std-ref">STCS</span></a>).</p>
 </section>
 <section id="compression-options">
 <span id="cql-compression-options"></span><h5>Compression options<a class="headerlink" href="#compression-options" title="Link to this heading">¶</a></h5>
@@ -1568,7 +1589,8 @@ data the cluster contains) time operation.</p></li>
 <li><p>Remove column(s) from the table. This drops both the column and all its content, but note that while the column
 becomes immediately unavailable, its content is only removed lazily during compaction. Please also note the warnings
 below. Due to lazy removal, the altering itself is a constant (in the amount of data removed or contained in the
-cluster) time operation.</p></li>
+cluster) time operation. A column that an index or a materialized view uses cannot be removed; drop the index or
+the view first.</p></li>
 <li><p>Change data type of the column to a compatible type.</p></li>
 <li><p>Change some of the table options (through the <code class="docutils literal notranslate"><span class="pre">WITH</span></code> instruction). The <a class="reference internal" href="#create-table-options"><span class="std std-ref">supported options</span></a> are the same that when creating a table (outside of <code class="docutils literal notranslate"><span class="pre">COMPACT</span> <span class="pre">STORAGE</span></code> and <code class="docutils literal notranslate"><span class="pre">CLUSTERING</span>
 <span class="pre">ORDER</span></code> that cannot be changed after creation). Note that setting any <code class="docutils literal notranslate"><span class="pre">compaction</span></code> sub-options has the effect of
@@ -1633,7 +1655,8 @@ operation is a no-op.</p>
 <p>A table can be truncated using the <code class="docutils literal notranslate"><span class="pre">TRUNCATE</span></code> statement:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">truncate_statement</span><span class="p">:</span> <span class="k">TRUNCATE</span> <span class="p">[</span> <span class="k">TABLE</span> <span class="p">]</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
                   <span class="p">:</span> <span class="p">[</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="o">`</span><span class="n">timeout</span><span class="o">`</span> <span class="p">]</span>
-<span class="n">timeout</span><span class="p">:</span> <span class="o">`</span><span class="n">duration</span><span class="o">`</span>
+<span class="n">timeout</span><span class="p">:</span> <span class="o">`</span><span class="n">duration</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span>
+<span class="n">bind_marker</span><span class="p">:</span> <span class="s1">'?'</span> <span class="o">|</span> <span class="s1">':'</span> <span class="o">`</span><span class="n">identifier</span><span class="o">`</span>
 </pre></div>
 </div>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">TRUNCATE</span> <span class="pre">TABLE</span> <span class="pre">foo</span></code> is allowed for consistency with other DDL statements, but tables are the only object
@@ -1642,6 +1665,10 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <p>The <code class="docutils literal notranslate"><span class="pre">USING</span> <span class="pre">TIMEOUT</span></code> clause allows specifying a timeout for a specific request.</p>
 <p>For example:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="k">users</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="mf">5</span><span class="n">m</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In a prepared statement, the timeout can be given as a bind marker:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">TRUNCATE</span> <span class="k">TABLE</span> <span class="k">users</span> <span class="k">USING</span> <span class="n">TIMEOUT</span> <span class="o">?</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="admonition caution">
@@ -1689,7 +1716,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1758,7 +1785,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Data Definition&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/ddl%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1876,7 +1903,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1890,13 +1917,13 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 
                     <li>
-                        <a href="../../branch-2026.4/cql/ddl.html">2026.4</a>
+                        <a href="ddl.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="ddl.html">2026.3</a>
+                        <a href="../../branch-2026.3/cql/ddl.html">2026.3</a>
                     </li>
                 
             
@@ -1943,17 +1970,16 @@ that can be truncated currently and so the <code class="docutils literal notrans
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -2002,7 +2028,6 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -2015,6 +2040,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -2044,6 +2070,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -2081,6 +2108,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/delete.html">DELETE</a></li>
@@ -2097,6 +2125,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -2107,6 +2136,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -2134,6 +2164,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -2255,13 +2286,13 @@ that can be truncated currently and so the <code class="docutils literal notrans
 <li class="toctree-l2"><a class="reference internal" href="../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -2342,7 +2373,7 @@ that can be truncated currently and so the <code class="docutils literal notrans
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 10 Sep 2026.
+                        Last updated on 19 Oct 2026.
                     
                 </div>
             

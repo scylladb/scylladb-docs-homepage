@@ -2,7 +2,7 @@
 
 # Incremental Repair
 
-ScyllaDB’s standard [repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/maintenance/repair.md) process scans and processes all the data on a node, regardless of whether it has changed since the last repair. This operation can be resource-intensive and time-consuming. The Incremental Repair feature provides a much more efficient and lightweight alternative for maintaining data consistency.
+ScyllaDB’s standard [repair](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/maintenance/repair.md) process scans and processes all the data on a node, regardless of whether it has changed since the last repair. This operation can be resource-intensive and time-consuming. The Incremental Repair feature provides a much more efficient and lightweight alternative for maintaining data consistency.
 
 The core idea of incremental repair is to repair only the data that has been written or changed since the last repair was run. It intelligently skips data that has already been verified, dramatically reducing the time, I/O, and CPU resources required for the repair operation.
 
@@ -45,7 +45,7 @@ curl -X POST "http://127.0.0.1:10000/storage_service/tablets/repair?ks=ks1&table
 * **Reduced Resource Usage:** Consumes significantly less CPU, I/O, and network bandwidth compared to a full repair.
 * **More Frequent Repairs:** The efficiency of incremental repair allows you to run it more frequently, ensuring a higher level of data consistency across your cluster at all times.
 
-Tables using Incremental Repair can schedule repairs in ScyllaDB itself, with [Automatic Repair](https://docs.scylladb.com/manual/branch-2026.4/features/automatic-repair.md).
+Tables using Incremental Repair can schedule repairs in ScyllaDB itself, with [Automatic Repair](https://docs.scylladb.com/manual/stable/features/automatic-repair.md).
 
 ## Notes
 

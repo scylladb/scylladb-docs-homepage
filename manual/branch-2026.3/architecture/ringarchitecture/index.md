@@ -4,11 +4,11 @@ ScyllaDB is a database that scales out and up. ScyllaDB adopted much of its dist
 
 In the world of big data, a single node cannot hold the entire dataset and thus, a cluster of nodes is needed.
 
-A ScyllaDB [cluster](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Cluster) is a collection of [nodes](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Node), or ScyllaDB instances, visualized as a ring. All of the nodes should be homogeneous using a shared-nothing approach. This article describes the design that determines how data is distributed among the cluster members.
+A ScyllaDB [cluster](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Cluster) is a collection of [nodes](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Node), or ScyllaDB instances, visualized as a ring. All of the nodes should be homogeneous using a shared-nothing approach. This article describes the design that determines how data is distributed among the cluster members.
 
-A ScyllaDB [keyspace](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Keyspace) is a collection of tables with attributes that define how data is replicated on nodes.   A keyspace is analogous to a database in SQL. When a new keyspace is created, the user sets a numerical attribute, the [replication factor](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Replication-Factor-RF), that defines how data is replicated on nodes. For example, an  of 2 means a given token or token range will be stored on 2 nodes (or replicated on one additional node).   We will use an RF value of 2 in our examples.
+A ScyllaDB [keyspace](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Keyspace) is a collection of tables with attributes that define how data is replicated on nodes.   A keyspace is analogous to a database in SQL. When a new keyspace is created, the user sets a numerical attribute, the [replication factor](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Replication-Factor-RF), that defines how data is replicated on nodes. For example, an  of 2 means a given token or token range will be stored on 2 nodes (or replicated on one additional node).   We will use an RF value of 2 in our examples.
 
-A [table](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Table) is a standard collection of columns and rows, as defined by a schema. Subsequently, when a table is created, using CQL (Cassandra Query Language) within a keyspace, a primary key is defined out of a subset of the table’s columns.
+A [table](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Table) is a standard collection of columns and rows, as defined by a schema. Subsequently, when a table is created, using CQL (Cassandra Query Language) within a keyspace, a primary key is defined out of a subset of the table’s columns.
 
 The table in the diagram below can thus be defined in CQL as follows:
 
@@ -23,21 +23,21 @@ CREATE TABLE users (
 );
 ```
 
-In a CQL table definition, the [primary key](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Primary-Key) clause specifies, at a minimum, a single column [partition key](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Partition-Key) and may also specify [clustering key](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Clustering-Key) columns.  The primary key uniquely identifies each partition/row combination in the table, while the clustering keys dictate how the data (rows) are sorted within a given partition. For more information, see our CQL [documentation](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-statement).
+In a CQL table definition, the [primary key](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Primary-Key) clause specifies, at a minimum, a single column [partition key](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Partition-Key) and may also specify [clustering key](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Clustering-Key) columns.  The primary key uniquely identifies each partition/row combination in the table, while the clustering keys dictate how the data (rows) are sorted within a given partition. For more information, see our CQL [documentation](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#create-table-statement).
 
 A **row** is a container for columns associated with a primary key.   In other words, a primary key represents one or more columns needed to fetch data from a CQL table.
 
 ![image](architecture/ringarchitecture/ring-architecture-1.png)
 
-A [token](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Token) is a value in a range, used to identify both nodes and partitions.  The [partition key](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Partition-Key) is the unique identifier for a partition, and represented as a token which is hashed from the [primary key](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Primary-Key).
+A [token](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Token) is a value in a range, used to identify both nodes and partitions.  The [partition key](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Partition-Key) is the unique identifier for a partition, and represented as a token which is hashed from the [primary key](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Primary-Key).
 
-A [partition](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Partition) is a subset of data that is stored on a node and replicated across nodes.   There are two ways to consider a partition.  In **CQL**, a partition appears as a group of sorted rows, and is the unit of access for queried data, given that most queries access a single partition. On the **physical layer**, a partition is a unit of data stored on a node and is identified by a [partition key](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Partition-Key).
+A [partition](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Partition) is a subset of data that is stored on a node and replicated across nodes.   There are two ways to consider a partition.  In **CQL**, a partition appears as a group of sorted rows, and is the unit of access for queried data, given that most queries access a single partition. On the **physical layer**, a partition is a unit of data stored on a node and is identified by a [partition key](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Partition-Key).
 
 In the diagram above,  there are 3 partitions shown, with the partition keys of **101**, **103**, and **104**.
 
-A [partition key](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Partition-Key) is the primary means of looking up a set of rows that comprise a partition.  A partition key serves to identify the node in the cluster that stores a given partition, as well as to distribute data across nodes in a cluster.
+A [partition key](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Partition-Key) is the primary means of looking up a set of rows that comprise a partition.  A partition key serves to identify the node in the cluster that stores a given partition, as well as to distribute data across nodes in a cluster.
 
-The [partitioner](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Partitioner), or **partition hash function**, using a partition key, determines where data is stored on a given node in the cluster.  It does this by computing a token for each partition key. By default, the partition key is hashed using the Murmur3 hashing function.
+The [partitioner](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Partitioner), or **partition hash function**, using a partition key, determines where data is stored on a given node in the cluster.  It does this by computing a token for each partition key. By default, the partition key is hashed using the Murmur3 hashing function.
 
 ![image](architecture/ringarchitecture/ring-architecture-2.png)
 
@@ -53,7 +53,7 @@ ScyllaDB, by default, uses the Murmur3 partitioner. With the MurmurHash3 functio
 
 In the drawing above, each number represents a token range.  With a replication factor of 2, we see that each node holds one range from the previous node, and one range from the next node.
 
-Note, however, that ScyllaDB exclusively uses a Vnode-oriented architecture.  A [Virtual node](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Virtual-node) represents a contiguous range of tokens owned by a single ScyllaDB node.  A physical node may be assigned multiple, non-contiguous Vnodes.
+Note, however, that ScyllaDB exclusively uses a Vnode-oriented architecture.  A [Virtual node](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Virtual-node) represents a contiguous range of tokens owned by a single ScyllaDB node.  A physical node may be assigned multiple, non-contiguous Vnodes.
 
 ScyllaDB’s implementation of a Vnode oriented architecture provides several advantages.  First of all, rebalancing a cluster is no longer required when adding or removing nodes. Secondly, as rebuilding can stream data from all available nodes (instead of just the nodes where data would reside on a one-token-per-node setup), ScyllaDB can rebuild faster.
 
@@ -65,7 +65,7 @@ You can use the `nodetool` command to describe different aspects of your nodes, 
 
 `$ nodetool ring <keyspace>`
 
-Outputs all tokens of a node, and displays the [token ring information](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/ring.md).  It produces output as follows for a single datacenter:
+Outputs all tokens of a node, and displays the [token ring information](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/ring.md).  It produces output as follows for a single datacenter:
 
 ```shell
 Datacenter: datacenter1

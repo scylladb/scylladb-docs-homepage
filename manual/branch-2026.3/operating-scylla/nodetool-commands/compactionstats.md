@@ -28,4 +28,4 @@ minor            nba        player_stats    18569428       3610548974    bytes  
 | unit                  | Compaction unit type             |
 | progress              | Compaction progress %            |
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

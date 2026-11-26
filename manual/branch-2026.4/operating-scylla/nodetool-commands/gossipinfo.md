@@ -27,4 +27,4 @@ X2:cycling.race_times:0.000000;system_traces.node_slow_log_time_idx:0.000000;sys
  STATUS:NORMAL,983672177588923514
 ```
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

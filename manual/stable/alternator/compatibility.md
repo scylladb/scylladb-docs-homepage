@@ -158,6 +158,17 @@ key ID, and the *salted hash* of the role’s password is the secret key.
 This secret key for role XYZ can be retrieved by the CQL request
 `SELECT salted_hash from system.roles WHERE role = XYZ;`.
 
+Alternator also supports mutual TLS (mTLS) as an alternative authentication
+method. When the HTTPS port is configured with `require_client_auth=true` or
+`require_client_auth=optional` (via `--alternator-encryption-options`), clients
+that present a valid certificate are authenticated using the subject fields
+(DN or SAN) of that certificate as the username — no SigV4 signature is
+required or checked. With `require_client_auth=true` client certificates are
+mandatory; with `require_client_auth=optional` they are optional, allowing both
+mTLS and SigV4 clients to share the same port. See the
+[Mutual TLS (mTLS) for Alternator](https://docs.scylladb.com/manual/stable/alternator/alternator.md#mutual-tls-mtls-for-alternator)
+section for full configuration details.
+
 Alternator also implements authorization, or *access control* - defining
 which authenticated user is allowed to do which operation, such as reading
 or writing to a specific table. The way this is supported in Alternator is
@@ -407,6 +418,11 @@ they should be easy to detect. Here is a list of these unimplemented features:
   index. This option is not yet respected by Alternator - all attributes
   are projected. This wastes some disk space when it is not needed.
   [https://github.com/scylladb/scylla/issues/5036](https://github.com/scylladb/scylla/issues/5036)
+* The deprecated `KeyConditions` parameter of `Query` works only on
+  single-attribute keys. Using it to query a composite GSI fails with a
+  `ValidationException`. Use `KeyConditionExpression` instead - AWS
+  recommends it for all new applications anyway.
+  [https://github.com/scylladb/scylladb/issues/31393](https://github.com/scylladb/scylladb/issues/31393)
 * DynamoDB’s multi-item transaction feature (TransactWriteItems,
   TransactGetItems) is not supported. Note that the older single-item
   conditional updates feature are fully supported.
@@ -435,7 +451,7 @@ they should be easy to detect. Here is a list of these unimplemented features:
   [https://github.com/scylladb/scylla/issues/5063](https://github.com/scylladb/scylla/issues/5063)
 * Continuous backup (the ability to restore any point in time) is also not
   supported: UpdateContinuousBackups, DescribeContinuousBackups,
-  RestoreTableToPointInTime
+  RestoreTableToPointInTime.
 * DynamoDB’s encryption-at-rest settings are not supported. The Encryption-
   at-rest feature is available in ScyllaDB, but needs to be
   enabled and configured separately, not through the DynamoDB API.
@@ -499,6 +515,3 @@ they should be easy to detect. Here is a list of these unimplemented features:
   that can be used to achieve consistent reads on global (multi-region) tables.
   This table option was added as a preview to DynamoDB in December 2024.
   [https://github.com/scylladb/scylladb/issues/21852](https://github.com/scylladb/scylladb/issues/21852)
-* Alternator does not support multi-attribute (composite) keys in GSIs.
-  This feature was added to DynamoDB in November 2025.
-  [https://github.com/scylladb/scylladb/issues/27182](https://github.com/scylladb/scylladb/issues/27182)

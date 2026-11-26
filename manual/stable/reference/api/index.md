@@ -2,7 +2,6 @@
 
 * [Authorization Cache](https://docs.scylladb.com/manual/stable/reference/api/authorization-cache.md)
 * [Cache Service](https://docs.scylladb.com/manual/stable/reference/api/cache-service.md)
-* [Collectd](https://docs.scylladb.com/manual/stable/reference/api/collectd.md)
 * [Column Family](https://docs.scylladb.com/manual/stable/reference/api/column-family.md)
 * [Commit Log](https://docs.scylladb.com/manual/stable/reference/api/commit-log.md)
 * [Compaction Manager](https://docs.scylladb.com/manual/stable/reference/api/compaction-manager.md)

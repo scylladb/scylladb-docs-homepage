@@ -48,4 +48,4 @@ ICS garbage collection is enabled by default.
 As in STCS, you can use the compaction options `tombstone_threshold` and `tombstone_compaction_interval` to tweak the behavior
 of the GC process.
 
-See the ScyllaDB documentation for a full description of [Compaction](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md).
+See the ScyllaDB documentation for a full description of [Compaction](https://docs.scylladb.com/manual/stable/cql/compaction.md).

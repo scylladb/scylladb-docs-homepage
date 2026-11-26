@@ -26,4 +26,4 @@ Max                  8365.00          21873.00         208960.00
 | Write Latency | Write latency                   |
 | Range Latency | Range scan latency for the node |
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

@@ -18,7 +18,7 @@ Check the node status from the other nodes in the cluster to verify that the sta
 #### NOTE
 The `nodetool netstats` command does not show ongoing streaming.
 
-The following error message will appear in the [logs](https://docs.scylladb.com/manual/branch-2026.4/getting-started/logging.md):
+The following error message will appear in the [logs](https://docs.scylladb.com/manual/stable/getting-started/logging.md):
 
 ```shell
 nodetool: ScyllaDB API server HTTP POST to URL '/storage_service/decommission' failed: stream_ranges failed
@@ -41,4 +41,4 @@ nodetool: ScyllaDB API server HTTP POST to URL '/storage_service/decommission' f
 2. Run the `nodetool status` command to verify the node is in `UN` status.
 3. Run `nodetool decommission` again.
 
-[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)

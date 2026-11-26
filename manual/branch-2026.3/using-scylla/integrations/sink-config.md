@@ -264,4 +264,4 @@ Since these servers are just used for the initial connection to discover the ful
 
 ## Additional References
 
-* [Kafka Sink Connector Quickstart](https://docs.scylladb.com/manual/stable/using-scylla/integrations/kafka-connector.md)
+* [Kafka Sink Connector Quickstart](https://docs.scylladb.com/manual/branch-2026.3/using-scylla/integrations/kafka-connector.md)

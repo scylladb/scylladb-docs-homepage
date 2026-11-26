@@ -336,7 +336,7 @@ mvn exec:java
 
 For more compatibility information check [ScyllaDB status](http://www.scylladb.com/technology/status/)
 
-[Knowledge Base](https://docs.scylladb.com/manual/branch-2026.4/kb/index.md)
+[Knowledge Base](https://docs.scylladb.com/manual/stable/kb/index.md)
 
 Copyright
 

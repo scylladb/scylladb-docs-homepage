@@ -79,12 +79,16 @@ Where `mutation_source_kind` is one of:
 * `memtable`
 * `row-cache`
 * `sstable`
+* `logstor-cache`
+* `logstor-log`
 
 And the `mutation_source_id` is used to distinguish individual mutation sources of the same kind, where applicable:
 
 * `memtable` - a numeric id, starting from `0`
 * `row-cache` - N/A, there is only a single cache per table
 * `sstable` - the path of the sstable
+* `logstor-cache` - N/A, there is only a single cache per table
+* `logstor-log` - the path of the log file, followed by the id of the segment holding the record
 
 #### partition_region
 
@@ -153,6 +157,10 @@ The reason for extracting this out into a separate column, is to allow deselecti
 Data is read locally, from the node which receives the query, so replica is always the same node as the coordinator.
 The query cannot be migrated between nodes. If a query is paged, all its pages have to be served by the same coordinator. This is enforced, and any attempt to migrate the query to another coordinator will result in the query being aborted.
 Note that by default, drivers use round robin load balancing policies, and consequently they will attempt to read each page from a different coordinator.
+
+On strongly consistent tables the statement is accepted only with consistency level `ONE` or `LOCAL_ONE`.
+It reads the local replica as it is, with no read barrier, so its result is not linearizable.
+`QUORUM` and `LOCAL_QUORUM`, which promise a linearizable read on such tables, are rejected.
 
 The statement can output rows with a non-full clustering prefix.
 

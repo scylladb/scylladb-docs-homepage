@@ -8,7 +8,7 @@ have multiple keyspaces in case your application has different replication requi
 #### NOTE
 Schema updates require at least a quorum of nodes in a cluster to be available.
 If the quorum is lost, it must be restored before a schema is updated.
-See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/handling-node-failures.md) for details.
+See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
 
 This section describes the statements used to create, modify, and remove keyspaces and tables.
 
@@ -82,7 +82,7 @@ option: `identifier` '=' ( `identifier` | `constant` | `map_literal` )
 
 <a id="create-keyspace-statement"></a>
 
-In all cases, for creating keyspaces and tables, if you are using [reserved keywords](https://docs.scylladb.com/manual/branch-2026.4/cql/appendices.md#appendix-a), enclose them in single or double-quotes.
+In all cases, for creating keyspaces and tables, if you are using [reserved keywords](https://docs.scylladb.com/manual/stable/cql/appendices.md#appendix-a), enclose them in single or double-quotes.
 
 ## CREATE KEYSPACE
 
@@ -111,7 +111,7 @@ The supported `options` are:
 
 A keyspace also accepts the options that can be set through CQL at the `KEYSPACE` scope, such as
 `auto_repair_enabled` and `auto_repair_threshold_in_seconds`; setting one to `NULL` removes it from the keyspace. See
-[configuring a cluster with CQL](https://docs.scylladb.com/manual/branch-2026.4/cql/cluster-config.md).
+[configuring a cluster with CQL](https://docs.scylladb.com/manual/stable/cql/cluster-config.md).
 
 The `replication` property is optional. Omitting it is equivalent to supplying an empty map (`replication = {}`),
 and default value will be applied for each sub-option.
@@ -150,7 +150,7 @@ associated replication factor. Options:
 
 If no datacenters are specified, and `replication_factor` is left unspecified,
 then every rack in every datacenter receives a replica, except for racks comprised
-of only [zero-token nodes](https://docs.scylladb.com/manual/branch-2026.4/architecture/zero-token-nodes.md). Racks added after
+of only [zero-token nodes](https://docs.scylladb.com/manual/stable/architecture/zero-token-nodes.md). Racks added after
 the keyspace creation do not receive replicas.
 
 When `enforce_rack_list` (or (deprecated) `rf_rack_valid_keyspaces`) is enabled in the config and the keyspace is tablet-based,
@@ -256,8 +256,8 @@ By default, a keyspace is created with tablets enabled. You can use the `tablets
 to opt out a keyspace from tablets-based distribution.
 
 You may want to opt out if you plan to use features that are not supported for keyspaces
-with tablets enabled. Keyspaces using tablets must also remain [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace)
-throughout their lifetime. See [Limitations and Unsupported Features](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md#tablets-limitations)
+with tablets enabled. Keyspaces using tablets must also remain [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace)
+throughout their lifetime. See [Limitations and Unsupported Features](https://docs.scylladb.com/manual/stable/architecture/tablets.md#tablets-limitations)
 for details.
 
 **The** `initial` **sub-option (deprecated)**
@@ -283,14 +283,14 @@ WITH replication = {
 Note that the `initial` tablets option was deprecated.
 Please use [Per-table tablet options](#cql-per-table-tablet-options) instead.
 
-See [Data Distribution with Tablets](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md) for more information about tablets.
+See [Data Distribution with Tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md) for more information about tablets.
 
 ### Keyspace storage options
 
 By default, SStables of a keyspace are stored locally.
 As an alternative, you can configure your keyspace to be stored
 on Amazon S3 or another S3-compatible object store.
-See [Keyspace storage options](https://docs.scylladb.com/manual/branch-2026.4/cql/cql-extensions.md#cql-keyspace-storage-options) for details.
+See [Keyspace storage options](https://docs.scylladb.com/manual/stable/cql/cql-extensions.md#cql-keyspace-storage-options) for details.
 
 <a id="consistency-option"></a>
 
@@ -345,7 +345,7 @@ Modifying a keyspace with tablets enabled is possible and doesn’t require any 
 - An RF change cannot be requested while another RF change is pending for the same keyspace. Attempting to execute an `ALTER` statement in this scenario will fail with an explicit error. Wait for the ongoing RF change to complete before issuing another `ALTER` statement.
 - The `ALTER` statement may take longer than the regular query timeout, and even if it times out, it will continue to execute in the background.
 - The replication strategy cannot be modified, as keyspaces with tablets only support `NetworkTopologyStrategy`.
-- The `ALTER` statement will fail if it would make the keyspace [RF-rack-invalid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace).
+- The `ALTER` statement will fail if it would make the keyspace [RF-rack-invalid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace).
 - After the `ALTER` statement that increases the RF finishes, client applications should be restarted. Without a restart, drivers will not know about new replicas, which may cause request imbalance.
 
 <a id="rack-list-rf"></a>
@@ -397,7 +397,7 @@ ALTER KEYSPACE Excelsior
 
 Altering from a rack list to a numeric replication factor is not supported.
 
-Keyspaces which use rack lists are [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace) if each rack in the rack list contains at least one node (excluding [zero-token nodes](https://docs.scylladb.com/manual/branch-2026.4/architecture/zero-token-nodes.md)).
+Keyspaces which use rack lists are [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace) if each rack in the rack list contains at least one node (excluding [zero-token nodes](https://docs.scylladb.com/manual/stable/architecture/zero-token-nodes.md)).
 
 <a id="conversion-to-rack-list-rf"></a>
 
@@ -463,7 +463,7 @@ functions in it, and all the data contained in those tables.
 
 #### NOTE
 By default, when a table or a keyspace is removed, a snapshot is taken so that you can restore it later. As a result, the disk space remains the same and is not immediately reclaimed.
-Refer to [this article](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/drop-table-space-up.md) or this [FAQ entry](https://docs.scylladb.com/manual/branch-2026.4/faq.md#reclaim-space).
+Refer to [this article](https://docs.scylladb.com/manual/stable/troubleshooting/drop-table-space-up.md) or this [FAQ entry](https://docs.scylladb.com/manual/stable/faq.md#reclaim-space).
 
 If the keyspace does not exist, the statement will return an error unless `IF EXISTS` is used, in which case the
 operation is a no-op.
@@ -574,7 +574,7 @@ it is used, the statement will be a no-op if the table already exists.
 Every row in a CQL table has a set of predefined columns defined at the time of the table creation (or added later
 using an [alter statement](#alter-table-statement)).
 
-A `column_definition` is primarily comprised of the name of the column defined and its [type](https://docs.scylladb.com/manual/branch-2026.4/cql/types.md#id1),
+A `column_definition` is primarily comprised of the name of the column defined and its [type](https://docs.scylladb.com/manual/stable/cql/types.md#id1),
 which restricts which values are accepted for that column. Additionally, a column definition can have the following
 modifiers:
 
@@ -793,7 +793,7 @@ clustering columns using the `ASC` modifier.
 Note that this option is basically a hint for the storage engine to change the order in which it stores the row, but it
 has three visible consequences:
 
-- it limits which `ORDER BY` clause is allowed for [selects](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#select-statement) on that table. You can only
+- it limits which `ORDER BY` clause is allowed for [selects](https://docs.scylladb.com/manual/stable/cql/dml/select.md#select-statement) on that table. You can only
   order results by the clustering order or the reverse clustering order. Meaning that if a table has two clustering columns
   `a` and `b`,  and you define `WITH CLUSTERING ORDER (a DESC, b ASC)`, then in queries, you will be allowed to use
   `ORDER BY (a DESC, b ASC)` and (reverse clustering order) `ORDER BY (a ASC, b DESC)` but **not** `ORDER BY (a
@@ -811,25 +811,25 @@ has three visible consequences:
 
 A table supports the following options:
 
-| Option                             | Kind   | Default      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-|------------------------------------|--------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `comment`                          | simple | none         | A free-form, human-readable comment.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `speculative_retry`                | simple | 99PERCENTILE | [Speculative retry options](#speculative-retry-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `gc_grace_seconds`                 | simple | 864000       | Time to wait before garbage collecting tombstones (deletion markers). See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `tombstone_gc`                     | mode   | see below    | The mode of garbage collecting tombstones. See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `bloom_filter_fp_chance`           | simple | 0.01         | The target probability of false-positive of the sstable bloom filters. Sstable bloom filters will be sized to provide the provided probability (thus lowering this value impact the size of bloom filters in-memory and on-disk).                                                                                                                                                                                                                                                                                                          |
-| `default_time_to_live`             | simple | 0            | The default expiration time (“TTL”) in seconds for a table.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `memtable_flush_period_in_ms`      | simple | 0            | Flush the memtables associated with this table every `memtable_flush_period_in_ms` milliseconds. When set to `0`, periodic flush is disabled. Cannot set to values lower than `60000` (1 minute). Default: `0`.                                                                                                                                                                                                                                                                                                                            |
-| `min_index_interval`               | simple | 128          | Minimum gap between summary entries: ScyllaDB will create summary entries with at least this amount of partitions between them. Controls the maximums density of the summary.                                                                                                                                                                                                                                                                                                                                                              |
-| `max_index_interval`               | simple | 2048         | Not implemented (option value is ignored).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `auto_repair_enabled`              | simple | inherited    | Enable automatic repair for tablet-based tables. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/branch-2026.4/cql/cluster-config.md).                                                                                                                                                                                                                                                                 |
-| `auto_repair_threshold_in_seconds` | simple | inherited    | Time in seconds since the start of the last successful repair of a tablet of the table after which it is eligible for automatic repair. A repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. `0` disables time-based automatic repair. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/branch-2026.4/cql/cluster-config.md). |
-| `compaction`                       | map    | see below    | [Compaction options](#cql-compaction-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `compression`                      | map    | see below    | [Compression options](#cql-compression-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `caching`                          | map    | see below    | [Caching Options](#cql-caching-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `cdc`                              | map    | see below    | [CDC Options](#cdc-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `tablet_options`                   | map    | see below    | [Per-table tablet options](#cql-per-table-tablet-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `large_data_guardrails_enabled`    | simple | `false`      | Enables [large data guardrails](https://docs.scylladb.com/manual/branch-2026.4/cql/guardrails.md#guardrails-large-data) for this table.                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Option                             | Kind   | Default      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|------------------------------------|--------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `comment`                          | simple | none         | A free-form, human-readable comment.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `speculative_retry`                | simple | 99PERCENTILE | [Speculative retry options](#speculative-retry-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `gc_grace_seconds`                 | simple | 864000       | Time to wait before garbage collecting tombstones (deletion markers). See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `tombstone_gc`                     | mode   | see below    | The mode of garbage collecting tombstones. See [Tombstones GC options](#ddl-tombstones-gc).                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `bloom_filter_fp_chance`           | simple | 0.01         | The target probability of false-positive of the sstable bloom filters. Sstable bloom filters will be sized to provide the provided probability (thus lowering this value impact the size of bloom filters in-memory and on-disk).                                                                                                                                                                                                                                                                                                   |
+| `default_time_to_live`             | simple | 0            | The default expiration time (“TTL”) in seconds for a table.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `memtable_flush_period_in_ms`      | simple | 0            | Flush the memtables associated with this table every `memtable_flush_period_in_ms` milliseconds. When set to `0`, periodic flush is disabled. Cannot set to values lower than `60000` (1 minute). Default: `0`.                                                                                                                                                                                                                                                                                                                     |
+| `min_index_interval`               | simple | 128          | Minimum gap between summary entries: ScyllaDB will create summary entries with at least this amount of partitions between them. Controls the maximums density of the summary.                                                                                                                                                                                                                                                                                                                                                       |
+| `max_index_interval`               | simple | 2048         | Not implemented (option value is ignored).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `auto_repair_enabled`              | simple | inherited    | Enable automatic repair for tablet-based tables. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/stable/cql/cluster-config.md).                                                                                                                                                                                                                                                                 |
+| `auto_repair_threshold_in_seconds` | simple | inherited    | Time in seconds since the start of the last successful repair of a tablet of the table after which it is eligible for automatic repair. A repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. `0` disables time-based automatic repair. When not set for the table, the keyspace or cluster value applies. Set to `NULL` to remove the table setting. See [configuring a cluster with CQL](https://docs.scylladb.com/manual/stable/cql/cluster-config.md). |
+| `compaction`                       | map    | see below    | [Compaction options](#cql-compaction-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `compression`                      | map    | see below    | [Compression options](#cql-compression-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `caching`                          | map    | see below    | [Caching Options](#cql-caching-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `cdc`                              | map    | see below    | [CDC Options](#cdc-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `tablet_options`                   | map    | see below    | [Per-table tablet options](#cql-per-table-tablet-options)                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `large_data_guardrails_enabled`    | simple | `false`      | Enables [large data guardrails](https://docs.scylladb.com/manual/stable/cql/guardrails.md#guardrails-large-data) for this table.                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 <a id="speculative-retry-options"></a>
 
@@ -869,10 +869,10 @@ to use. The default supported class are `'IncrementalCompactionStrategy'`,
 `'LeveledCompactionStrategy'`, and `'TimeWindowCompactionStrategy'`.
 `'SizeTieredCompactionStrategy'` is deprecated and is an alias of
 `'IncrementalCompactionStrategy'`.
-Custom strategy can be provided by specifying the full class name as a [string constant](https://docs.scylladb.com/manual/branch-2026.4/cql/definitions.md#constants).
+Custom strategy can be provided by specifying the full class name as a [string constant](https://docs.scylladb.com/manual/stable/cql/definitions.md#constants).
 
 All default strategies support a number of common options, as well as options specific to
-the strategy chosen (see the section corresponding to your strategy for details: [ICS](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#ics-options), [LCS](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#lcs-options), [TWCS](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#twcs-options), and [STCS](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#stcs-options)).
+the strategy chosen (see the section corresponding to your strategy for details: [ICS](https://docs.scylladb.com/manual/stable/cql/compaction.md#ics-options), [LCS](https://docs.scylladb.com/manual/stable/cql/compaction.md#lcs-options), [TWCS](https://docs.scylladb.com/manual/stable/cql/compaction.md#twcs-options), and [STCS](https://docs.scylladb.com/manual/stable/cql/compaction.md#stcs-options)).
 
 <a id="cql-compression-options"></a>
 
@@ -952,12 +952,12 @@ CREATE TABLE caching (
 ##### Tombstones GC options
 
 ScyllaDB inherited the `gc_grace_seconds` option from Apache Cassandra. The option allows you to specify the wait time
-(in seconds) before data marked with a deletion [tombstone](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Tombstone) is removed via compaction.
-This option assumes that you run [repair](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Repair) during the specified time. Failing to run repair during the wait
+(in seconds) before data marked with a deletion [tombstone](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Tombstone) is removed via compaction.
+This option assumes that you run [repair](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Repair) during the specified time. Failing to run repair during the wait
 time may result in the resurrection of deleted data.
 
-The `tombstone_gc` option allows you to prevent data resurrection. With the `repair` mode configured, [tombstone](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Tombstone)
-are only removed after [repair](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Repair) is performed. Unlike  `gc_grace_seconds`, `tombstone_gc` has no time constraints - when
+The `tombstone_gc` option allows you to prevent data resurrection. With the `repair` mode configured, [tombstone](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Tombstone)
+are only removed after [repair](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Repair) is performed. Unlike  `gc_grace_seconds`, `tombstone_gc` has no time constraints - when
 the `repair` mode is on, tombstones garbage collection will wait until repair is run. For tables which use tablets `repair`
 mode is set by default.
 
@@ -1004,12 +1004,12 @@ The following tombstone gc modes are available:
 | `immediate` | Tombstone GC is immediately performed. There is no wait time or repair requirement. This mode is useful for a table that uses the TWCS compaction strategy with no user deletes. After data is expired after TTL, ScyllaDB can perform compaction to drop the expired data immediately. |
 
 #### WARNING
-The `repair` mode is not supported for [Colocated Tables](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Colocated-Table) in this version.
+The `repair` mode is not supported for [Colocated Tables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Colocated-Table) in this version.
 
-The default tombstone-gc mode is `repair` for all tables that use `NetworkTopologyStrategy` or `SimpleStrategy`, except for [Colocated Tables](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Colocated-Table).
+The default tombstone-gc mode is `repair` for all tables that use `NetworkTopologyStrategy` or `SimpleStrategy`, except for [Colocated Tables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Colocated-Table).
 Tables which have a single replica (RF=1) don’t need repair (and cannot be repaired either). For such tables, tombstone-gc mode `repair` acts the same as `immediate` mode would: all tombstones are immediately collectible.
 
-Tombstone GC does not run on a materialized view or a secondary index, in any mode, until the view is built on every node. Its tombstones are kept until then, also while a node that has not finished its part of the build is down. Removing or [excluding](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/excludenode.md) such a node ends the wait. This includes a node that is joining the cluster. Adding a node suspends tombstone GC on views until they are built on the new node too. [nodetool viewbuildstatus](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/viewbuildstatus.md) shows the build progress per node.
+Tombstone GC does not run on a materialized view or a secondary index, in any mode, until the view is built on every node. Its tombstones are kept until then, also while a node that has not finished its part of the build is down. Removing or [excluding](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/excludenode.md) such a node ends the wait. This includes a node that is joining the cluster. Adding a node suspends tombstone GC on views until they are built on the new node too. [nodetool viewbuildstatus](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/viewbuildstatus.md) shows the build progress per node.
 
 <a id="cql-per-table-tablet-options"></a>
 
@@ -1140,7 +1140,7 @@ Once a column is dropped, it is allowed to re-add a column with the same name as
 **unless** the type of the dropped column was a (non-frozen) column (due to an internal technical limitation).
 
 It is also possible to drop a column with specified timestamp `ALTER TABLE ... DROP ... USING TIMESTAMP ...`.
-The purpose of this statement is to be able to safely restore schema (see [Backup and Restore Procedures](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/index.md)) in the case a column was dropped and re-added later.
+The purpose of this statement is to be able to safely restore schema (see [Backup and Restore Procedures](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/index.md)) in the case a column was dropped and re-added later.
 The timestamp should be obtained by describing schema with internals `DESC SCHEMA WITH INTERNALS` (or other descriptions like `DESC TABLE ks.cf WITH INTERNALS`)
 
 For example:
@@ -1167,13 +1167,13 @@ Dropping a table results in the immediate removal of the table, including all da
 
 #### NOTE
 By default, when a table or a keyspace is removed, a snapshot is taken so that you can restore it later. As a result, the disk space remains the same and is not immediately reclaimed.
-Refer to [this article](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/drop-table-space-up.md) or this [FAQ entry](https://docs.scylladb.com/manual/branch-2026.4/faq.md#reclaim-space).
+Refer to [this article](https://docs.scylladb.com/manual/stable/troubleshooting/drop-table-space-up.md) or this [FAQ entry](https://docs.scylladb.com/manual/stable/faq.md#reclaim-space).
 
 If the table does not exist, the statement will return an error unless `IF EXISTS` is used, in which case the
 operation is a no-op.
 
 #### NOTE
-Dropping a table that has materialized views is disallowed and will return an error. To do so, the materialized views that depend on the table must first be explicitly dropped. Refer to [Materialized Views](https://docs.scylladb.com/manual/branch-2026.4/cql/mv.md) for details.
+Dropping a table that has materialized views is disallowed and will return an error. To do so, the materialized views that depend on the table must first be explicitly dropped. Refer to [Materialized Views](https://docs.scylladb.com/manual/stable/cql/mv.md) for details.
 
 <a id="truncate-statement"></a>
 
@@ -1210,7 +1210,7 @@ TRUNCATE TABLE users USING TIMEOUT ?;
 #### CAUTION
 Do not run any operation on a table that is being truncated. Truncate operation is an administrative operation, and running any other operation on the same table in parallel may cause the truncating table’s data to end up in an undefined state.
 
-* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
 
 Copyright
 

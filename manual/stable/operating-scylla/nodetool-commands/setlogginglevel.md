@@ -158,7 +158,6 @@ schema_diff
 schema_loader
 schema_registry
 schema_tables
-scollectd
 scylla-nodetool
 scylla-sstable
 seastar
@@ -174,8 +173,6 @@ standard_role_manager
 storage_proxy
 storage_service
 stream_session
-broadcast_modification_statement
-broadcast_select_statement
 system_distributed_keyspace
 system_keyspace
 table

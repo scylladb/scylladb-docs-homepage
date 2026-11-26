@@ -41,6 +41,6 @@ XN  127.0.0.4  149.07 MiB  256     32.3%             dd961642-c7c6-4962-9f5a-ea7
 
 Nodes in the excluded status (`X`) are down nodes which were marked as excluded
 by `removenode`, `excludenode`` or node replace, and means that they are considered permanently lost.
-See [nodetool excludenode](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/excludenode.md) for more information.
+See [nodetool excludenode](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/excludenode.md) for more information.
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

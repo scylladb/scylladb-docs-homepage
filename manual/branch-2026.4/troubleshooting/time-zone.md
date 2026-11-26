@@ -8,7 +8,7 @@ In many cases, the client that performs an `INSERT`, is not the same client that
 
 ## Solution
 
-It is highly recommended when submitting a `SELECT` query to include the client’s local TZ within the [timestamp](https://docs.scylladb.com/manual/branch-2026.4/cql/types.md#timestamps)  (for example:  `2019-02-18 06:00:00+0000`). Otherwise, the query will parse differently as a result of different TZs and may not return some / all the dataset you’re trying to fetch.
+It is highly recommended when submitting a `SELECT` query to include the client’s local TZ within the [timestamp](https://docs.scylladb.com/manual/stable/cql/types.md#timestamps)  (for example:  `2019-02-18 06:00:00+0000`). Otherwise, the query will parse differently as a result of different TZs and may not return some / all the dataset you’re trying to fetch.
 
 #### NOTE
 The `+0000` (above) is an RFC 822 4-digit time zone specification where `+0000` refers to GMT. US Pacific Standard Time, for example is `-0800`. A timestamp using US Pacific Standard Time would be `2019-02-18 06:00:00-0800`.

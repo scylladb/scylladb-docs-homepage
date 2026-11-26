@@ -62,4 +62,4 @@ and compaction will be run whenever tombstone_compaction_interval has elapsed.
 ALTER table <your table name> with compaction = { 'class' : 'SizeTieredCompactionStrategy', 'unchecked_tombstone_compaction' : false };
 ```
 
-[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/index.md)

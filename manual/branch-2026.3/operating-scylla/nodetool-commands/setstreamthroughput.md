@@ -12,6 +12,6 @@ nodetool [options] setstreamthroughput <value_in_mb>
 
 See also
 
-* [getstreamthroughput](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/getstreamthroughput.md)
+* [getstreamthroughput](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/getstreamthroughput.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

@@ -17,7 +17,7 @@ One or more ScyllaDB nodes have a schema mismatch.
 
 ## How to Verify
 
-Run [nodetool describecluster](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/describecluster.md)
+Run [nodetool describecluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/describecluster.md)
 
 In the following example, one node, **172.17.0.3** has a different schema than the other two nodes. As a temporary state, this is fine, but if this state persists, it will fail CQL operations.
 

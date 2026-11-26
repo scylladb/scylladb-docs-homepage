@@ -7,7 +7,7 @@ For example:
 nodetool describering nba
 ```
 
-If [tablets](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md) are enabled for your keyspace, you
+If [tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md) are enabled for your keyspace, you
 need to additionally specify the table name. The command will display the ring
 of the table.
 
@@ -43,4 +43,4 @@ TokenRange:
       EndpointDetails(host:54.0.9.1, datacenter:us-east-1, rack:RACK1)])
 ```
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

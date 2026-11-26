@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/kb/compaction.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/kb/compaction.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md">https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/kb/compaction.md">https://docs.scylladb.com/manual/branch-2026.4/kb/compaction.md</a>.
                         </div>
                     
                     
@@ -402,10 +402,10 @@
 <h2>Compaction strategy<a class="headerlink" href="#compaction-strategy" title="Link to this heading">¶</a></h2>
 <p>A compaction strategy is what determines which of the SSTables will be compacted, and when. The following compaction strategies are available and are described in greater detail below. For a matrix which compares each strategy to its workload, refer to <a class="reference internal" href="../architecture/compaction/compaction-strategies.html"><span class="doc">Compaction Strategy Matrix</span></a></p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1">Size-tiered compaction strategy (STCS)</a> - (default setting) triggered when the system has enough similarly sized SSTables.</p></li>
+<li><p><a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental compaction strategy (ICS)</span></a> - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.</p></li>
 <li><p><a class="reference internal" href="#id2">Leveled compaction strategy (LCS)</a> - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.</p></li>
-<li><p><a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">Incremental compaction strategy (ICS)</span></a> - Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers, similar to STCS size-tiers. ICS is an updated strategy meant to replace STCS. It has the same read and write amplification, but has lower space amplification due to the reduction of temporary space overhead is reduced to a constant manageable level.</p></li>
-<li><p><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> - designed for time series data and puts data in time order. TWCS uses STCS to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.</p></li>
+<li><p><a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> - designed for time series data and puts data in time order. TWCS uses size-tiered compaction to prevent accumulating  SSTables in a window not yet closed. When the window closes, TWCS works towards reducing the SSTables in a time window to one.</p></li>
+<li><p><a class="reference internal" href="#id1">Size-tiered compaction strategy (STCS)</a> - deprecated. <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is now an alias of ICS.</p></li>
 </ul>
 <section id="how-to-set-a-compaction-strategy">
 <h3>How to Set a Compaction Strategy<a class="headerlink" href="#how-to-set-a-compaction-strategy" title="Link to this heading">¶</a></h3>
@@ -418,9 +418,25 @@
 </section>
 <section id="size-tiered-compaction-strategy-stcs">
 <span id="id1"></span><h2>Size-tiered Compaction Strategy (STCS)<a class="headerlink" href="#size-tiered-compaction-strategy-stcs" title="Link to this heading">¶</a></h2>
-<p>The premise of <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> (STCS) is to merge SSTables of approximately the same size.
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is deprecated. It is an alias of
+<a class="reference internal" href="#incremental-compaction-strategy-ics"><span class="std std-ref">IncrementalCompactionStrategy</span></a>:
+a table configured with <code class="docutils literal notranslate"><span class="pre">SizeTieredCompactionStrategy</span></code> is compacted by ICS.
+Naming it in <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code>, <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code>
+or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">MATERIALIZED</span> <span class="pre">VIEW</span></code> is still accepted, so that existing
+applications and schema dumps keep working, but returns a CQL warning.
+Set the <code class="docutils literal notranslate"><span class="pre">allow_deprecated_size_tiered_compaction_strategy</span></code> configuration
+option to <code class="docutils literal notranslate"><span class="pre">false</span></code> to make it an error instead. That option defaults to
+<code class="docutils literal notranslate"><span class="pre">true</span></code> for backward compatibility, and will default to <code class="docutils literal notranslate"><span class="pre">false</span></code> in a
+future version.
+Size-tiered compaction as described below is still used internally, per time
+window by <a class="reference internal" href="#time-window-compaction-strategy-twcs">Time-window compaction strategy (TWCS)</a> and for level 0 by
+<a class="reference internal" href="#id2">Leveled compaction strategy (LCS)</a>, and it is the basis for ICS.</p>
+</div>
+<p>The premise of size-tiered compaction (STCS) is to merge SSTables of approximately the same size.
 All SSTables are put into different buckets depending on their size.
-An SSTable is added to an existing bucket if size of the SSTable is within the parameters: <a class="reference internal" href="../cql/compaction.html#stcs-options"><span class="std std-ref">bucket_low</span></a> and <a class="reference internal" href="../cql/compaction.html#stcs-options"><span class="std std-ref">bucket_high</span></a>, which is based on calculating the current average size of the SSTables already in the bucket.</p>
+An SSTable is added to an existing bucket if size of the SSTable is within the parameters: <a class="reference internal" href="../cql/compaction.html#ics-options"><span class="std std-ref">bucket_low</span></a> and <a class="reference internal" href="../cql/compaction.html#ics-options"><span class="std std-ref">bucket_high</span></a>, which is based on calculating the current average size of the SSTables already in the bucket.</p>
 <p>This will create several buckets and when the threshold number of tables(<code class="docutils literal notranslate"><span class="pre">min_threshold</span></code>) within a bucket is reached, the tables in that bucket are compacted.
 Following the compaction, the tables are merged, resulting in one larger SSTable. As time progresses and several large SSTables have accumulated, they will be merged to form one even-larger SSTable and so on.</p>
 <p>This means that the system has several size tiers/buckets (small SSTables, large SSTables, even-larger SSTables) and in each tier, there is roughly the same number of SSTables. When one tier is full (the threshold has been reached), the system merges all its tables to create one SSTable which falls roughly  into the next size tier.</p>
@@ -564,6 +580,30 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <h2>Which Strategy is best to use<a class="headerlink" href="#which-strategy-is-best-to-use" title="Link to this heading">¶</a></h2>
 <p>Use the table in <a class="reference internal" href="../architecture/compaction/compaction-strategies.html#which-strategy-is-best"><span class="std std-ref">Which strategy is best</span></a> to determine the right strategy for your needs.</p>
 </section>
+<section id="off-strategy-compaction">
+<span id="compaction-off-strategy-compaction"></span><h2>Off-strategy Compaction<a class="headerlink" href="#off-strategy-compaction" title="Link to this heading">¶</a></h2>
+<p>Off-strategy compaction is an internal mechanism used by ScyllaDB to improve the efficiency of node operations,
+such as <code class="docutils literal notranslate"><span class="pre">bootstrap</span></code>, <code class="docutils literal notranslate"><span class="pre">repair</span></code>, or <code class="docutils literal notranslate"><span class="pre">replace</span></code>. It keeps SStables created by node operations
+in a separate “maintenance” data set ignored by the regular compaction (STCS, LCS, etc.).</p>
+<p>After a table is processed during a node operation, all of its new SSTables kept in the maintenance
+set are reshaped and then integrated into the table’s main set of SSTables to fall under the regular
+compaction strategy.</p>
+<p>Off-strategy compaction prevents creating excessive compaction backlog due to a large number
+of SStables generated by node operations. Compaction work during node operations is limited,
+which speeds up the completion of <code class="docutils literal notranslate"><span class="pre">repair</span></code>, <code class="docutils literal notranslate"><span class="pre">bootstrap</span></code>, and others.</p>
+<p>As a rule, we advise <em>against</em> aborting off-strategy compaction. However, if required, you
+can abort the currently running off-strategy compaction with the following nodetool command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">stop</span> <span class="n">RESHAPE</span>
+</pre></div>
+</div>
+<p>You can monitor off-strategy compaction in the following ways:</p>
+<ul class="simple">
+<li><p>With the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">compactionstats</span></code> command - off-strategy compactions are listed
+under the <code class="docutils literal notranslate"><span class="pre">RESHAPE</span></code> compaction type.</p></li>
+<li><p>Via ScyllaDB logs, which contain information about when off-strategy compaction is started
+and when it is completed.</p></li>
+</ul>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -608,7 +648,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -677,7 +717,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Compaction&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/kb/compaction%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -725,6 +765,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 </ul>
 </li>
 <li><a class="reference internal" href="#which-strategy-is-best-to-use">Which Strategy is best to use</a></li>
+<li><a class="reference internal" href="#off-strategy-compaction">Off-strategy Compaction</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -774,7 +815,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -788,13 +829,13 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
             
                 
                     <li>
-                        <a href="../../branch-2026.4/kb/compaction.html">2026.4</a>
+                        <a href="compaction.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="compaction.html">2026.3</a>
+                        <a href="../../branch-2026.3/kb/compaction.html">2026.3</a>
                     </li>
                 
             
@@ -841,17 +882,16 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -900,7 +940,6 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -913,6 +952,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -942,6 +982,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -979,6 +1020,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/delete.html">DELETE</a></li>
@@ -995,6 +1037,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1005,6 +1048,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1032,6 +1076,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1153,13 +1198,13 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
 <li class="toctree-l2"><a class="reference internal" href="../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1240,7 +1285,7 @@ For example, a user has tables which are using LCS. There are 5 levels of tables
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 06 Jan 2025.
+                        Last updated on 18 Sep 2023.
                     
                 </div>
             

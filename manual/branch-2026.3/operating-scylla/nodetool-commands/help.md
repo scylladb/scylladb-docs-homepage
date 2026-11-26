@@ -10,4 +10,4 @@ nodetool help
 nodetool help cfstats
 ```
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

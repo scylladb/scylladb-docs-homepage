@@ -78,11 +78,11 @@ sudo tar xvzf kairosdb-1.2.0-1.tar.gz
      ```none
      kairosdb.datastore.cassandra.cql_host_list=[IP1],[IP2]...
      ```
-   * Set the [replication](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md) factor (for production purposes use a ScyllaDB cluster with a minimum of RF=3)
+   * Set the [replication](https://docs.scylladb.com/manual/branch-2026.3/architecture/architecture-fault-tolerance.md) factor (for production purposes use a ScyllaDB cluster with a minimum of RF=3)
      ```none
      kairosdb.datastore.cassandra.replication={'class': 'NetworkTopologyStrategy','replication_factor' : 3}
      ```
-   * Set the read and write [consistency](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md) level (for production purposes use write=ONE, read=QUORUM)
+   * Set the read and write [consistency](https://docs.scylladb.com/manual/branch-2026.3/architecture/architecture-fault-tolerance.md) level (for production purposes use write=ONE, read=QUORUM)
      ```none
      kairosdb.datastore.cassandra.read_consistency_level=QUORUM
      kairosdb.datastore.cassandra.write_consistency_level=ONE (sufficient for time series workload)

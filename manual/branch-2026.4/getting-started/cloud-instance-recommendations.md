@@ -179,12 +179,12 @@ and [n2-highmem](https://cloud.google.com/compute/docs/general-purpose-machines#
 The ScyllaDB GCE image supports all of the C4 machine series:
 [C4, C4A, and C4D](https://cloud.google.com/compute/docs/general-purpose-machines#c4_series).
 C4A is Arm-based (Google Axion), so it needs the arm64 ScyllaDB GCE image;
-see [GCP Images](https://docs.scylladb.com/manual/branch-2026.4/reference/gcp-images.md).
+see [GCP Images](https://docs.scylladb.com/manual/stable/reference/gcp-images.md).
 
 ScyllaDB needs local SSDs, so use the `-lssd` machine types
 (for example, `c4-standard-8-lssd`, `c4a-highmem-16-lssd`, or `c4d-highmem-32-lssd`),
 which come with Titanium local SSD attached. Do not pass `--local-ssd` when you
-create these instances; see [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/branch-2026.4/getting-started/install-scylla/launch-on-gcp.md).
+create these instances; see [Launch ScyllaDB on GCP](https://docs.scylladb.com/manual/stable/getting-started/install-scylla/launch-on-gcp.md).
 
 <a id="system-requirements-azure"></a>
 

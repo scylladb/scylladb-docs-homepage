@@ -50,7 +50,7 @@ increase availability. Rather than providing strong consistency, they provide [e
 
 In ScyllaDB (and Apache Cassandra), consistency is tunable - for a given query, the client can specify a [Consistency Level](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/architecture/topic/consistency-level-cl/).
 A Consistency Level is the number of replicas required to respond to a request for the request to be considered successful.  The possibility to
-specify a Consistency Level per query is known as [Tunable Consistency](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Tunable-Consistency).
+specify a Consistency Level per query is known as [Tunable Consistency](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Tunable-Consistency).
 
 A database using the ACID model expects a unit of work to be atomic. It is all-or-nothing. While that unit of work is being done, the records or
 tables affected may be locked.
@@ -68,7 +68,7 @@ because responses to any new requests must wait while the replicas are updated.
 To summarize, in contrast to SQL’s ACID guarantees, NoSQL databases generally provide BASE guarantees. This enables high availability and relaxes
 the stringent consistency.
 
-A related feature is [Lightweight Transactions (LWT)](https://docs.scylladb.com/manual/branch-2026.4/features/lwt.md). LWT in ScyllaDB allow the client
+A related feature is [Lightweight Transactions (LWT)](https://docs.scylladb.com/manual/stable/features/lwt.md). LWT in ScyllaDB allow the client
 to modify data based on its current state: that is, to perform an update that is executed only if a row does not exist or contains a certain value.
 LWT are limited to a single conditional statement, which allows an “atomic compare and set” operation. That is, it checks if a condition is true,
 and if so, it conducts the transaction. If the condition is not met, the transaction does not go through.
@@ -77,7 +77,7 @@ and if so, it conducts the transaction. If the condition is not met, the transac
 
 * [Jepsen and ScyllaDB: Putting Consistency to the Test blog post](https://www.scylladb.com/2020/12/23/jepsen-and-scylla-putting-consistency-to-the-test/)
 * [Nauto: Achieving Consistency in an Eventually Consistent Environment blog post](https://www.scylladb.com/2020/02/20/nauto-achieving-consistency-in-an-eventually-consistent-environment/)
-* [Consistency Levels documentation](https://docs.scylladb.com/manual/branch-2026.4/cql/consistency.md)
+* [Consistency Levels documentation](https://docs.scylladb.com/manual/stable/cql/consistency.md)
 * [High Availability lesson on ScyllaDB University](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/high-availability/)
 * [Lightweight Transactions lesson on ScyllaDB University](https://university.scylladb.com/courses/data-modeling/lessons/lightweight-transactions/)
 * [Getting the Most out of Lightweight Transactions in ScyllaDB blog post](https://www.scylladb.com/2020/07/15/getting-the-most-out-of-lightweight-transactions-in-scylla/)

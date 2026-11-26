@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md" />
             
         
 
@@ -355,14 +355,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/dml/select.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md">https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md">https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md</a>.
                         </div>
                     
                     
@@ -372,13 +372,14 @@
                     <section id="select">
 <span id="select-statement"></span><h1>SELECT<a class="headerlink" href="#select" title="Link to this heading">¶</a></h1>
 <p>Querying data from data is done using a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">select_statement</span><span class="p">:</span> <span class="k">SELECT</span> <span class="p">[</span> <span class="k">DISTINCT</span> <span class="p">]</span> <span class="p">(</span> <span class="o">`</span><span class="n">select_clause</span><span class="o">`</span> <span class="o">|</span> <span class="s1">'*'</span> <span class="p">)</span>
-                <span class="p">:</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">select_statement</span><span class="p">:</span> <span class="k">SELECT</span> <span class="p">[</span> <span class="k">JSON</span> <span class="p">]</span> <span class="p">[</span> <span class="k">DISTINCT</span> <span class="p">]</span> <span class="p">(</span> <span class="o">`</span><span class="n">select_clause</span><span class="o">`</span> <span class="o">|</span> <span class="s1">'*'</span> <span class="p">)</span>
+                <span class="p">:</span> <span class="p">[</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">WHERE</span> <span class="o">`</span><span class="n">where_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="n">GROUP</span> <span class="k">BY</span> <span class="o">`</span><span class="n">group_by_clause</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">ordering_clause</span><span class="o">`</span> <span class="p">]</span>
-                <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
+                <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="p">(</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="o">|</span> <span class="n">ANN</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="s1">')'</span> <span class="p">)</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">WHERE</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span> <span class="s1">'&gt;'</span> <span class="mf">0</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
+                <span class="p">:</span> <span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">fusion_function</span><span class="o">`</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">)</span><span class="o">+</span> <span class="s1">')'</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">PER</span> <span class="k">PARTITION</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">LIMIT</span> <span class="p">(</span><span class="o">`</span><span class="n">integer</span><span class="o">`</span> <span class="o">|</span> <span class="o">`</span><span class="n">bind_marker</span><span class="o">`</span><span class="p">)</span> <span class="p">]</span>
                 <span class="p">:</span> <span class="p">[</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span> <span class="p">]</span>
@@ -398,6 +399,7 @@
 <span class="n">relation</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span>
         <span class="p">:</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">')'</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">tuple_literal</span><span class="o">`</span>
         <span class="p">:</span> <span class="k">TOKEN</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">)</span><span class="o">*</span> <span class="s1">')'</span> <span class="o">`</span><span class="n">operator</span><span class="o">`</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span>
+        <span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="k">IS</span> <span class="p">[</span> <span class="k">NOT</span> <span class="p">]</span> <span class="k">NULL</span>
 <span class="n">operator</span><span class="p">:</span> <span class="s1">'='</span> <span class="o">|</span> <span class="s1">'&lt;'</span> <span class="o">|</span> <span class="s1">'&gt;'</span> <span class="o">|</span> <span class="s1">'&lt;='</span> <span class="o">|</span> <span class="s1">'&gt;='</span> <span class="o">|</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="o">|</span> <span class="k">CONTAINS</span> <span class="k">KEY</span>
 <span class="n">ordering_clause</span><span class="p">:</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">)</span><span class="o">*</span>
 <span class="n">timeout</span><span class="p">:</span> <span class="o">`</span><span class="n">duration</span><span class="o">`</span>
@@ -423,11 +425,13 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement reads one or more columns for one or more rows in a table. It returns a result-set of the rows
 matching the request, where each row contains the values for the selection corresponding to the query. Additionally,
 functions, including aggregation ones, can be applied to the result.</p>
-<p>A <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement contains at least a <a class="reference internal" href="#selection-clause"><span class="std std-ref">selection clause</span></a> and the name of the table on which
-the selection is on (note that CQL does <strong>not</strong> support joins or sub-queries, and thus a select statement only applies to a single
-table). In most cases, a select will also have a <a class="reference internal" href="#where-clause"><span class="std std-ref">where clause</span></a> and it can optionally have additional
-clauses to <a class="reference internal" href="#ordering-clause"><span class="std std-ref">order</span></a> or <a class="reference internal" href="#limit-clause"><span class="std std-ref">limit</span></a> the results. Lastly, <a class="reference internal" href="#allow-filtering"><span class="std std-ref">queries that require
-filtering</span></a> can be allowed if the <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code> flag is provided.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement contains at least a <a class="reference internal" href="#selection-clause"><span class="std std-ref">selection clause</span></a> and typically the name of the table
+on which the selection is on (note that CQL does <strong>not</strong> support joins or sub-queries, and thus a select statement only
+applies to a single table). The <code class="docutils literal notranslate"><span class="pre">FROM</span></code> clause may be omitted; the statement then evaluates the selected expressions
+and returns them as a single row (see <a class="reference internal" href="#select-without-from"><span class="std std-ref">SELECT without FROM</span></a>). In most cases, a select will also have a
+<a class="reference internal" href="#where-clause"><span class="std std-ref">where clause</span></a> and it can optionally have additional clauses to <a class="reference internal" href="#ordering-clause"><span class="std std-ref">order</span></a> or
+<a class="reference internal" href="#limit-clause"><span class="std std-ref">limit</span></a> the results. Lastly, <a class="reference internal" href="#allow-filtering"><span class="std std-ref">queries that require filtering</span></a> can be allowed
+if the <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code> flag is provided.</p>
 <p>If your <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> query results in what appears to be missing data, see this <a class="reference internal" href="../../kb/cqlsh-results.html"><span class="doc">KB Article</span></a> for information.</p>
 <section id="selection-clause">
 <span id="id1"></span><h2>Selection clause<a class="headerlink" href="#selection-clause" title="Link to this heading">¶</a></h2>
@@ -693,13 +697,17 @@ induced by the clustering columns and the reverse of that one.</p></li>
 <span id="vector-queries"></span><h2>Vector queries <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#vector-queries-scylladb-cloud" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause can also be used with vector columns to perform the approximate nearest neighbor (ANN) search.
 When using vector columns, the syntax is as follows:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">order_by_vector</span><span class="p">:</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">order_by_vector</span><span class="p">:</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="p">(</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="o">|</span> <span class="n">ANN</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="s1">')'</span> <span class="p">)</span> <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
 </pre></div>
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">vector_column_name</span></code> is the name of the vector column,
 <code class="docutils literal notranslate"><span class="pre">vector</span></code> is the query <a class="reference internal" href="../types.html#vectors"><span class="std std-ref">vector</span></a>, and <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> is a limit on the number of results to return.
 Vector queries can only be performed on a vector column that has a <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">vector index</span></a> created.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">ANN</span> <span class="pre">OF</span></code> clause orders the results by their distance to the provided query vector,
+<p>The two forms are equivalent: <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">embedding</span> <span class="pre">ANN</span> <span class="pre">OF</span> <span class="pre">[0.1,</span> <span class="pre">0.2]</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">ANN(embedding,</span> <span class="pre">[0.1,</span> <span class="pre">0.2])</span></code> produce the same query. The function form is a
+ScyllaDB extension, and is consistent with how the <a class="reference internal" href="#fulltext-queries"><span class="std std-ref">BM25</span></a> scoring
+function is written; the <code class="docutils literal notranslate"><span class="pre">ANN</span> <span class="pre">OF</span></code> form is compatible with Apache Cassandra.</p>
+<p>The ANN ordering clause orders the results by their distance to the provided query vector,
 using the distance function defined for the vector column when
 <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">creating the vector index</span></a>.
 The query vector must have the same dimension as the vector column.</p>
@@ -712,10 +720,36 @@ the actual number of results returned may be less than the specified limit.</p>
 </pre></div>
 </div>
 <p>This query returns up to 5 rows with the closest distance of <code class="docutils literal notranslate"><span class="pre">embedding</span></code> vector to the provided query vector,
-in this case <code class="docutils literal notranslate"><span class="pre">[0.1,</span> <span class="pre">0.2,</span> <span class="pre">0.3,</span> <span class="pre">0.4]</span></code>.</p>
-<p>There’s also possibility to return the similarity score along with the results by using the <a class="reference internal" href="../functions.html#vector-similarity-functions"><span class="std std-ref">similarity functions</span></a>.</p>
+in this case <code class="docutils literal notranslate"><span class="pre">[0.1,</span> <span class="pre">0.2,</span> <span class="pre">0.3,</span> <span class="pre">0.4]</span></code>. Written with the function form, it is:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span> <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ANN()</span></code> may also be used as a selector. It returns a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>: the <strong>similarity</strong> the
+index gave the row, and the row’s <strong>rank</strong>, its position in the index’s result counted from 1:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">score_and_rank</span>
+  <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">ANN_RANK()</span></code> return the two values on their own:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">ANN_SCORE</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">similarity</span>
+  <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
+  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>All three describe the search the rows are ranked by, so each is only accepted in a query whose
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause has an ANN search, in either form, on the same column, and every occurrence must
+use the same query vector as that search. A query using several of them still makes a single
+request.</p>
+<p>An index configured for <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">rescoring</span></a> recomputes the similarity
+on the coordinator and reorders the rows by it, so the rank the Vector Store gave them no longer
+applies. <code class="docutils literal notranslate"><span class="pre">ANN_RANK()</span></code> and <code class="docutils literal notranslate"><span class="pre">ANN()</span></code> are rejected in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause of such a query;
+<code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code> and the <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> itself work as usual.</p>
+<p>To score rows against a vector other than the one being searched for, use the
+<a class="reference internal" href="../functions.html#vector-similarity-functions"><span class="std std-ref">similarity functions</span></a> directly.</p>
 <p>For example:</p>
-<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">similarity_cosine</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">similarity_cosine</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
   <span class="k">FROM</span> <span class="n">ImageEmbeddings</span>
   <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">embedding</span> <span class="n">ANN</span> <span class="k">OF</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span> <span class="k">LIMIT</span> <span class="mf">5</span><span class="p">;</span>
 </pre></div>
@@ -731,8 +765,9 @@ See <a class="reference internal" href="#where-clause"><span class="std std-ref"
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
-about Vector Search is available in the
+Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">DISTINCT</span></code>).
+<code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">DISTINCT</span></code> is currently accepted in queries ordered by <code class="docutils literal notranslate"><span class="pre">ANN</span> <span class="pre">OF</span></code> or <code class="docutils literal notranslate"><span class="pre">ANN()</span></code>, but does not remove
+duplicate partition keys. More information about Vector Search is available in the
 <a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/">ScyllaDB Cloud documentation</a>.</p>
 </div>
 </section>
@@ -754,7 +789,8 @@ referencing the <strong>same</strong> column and the <strong>same</strong> searc
 <li><p>An <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25(column,</span> <span class="pre">'term')</span></code> clause that ranks the matching rows.</p></li>
 </ul>
 <p>Neither clause is accepted on its own. A query that has only <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25()</span></code> or
-only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected.</p>
+only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> is rejected. The exception is a <a class="reference internal" href="#hybrid-queries"><span class="std std-ref">hybrid query</span></a>,
+which ranks the rows by several searches at once and takes no <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p>
 <p><strong>Syntax:</strong></p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">fts_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
          <span class="p">:</span>   <span class="k">WHERE</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span> <span class="s1">'&gt;'</span> <span class="mf">0</span>
@@ -764,13 +800,16 @@ only <code class="docutils literal notranslate"><span class="pre">ORDER</span> <
 </div>
 <p>In the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> is the only supported comparison operator, and the right-hand side must be
 the literal <code class="docutils literal notranslate"><span class="pre">0</span></code>. The column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>
-and have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>; it may be a regular or clustering-key column, but
-not a partition-key column.</p>
+and have a <code class="docutils literal notranslate"><span class="pre">fulltext_index</span></code>. Columns of the <a class="reference internal" href="../ddl.html#primary-key"><span class="std std-ref">primary key</span></a>
+and <a class="reference internal" href="../ddl.html#static-columns"><span class="std std-ref">static columns</span></a> cannot be indexed.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">BM25()</span></code> must be the only ordering in the query - it cannot be combined
-with another <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> column, a second <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> ordering, or an <code class="docutils literal notranslate"><span class="pre">ANN</span></code>
-ordering.</p>
+with another <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> column. To rank the rows by several searches, such as a
+full-text and a vector search, fuse them into one ordering in a
+<a class="reference internal" href="#hybrid-queries"><span class="std std-ref">hybrid query</span></a>.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause is mandatory; queries without <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> are rejected. The
 specified value must not exceed 1000.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">DISTINCT</span></code> is not supported in queries ordered by <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>. It is
+currently accepted, but does not remove duplicate partition keys.</p>
 <p><strong>Examples:</strong></p>
 <p>Filter and rank by relevance:</p>
 <div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">articles</span>
@@ -786,16 +825,156 @@ specified value must not exceed 1000.</p>
     <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>Return the score and the rank of each row:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">title</span><span class="p">,</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">score_and_rank</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>: the <strong>score</strong> the index gave the row, and the row’s
+<strong>rank</strong>, its position in the index’s result counted from 1. <code class="docutils literal notranslate"><span class="pre">BM25_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code>
+return the two values on their own.</p>
+<p>All three describe the search the rows are ranked by, so each is only accepted in a query whose
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause has a BM25 search on the same column, and every occurrence must use the same
+search term as that search. <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> compares the score, and is the same as
+<code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">BM25_SCORE(...)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code> cannot be used in the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> operator is not a reserved word. If a user-defined function named
 <code class="docutils literal notranslate"><span class="pre">bm25</span></code> exists in a keyspace, unqualified <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> becomes ambiguous; qualify
 the built-in operator as <code class="docutils literal notranslate"><span class="pre">system.bm25(...)</span></code> to disambiguate it.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">BM25()</span></code> is only valid in the <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> and <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clauses.
-It cannot be used as a selector in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause.</p>
+</section>
+</section>
+<section id="selecting-an-excerpt">
+<h1>Selecting an excerpt<a class="headerlink" href="#selecting-an-excerpt" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT(column,</span> <span class="pre">term)</span></code> returns an excerpt of the searched text as HTML,
+with the matched terms wrapped in <code class="docutils literal notranslate"><span class="pre">&lt;b&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;/b&gt;</span></code> and the text around them
+escaped:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">BM25_HIGHLIGHT</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">excerpt</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
 </div>
+<p>It is accepted only in the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> clause, under the same rules as <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>
+there. The result is of type <code class="docutils literal notranslate"><span class="pre">text</span></code> and is <code class="docutils literal notranslate"><span class="pre">null</span></code> for a row in which no
+fragment could be found; the row itself is still returned. See
+<a class="reference internal" href="../../features/fulltext-search.html#fulltext-highlighting"><span class="std std-ref">Highlighting</span></a> for the details.</p>
 <p>For the full list of query constraints and requirements, see
 <a class="reference internal" href="../../features/fulltext-search.html"><span class="doc">Full-Text Search</span></a>.</p>
+<section id="hybrid-search-queries-scylladb-cloud">
+<span id="hybrid-queries"></span><h2>Hybrid search queries <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#hybrid-search-queries-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<p>A hybrid query ranks the rows by several searches at once, typically a <a class="reference internal" href="#vector-queries"><span class="std std-ref">vector search</span></a> and a <a class="reference internal" href="#fulltext-queries"><span class="std std-ref">full-text search</span></a> over the same table. Its
+<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause fuses the searches into one score:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">hybrid_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
+            <span class="p">:</span>   <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">`</span><span class="n">fusion_function</span><span class="o">`</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">(</span> <span class="s1">','</span> <span class="o">`</span><span class="n">search</span><span class="o">`</span> <span class="p">)</span><span class="o">+</span> <span class="s1">')'</span>
+            <span class="p">:</span>   <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
+<span class="n">search</span><span class="p">:</span> <span class="n">ANN</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">vector_column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">vector</span><span class="o">`</span> <span class="s1">')'</span>
+      <span class="p">:</span> <span class="o">|</span> <span class="n">BM25</span> <span class="s1">'('</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="s1">','</span> <span class="o">`</span><span class="n">term</span><span class="o">`</span> <span class="s1">')'</span>
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">RRF</span><span class="p">(</span><span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">))</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The searches are sent to their indexes in parallel. A row is a candidate if any of them returned
+it. The candidates are read, scored by the fusion function, sorted by that score, highest first,
+and only then cut to the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>.</p>
+<p>Each search passes the fusion function a <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code>: the score the index gave the row
+and the row’s rank, its position in the index’s result counted from 1. Where a search did not
+return the row, both are null. Scores of different searches are on different scales, so a BM25
+relevance and a vector similarity cannot be meaningfully added; ranks can be compared, so fusion
+usually goes by rank.</p>
+<p><code class="docutils literal notranslate"><span class="pre">RRF()</span></code> is reciprocal rank fusion. A row scores <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">(60</span> <span class="pre">+</span> <span class="pre">rank)</span></code> for each search that returned
+it, summed over the searches. It takes any number of searches, at least two.</p>
+<p>A user-defined function can fuse the searches instead. It takes one <code class="docutils literal notranslate"><span class="pre">tuple&lt;float,</span> <span class="pre">int&gt;</span></code> argument
+per search and returns a <code class="docutils literal notranslate"><span class="pre">float</span></code>. For example, to weigh the vector search three times as much as
+the full-text one:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">ks</span><span class="mf">.</span><span class="n">weighted</span><span class="p">(</span><span class="n">a</span> <span class="k">tuple</span><span class="o">&lt;</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">b</span> <span class="k">tuple</span><span class="o">&lt;</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+    <span class="k">CALLED</span> <span class="k">ON</span> <span class="k">NULL</span> <span class="k">INPUT</span> <span class="k">RETURNS</span> <span class="nb">float</span> <span class="k">LANGUAGE</span> <span class="n">lua</span> <span class="k">AS</span>
+    <span class="s1">'local function w(hit) if hit[2] == nil then return 0 end return 1 / hit[2] end</span>
+<span class="s1">     return 3 * w(a) + w(b)'</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">ks</span><span class="mf">.</span><span class="n">weighted</span><span class="p">(</span><span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">))</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>A search is identified by its kind and its column. Two calls on the same column are the same search
+and must use the same query vector or search term; several columns of one kind are several
+searches, so <code class="docutils literal notranslate"><span class="pre">RRF(BM25(title,</span> <span class="pre">'database'),</span> <span class="pre">BM25(body,</span> <span class="pre">'database'))</span></code> fuses two full-text searches.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ANN()</span></code>, <code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code>, <code class="docutils literal notranslate"><span class="pre">ANN_RANK()</span></code>, <code class="docutils literal notranslate"><span class="pre">BM25()</span></code>, <code class="docutils literal notranslate"><span class="pre">BM25_SCORE()</span></code> and <code class="docutils literal notranslate"><span class="pre">BM25_RANK()</span></code> may be
+selected to report what each search said about a row, provided the <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> clause searches
+their column with the same query value. They return null for a row that search did not return:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">ANN_RANK</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="k">AS</span> <span class="n">vector_rank</span><span class="p">,</span>
+           <span class="n">BM25_RANK</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">text_rank</span>
+    <span class="k">FROM</span> <span class="n">articles</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">RRF</span><span class="p">(</span><span class="n">ANN</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span> <span class="n">BM25</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s1">'distributed database'</span><span class="p">))</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../../features/fulltext-search.html#fulltext-highlighting"><span class="std std-ref">BM25_HIGHLIGHT()</span></a> may be selected too, and is null in the same way: only
+the text of the rows the full-text search returned is sent to the index for an excerpt.</p>
+<p>Hybrid queries have the following limitations:</p>
+<ul class="simple">
+<li><p>A hybrid query takes no <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause is mandatory, and must not exceed 1000. Only the first <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> rows of each
+search’s answer are fused: a vector index with <code class="docutils literal notranslate"><span class="pre">oversampling</span></code> is asked for the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> times
+the oversampling factor, but its answer is cut to the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> before the fusion.</p></li>
+<li><p>A vector index configured for <a class="reference internal" href="../secondary-indexes.html#create-vector-index-statement"><span class="std std-ref">rescoring</span></a> cannot take part in
+a hybrid query: the rescored order has no rank to fuse by. On such an index, <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> accepts
+only <code class="docutils literal notranslate"><span class="pre">ANN()</span></code> or <code class="docutils literal notranslate"><span class="pre">ANN_SCORE()</span></code> called directly.</p></li>
+<li><p>The rank is the position in the index’s result, not in the result set. If an index returns a row
+that is no longer in the base table, the ranks after it are not renumbered.</p></li>
+<li><p>Paging is not supported: the whole result is returned at once, with a warning if a page size
+smaller than the <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> was requested.</p></li>
+</ul>
+</section>
+<section id="indexed-like-queries-pattern-index-scylladb-cloud">
+<span id="pattern-queries"></span><h2>Indexed LIKE queries (pattern index) <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#indexed-like-queries-pattern-index-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pattern Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For more information, see the <a class="reference internal" href="../../features/pattern-search.html"><span class="doc">Pattern Search documentation</span></a>.</p>
+</div>
+<p>This section covers <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on a column that has a <a class="reference internal" href="../secondary-indexes.html#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a>.
+<code class="docutils literal notranslate"><span class="pre">LIKE</span></code> as a filter, available in every deployment, is described in <a class="reference internal" href="#like-operator"><span class="std std-ref">LIKE Operator</span></a>.
+The two use the same pattern syntax but otherwise behave differently, for example in result order,
+paging, consistency and case sensitivity; see
+<a class="reference internal" href="../../features/pattern-search.html#pattern-search-indexed-vs-filtered"><span class="std std-ref">Indexed vs. Filtered LIKE</span></a> for a comparison.</p>
+<p>On a column that has a pattern index, every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> restriction is served by the index instead of by
+filtering. Such a query does not need <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>; if it is given, it is ignored and the index
+is still used:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="n">pattern_query</span><span class="p">:</span> <span class="k">SELECT</span> <span class="mf">...</span> <span class="k">FROM</span> <span class="o">`</span><span class="n">table_name</span><span class="o">`</span>
+               <span class="p">:</span>   <span class="k">WHERE</span> <span class="o">`</span><span class="n">column_name</span><span class="o">`</span> <span class="k">LIKE</span> <span class="o">`</span><span class="n">pattern</span><span class="o">`</span>
+               <span class="p">:</span>   <span class="k">LIMIT</span> <span class="o">`</span><span class="n">integer</span><span class="o">`</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">code</span> <span class="k">FROM</span> <span class="n">parts</span>
+    <span class="k">WHERE</span> <span class="n">code</span> <span class="k">LIKE</span> <span class="s1">'%024%'</span>
+    <span class="k">LIMIT</span> <span class="mf">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The rules are:</p>
+<ul class="simple">
+<li><p>The pattern uses the <a class="reference internal" href="#like-operator"><span class="std std-ref">LIKE</span></a> syntax. Which patterns are supported depends on the
+index node, and a pattern it does not support fails the query with an <code class="docutils literal notranslate"><span class="pre">InvalidRequest</span></code> error.</p></li>
+<li><p>A bind marker may stand for the pattern (<code class="docutils literal notranslate"><span class="pre">LIKE</span> <span class="pre">?</span></code>). The pattern must not be null.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> is mandatory and must not exceed 1000. <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code>, <code class="docutils literal notranslate"><span class="pre">PER</span> <span class="pre">PARTITION</span> <span class="pre">LIMIT</span></code>, <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code>,
+aggregation and any further <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> restriction, including one on the partition key, are not
+supported.</p></li>
+<li><p>The query is served by the index even with <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>. When the index node is unavailable
+or does not support the pattern, the query fails.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A pattern index changes every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on its column, from every application, for as long as the
+index exists: a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> that worked by filtering before the index was created can fail or return
+different rows afterwards. Dropping the index with <a class="reference internal" href="../secondary-indexes.html#drop-index-statement"><span class="std std-ref">DROP INDEX</span></a> restores
+filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>.</p>
+</div>
 </section>
 <section id="limiting-results">
 <span id="limit-clause"></span><h2>Limiting results<a class="headerlink" href="#limiting-results" title="Link to this heading">¶</a></h2>
@@ -948,6 +1127,27 @@ example, conditions in the WHERE clause will limit the candidate row set first b
 primary index or a secondary index.</p>
 </div>
 </section>
+<section id="select-without-from-scylladb-extension">
+<span id="select-without-from"></span><h2><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> without <code class="docutils literal notranslate"><span class="pre">FROM</span></code> <span class="label label--note">ScyllaDB Extension</span><a class="headerlink" href="#select-without-from-scylladb-extension" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">FROM</span></code> clause is optional. When omitted, the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statement evaluates the given
+expressions and returns them as a single row, which is useful for evaluating functions or
+computing constant expressions without needing a table. Internally, the statement runs as
+an ordinary select over <code class="docutils literal notranslate"><span class="pre">system.one_row</span></code>, a built-in table with exactly one row.</p>
+<p><code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">DISTINCT</span></code> are not allowed without <code class="docutils literal notranslate"><span class="pre">FROM</span></code>, and there are no columns in
+scope to reference. Aggregate functions operate on the single row, so, for example,
+<code class="docutils literal notranslate"><span class="pre">count(*)</span></code> returns 1.</p>
+<p>Examples:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="mf">1</span> <span class="k">AS</span> <span class="n">one</span><span class="p">,</span> <span class="s1">'hello'</span> <span class="k">AS</span> <span class="n">greeting</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="n">toTimestamp</span><span class="p">(</span><span class="n">now</span><span class="p">())</span> <span class="k">AS</span> <span class="n">ts</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="k">JSON</span> <span class="mf">1</span><span class="p">,</span> <span class="n">now</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> without <code class="docutils literal notranslate"><span class="pre">FROM</span></code> is a ScyllaDB CQL extension and is not supported
+by Apache Cassandra.</p>
+</div>
+</section>
 <section id="bypass-cache">
 <span id="id2"></span><h2>Bypass Cache<a class="headerlink" href="#bypass-cache" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">BYPASS</span> <span class="pre">CACHE</span></code> clause on SELECT statements informs the database that the data being read is unlikely to be read again in the near future, and also was unlikely to have been read in the near past; therefore, no attempt should be made to read it from the cache or to populate the cache with the data. This is mostly useful for range scans; these typically process large amounts of data with no temporal locality and do not benefit from the cache.
@@ -973,6 +1173,12 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <section id="like-operator">
 <span id="id4"></span><h2>LIKE Operator<a class="headerlink" href="#like-operator" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> operation on <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> statements informs ScyllaDB that you are looking for a pattern match. The expression ‘column LIKE pattern’ yields true only if the entire column value matches the pattern.</p>
+<p>Without an index, <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> is a filter: ScyllaDB reads the rows and checks each value against the
+pattern, so the query requires <a class="reference internal" href="#allow-filtering"><span class="std std-ref">ALLOW FILTERING</span></a>. This section describes that
+filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>. On a column with a <a class="reference internal" href="../secondary-indexes.html#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a>, <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>
+is served by the index instead, even with <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>, and follows different rules; see
+<a class="reference internal" href="#pattern-queries"><span class="std std-ref">Indexed LIKE queries</span></a> and
+<a class="reference internal" href="../../features/pattern-search.html#pattern-search-indexed-vs-filtered"><span class="std std-ref">Indexed vs. Filtered LIKE</span></a>.</p>
 <p>The search pattern is a string of characters with two wildcards, as shown:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">_</span></code> matches any single character</p></li>
@@ -985,17 +1191,21 @@ The clause is placed immediately after the optional ALLOW FILTERING clause.</p>
 <p class="admonition-title">Note</p>
 <p>Only string types (ascii, text, and varchar) are valid for matching</p>
 </div>
-<p>Currently, the match is <strong>case sensitive</strong>. The entire column value must match the pattern.
+<p>A filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> is always <strong>case sensitive</strong>. The entire column value must match the pattern.
 For example, consider the search pattern ‘M%n’ - this will match <code class="docutils literal notranslate"><span class="pre">Martin</span></code>, but will not match <code class="docutils literal notranslate"><span class="pre">Moonbeam</span></code> because the <code class="docutils literal notranslate"><span class="pre">m</span></code> at the end isn’t matched. In addition, <code class="docutils literal notranslate"><span class="pre">moon</span></code> is not matched because <code class="docutils literal notranslate"><span class="pre">M</span></code> is not the same as <code class="docutils literal notranslate"><span class="pre">m</span></code>. Both the pattern and the column value are assumed to be UTF-8 encoded.</p>
+<p>To match regardless of letter case, use a pattern index created with <code class="docutils literal notranslate"><span class="pre">'case_sensitive':</span> <span class="pre">'false'</span></code>.</p>
 <p>A query can find all values containing some text fragment by matching to an appropriate <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> pattern.</p>
 <p><strong>Differences Between ScyllaDB and Cassandra LIKE Operators</strong></p>
 <ul class="simple">
-<li><p>In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter.</p></li>
-<li><p>Consequently, ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.</p></li>
+<li><p>In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter,
+and can also serve it from a <a class="reference internal" href="../secondary-indexes.html#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a>.</p></li>
+<li><p>Consequently, a filtered ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.</p></li>
 <li><p>ScyllaDB treats underscore (_) as a wildcard; Cassandra doesn’t.</p></li>
 <li><p>ScyllaDB treats percent (%) as a wildcard anywhere in the pattern; Cassandra only at the beginning/end</p></li>
 <li><p>ScyllaDB interprets backslash (\) as an escape character; Cassandra doesn’t.</p></li>
-<li><p>Cassandra allows case-insensitive LIKE; ScyllaDB doesn’t (see <a class="reference external" href="https://github.com/scylladb/scylla/issues/4911">#4911</a>).</p></li>
+<li><p>Cassandra allows case-insensitive LIKE through an option of the SASI index. A filtered ScyllaDB LIKE is always
+case-sensitive (see <a class="reference external" href="https://github.com/scylladb/scylla/issues/4911">#4911</a>); case-insensitive matching needs a
+pattern index created with <code class="docutils literal notranslate"><span class="pre">'case_sensitive':</span> <span class="pre">'false'</span></code>.</p></li>
 <li><p>ScyllaDB allows empty LIKE pattern; Cassandra doesn’t.</p></li>
 </ul>
 <p><strong>Example A</strong></p>
@@ -1076,6 +1286,98 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 </tr>
 </tbody>
 </table>
+</section>
+<section id="is-null-and-is-not-null-operators">
+<span id="is-null-operator"></span><h2>IS NULL and IS NOT NULL Operators<a class="headerlink" href="#is-null-and-is-not-null-operators" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> operators allow you to filter rows based on whether a column value is present or absent.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> returns rows where the column has no value (is null).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> returns rows where the column has a value.</p></li>
+</ul>
+<p>Whether these operators require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code> depends on the column:</p>
+<ul class="simple">
+<li><p>On a <strong>partition key column</strong>, <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> never requires <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>. Such a column can never be
+null, so the restriction matches every row and is dropped entirely. Being dropped, it also doesn’t count as
+restricting the partition key for the rules below. <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> on a partition key column matches no row, but it
+is still a restriction, so it requires <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>.</p></li>
+<li><p>On a <strong>clustering key column</strong>, both operators are ordinary restrictions on that column and neither is dropped,
+because a clustering key column <em>can</em> read as null - see below. They therefore need the partition key fully
+restricted by <code class="docutils literal notranslate"><span class="pre">=</span></code> or <code class="docutils literal notranslate"><span class="pre">IN</span></code> (a <code class="docutils literal notranslate"><span class="pre">token()</span></code> range is not enough) and every preceding clustering key column
+restricted; otherwise they require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>.</p></li>
+<li><p>On any <strong>other column</strong> - regular or static - both operators require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>, because every row’s
+value has to be inspected. This holds even when the column is indexed: the index is not consulted for a null
+check.</p></li>
+</ul>
+<p>A clustering key column reads as null in one case: a partition that holds a static row but no clustering rows is
+returned as a single row whose clustering key columns are all null. So on a clustering key column <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code>
+selects exactly those static-only rows, and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> selects exactly the clustering rows. In a table with
+no static columns there are no such rows, which makes <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> match nothing and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> match
+everything - but the two are still ordinary restrictions there, subject to the same rules.</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span><span class="n">p</span> <span class="nb">int</span><span class="p">,</span> <span class="n">c</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">));</span>
+
+<span class="c1">-- no ALLOW FILTERING needed: p is a partition key column, so IS NOT NULL is</span>
+<span class="c1">-- dropped and this is a full scan</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+
+<span class="c1">-- no ALLOW FILTERING needed: the partition key is fixed, so IS [NOT] NULL on</span>
+<span class="c1">-- the clustering key is an ordinary clustering key restriction</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
+
+<span class="c1">-- ALLOW FILTERING needed: no partition key restriction to anchor the</span>
+<span class="c1">-- clustering key restriction</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+
+<span class="c1">-- ALLOW FILTERING needed: v is a regular column</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">v</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Like other Scylla filtering predicates, they can also be combined with additional restrictions on the same column.
+The result follows ordinary conjunction semantics: contradictory predicates such as <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NULL</span> <span class="pre">AND</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">3</span></code> match
+no rows, while compatible predicates such as <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span> <span class="pre">AND</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">3</span></code> work normally.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In a materialized view definition <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> on a base table primary key column is a no-op,
+because a view row is only ever built from a base clustering row, and such a row has a value for every one
+of the base table’s primary key columns. This is why a view definition may name those columns with
+<code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> freely. On a regular base table column
+promoted into the view’s primary key it is <em>not</em> a no-op - see <strong>Usage in Materialized Views</strong> below. For
+the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> rules, which differ between partition key and clustering key columns, see the list above
+rather than this note.</p>
+</div>
+<p>Unlike the other filtering operators, <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> may also be used on non-frozen collection
+columns, because they only test whether the column has a value rather than compare it against one. Note that a
+non-frozen collection with no elements is indistinguishable from a missing one, so an empty collection is
+considered null.</p>
+<p><strong>Example</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">users</span> <span class="p">(</span><span class="n">id</span> <span class="nb">int</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">name</span> <span class="nb">text</span><span class="p">,</span> <span class="n">email</span> <span class="nb">text</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">users</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="s1">'Alice'</span><span class="p">,</span> <span class="s1">'alice@example.com'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">users</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">2</span><span class="p">,</span> <span class="s1">'Bob'</span><span class="p">);</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">email</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+
+ <span class="n">id</span> <span class="o">|</span> <span class="n">email</span> <span class="o">|</span> <span class="n">name</span>
+<span class="c1">----+-------+------</span>
+  <span class="mf">2</span> <span class="o">|</span>  <span class="k">null</span> <span class="o">|</span>  <span class="n">Bob</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">email</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+
+ <span class="n">id</span> <span class="o">|</span> <span class="n">email</span>             <span class="o">|</span> <span class="n">name</span>
+<span class="c1">----+-------------------+-------</span>
+  <span class="mf">1</span> <span class="o">|</span> <span class="n">alice</span><span class="o">@</span><span class="n">example</span><span class="mf">.</span><span class="n">com</span> <span class="o">|</span> <span class="n">Alice</span>
+</pre></div>
+</div>
+<p><strong>Usage in Materialized Views</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> restriction is required in materialized view definitions for all columns that are part of the
+view’s primary key, as primary key columns cannot be null. See <a class="reference internal" href="../mv.html#materialized-views"><span class="std std-ref">Materialized Views</span></a> for
+more details. This usage does not require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>. On a base table primary key column the restriction
+is a no-op, because a view row is only ever built from a base clustering row, and such a row has a value for every
+one of the base table’s primary key columns. On a regular base table column promoted into the view’s primary key it
+is not a no-op: it is what excludes the base rows where that column is null from the view.
+<code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> is not supported in materialized view definitions, and neither operator can be used in a view
+definition on a column that is not part of the view’s primary key - views do not support filtering on non-key
+columns.</p>
 <p><a class="reference internal" href="../index.html"><span class="doc">Apache Cassandra Query Language (CQL) Reference</span></a></p>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
@@ -1115,7 +1417,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page SELECT&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page SELECT&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1184,7 +1486,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page SELECT&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page SELECT&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1215,12 +1517,19 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li><a class="reference internal" href="#ordering-results">Ordering results</a></li>
 <li><a class="reference internal" href="#vector-queries-scylladb-cloud">Vector queries <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#full-text-search-queries-bm25-scylladb-cloud">Full-Text Search queries (BM25) <span class="label label--note">ScyllaDB Cloud</span></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#selecting-an-excerpt">Selecting an excerpt</a><ul>
+<li><a class="reference internal" href="#hybrid-search-queries-scylladb-cloud">Hybrid search queries <span class="label label--note">ScyllaDB Cloud</span></a></li>
+<li><a class="reference internal" href="#indexed-like-queries-pattern-index-scylladb-cloud">Indexed LIKE queries (pattern index) <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#limiting-results">Limiting results</a></li>
 <li><a class="reference internal" href="#allowing-filtering">Allowing filtering</a></li>
 <li><a class="reference internal" href="#evaluation-order-of-select-statement-clauses">Evaluation order of SELECT statement clauses</a></li>
+<li><a class="reference internal" href="#select-without-from-scylladb-extension"><code class="docutils literal notranslate"><span class="pre">SELECT</span></code> without <code class="docutils literal notranslate"><span class="pre">FROM</span></code> <span class="label label--note">ScyllaDB Extension</span></a></li>
 <li><a class="reference internal" href="#bypass-cache">Bypass Cache</a></li>
 <li><a class="reference internal" href="#using-timeout">Using Timeout</a></li>
 <li><a class="reference internal" href="#like-operator">LIKE Operator</a></li>
+<li><a class="reference internal" href="#is-null-and-is-not-null-operators">IS NULL and IS NOT NULL Operators</a></li>
 </ul>
 </li>
 </ul>
@@ -1269,7 +1578,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1283,13 +1592,13 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 
                     <li>
-                        <a href="../../../branch-2026.4/cql/dml/select.html">2026.4</a>
+                        <a href="select.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="select.html">2026.3</a>
+                        <a href="../../../branch-2026.3/cql/dml/select.html">2026.3</a>
                     </li>
                 
             
@@ -1336,17 +1645,16 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -1395,7 +1703,6 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1408,6 +1715,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -1437,6 +1745,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../operating-scylla/admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -1474,6 +1783,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l2"><a class="reference internal" href="../ddl.html">Data Definition</a></li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../dml.html">Data Manipulation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="delete.html">DELETE</a></li>
@@ -1490,6 +1800,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l2"><a class="reference internal" href="../json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1500,6 +1811,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1527,6 +1839,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1648,13 +1961,13 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1735,7 +2048,7 @@ For example, consider the search pattern ‘M%n’ - this will match <code class
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Aug 2026.
+                        Last updated on 07 Oct 2026.
                     
                 </div>
             

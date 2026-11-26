@@ -5,7 +5,7 @@ The script API consists of two parts:
 * [ScyllaDB Consume API]()
 
   <a id="scylla-consume-api"></a>
-   - Hook methods implemented by the script to consume a [mutation fragment stream](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-sstable-content);
+   - Hook methods implemented by the script to consume a [mutation fragment stream](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-sstable-content);
 * [ScyllaDB Lua API]()
 
   <a id="scylla-script-lua-api"></a>
@@ -16,7 +16,7 @@ The script API consists of two parts:
 ## ScyllaDB Consume API
 
 These methods represent the glue code between scylla-sstable’s C++ code and the Lua script.
-Conceptually a script is an implementation of a consumer interface. The script has to implement only the methods it is interested in. Each method has a default implementation in the interface, which simply drops the respective [mutation fragment](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-sstable-content).
+Conceptually a script is an implementation of a consumer interface. The script has to implement only the methods it is interested in. Each method has a default implementation in the interface, which simply drops the respective [mutation fragment](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-sstable-content).
 For example, a script only interested in partitions can define only [consume_partition_start()](#scylla-consume-partition-start-method) and nothing else.
 Therefore a completely empty script is also valid, although not very useful.
 Below you will find the listing of the API methods.
@@ -352,7 +352,7 @@ See also:
 
 A JSON writer object, with both low-level and high-level APIs.
 The low-level API allows you to write custom JSON and it loosely follows the API of [rapidjson::Writer](https://rapidjson.org/classrapidjson_1_1_writer.html) (upon which it is implemented).
-The high-level API is for writing [mutation fragments](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-sstable-content) as JSON directly, using the built-in JSON conversion logic that is used by [dump-data](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation) operation.
+The high-level API is for writing [mutation fragments](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-sstable-content) as JSON directly, using the built-in JSON conversion logic that is used by [dump-data](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation) operation.
 
 Low level API Methods:
 

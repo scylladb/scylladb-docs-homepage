@@ -84,15 +84,15 @@ The default for `gc_grace_seconds` and `paxos_grace_seconds` are both the same (
 You can have two different settings for `paxos_grace_seconds` and `gc_grace_seconds`.
 You can change the `paxos_grace_seconds` value by altering the system.paxos table.
 
-Refer to [LWT](https://docs.scylladb.com/manual/branch-2026.4/features/lwt.md) for more information.
+Refer to [LWT](https://docs.scylladb.com/manual/stable/features/lwt.md) for more information.
 
-The `gc_grace_seconds` parameter is defined [here](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#create-table-general-options).
+The `gc_grace_seconds` parameter is defined [here](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-general-options).
 
 ## TTL for a Collection
 
 You can set the TTL on a per element basis for collections.
 
-See for example the [Maps](https://docs.scylladb.com/manual/branch-2026.4/cql/types.md#maps) CQL Reference for map collections.
+See for example the [Maps](https://docs.scylladb.com/manual/stable/cql/types.md#maps) CQL Reference for map collections.
 For a non-frozen map or set column, each element is stored independently and can have its own TTL. You can query the
 remaining TTL for a specific map element using `TTL(map_column[key])` or for a specific set element using
 `TTL(set_column[element])`:
@@ -116,7 +116,7 @@ For a non-frozen user-defined type (UDT) column, each field is also stored indep
 You can query the remaining TTL or write timestamp of a specific field using dot notation:
 `TTL(udt_column.field)` and `WRITETIME(udt_column.field)`.
 
-See the [WRITETIME and TTL function](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#select-writetime-ttl) section for details.
+See the [WRITETIME and TTL function](https://docs.scylladb.com/manual/stable/cql/dml/select.md#select-writetime-ttl) section for details.
 
 ## Notes
 
@@ -132,7 +132,7 @@ See the [WRITETIME and TTL function](https://docs.scylladb.com/manual/branch-202
 To learn more about TTL, and see a hands-on example, check out [this lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/) on ScyllaDB University.
 
 * [Video: Managing data expiration with Time-To-Live](https://www.youtube.com/watch?v=SXkbu7mFHeA)
-* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
-* [KB Article:How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/branch-2026.4/kb/gc-grace-seconds.md)
-* [KB Article:Time to Live (TTL) and Compaction](https://docs.scylladb.com/manual/branch-2026.4/kb/ttl-facts.md)
-* [CQL Reference: Table Options](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#create-table-general-options)
+* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+* [KB Article:How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/stable/kb/gc-grace-seconds.md)
+* [KB Article:Time to Live (TTL) and Compaction](https://docs.scylladb.com/manual/stable/kb/ttl-facts.md)
+* [CQL Reference: Table Options](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-general-options)

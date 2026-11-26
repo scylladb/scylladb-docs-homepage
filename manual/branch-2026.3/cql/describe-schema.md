@@ -10,8 +10,8 @@ responsible for producing a sequence of CQL commands that can be executed in ord
 Aside from elements of schema, like keyspaces and tables, it also allows for restoring entities such as
 roles and service levels.
 
-For more context, see the articles covering [backing up](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/backup.md)
-and [restoring](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/restore.md) the schema.
+For more context, see the articles covering [backing up](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/backup.md)
+and [restoring](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore.md) the schema.
 
 ## Syntax and semantics
 
@@ -93,4 +93,4 @@ CREATE ROLE [IF NOT EXISTS] <role_name> WITH HASHED PASSWORD = '<hashed_password
 
 The semantics of this statement is analogous to the regular `CREATE ROLE` statement except that it circumvents
 the encryption phase of the execution and inserts the hashed password directly into the database.
-See [the article on authorization in ScyllaDB](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md) to learn more about it.
+See [the article on authorization in ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md) to learn more about it.

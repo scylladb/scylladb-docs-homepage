@@ -11,10 +11,10 @@ SELECT COUNT(1) FROM ks.table;
 may fail with the **ReadTimeout** error.
 
 COUNT() runs a full-scan query on all nodes, which might take a long time to finish. As a result, the count time may be greater than the ScyllaDB query timeout.
-One way to prevent that issue is to increase the timeout for the query using the [USING TIMEOUT](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#using-timeout) directive, for example:
+One way to prevent that issue is to increase the timeout for the query using the [USING TIMEOUT](https://docs.scylladb.com/manual/stable/cql/dml/select.md#using-timeout) directive, for example:
 
 ```cql
 SELECT COUNT(1) FROM ks.table USING TIMEOUT 120s;
 ```
 
-You can also get an *estimation* of the number **of partitions** (not rows) with [nodetool tablestats](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tablestats.md).
+You can also get an *estimation* of the number **of partitions** (not rows) with [nodetool tablestats](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tablestats.md).

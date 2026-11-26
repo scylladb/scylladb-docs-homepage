@@ -124,7 +124,7 @@ More on [Local Secondary Indexes](https://docs.scylladb.com/manual/stable/featur
 
 #### NOTE
 Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
+Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and `SELECT DISTINCT`). More information
 about Vector Search is available in the
 [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com/stable/vector-search/).
 
@@ -141,6 +141,10 @@ are treated as filtering columns. The local vector index requires that the
 partition key of the index is of a type allowed for filtering columns and the
 vector column is the first one after the partition key definition, and any
 subsequent columns are filtering columns.
+
+The vector column must be a regular column. Primary-key and static columns
+cannot be indexed.
+A filtering column cannot be a static column.
 
 ScyllaDB allows creating multiple **named** vector indexes on the same vector column.
 This can be used to create a replacement index before dropping an older one.
@@ -301,7 +305,7 @@ CDC is enabled automatically on the base table when a full-text index is created
 **Column restrictions:**
 
 * The indexed column must be of type `text`, `varchar`, or `ascii`. Other types are rejected.
-* The indexed column must be a regular or clustering-key column. Partition-key columns cannot be indexed.
+* The indexed column must be a regular column. Primary-key and static columns cannot be indexed.
 * The table must use tablets (not vnodes).
 
 Example:
@@ -345,6 +349,63 @@ The analyzers differ in how they tokenize and normalize text:
   `Hello,` and `World!`). It does not apply lowercasing, stemming,
   or stop-word removal.
 
+<a id="create-pattern-index-statement"></a>
+
+## Pattern Index ScyllaDB Cloud
+
+#### NOTE
+Pattern indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For the full description, see the [Pattern Search documentation](https://docs.scylladb.com/manual/stable/features/pattern-search.md).
+
+A pattern index serves `LIKE` restrictions on a text column. Such a query does not need
+`ALLOW FILTERING`; if it is given, it is ignored and the index is still used.
+Instead of tokenizing the text into words, as a [full-text index](#create-fulltext-index-statement)
+does, it matches the whole value against the pattern, so a pattern such as `'%abc%'` is an index
+lookup rather than a scan of the table. Which patterns are supported depends on the index node. It is
+meant for values searched by any part of them, such as codes, identifiers and tags.
+
+A pattern index is a custom index created using the `CUSTOM` keyword and the index type
+`pattern_index`. CDC is enabled automatically on the base table when a pattern index is created.
+
+**Column restrictions:**
+
+* The indexed column must be of type `text`, `varchar`, or `ascii`. Other types are rejected.
+* The indexed column must be a regular column. Primary-key and static columns cannot be indexed.
+* The table must use tablets (not vnodes).
+
+Example:
+
+```cql
+CREATE CUSTOM INDEX ON parts (code) USING 'pattern_index';
+
+CREATE CUSTOM INDEX ON parts (supplier) USING 'pattern_index'
+    WITH OPTIONS = {'case_sensitive': 'false'};
+```
+
+#### WARNING
+Creating a pattern index changes the meaning of every `LIKE` on its column, for every application
+that queries the column, not only the one the index was created for. Once the index exists, a
+`LIKE` on the column is served by the index, even with `ALLOW FILTERING`:
+
+* Queries that worked by filtering start failing. The `LIKE` must be the only restriction in the
+  `WHERE` clause, and the query needs a `LIMIT` of at most 1000, so for example a `LIKE`
+  together with a restriction on the partition key, or a `LIKE` without a `LIMIT`, is rejected.
+* Queries that still succeed can return different rows, without any error. The index is eventually
+  consistent, so a recent write may be missed, and the rows are neither paged nor ordered. With
+  `'case_sensitive': 'false'`, matching ignores letter case, so a `LIKE` returns rows that a
+  filtered `LIKE` does not.
+* When the index node is unavailable, every `LIKE` on the column fails.
+
+`CREATE INDEX` returns a warning that summarizes these changes. To restore filtered `LIKE`, drop the
+index with [DROP INDEX](#drop-index-statement). For all the differences from a filtered
+`LIKE`, see [Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/stable/features/pattern-search.md#pattern-search-indexed-vs-filtered).
+
+The following options are supported for pattern indexes:
+
+| Option           | Description                                                                                                                                                                                                                         | Default Value   |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| `case_sensitive` | Whether matching distinguishes letter case, as `LIKE` does. With `false` both the<br/>indexed values and the patterns are lowercased, so `'%ab-%'` matches<br/>`AB-1024-XL`. Supported values: `true`, `false`, in any letter case. | `true`          |
+
 <a id="drop-index-statement"></a>
 
 ## DROP INDEX
@@ -361,8 +422,36 @@ name, which may optionally specify the keyspace of the index.
 If the index is currently being built, the `DROP INDEX` can still be executed. Once the `DROP INDEX` command is issued,
 the system stops the build process and cleans up any partially built data associated with the index.
 
+Dropping a [pattern index](#create-pattern-index-statement) restores filtered `LIKE` on its
+column: from then on, a `LIKE` on the column is a filter again, requires `ALLOW FILTERING`, and
+follows the rules of [LIKE Operator](https://docs.scylladb.com/manual/stable/cql/dml/select.md#like-operator).
+
 <!-- If the index does not exists, the statement will return an error, unless ``IF EXISTS`` is used in which case the -->
 <!-- operation is a no-op. -->
+
+## Changing Indexes During a Paged Read
+
+A paged read keeps using the query plan it started with. The paging state
+returned to the client records whether the read scans the base table or uses a
+particular secondary index, and every subsequent page is served by that same
+plan, so creating an index that could serve the query affects only new queries.
+Because a new index takes a moment to become known cluster-wide, a read that
+already uses one may be resumed by a node that does not know it yet, and then
+fails as described below.
+
+Dropping the index a paged read uses is different: the position saved in the
+paging state belongs to that index’s scan, and no other plan can interpret it.
+Requesting the next page fails with an `InvalidRequest` error stating that the
+index is no longer available, and the query has to be retried from the
+beginning. Creating another index under the same name does not help, because the
+read is tied to the specific index it started with. A prepared statement fails
+one step earlier: the `DROP` invalidates it, the driver re-prepares it before
+resuming, and a query that is not valid without the index - one lacking
+`ALLOW FILTERING`, for example - fails that re-preparation. A read scanning the
+base table, in contrast, is not tied to that table’s identity: dropping and
+re-creating the base table does not change the plan, and the next page is served
+from the new table - resuming where the old table’s scan stopped, so whatever
+the new table holds before that position is skipped without an error.
 
 ## Additional Information
 

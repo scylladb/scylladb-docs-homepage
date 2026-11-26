@@ -1,12 +1,12 @@
 # Preimages and postimages
 
-Prerequisites: make sure you are familiar with the [CDC log table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md) and [Basic operations in CDC](https://docs.scylladb.com/manual/stable/features/cdc/cdc-basic-operations.md) documents. Whenever we discuss non-frozen collections and UDTs, knowledge from the [Advanced column types](https://docs.scylladb.com/manual/stable/features/cdc/cdc-advanced-types.md) is also helpful (but it’s not required to understand parts of the document which don’t refer to non-frozen collections and UDTs).
+Prerequisites: make sure you are familiar with the [CDC log table](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-log-table.md) and [Basic operations in CDC](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-basic-operations.md) documents. Whenever we discuss non-frozen collections and UDTs, knowledge from the [Advanced column types](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-advanced-types.md) is also helpful (but it’s not required to understand parts of the document which don’t refer to non-frozen collections and UDTs).
 
 When a write is performed to the base table, a corresponding write is made to the CDC log table associated with the base table. This CDC write can have many rows.
 
 There are three kinds of rows: preimage rows, delta rows, and postimage rows.
 
-The row’s kind can be recognized using the `cdc$operation` column: values `1` to `8` denote the different types of delta rows (as explained in the [CDC log table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md) document), value `0` denotes a preimage row, and value `9` denotes a postimage row.
+The row’s kind can be recognized using the `cdc$operation` column: values `1` to `8` denote the different types of delta rows (as explained in the [CDC log table](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-log-table.md) document), value `0` denotes a preimage row, and value `9` denotes a postimage row.
 
 **Delta rows** have been extensively covered in the previous documents. They always appear if CDC is enabled. On the other hand, preimage and postimage rows are optional.
 
@@ -21,7 +21,7 @@ in order to generate preimage rows for a given write, ScyllaDB must perform a re
 
 ## Preimage rows
 
-As mentioned in the [CDC log table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md) document, each non-primary-key column of the base table has a corresponding column in the CDC log table with the same name, called the value column. The value column is used by delta rows to describe the change. Preimage rows use it to describe the previous values of the base table column in the corresponding base table rows.
+As mentioned in the [CDC log table](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-log-table.md) document, each non-primary-key column of the base table has a corresponding column in the CDC log table with the same name, called the value column. The value column is used by delta rows to describe the change. Preimage rows use it to describe the previous values of the base table column in the corresponding base table rows.
 
 Suppose that a write generates a preimage row and let `X` be a base table column. If the write modified the `X` column, or if the `full` option for preimages is enabled, then the value of the column `X` in the preimage row is equal to the value of the corresponding column of the corresponding row of the base table *before* the write was performed. We call this value the **preimage** of `X` for the written row; it’s obtained by reading the base table before making the write. The read’s consistency level depends on the write’s consistency level:
 
@@ -141,7 +141,7 @@ Finally, we perform a range delete (rows 10 and 11) and a partition delete (row 
 
 ### Preimages and non-atomic columns
 
-Recall that for atomic columns in the base table, the corresponding value columns in the CDC log table have the same type. For non-frozen collections and UDTs the type is different; in particular, it is always frozen (see [Advanced column types](https://docs.scylladb.com/manual/stable/features/cdc/cdc-advanced-types.md) for details).
+Recall that for atomic columns in the base table, the corresponding value columns in the CDC log table have the same type. For non-frozen collections and UDTs the type is different; in particular, it is always frozen (see [Advanced column types](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-advanced-types.md) for details).
 
 The preimage for a non-frozen collection/UDT column is calculated by reading the collection/UDT from the base table and “freezing” the obtained set of cells. For maps, sets and UDTs, the preimage value will “look” the same as if we manually performed a read from the base table, except that its type will be a frozen version of the base type. For example:
 
@@ -164,7 +164,7 @@ returns:
 
 The preimage of `v` for the second update shows `{1, 2}`. This value has type `frozen<set<int>>`. If we had performed a read after the first update but before the second one, we would have also obtained `{1, 2}`, although of type `set<int>`. The values “look” the same but formally they are different (they have different types). In particular CQL drivers may represent them differently.
 
-For columns of type `list<T>`, the type of the CDC value column is `map<timeuuid, T>` (see [Advanced column types](https://docs.scylladb.com/manual/stable/features/cdc/cdc-advanced-types.md)). Therefore, for non-frozen lists, the timeuuid keys are also exposed in preimages. To obtain the list that one would obtain by performing a standard read of the base table simply remove the keys. For example:
+For columns of type `list<T>`, the type of the CDC value column is `map<timeuuid, T>` (see [Advanced column types](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-advanced-types.md)). Therefore, for non-frozen lists, the timeuuid keys are also exposed in preimages. To obtain the list that one would obtain by performing a standard read of the base table simply remove the keys. For example:
 
 ```cql
 CREATE TABLE ks.t (pk int, ck int, v list<int>, PRIMARY KEY (pk, ck)) WITH cdc = {'enabled': true, 'preimage': true};

@@ -5,7 +5,7 @@ Communication between all or some nodes can be encrypted. The controlling parame
 Once enabled, all communication between the nodes is transmitted over TLS/SSL.
 The libraries used by ScyllaDB for OpenSSL are FIPS 140-2 certified.
 
-To build a self-signed certificate chain, see [generating a self-signed certificate chain using openssl](https://docs.scylladb.com/manual/stable/operating-scylla/security/generate-certificate.md).
+To build a self-signed certificate chain, see [generating a self-signed certificate chain using openssl](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/generate-certificate.md).
 
 **Procedure**
 
@@ -75,7 +75,7 @@ Upgrading an existing cluster, without TLS enabled, to use secure traffic requir
 
 ## See Also
 
-* [Encryption Data in Transit Client to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md)
-* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/stable/operating-scylla/security/generate-certificate.md)
-* [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md)
-* [Invalid SSL Protocol Error](https://docs.scylladb.com/manual/stable/troubleshooting/error-messages/invalid-ssl-prot-error.md)
+* [Encryption Data in Transit Client to Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/client-node-encryption.md)
+* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/generate-certificate.md)
+* [Authorization](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md)
+* [Invalid SSL Protocol Error](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/error-messages/invalid-ssl-prot-error.md)

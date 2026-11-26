@@ -6,13 +6,13 @@ its key and its columns.
 
 The data file alone does not provide an efficient means to efficiently
 find a row with a specific key. For this, the `SSTables Index File` and
-[SSTables Summary File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-summary-file.md) exist. Additionally
+[SSTables Summary File](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-summary-file.md) exist. Additionally
 the `SSTables Bloom Filter File` exists
 for quickly determining if a specific key exists in this SSTable
 (an Apache Cassandra table is written incrementally to several separate SSTables).
 
 The data file may be compressed as described in [SSTables
-Compression](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-compression.md). As
+Compression](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-compression.md). As
 we explain there, the compression layer offers random access to the
 uncompressed data, like an ordinary file, so here we can assume the data
 file is uncompressed.
@@ -21,7 +21,7 @@ This document explains the format of the sstable data file, but glosses
 over the question of how higher-level Apache Cassandra concepts - such as
 clustering columns, static columns, collections, etc., translate to
 sstable data. This is discussed in [SSTables
-interpretation](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-interpretation.md).
+interpretation](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-interpretation.md).
 
 ## The Data File
 
@@ -252,7 +252,7 @@ first two null bytes are the empty component’s length, and at the end we
 have the additional null added in the serialization. This
 three-null-bytes is what gets used as the column name
 
-[ScyllaDB Architecture](https://docs.scylladb.com/manual/stable/architecture/index.md)
+[ScyllaDB Architecture](https://docs.scylladb.com/manual/branch-2026.3/architecture/index.md)
 
 Copyright
 

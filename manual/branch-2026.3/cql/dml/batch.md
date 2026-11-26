@@ -44,7 +44,7 @@ Note that:
 - A LOGGED batch to a single partition will be converted to an UNLOGGED batch as an optimization.
 
 `BATCH` supports the `TIMESTAMP` option with the same semantics as the TIMESTAMP parameter in `UPDATE` statement.
-For more information on the `update_parameter` refer to the [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section.
+For more information on the `update_parameter` refer to the [UPDATE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml.md#update-parameters) section.
 
 <a id="unlogged-batches"></a>
 
@@ -62,7 +62,7 @@ used, a failed batch might leave the batch only partly applied.
 Use the `COUNTER` option for batched counter updates. Unlike other
 updates in ScyllaDB, counter updates are not idempotent.
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
 
 Copyright
 

@@ -95,8 +95,8 @@ Scrub **a** specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mod
 Replacing the node is the only supported way to remove bad sstables.
 The replacing node streams its data from the other replicas, so this method carries no risk of data resurrection.
 
-See [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-running-node.md),
-or [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-dead-node.md) if the node is down.
+See [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-running-node.md),
+or [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md) if the node is down.
 
 ### Method 2: Quarantine and Drop
 
@@ -140,7 +140,7 @@ to determine the root cause of the corruption.
 > cp -r /path/to/data/keyspace_name/table_dir/quarantine /path/to/backup/location/
 ```
 
-**Step 3**: Drop the quarantined SSTables using [dropquarantinedsstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/dropquarantinedsstables.md):
+**Step 3**: Drop the quarantined SSTables using [dropquarantinedsstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/dropquarantinedsstables.md):
 
 ```shell
 > nodetool dropquarantinedsstables --i-accept-data-resurrection-risk keyspace_name table_name

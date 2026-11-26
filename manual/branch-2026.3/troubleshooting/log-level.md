@@ -28,7 +28,7 @@ To change the status of a particular logger:
 
 Valid log levels are: `trace`, `debug`, `info`, `warn`, `error`.
 
-Alternatively, you can use Nodetool commands. Refer to [setlogginglevel](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/setlogginglevel.md) to set the logging level threshold for ScyllaDB classes.
+Alternatively, you can use Nodetool commands. Refer to [setlogginglevel](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/setlogginglevel.md) to set the logging level threshold for ScyllaDB classes.
 
 ## How to Change Log Level Offline
 
@@ -90,4 +90,4 @@ To enable the debug log level for all classes
 
 ## Related Topics
 
-[Nodetool setlogginglevel](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/setlogginglevel.md)
+[Nodetool setlogginglevel](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/setlogginglevel.md)

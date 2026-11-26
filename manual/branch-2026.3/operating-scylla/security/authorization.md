@@ -2,7 +2,7 @@
 
 # Grant Authorization CQL Reference
 
-Authorization is the process by where users are granted permissions, which entitle them to access, or permission to change data on specific keyspaces, tables or an entire datacenter. Authorization for ScyllaDB is done internally within ScyllaDB and is not done with a third-party such as LDAP or OAuth. Granting permissions to users requires the use of a role such as a Database Administrator as well as [enabling the CassandraAuthorizer](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md). It also requires a user who has been [authenticated](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md).
+Authorization is the process by where users are granted permissions, which entitle them to access, or permission to change data on specific keyspaces, tables or an entire datacenter. Authorization for ScyllaDB is done internally within ScyllaDB and is not done with a third-party such as LDAP or OAuth. Granting permissions to users requires the use of a role such as a Database Administrator as well as [enabling the CassandraAuthorizer](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/enable-authorization.md). It also requires a user who has been [authenticated](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authentication.md).
 
 #### NOTE
 All role and permission management statements in this section are consistent: once a statement completes
@@ -552,8 +552,8 @@ Show any permissions granted to `carlos`, limited to `SELECT` permissions on any
 
 #### Related Topics
 
-* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
-* [Role Based Access Control (RBAC)](https://docs.scylladb.com/manual/stable/operating-scylla/security/rbac-usecase.md)
+* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
+* [Role Based Access Control (RBAC)](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/rbac-usecase.md)
 
 Copyright
 

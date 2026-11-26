@@ -112,8 +112,8 @@
 
 ## Additional Information
 
-* [Consistency Levels](https://docs.scylladb.com/manual/stable/cql/consistency.md)
-* [Fault Tolerance](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md)
-* [Consistency Level Compatibility](https://docs.scylladb.com/manual/stable/using-scylla/cassandra-compatibility.md#consistency-level-read-and-write)
-* [Consistency Quiz](https://docs.scylladb.com/manual/stable/kb/quiz-administrators.md)
+* [Consistency Levels](https://docs.scylladb.com/manual/branch-2026.3/cql/consistency.md)
+* [Fault Tolerance](https://docs.scylladb.com/manual/branch-2026.3/architecture/architecture-fault-tolerance.md)
+* [Consistency Level Compatibility](https://docs.scylladb.com/manual/branch-2026.3/using-scylla/cassandra-compatibility.md#consistency-level-read-and-write)
+* [Consistency Quiz](https://docs.scylladb.com/manual/branch-2026.3/kb/quiz-administrators.md)
 * Take a course on [Consistency Levels at ScyllaDB University](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/high-availability/topic/consistency-level/)

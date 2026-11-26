@@ -1,6 +1,6 @@
 # Nodetool drain
 
-**drain** - Flushes all memtables from a node to the SSTables that are on the disk. ScyllaDB stops listening for connections from the client and other nodes. You need to restart ScyllaDB after running this command. This command is usually executed before upgrading a node to a new version or before any maintenance action is performed. When you want to simply flush memtables to disk, use the [nodetool flush](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/flush.md) command.
+**drain** - Flushes all memtables from a node to the SSTables that are on the disk. ScyllaDB stops listening for connections from the client and other nodes. You need to restart ScyllaDB after running this command. This command is usually executed before upgrading a node to a new version or before any maintenance action is performed. When you want to simply flush memtables to disk, use the [nodetool flush](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/flush.md) command.
 
 For example:
 
@@ -8,6 +8,6 @@ For example:
 
 See also
 
-[Nodetool flush](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/flush.md)
+[Nodetool flush](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/flush.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

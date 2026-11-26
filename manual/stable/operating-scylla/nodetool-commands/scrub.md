@@ -18,7 +18,7 @@ Remove faulty data, eliminate tombstoned rows that have surpassed the table’s 
                 [--drop-unfixable-sstables]
                 [--] <keyspace> [<table...>]
 
-Supported scrub modes: ABORT, SKIP, SEGREGATE, VALIDATE
+Supported scrub modes: VALIDATE, ABORT, SKIP, SEGREGATE
 Supported quarantine modes: INCLUDE, EXCLUDE, ONLY
 ```
 
@@ -28,9 +28,10 @@ Supported quarantine modes: INCLUDE, EXCLUDE, ONLY
 |----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | `-ns` / `--no-snapshot`                                        | Do not take a snapshot of all scrubbed tables before starting scrub (default false).                                        |
 | `-s` / `--skip-corrupted`                                      | Skip corrupted rows or partitions even when scrubbing counter tables.<br/>(Deprecated, use `--mode` instead. default false) |
-| `-m <scrub_mode>` / `--mode <scrub_mode>`                      | How to handle corrupt data (one of: ABORT|SKIP|SEGREGATE|VALIDATE, default ABORT; overrides `--skip-corrupted`)             |
+| `-m <scrub_mode>` / `--mode <scrub_mode>`                      | How to handle corrupt data (one of: VALIDATE|ABORT|SKIP|SEGREGATE, default VALIDATE; overrides `--skip-corrupted`)          |
 | `-q <quarantine_mode>` / `--quarantine-mode <quarantine_mode>` | How to handle quarantined SSTables (one of: INCLUDE|EXCLUDE|ONLY, default INCLUDE)                                          |
 | `--drop-unfixable-sstables`                                    | Drop unfixable SSTables instead of aborting the entire scrub (only valid with `--mode=SEGREGATE`)                           |
+| `--quarantine-invalid-sstables <true|false>`                   | Should corrupt sstables be quarantined (default true, only valid with `--mode=VALIDATE`)                                    |
 
 `--` This option can be used to separate command-line options from the list of argument, (useful when arguments might be mistaken for command-line options.
 
@@ -40,12 +41,12 @@ Supported quarantine modes: INCLUDE, EXCLUDE, ONLY
 
 ## SCRUB MODES
 
-| Scrub mode   | Description                                                                                                                                                                                                                                           |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ABORT        | Abort scrubbing when the first validation error occurs. (default).                                                                                                                                                                                    |
-| SKIP         | Skip corrupted rows or partitions. (equivalent to the legacy –skip-corrupted option).<br/>**Warning**: This mode can cause data loss by removing invalid data portions or entire<br/>SSTables if severely corrupted (e.g., digest mismatch detected). |
-| SEGREGATE    | Sort out-of-order rows or partitions by segregating them into additional SSTables.                                                                                                                                                                    |
-| VALIDATE     | Read-only mode: report any corruptions found while scrubbing but do not fix them.<br/>By default, corrupt SSTables are moved into a “quarantine” subdirectory so they will not be subject to compaction.                                              |
+| Scrub mode   | Description                                                                                                                                                                                                                                                                                                          |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| VALIDATE     | Read-only mode: report any corruptions found while scrubbing but do not fix them.<br/>Additionally, validate component integrity by verifying the stored digests if available.<br/>By default, corrupt SSTables are moved into a “quarantine” subdirectory so they will not be subject to compaction.<br/>(default). |
+| ABORT        | Abort scrubbing when the first validation error occurs.                                                                                                                                                                                                                                                              |
+| SKIP         | Skip corrupted rows or partitions. (equivalent to the legacy –skip-corrupted option).<br/>**Warning**: This mode can cause data loss by removing invalid data portions or entire<br/>SSTables if severely corrupted (e.g., digest mismatch detected).                                                                |
+| SEGREGATE    | Sort out-of-order rows or partitions by segregating them into additional SSTables.                                                                                                                                                                                                                                   |
 
 ## QUARANTINE MODES
 
@@ -78,7 +79,7 @@ Scrub **a** specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mod
 Scrub **a** specific table (mytable) in a keyspace (mykeyspace) in VALIDATE mode without taking a preliminary snapshot
 
 ```shell
-> nodetool scrub -m VALIDATE --no-snapshot mykeyspace mytable
+> nodetool scrub --no-snapshot mykeyspace mytable
 ```
 
 Scrub **a** specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mode dropping unfixable SSTables
@@ -89,16 +90,44 @@ Scrub **a** specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mod
 
 ## Procedures for Removing Bad SSTables
 
-### Method 1: Quarantine and Drop
+### Method 1: Replace the node
+
+Replacing the node is the only supported way to remove bad sstables.
+The replacing node streams its data from the other replicas, so this method carries no risk of data resurrection.
+
+See [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-running-node.md),
+or [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md) if the node is down.
+
+### Method 2: Quarantine and Drop
+
+#### WARNING
+The last step of this procedure is unsafe and may lead to data resurrection.
+This can happen regardless of the consistency level and of the `repair` tombstone GC mode.
+Because of that, this method should only be used as a backup when no viable alternatives remain
+and with the full understanding of the risks it carries.
+
+The only exception are tables which never produce tombstones.
+For such sstables this procedure is safe.
 
 **Step 1**: Run scrub in VALIDATE mode to identify and quarantine corrupted SSTables:
 
 ```shell
-> nodetool scrub -m VALIDATE keyspace_name table_name
+> nodetool scrub keyspace_name table_name
 ```
 
 This will move corrupted SSTables to a `quarantine` directory.
 The `quarantine` directory is a sub-directory of the table’s respective data directory.
+Quarantined SSTables are handled distinctly:
+
+* They participate in reads.
+* They participate in streaming and data migration.
+* They participate in repairs.
+* They do not participate in compaction, but participate in overlap checks for
+  the purpose of tombstone-gc.
+
+The purpose of the quarantine is to keep corrupt SSTables out of compaction, which can spread the compaction or can get in a fail-retry loop. It also makes corrupt SSTables easy to find and retrieve for investigation.
+
+It is possible to opt-out from quarantining SSTables by passing `--quarantine-invalid-sstables=false` to nodetool.
 
 **Step 2** (Optional): Preserve quarantined SSTables for analysis:
 
@@ -114,30 +143,10 @@ to determine the root cause of the corruption.
 **Step 3**: Drop the quarantined SSTables using [dropquarantinedsstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/dropquarantinedsstables.md):
 
 ```shell
-> nodetool dropquarantinedsstables keyspace_name table_name
+> nodetool dropquarantinedsstables --i-accept-data-resurrection-risk keyspace_name table_name
 ```
 
 This permanently removes the quarantined SSTables from the specified table.
-
-### Method 2: Segregate with Drop Unfixable Flag
-
-This approach attempts to fix what can be fixed and automatically drops SSTables that cannot be fixed.
-
-#### NOTE
-This method should be used for the subset of corruption issues where SEGREGATE mode can actually help: where corruption manifests at least partly in reordered partitions or rows.
-
-**Step 1**: Run scrub in SEGREGATE mode with the `--drop-unfixable-sstables` flag:
-
-```shell
-> nodetool scrub -m SEGREGATE --drop-unfixable-sstables keyspace_name table_name
-```
-
-This will:
-
-- Attempt to segregate and fix out-of-order data where possible
-- Remove faulty data
-- Automatically drop SSTables that cannot be fixed
-- Create new properly ordered SSTables from the recoverable data
 
 Copyright
 

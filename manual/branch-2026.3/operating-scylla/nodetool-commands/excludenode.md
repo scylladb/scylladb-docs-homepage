@@ -19,7 +19,7 @@ nodes to removnenode, replace, or repair.
 
 * Using `excludenode` requires at least a quorum of nodes in a cluster to be available.
   If the quorum is lost, it must be restored before you change the cluster topology.
-  See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+  See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 
 ## Usage
 
@@ -39,4 +39,4 @@ nodetool excludenode 2d1e1b0a-4ecb-4128-ba45-36ba558f7aee
 nodetool excludenode 2d1e1b0a-4ecb-4128-ba45-36ba558f7aee 73adf19e-2912-4cf6-b9ab-bbc74297b8de
 ```
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

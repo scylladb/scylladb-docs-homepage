@@ -41,4 +41,4 @@ nodetool: ScyllaDB API server HTTP POST to URL '/storage_service/decommission' f
 2. Run the `nodetool status` command to verify the node is in `UN` status.
 3. Run `nodetool decommission` again.
 
-[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/index.md)

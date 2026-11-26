@@ -100,6 +100,6 @@ With task manager, we can have asynchronous versions of synchronous calls. Some 
 The calls work analogically as their synchronous versions, but instead of waiting for the operation to be done, they
 return the id of the associated task. You can query the operation’s status with task manager API.
 
-See [Nodetool tasks](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/index.md).
+See [Nodetool tasks](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/tasks/index.md).
 
-To learn how to interact with REST API see [REST API](https://docs.scylladb.com/manual/stable/operating-scylla/rest.md).
+To learn how to interact with REST API see [REST API](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/rest.md).

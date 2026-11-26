@@ -12,7 +12,7 @@ To verify the gossip status, run `nodetool statusgossip`. The result will be: `n
 
 See also
 
-* [enablegossip](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/enablegossip.md)
-* [statusgossip](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/statusgossip.md)
+* [enablegossip](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/enablegossip.md)
+* [statusgossip](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/statusgossip.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

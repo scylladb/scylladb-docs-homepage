@@ -40,7 +40,7 @@ cluster = Cluster([socket],
 session = cluster.connect()
 ```
 
-### With [CQLSh](https://docs.scylladb.com/manual/stable/cql/cqlsh.md)
+### With [CQLSh](https://docs.scylladb.com/manual/branch-2026.3/cql/cqlsh.md)
 
 ```console
 cqlsh <node's workdir>/cql.m

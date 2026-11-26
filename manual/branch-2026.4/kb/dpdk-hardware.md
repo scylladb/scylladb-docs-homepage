@@ -27,4 +27,4 @@ ETHDRV=
 
 [DPDK: Supported NICs](http://dpdk.org/doc/nics)
 
-[Knowledge Base](https://docs.scylladb.com/manual/branch-2026.4/kb/index.md)
+[Knowledge Base](https://docs.scylladb.com/manual/stable/kb/index.md)

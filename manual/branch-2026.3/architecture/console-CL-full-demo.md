@@ -1,6 +1,6 @@
 # Consistency Level Console Demo
 
-In this demo, we’ll bring up 3 nodes and demonstrate how writes and reads look, with tracing enabled in a cluster where our [Replication Factor (RF)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Replication-Factor-RF) is set to **3**.  We’ll change the [Consistency Level (CL)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Consistency-Level-CL) between operations to show how messages are passed between nodes, and finally take down a few nodes to show failure conditions in a ScyllaDB cluster.
+In this demo, we’ll bring up 3 nodes and demonstrate how writes and reads look, with tracing enabled in a cluster where our [Replication Factor (RF)](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Replication-Factor-RF) is set to **3**.  We’ll change the [Consistency Level (CL)](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Consistency-Level-CL) between operations to show how messages are passed between nodes, and finally take down a few nodes to show failure conditions in a ScyllaDB cluster.
 
 You can also learn more in the [High Availability lesson](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/high-availability/) on ScyllaDB University.
 
@@ -8,7 +8,7 @@ Note:  We use [asciinema](https://asciinema.org) to generate the console casts u
 
 ## Step one:  bring up the cluster
 
-First, we’ll bring up a 3-node docker cluster.  You’ll see all the nodes eventually read  `UN` for status. `U` means **up**, and `N` means **normal**.  Read more about [Nodetool Status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md).
+First, we’ll bring up a 3-node docker cluster.  You’ll see all the nodes eventually read  `UN` for status. `U` means **up**, and `N` means **normal**.  Read more about [Nodetool Status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md).
 
 Once all nodes are up, we can run our CQL shell.
 

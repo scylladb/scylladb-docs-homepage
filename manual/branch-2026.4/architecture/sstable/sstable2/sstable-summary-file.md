@@ -32,4 +32,4 @@ struct summary_la {
 };
 ```
 
-[ScyllaDB Architecture](https://docs.scylladb.com/manual/branch-2026.4/architecture/index.md)
+[ScyllaDB Architecture](https://docs.scylladb.com/manual/stable/architecture/index.md)

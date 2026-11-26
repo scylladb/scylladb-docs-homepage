@@ -113,4 +113,4 @@ Maximum tombstones per slice (last five minutes): 0.0
 | Average tombstones per slice (last five minutes) | Average tombstones per slice                                                      |
 | Maximum tombstones per slice (last five minutes) | Maximum tombstones per slice                                                      |
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

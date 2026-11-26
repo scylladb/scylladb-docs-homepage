@@ -4,12 +4,12 @@
 
 The status of a restore operation is retained for a period defined by `user_task_ttl`,
 allowing you to query the status even after the operation completes.
-You can configure the TTL duration using the [nodetool tasks user-ttl](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tasks/user-ttl.md) command.
+You can configure the TTL duration using the [nodetool tasks user-ttl](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/user-ttl.md) command.
 
 When you run a restore operation, it always executes as a background task. You have two ways to interact with this task:
 
 * **Without the \`\`–nowait\`\` flag (default)**: The command waits for the restore operation to complete and returns the final status. This approach relies on the `user_task_ttl` setting. If `user_task_ttl` is set too low (especially if set to 0), the task record might be removed before the status can be checked, potentially causing the command to fail in reporting the result.
-* **With the \`\`–nowait\`\` flag**: The command immediately returns a task ID without waiting for the operation to complete. You can use this task ID with the [nodetool tasks](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tasks/index.md) command to monitor the progress of the restore operation or to cancel it if needed. The task information remains available for the duration specified by `user_task_ttl` after completion.
+* **With the \`\`–nowait\`\` flag**: The command immediately returns a task ID without waiting for the operation to complete. You can use this task ID with the [nodetool tasks](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/index.md) command to monitor the progress of the restore operation or to cancel it if needed. The task information remains available for the duration specified by `user_task_ttl` after completion.
 
 ## Syntax
 
@@ -38,7 +38,7 @@ nodetool restore --endpoint s3.us-east-2.amazonaws.com  --bucket bucket-foo --pr
 
 * `-h <host>` or `--host <host>` - Node hostname or IP address.
 * `--endpoint` - Name of the configured object storage endpoint to load SSTables from.
-  This should be configured as per [the object storage configuration instructions](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#object-storage-configuration).
+  This should be configured as per [the object storage configuration instructions](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-configuration).
 * `--bucket` - Name of the bucket to load SSTables from
 * `--prefix` - The share prefix for object keys of backed up SSTables
 * `--keyspace` - Name of the keyspace to load SSTables into
@@ -66,6 +66,6 @@ a subset of nodes to restore only SStables that belong to the rack or DC.
 
 See also
 
-[Nodetool backup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/backup.md)
+[Nodetool backup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/backup.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

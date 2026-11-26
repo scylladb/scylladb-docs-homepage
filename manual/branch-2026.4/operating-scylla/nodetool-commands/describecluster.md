@@ -26,4 +26,4 @@ Cluster Information:
 | Partitioner | Partitioner used by the cluster |
 | Schema      | Schema version                  |
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

@@ -66,7 +66,7 @@ DESCRIBE KEYSPACE mykeyspace;
 CREATE KEYSPACE mykeyspace WITH replication = { 'class' : 'NetworkTopologyStrategy', '<existing_dc>' : 3};
 ```
 
-To complete the process, you need to [change the snitch](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/switch-snitch.md), edit the
+To complete the process, you need to [change the snitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/config-change/switch-snitch.md), edit the
 `cassandra-rackdc.properties` file, and set the preferred data-center name.
 
 ## Procedure with downtime
@@ -75,7 +75,7 @@ This is a more complex scenario, as the new strategy may select different replic
 To fix that, you will need a **full shutdown of the cluster**.
 
 1. Stop all traffic to the cluster. **A failure to stop the traffic can cause data loss.**
-2. Run [full repair on the cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/maintenance/repair.md)
+2. Run [full repair on the cluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/maintenance/repair.md)
 3. Alter the strategy as detailed above
 4. Run a second full repair
 5. Run `nodetool cleanup` on each node

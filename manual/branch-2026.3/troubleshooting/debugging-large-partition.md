@@ -16,7 +16,7 @@ Any of the following:
   WARN  2022-09-22 17:33:11,075 [shard 1]large_data - Writing large partition Some_KS/Some_table: [COL] (SIZE bytes) to SSTABLE_NAME
   ```
 
-  In this case, refer to [Troubleshooting Large Partition Tables](https://docs.scylladb.com/manual/stable/troubleshooting/large-partition-table.md#large-partition-table-configure) for more information.
+  In this case, refer to [Troubleshooting Large Partition Tables](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/large-partition-table.md#large-partition-table-configure) for more information.
 
 ## What To Do When You Suspect You May Have A Large Partition?
 
@@ -37,7 +37,7 @@ nodetool cfstats demodb.tmcr | grep "Compacted partition maximum bytes"
 
 ## Using system tables to detect large partitions, rows, or cells
 
-Large rows and large cells are listed in the `system.large_rows` and `system.large_cells` tables, respectively.  See [ScyllaDB Large Rows and Cells Tables](https://docs.scylladb.com/manual/stable/troubleshooting/large-rows-large-cells-tables.md) for more information.
+Large rows and large cells are listed in the `system.large_rows` and `system.large_cells` tables, respectively.  See [ScyllaDB Large Rows and Cells Tables](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/large-rows-large-cells-tables.md) for more information.
 
 ## When Compaction Creates an Error
 
@@ -45,4 +45,4 @@ When compaction or writing to a table results in a “Writing a partition with t
 
 This warning indicates that there is a huge multi-row partition (based on the number of rows) and it is orthogonal
 to the size-based warnings. The warning is controlled by `compaction_rows_count_warning_threshold`, which is set in the scylla.yaml.
-See [Troubleshooting Large Partition Tables](https://docs.scylladb.com/manual/stable/troubleshooting/large-partition-table.md#large-partition-table-configure) for more information.
+See [Troubleshooting Large Partition Tables](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/large-partition-table.md#large-partition-table-configure) for more information.

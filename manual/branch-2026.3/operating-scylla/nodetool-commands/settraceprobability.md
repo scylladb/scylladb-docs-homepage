@@ -16,4 +16,4 @@ nodetool settraceprobability 0.1
 
 ## Additional Information
 
-* [gettraceprobability](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/gettraceprobability.md) - Nodetool Reference
+* [gettraceprobability](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/gettraceprobability.md) - Nodetool Reference

@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/secondary-indexes.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md">https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md">https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md</a>.
                         </div>
                     
                     
@@ -447,7 +447,7 @@ automatically at insertion time.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Vector indexes are supported in ScyllaDB Cloud only in clusters that have the Vector Search feature enabled.
-Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, and grouping). More information
+Vector indexes do not support all ScyllaDB features (e.g., tracing, paging, grouping, and <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">DISTINCT</span></code>). More information
 about Vector Search is available in the
 <a class="reference external" href="https://cloud.docs.scylladb.com/stable/vector-search/">ScyllaDB Cloud documentation</a>.</p>
 </div>
@@ -463,6 +463,9 @@ are treated as filtering columns. The local vector index requires that the
 partition key of the index is of a type allowed for filtering columns and the
 vector column is the first one after the partition key definition, and any
 subsequent columns are filtering columns.</p>
+<p>The vector column must be a regular column. Primary-key and static columns
+cannot be indexed.
+A filtering column cannot be a static column.</p>
 <p>ScyllaDB allows creating multiple <strong>named</strong> vector indexes on the same vector column.
 This can be used to create a replacement index before dropping an older one.
 Unnamed duplicate vector index definitions are still rejected, and index names
@@ -665,7 +668,7 @@ keyword and specifying the index type as <code class="docutils literal notransla
 <p><strong>Column restrictions:</strong></p>
 <ul class="simple">
 <li><p>The indexed column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>. Other types are rejected.</p></li>
-<li><p>The indexed column must be a regular or clustering-key column. Partition-key columns cannot be indexed.</p></li>
+<li><p>The indexed column must be a regular column. Primary-key and static columns cannot be indexed.</p></li>
 <li><p>The table must use tablets (not vnodes).</p></li>
 </ul>
 <p>Example:</p>
@@ -722,6 +725,71 @@ a word is kept as part of that term (e.g., <code class="docutils literal notrans
 or stop-word removal.</p></li>
 </ul>
 </section>
+<section id="pattern-index-scylladb-cloud">
+<span id="create-pattern-index-statement"></span><h2>Pattern Index <span class="label label--note">ScyllaDB Cloud</span><a class="headerlink" href="#pattern-index-scylladb-cloud" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pattern indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
+For the full description, see the <a class="reference internal" href="../features/pattern-search.html"><span class="doc">Pattern Search documentation</span></a>.</p>
+</div>
+<p>A pattern index serves <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> restrictions on a text column. Such a query does not need
+<code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>; if it is given, it is ignored and the index is still used.
+Instead of tokenizing the text into words, as a <a class="reference internal" href="#create-fulltext-index-statement"><span class="std std-ref">full-text index</span></a>
+does, it matches the whole value against the pattern, so a pattern such as <code class="docutils literal notranslate"><span class="pre">'%abc%'</span></code> is an index
+lookup rather than a scan of the table. Which patterns are supported depends on the index node. It is
+meant for values searched by any part of them, such as codes, identifiers and tags.</p>
+<p>A pattern index is a custom index created using the <code class="docutils literal notranslate"><span class="pre">CUSTOM</span></code> keyword and the index type
+<code class="docutils literal notranslate"><span class="pre">pattern_index</span></code>. CDC is enabled automatically on the base table when a pattern index is created.</p>
+<p><strong>Column restrictions:</strong></p>
+<ul class="simple">
+<li><p>The indexed column must be of type <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">varchar</span></code>, or <code class="docutils literal notranslate"><span class="pre">ascii</span></code>. Other types are rejected.</p></li>
+<li><p>The indexed column must be a regular column. Primary-key and static columns cannot be indexed.</p></li>
+<li><p>The table must use tablets (not vnodes).</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">parts</span> <span class="p">(</span><span class="n">code</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">'pattern_index'</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">CUSTOM</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">parts</span> <span class="p">(</span><span class="n">supplier</span><span class="p">)</span> <span class="k">USING</span> <span class="s1">'pattern_index'</span>
+    <span class="k">WITH</span> <span class="k">OPTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'case_sensitive'</span><span class="p">:</span> <span class="s1">'false'</span><span class="p">};</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Creating a pattern index changes the meaning of every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on its column, for every application
+that queries the column, not only the one the index was created for. Once the index exists, a
+<code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on the column is served by the index, even with <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>:</p>
+<ul class="simple">
+<li><p>Queries that worked by filtering start failing. The <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> must be the only restriction in the
+<code class="docutils literal notranslate"><span class="pre">WHERE</span></code> clause, and the query needs a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> of at most 1000, so for example a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>
+together with a restriction on the partition key, or a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> without a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code>, is rejected.</p></li>
+<li><p>Queries that still succeed can return different rows, without any error. The index is eventually
+consistent, so a recent write may be missed, and the rows are neither paged nor ordered. With
+<code class="docutils literal notranslate"><span class="pre">'case_sensitive':</span> <span class="pre">'false'</span></code>, matching ignores letter case, so a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> returns rows that a
+filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> does not.</p></li>
+<li><p>When the index node is unavailable, every <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on the column fails.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">INDEX</span></code> returns a warning that summarizes these changes. To restore filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>, drop the
+index with <a class="reference internal" href="#drop-index-statement"><span class="std std-ref">DROP INDEX</span></a>. For all the differences from a filtered
+<code class="docutils literal notranslate"><span class="pre">LIKE</span></code>, see <a class="reference internal" href="../features/pattern-search.html#pattern-search-indexed-vs-filtered"><span class="std std-ref">Indexed vs. Filtered LIKE</span></a>.</p>
+</div>
+<p>The following options are supported for pattern indexes:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">case_sensitive</span></code></p></td>
+<td><p>Whether matching distinguishes letter case, as <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> does. With <code class="docutils literal notranslate"><span class="pre">false</span></code> both the
+indexed values and the patterns are lowercased, so <code class="docutils literal notranslate"><span class="pre">'%ab-%'</span></code> matches
+<code class="docutils literal notranslate"><span class="pre">AB-1024-XL</span></code>. Supported values: <code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code>, in any letter case.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="drop-index">
 <span id="drop-index-statement"></span><h2>DROP INDEX<a class="headerlink" href="#drop-index" title="Link to this heading">¶</a></h2>
 <p>Dropping a secondary index uses the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> statement:</p>
@@ -732,6 +800,32 @@ or stop-word removal.</p></li>
 name, which may optionally specify the keyspace of the index.</p>
 <p>If the index is currently being built, the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> can still be executed. Once the <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">INDEX</span></code> command is issued,
 the system stops the build process and cleans up any partially built data associated with the index.</p>
+<p>Dropping a <a class="reference internal" href="#create-pattern-index-statement"><span class="std std-ref">pattern index</span></a> restores filtered <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on its
+column: from then on, a <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> on the column is a filter again, requires <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>, and
+follows the rules of <a class="reference internal" href="dml/select.html#like-operator"><span class="std std-ref">LIKE Operator</span></a>.</p>
+</section>
+<section id="changing-indexes-during-a-paged-read">
+<h2>Changing Indexes During a Paged Read<a class="headerlink" href="#changing-indexes-during-a-paged-read" title="Link to this heading">¶</a></h2>
+<p>A paged read keeps using the query plan it started with. The paging state
+returned to the client records whether the read scans the base table or uses a
+particular secondary index, and every subsequent page is served by that same
+plan, so creating an index that could serve the query affects only new queries.
+Because a new index takes a moment to become known cluster-wide, a read that
+already uses one may be resumed by a node that does not know it yet, and then
+fails as described below.</p>
+<p>Dropping the index a paged read uses is different: the position saved in the
+paging state belongs to that index’s scan, and no other plan can interpret it.
+Requesting the next page fails with an <code class="docutils literal notranslate"><span class="pre">InvalidRequest</span></code> error stating that the
+index is no longer available, and the query has to be retried from the
+beginning. Creating another index under the same name does not help, because the
+read is tied to the specific index it started with. A prepared statement fails
+one step earlier: the <code class="docutils literal notranslate"><span class="pre">DROP</span></code> invalidates it, the driver re-prepares it before
+resuming, and a query that is not valid without the index - one lacking
+<code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>, for example - fails that re-preparation. A read scanning the
+base table, in contrast, is not tied to that table’s identity: dropping and
+re-creating the base table does not change the plan, and the next page is served
+from the new table - resuming where the old table’s scan stopped, so whatever
+the new table holds before that position is skipped without an error.</p>
 </section>
 <section id="additional-information">
 <h2>Additional Information<a class="headerlink" href="#additional-information" title="Link to this heading">¶</a></h2>
@@ -783,7 +877,7 @@ the system stops the build process and cleans up any partially built data associ
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -852,7 +946,7 @@ the system stops the build process and cleans up any partially built data associ
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Global Secondary Indexes&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -879,7 +973,9 @@ the system stops the build process and cleans up any partially built data associ
 </ul>
 </li>
 <li><a class="reference internal" href="#full-text-index-scylladb-cloud">Full-text Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
+<li><a class="reference internal" href="#pattern-index-scylladb-cloud">Pattern Index <span class="label label--note">ScyllaDB Cloud</span></a></li>
 <li><a class="reference internal" href="#drop-index">DROP INDEX</a></li>
+<li><a class="reference internal" href="#changing-indexes-during-a-paged-read">Changing Indexes During a Paged Read</a></li>
 <li><a class="reference internal" href="#additional-information">Additional Information</a></li>
 </ul>
 </li>
@@ -929,7 +1025,7 @@ the system stops the build process and cleans up any partially built data associ
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -943,13 +1039,13 @@ the system stops the build process and cleans up any partially built data associ
             
                 
                     <li>
-                        <a href="../../branch-2026.4/cql/secondary-indexes.html">2026.4</a>
+                        <a href="secondary-indexes.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="secondary-indexes.html">2026.3</a>
+                        <a href="../../branch-2026.3/cql/secondary-indexes.html">2026.3</a>
                     </li>
                 
             
@@ -996,17 +1092,16 @@ the system stops the build process and cleans up any partially built data associ
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -1055,7 +1150,6 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1068,6 +1162,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -1097,6 +1192,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -1134,6 +1230,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/delete.html">DELETE</a></li>
@@ -1150,6 +1247,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1160,6 +1258,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1187,6 +1286,7 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1308,13 +1408,13 @@ the system stops the build process and cleans up any partially built data associ
 <li class="toctree-l2"><a class="reference internal" href="../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1395,7 +1495,7 @@ the system stops the build process and cleans up any partially built data associ
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 13 Aug 2026.
+                        Last updated on 07 Oct 2026.
                     
                 </div>
             

@@ -17,7 +17,7 @@ One or more ScyllaDB nodes have a schema mismatch.
 
 ## How to Verify
 
-Run [nodetool describecluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/describecluster.md)
+Run [nodetool describecluster](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/describecluster.md)
 
 In the following example, one node, **172.17.0.3** has a different schema than the other two nodes. As a temporary state, this is fine, but if this state persists, it will fail CQL operations.
 
@@ -35,7 +35,7 @@ Cluster Information:
 ## Solution
 
 1. Wait for five minutes and run `nodetool describecluster` to verify that the schema is synced.
-2. If there is still a mismatch error message execute a [rolling restart](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/config-change/rolling-restart.md).
+2. If there is still a mismatch error message execute a [rolling restart](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/rolling-restart.md).
 3. Verify schema is synced
 
 For example:

@@ -43,14 +43,14 @@ steps 2 and 5 are required for Live migration only (meaning with ongoing traffic
    - Import schema to ScyllaDB: `cqlsh [IP] --file 'adjusted_schema.cql'`
 
 #### NOTE
-Scylla and Apache Cassandra [encrypted backup files](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md) are **not** compatible.
+Scylla and Apache Cassandra [encrypted backup files](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest.md) are **not** compatible.
 sstableloader does **not** support loading from encrypted files.
 
 If you need to migrate/restore from encrypted files:
 
 * Upload them to the original database
 * Decrypted the table with ALTER TABLE
-* Update the SSTables files with [upgradesstable](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md)
+* Update the SSTables files with [upgradesstable](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/upgradesstables.md)
 * Use sstableloader
 
 #### NOTE
@@ -62,12 +62,12 @@ It is recommended to alter the schema of tables you plan to migrate as follows:
 Make sure to change both parameters back to the original value once the migration is done (using ALTER TABLE).
 
 #### NOTE
-ScyllaDB supports [Materialized View(MV)](https://docs.scylladb.com/manual/stable/features/materialized-views.md) and [Secondary Index(SI)](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md).
+ScyllaDB supports [Materialized View(MV)](https://docs.scylladb.com/manual/branch-2026.3/features/materialized-views.md) and [Secondary Index(SI)](https://docs.scylladb.com/manual/branch-2026.3/features/secondary-indexes.md).
 
 When migrating data from Apache Cassandra with MV or SI, you can either:
 
 * Create the MV and SI as part of the schema so that each new insert will be indexed.
-* Upload all the data with sstableloader first, and only then [create the secondary indexes](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-index-statement) and [MVs](https://docs.scylladb.com/manual/stable/cql/mv.md#create-materialized-view-statement).
+* Upload all the data with sstableloader first, and only then [create the secondary indexes](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md#create-index-statement) and [MVs](https://docs.scylladb.com/manual/branch-2026.3/cql/mv.md#create-materialized-view-statement).
 
 In either case, only use the sstableloader to load the base table SSTable. Do **not** load the index and view data - let ScyllaDB index for you.
 
@@ -116,7 +116,7 @@ for x in range(0,RANDOM_WRITES):
 
 See the full code example [here](https://github.com/scylladb/scylla-code-samples/tree/master/dual_writes)
 
-1. On each Apache Cassandra node, take a snapshot for every keyspace using the [nodetool snapshot](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/snapshot.md) command. This will flush all SSTables to disk and generate a `snapshots` folder with an epoch timestamp for each underlying table in that keyspace.
+1. On each Apache Cassandra node, take a snapshot for every keyspace using the [nodetool snapshot](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/snapshot.md) command. This will flush all SSTables to disk and generate a `snapshots` folder with an epoch timestamp for each underlying table in that keyspace.
 
    Folder path post snapshot: `/var/lib/cassandra/data/keyspace/table-[uuid]/snapshots/[epoch_timestamp]/`
 2. We strongly advise against running the sstableloader tool directly on the ScyllaDB cluster, as it will consume resources from ScyllaDB. Instead you should run the sstableloader from intermediate node/s. To do that, you need to install the `scylla-tools-core` package (it includes the sstableloader tool).
@@ -185,6 +185,6 @@ If the node that failed was a node you were loading sstables to, then the sstabl
 
 In older ScyllaDB releases, the estimated partition count reported by `nodetool tablestats` could differ significantly from Apache Cassandra because the value is derived from estimation algorithms rather than exact counts. This discrepancy did not indicate data loss. ([issue-2545](https://github.com/scylladb/scylla/issues/2545))
 
-More on [ScyllaDB and Apache Cassandra Compatibility](https://docs.scylladb.com/manual/stable/using-scylla/cassandra-compatibility.md)
+More on [ScyllaDB and Apache Cassandra Compatibility](https://docs.scylladb.com/manual/branch-2026.3/using-scylla/cassandra-compatibility.md)
 
 Also see the [Migrating to ScyllaDB lesson](https://university.scylladb.com/courses/scylla-operations/lessons/migrating-to-scylla/) on ScyllaDB University.

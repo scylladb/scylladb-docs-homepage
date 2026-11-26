@@ -12,7 +12,7 @@ By default, the incremental backup status is `not running`
 
 See also
 
-* [disablebackup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/disablebackup.md)
-* [enablebackup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/enablebackup.md)
+* [disablebackup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/disablebackup.md)
+* [enablebackup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/enablebackup.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

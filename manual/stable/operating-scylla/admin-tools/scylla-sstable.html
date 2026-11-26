@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md" />
             
         
 
@@ -355,14 +355,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/admin-tools/scylla-sstable.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md">https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md</a>.
                         </div>
                     
                     
@@ -386,6 +386,14 @@ validating the content of SStables, and more. See <a class="reference internal" 
 </pre></div>
 </div>
 <p>You can specify more than one SSTable.</p>
+<p>A single directory can be passed in place of the individual SSTables in it –
+typically the table directory – in which case all the SSTables found in it are
+processed. SSTables which are not sealed yet are left out.</p>
+<p>An SSTable with components missing fails the operation, whether it is named on
+the command line or found in a directory. Note that the data directory of a
+running node is a moving target: the node can delete an SSTable while the tool
+is loading it. Pass <code class="docutils literal notranslate"><span class="pre">--ignore-incomplete-sstables</span></code> to have such SSTables
+reported and skipped instead.</p>
 <p>Additionally, the path to SSTable can point to an object storage fully qualified
 path in the form of <code class="docutils literal notranslate"><span class="pre">s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt</span></code>
 or <code class="docutils literal notranslate"><span class="pre">gs://bucket-name/prefix/of/your/sstable/sstable-TOC.txt</span></code>. This also
@@ -897,6 +905,31 @@ $LARGE_DATA_RECORD := {
 </pre></div>
 </div>
 </section>
+<section id="dump">
+<span id="scylla-sstable-dump-operation"></span><h3>dump<a class="headerlink" href="#dump" title="Link to this heading">¶</a></h3>
+<p>Dumps one or more components of the SSTable(s) into a single JSON object per
+SSTable. Useful when you need to inspect multiple components together without
+running separate commands.</p>
+<p>The components to dump are selected via <code class="docutils literal notranslate"><span class="pre">--components</span></code> (a comma-separated
+list of component names) or <code class="docutils literal notranslate"><span class="pre">--all-components</span></code> (to dump all supported
+components). If neither is provided, the command exits with an error.</p>
+<p>Supported component names: <code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">index</span></code>, <code class="docutils literal notranslate"><span class="pre">compression-info</span></code>,
+<code class="docutils literal notranslate"><span class="pre">summary</span></code>, <code class="docutils literal notranslate"><span class="pre">statistics</span></code>, <code class="docutils literal notranslate"><span class="pre">scylla-metadata</span></code>.</p>
+<p>The content is dumped in JSON, using the following schema:</p>
+<div class="hide-copy-button highlight-none notranslate"><div class="highlight"><pre><span></span>$ROOT := { "$sstable_path": $SSTABLE, ... }
+
+$SSTABLE := {
+    "data":             &lt;same as dump-data $SSTABLE&gt;,             // optional
+    "index":            &lt;same as dump-index $SSTABLE&gt;,            // optional
+    "compression-info": &lt;same as dump-compression-info $SSTABLE&gt;, // optional
+    "summary":          &lt;same as dump-summary $SSTABLE&gt;,          // optional
+    "statistics":       &lt;same as dump-statistics $SSTABLE&gt;,       // optional
+    "scylla-metadata":  &lt;same as dump-scylla-metadata $SSTABLE&gt;   // optional
+}
+</pre></div>
+</div>
+<p>Only the requested components appear as keys in the <code class="docutils literal notranslate"><span class="pre">$SSTABLE</span></code> object.</p>
+</section>
 <section id="dump-schema">
 <h3>dump-schema<a class="headerlink" href="#dump-schema" title="Link to this heading">¶</a></h3>
 <p>Dump the schema of the table or sstable in CQL describe table format.</p>
@@ -908,6 +941,7 @@ This schema is enough to understand and parse the sstable data, but it may not b
 <section id="validate">
 <span id="scylla-sstable-validate-operation"></span><h3>validate<a class="headerlink" href="#validate" title="Link to this heading">¶</a></h3>
 <p>Validates the content of the sstable on the mutation-fragment level, see <a class="reference internal" href="#scylla-sstable-sstable-content">sstable content</a> for more details.
+Component digests will be validated if present in the scylla-metadata component.
 Any parsing errors will also be detected, but after successful parsing the validation will happen on the fragment level.
 The following things are validated:</p>
 <ul class="simple">
@@ -937,7 +971,7 @@ It is limited to ordering issues on the partition, row, or mutation-fragment lev
 <li><p><strong>abort</strong> - Aborts the scrub as soon as any error is found (recognized or not). This mode is only included for the sake of completeness. We recommend using the <strong>validate</strong> mode so that all errors are reported.</p></li>
 <li><p><strong>skip</strong> - Skips over any corruptions found, thus omitting them from the output. Note that this mode can result in omitting more than is strictly necessary, but it guarantees that all detectable corruptions will be omitted.</p></li>
 <li><p><strong>segregate</strong> - Fixes partition/row/mutation-fragment out-of-order errors by segregating the output into as many SStables as required so that the content of each output SStable is properly ordered.</p></li>
-<li><p><strong>validate</strong> - Validates the content of the SStable, reporting any corruptions found. Writes no output SStables. In this mode, scrub has the same outcome as the <a class="reference internal" href="#scylla-sstable-validate-operation">validate operation</a> - and the validate operation is recommended over scrub.</p></li>
+<li><p><strong>validate</strong> - Validates the content of the SStable and component digests, reporting any corruptions found. Writes no output SStables. In this mode, scrub has the same outcome as the <a class="reference internal" href="#scylla-sstable-validate-operation">validate operation</a> - and the validate operation is recommended over scrub.</p></li>
 </ul>
 <p>Output SStables are written to the directory specified via <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>. They will be written with the <code class="docutils literal notranslate"><span class="pre">BIG</span></code> format and the highest supported SStable format, with random generation.</p>
 </section>
@@ -988,6 +1022,9 @@ In both cases the input is expected to be provided via the file whose path is pa
 <p>The input file is expected to contain <code class="docutils literal notranslate"><span class="pre">;</span></code> separated CQL statements, providing the content of the output SSTable(s).
 The following CQL statements are allowed: <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code> and <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.
 The statements can be in any order, the data will be sorted internally.
+The table lives in the <code class="docutils literal notranslate"><span class="pre">scylla_sstable</span></code> keyspace, which is already selected when
+the statements are run, so the table name doesn’t have to be qualified with it
+(but it can be).
 Writes are internally applied to a memtable, which is flushed to disk once its size exceeds the memory limit, specified via the <code class="docutils literal notranslate"><span class="pre">--memory-limit</span></code> command line argument (defaults to <code class="docutils literal notranslate"><span class="pre">1MiB</span></code>).</p>
 <p>Reading the statements from the input file happens via a streaming parser, it is
 safe to provide input files of any size.</p>
@@ -1057,8 +1094,10 @@ Custom queries can be provided either via the <code class="docutils literal notr
 or via <code class="docutils literal notranslate"><span class="pre">--query-file</span></code> (in a file).
 When writing queries by hand, there are some things to keep in in mind:</p>
 <ul class="simple">
-<li><p>The keyspace of the table is changed to <code class="docutils literal notranslate"><span class="pre">scylla_sstable.</span></code> This is to avoid any
-collisions in case the sstables belong to a system keyspace.</p></li>
+<li><p>The keyspace of the table is changed to <code class="docutils literal notranslate"><span class="pre">scylla_sstable</span></code>. This is to avoid any
+collisions in case the sstables belong to a system keyspace. The query is run
+with this keyspace already selected, so the table name doesn’t have to be
+qualified with it (but it can be).</p></li>
 <li><p>If the schema is read from the sstable itself, partition key columns will be
 <code class="docutils literal notranslate"><span class="pre">$pk0..$pkN</span></code> and clustering key columns will be <code class="docutils literal notranslate"><span class="pre">$ck0..$ckN</span></code>. This is because
 the in-sstable schema doesn’t contain key column names.
@@ -1110,14 +1149,14 @@ environment variable. This temporary directory is removed on exit.</p>
 </pre></div>
 </div>
 <p>Select a specific field in a specific partition using the command-line:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query<span class="w"> </span><span class="s2">"SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks'"</span><span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-Data.db
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query<span class="w"> </span><span class="s2">"SELECT replication FROM keyspaces WHERE keyspace_name='ks'"</span><span class="w"> </span>/path/to/data/system_schema/keyspaces-*/*-Data.db
 <span class="go"> replication</span>
 <span class="go">-------------------------------------------------------------------------------------</span>
 <span class="go"> ({class : org.apache.cassandra.locator.NetworkTopologyStrategy}, {datacenter1 : 1})</span>
 </pre></div>
 </div>
 <p>Select a specific field in a specific partition using <code class="docutils literal notranslate"><span class="pre">--query-file</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks';"</span><span class="w"> </span>&gt;<span class="w"> </span>query.cql
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"SELECT replication FROM keyspaces WHERE keyspace_name='ks';"</span><span class="w"> </span>&gt;<span class="w"> </span>query.cql
 <span class="gp">$ </span>scylla<span class="w"> </span>sstable<span class="w"> </span>query<span class="w"> </span>--system-schema<span class="w"> </span>--query-file<span class="o">=</span>./query.cql<span class="w"> </span>./scylla-workdir/data/system_schema/keyspaces-*/*-Data.db
 <span class="go"> replication</span>
 <span class="go">-------------------------------------------------------------------------------------</span>
@@ -1173,7 +1212,7 @@ But even an altered schema which changed only the table options can lead to data
 <li><p>Also supports negative filters (keep all partitions except the those specified).</p></li>
 </ul>
 <p>The partition list can be provided either via the <code class="docutils literal notranslate"><span class="pre">--partition</span></code> command line argument, or via a file path passed to the the <code class="docutils literal notranslate"><span class="pre">--partitions-file</span></code> argument. The file should contain one partition key per line.
-Partition keys should be provided in the hex format, as produced by <a class="reference external" href="/operating-scylla/admin-tools/scylla-types/">scylla types serialize</a>.</p>
+Partition keys should be provided in the hex format, as produced by <a class="reference internal" href="scylla-types.html"><span class="doc">scylla types serialize</span></a>.</p>
 <p>With <code class="docutils literal notranslate"><span class="pre">--include</span></code>, only the specified partitions are kept from the input SSTable(s). With <code class="docutils literal notranslate"><span class="pre">--exclude</span></code>, the specified partitions are discarded and won’t be written to the output SSTable(s).
 It is possible that certain input SSTable(s) won’t have any content left after the filtering. These input SSTable(s) will not have a matching output SSTable.</p>
 <p>By default, each input sstable is filtered individually. Use <code class="docutils literal notranslate"><span class="pre">--merge</span></code> to filter the combined content of all input sstables, producing a single output SSTable.</p>
@@ -1219,6 +1258,85 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 </pre></div>
 </div>
 <p>This will merge both input SSTables first, then split the combined data, creating 3 output SSTables.</p>
+</section>
+<section id="layout">
+<h3>layout<a class="headerlink" href="#layout" title="Link to this heading">¶</a></h3>
+<p>Describes how the SSTables of a table are organized by its compaction strategy.
+Incremental and size-tiered compaction organize SSTables into runs, leveled
+compaction into levels and time-window compaction into time windows. The
+SSTables are grouped accordingly, and each group is annotated with the aggregate
+of the SSTables in it.</p>
+<p>The compaction strategy, its options and the <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> mode are the ones
+of the schema. <code class="docutils literal notranslate"><span class="pre">--strategy</span></code> (one of <code class="docutils literal notranslate"><span class="pre">ics</span></code>, <code class="docutils literal notranslate"><span class="pre">stcs</span></code>, <code class="docutils literal notranslate"><span class="pre">lcs</span></code>, <code class="docutils literal notranslate"><span class="pre">twcs</span></code>, or a
+compaction strategy class name) and <code class="docutils literal notranslate"><span class="pre">--strategy-option</span></code> are shortcuts for
+describing the layout in the terms of another strategy, which is useful when the
+schema is not available – in which case the schema loader falls back to the
+default, incremental compaction. Everything the description depends on is a
+property of the schema, so overriding the schema itself, with <code class="docutils literal notranslate"><span class="pre">--schema-file</span></code>,
+customizes all of it.</p>
+<p>SSTables belonging to different compaction groups are described separately, as
+compaction only ever considers SSTables of the same compaction group. For a
+tablet-based table the compaction group is the tablet, which is looked up in
+<code class="docutils literal notranslate"><span class="pre">system.tablets</span></code>, located in the data dir. If <code class="docutils literal notranslate"><span class="pre">system.tablets</span></code> lives
+elsewhere, its directory can be provided with <code class="docutils literal notranslate"><span class="pre">--system-tablets-dir</span></code>, which
+only a tablet-based table has any use for. For a vnode-based table the
+compaction group is the shard, which is derived from the sharding parameters of
+the node, read from <code class="docutils literal notranslate"><span class="pre">system.topology</span></code>. <code class="docutils literal notranslate"><span class="pre">--shards</span></code> and <code class="docutils literal notranslate"><span class="pre">--ignore-msb-bits</span></code>
+provide them when they cannot be read; they describe the sharding of a
+vnode-based table, and are rejected for a tablet-based one, whose sharding is
+its tablet map.</p>
+<p>The columns to include are selected with <code class="docutils literal notranslate"><span class="pre">--columns</span></code>, which takes a
+comma-separated list of column names, or <code class="docutils literal notranslate"><span class="pre">all</span></code> for all of them. The order of
+the SSTables within each group is selected with <code class="docutils literal notranslate"><span class="pre">--sort</span></code>, which takes a
+comma-separated list of <code class="docutils literal notranslate"><span class="pre">column[:asc|desc]</span></code>, in decreasing order of relevance.
+Run <code class="docutils literal notranslate"><span class="pre">scylla</span> <span class="pre">sstable</span> <span class="pre">layout</span> <span class="pre">--help</span></code> for the list of supported columns.</p>
+<p>Whether a tombstone counts as expired depends on the <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> mode of
+the table, which is reported in the header. The mode is the one the table
+actually uses: a table created without a <code class="docutils literal notranslate"><span class="pre">tombstone_gc</span></code> option has the default
+of its keyspace resolved and recorded when it is created, which is <code class="docutils literal notranslate"><span class="pre">repair</span></code>
+unless the keyspace uses a local replication strategy. In the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> mode
+the gc grace period of the schema is what decides it. In the <code class="docutils literal notranslate"><span class="pre">repair</span></code> mode it
+depends on when the token range
+of the SSTable was last repaired, less the propagation delay: the repair history
+is read from <code class="docutils literal notranslate"><span class="pre">system.tablets</span></code> for a tablet-based table and from
+<code class="docutils literal notranslate"><span class="pre">system.repair_history</span></code> for a vnode-based one. A range which was never
+repaired has nothing to purge.</p>
+<p>The layout of a table is what the operation is for, so with no SSTable arguments
+it describes the SSTables of the table <code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">--table</span></code> name:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable layout --keyspace &lt;keyspace&gt; --table &lt;table&gt;</span>
+</pre></div>
+</div>
+<p>They are resolved through the storage options of the keyspace, which say whether
+they live in a directory of the data dir or in a bucket of an object store. The
+data dir is the one <code class="docutils literal notranslate"><span class="pre">--scylla-data-dir</span></code> names, or the one the scylla.yaml
+configures. The system tables the SSTables of a table are looked up in have to
+be on disk: <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">flush</span> <span class="pre">system_schema</span></code>, and for a table on object storage
+<code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">flush</span> <span class="pre">system</span> <span class="pre">sstables</span></code> as well. Describing the table of a running
+node usually needs <code class="docutils literal notranslate"><span class="pre">--ignore-incomplete-sstables</span></code>, as the node can delete
+SSTables, e.g. by compacting them, while they are being loaded. SSTables named on the command line
+are the ones described, <code class="docutils literal notranslate"><span class="pre">--keyspace</span></code> and <code class="docutils literal notranslate"><span class="pre">--table</span></code> then only saying which
+schema to load.</p>
+<p>Supports both a text and a JSON output, selected with <code class="docutils literal notranslate"><span class="pre">--output-format</span></code>. The
+JSON output reports the raw, unformatted value of each column.</p>
+<p><strong>Examples:</strong></p>
+<p>Describe the layout of a table:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable layout --keyspace my_keyspace --table my_table</span>
+</pre></div>
+</div>
+<p>Describe the layout of the SSTables of a directory, which does not have to be
+the one the table of this node keeps its SSTables in:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable layout /var/lib/scylla/data/my_keyspace/my_table-8ff5d0a0a41411f0a8a1e2ba0e1e0b21</span>
+</pre></div>
+</div>
+<p>Describe it in the terms of time-window compaction, with 6 hour windows:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable layout --strategy twcs --strategy-option compaction_window_unit=HOURS \</span>
+<span class="go">    --strategy-option compaction_window_size=6 /path/to/table_dir</span>
+</pre></div>
+</div>
+<p>Include all the columns, ordered by the share of expired tombstones:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scylla sstable layout --columns all --sort expired-pctg:desc /path/to/table_dir</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="id5">
@@ -1270,7 +1388,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1339,7 +1457,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB SStable&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1380,6 +1498,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li><a class="reference internal" href="#dump-summary">dump-summary</a></li>
 <li><a class="reference internal" href="#dump-statistics">dump-statistics</a></li>
 <li><a class="reference internal" href="#dump-scylla-metadata">dump-scylla-metadata</a></li>
+<li><a class="reference internal" href="#dump">dump</a></li>
 <li><a class="reference internal" href="#dump-schema">dump-schema</a></li>
 <li><a class="reference internal" href="#validate">validate</a></li>
 <li><a class="reference internal" href="#scrub">scrub</a></li>
@@ -1403,6 +1522,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li><a class="reference internal" href="#upgrade">upgrade</a></li>
 <li><a class="reference internal" href="#filter">filter</a></li>
 <li><a class="reference internal" href="#split">split</a></li>
+<li><a class="reference internal" href="#layout">layout</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#id5">Examples</a></li>
@@ -1454,7 +1574,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1468,13 +1588,13 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
             
                 
                     <li>
-                        <a href="../../../branch-2026.4/operating-scylla/admin-tools/scylla-sstable.html">2026.4</a>
+                        <a href="scylla-sstable.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="scylla-sstable.html">2026.3</a>
+                        <a href="../../../branch-2026.3/operating-scylla/admin-tools/scylla-sstable.html">2026.3</a>
                     </li>
                 
             
@@ -1521,17 +1641,16 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -1580,7 +1699,6 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l3"><a class="reference internal" href="../procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1593,6 +1711,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l3"><a class="reference internal" href="../security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -1622,6 +1741,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l3"><a class="reference internal" href="maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -1659,6 +1779,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/delete.html">DELETE</a></li>
@@ -1675,6 +1796,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1685,6 +1807,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1712,6 +1835,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1833,13 +1957,13 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1920,7 +2044,7 @@ The tokens will be sorted automatically to ensure proper ordering.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 20 Aug 2026.
+                        Last updated on 01 Oct 2026.
                     
                 </div>
             

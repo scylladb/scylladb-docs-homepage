@@ -7,7 +7,7 @@ Perform this procedure on one node at the time. Move to the next node **only aft
 
 ## Procedure
 
-1. Run [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md) command (ScyllaDB stops listening to its connections from the client and other nodes).
+1. Run [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md) command (ScyllaDB stops listening to its connections from the client and other nodes).
 2. Stop the ScyllaDB node.
 
 Supported OS
@@ -41,5 +41,5 @@ docker exec -it some-scylla supervisorctl start scylla
 
 (with *some-scylla* container already running)
 
-1. Verify the node is up and has returned to the ScyllaDB cluster using [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md).
+1. Verify the node is up and has returned to the ScyllaDB cluster using [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md).
 2. Repeat this procedure for all the relevant nodes in the cluster.

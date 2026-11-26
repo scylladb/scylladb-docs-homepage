@@ -5,7 +5,7 @@ In some cases, one would like to add a decommissioned node back to the cluster, 
 
 ## Prerequisites
 
-Before adding the new node again to the cluster, we need to verify that the node was removed using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md) command.
+Before adding the new node again to the cluster, we need to verify that the node was removed using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
 
 **For Example:**
 
@@ -50,5 +50,5 @@ sudo find /var/lib/scylla/view_hints -type f -delete
 
 Since the node is added back to the cluster as a new node, you must delete the old node’s data folder. Otherwise, the old node’s state (like bootstrap status), will prevent the new node from starting its init procedure
 
-3. Follow the [Adding a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-node-to-cluster.md) procedure to add the decommissioned node back into the cluster
+3. Follow the [Adding a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md) procedure to add the decommissioned node back into the cluster
 <br/>

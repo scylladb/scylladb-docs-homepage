@@ -140,7 +140,7 @@ servers are working, have a look at the [instructions for joining the
 NTP pool](http://www.pool.ntp.org/join.html) yourself, so that you
 can help share the correct time with others
 
-[Knowledge Base](https://docs.scylladb.com/manual/stable/kb/index.md)
+[Knowledge Base](https://docs.scylladb.com/manual/branch-2026.3/kb/index.md)
 
 Copyright
 

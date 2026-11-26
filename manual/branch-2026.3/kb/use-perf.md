@@ -3,7 +3,7 @@
 This article contains useful tips & tricks for using the perf utility with ScyllaDB.
 The perf utility is particularly useful when debugging a pegged shard.
 
-Due to its thread-per-core nature, looking at aggregates is rarely useful as it tends to hide bad behavior that is localized to specific CPUs. Looking at an individual CPU will make those anomalies easier to see. Once you notice that a ScyllaDB shard requires investigation (for example, when the ScyllaDB Monitor shard view shows that a particular shard is more loaded than others), you can use the `seastar-cpu-map.sh` script described [here](https://docs.scylladb.com/manual/stable/kb/map-cpu.md) to determine which Linux CPU hosts that ScyllaDB shard. For example:
+Due to its thread-per-core nature, looking at aggregates is rarely useful as it tends to hide bad behavior that is localized to specific CPUs. Looking at an individual CPU will make those anomalies easier to see. Once you notice that a ScyllaDB shard requires investigation (for example, when the ScyllaDB Monitor shard view shows that a particular shard is more loaded than others), you can use the `seastar-cpu-map.sh` script described [here](https://docs.scylladb.com/manual/branch-2026.3/kb/map-cpu.md) to determine which Linux CPU hosts that ScyllaDB shard. For example:
 .. code-block:: bash
 
 > seastar-cpu-map.sh -n scylla -s 0

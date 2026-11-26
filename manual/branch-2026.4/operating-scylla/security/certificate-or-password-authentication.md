@@ -6,7 +6,7 @@ two kinds of clients at the same time:
 * **Certificate clients** — clients that present a TLS client certificate.
   The role name is extracted from the certificate’s subject or SAN fields using
   the same `auth_certificate_role_queries` rules as
-  [Certificate Based Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/certificate-authentication.md).
+  [Certificate Based Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/certificate-authentication.md).
   No username/password exchange (SASL) takes place for these clients.
 * **Password clients** — clients that do *not* present a TLS client certificate.
   The server falls back to the normal SASL username/password challenge, exactly
@@ -26,7 +26,7 @@ what to do based on whether a certificate was presented.
 ## Procedure
 
 1. Enable authentication and define the required roles as described in
-   [Enable Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authentication.md).
+   [Enable Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md).
 2. Enable CQL transport TLS with a truststore and `require_client_auth: optional`.
 
    On each node, edit `/etc/scylla/scylla.yaml`.  If you want a dedicated
@@ -83,8 +83,8 @@ On every new CQL connection:
 
 ## Additional Resources
 
-* [Enable Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authentication.md)
-* [Certificate Based Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/certificate-authentication.md)
-* [Enable Authorization](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/enable-authorization.md)
-* [Encryption: Data in Transit Client to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/client-node-encryption.md)
-* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/generate-certificate.md)
+* [Enable Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md)
+* [Certificate Based Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/certificate-authentication.md)
+* [Enable Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md)
+* [Encryption: Data in Transit Client to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md)
+* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/stable/operating-scylla/security/generate-certificate.md)

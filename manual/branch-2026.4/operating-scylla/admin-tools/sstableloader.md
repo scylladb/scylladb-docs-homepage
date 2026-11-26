@@ -4,13 +4,13 @@ Bulk loads SSTables from a directory to a ScyllaDB cluster via the **CQL API**.
 
 #### WARNING
 SSTableLoader is deprecated and will be removed in a future release.
-Please consider switching to [nodetool refresh –load-and-stream](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh.md).
+Please consider switching to [nodetool refresh –load-and-stream](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/refresh.md).
 
 #### NOTE
 This tool is **different than Apache Cassandra’s sstableloader**, which uses an internal RPC protocol to load data.
 
 #### NOTE
-sstableloader does **not** support loading from encrypted files. For restoring data from encrypted files, see [Migration to ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cassandra-to-scylla-migration-process.md#cassandra-to-scylla-procedure).
+sstableloader does **not** support loading from encrypted files. For restoring data from encrypted files, see [Migration to ScyllaDB](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cassandra-to-scylla-migration-process.md#cassandra-to-scylla-procedure).
 
 #### NOTE
 ScyllaDB does not support local counters used by Apache Cassandra 2.0. If you are migrating from Cassandra 2.0 or a later Cassandra version upgraded from 2.0, using SSTableLoader to migrate local counters to ScyllaDB will not work.
@@ -20,7 +20,7 @@ ScyllaDB supports global counters, which are used by Cassandra 2.1 and later.
 SSTableLoader can be used to restore data from ScyllaDB or Apache Cassandra backups or to clone data from cluster to cluster.
 It is especially useful when the number of nodes or token range distribution between the source and target cluster are **not** the same. ScyllaDB takes care of distributing the data via the CQL API.
 
-See [Apache Cassandra to ScyllaDB Migration Process](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cassandra-to-scylla-migration-process.md) for an example of usage.
+See [Apache Cassandra to ScyllaDB Migration Process](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cassandra-to-scylla-migration-process.md) for an example of usage.
 
 ## Usage
 

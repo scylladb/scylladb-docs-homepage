@@ -27,4 +27,4 @@ acknowledgement happen?
 A: The acknowledgment will be sent to the user when two **local** replicas respond.
 In this case, floor(local_RF/2 +1) = 2 , so LOCAL_QUORUM is equal to RF per DC, which is why RF of 3 is usually better.
 
-[Knowledge Base](https://docs.scylladb.com/manual/branch-2026.4/kb/index.md)
+[Knowledge Base](https://docs.scylladb.com/manual/stable/kb/index.md)

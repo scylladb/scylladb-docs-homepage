@@ -15,7 +15,7 @@ Alternatively, you can set the SSL_VERSION environment variable in the Linux she
 
 ## See Also
 
-* [Encryption: Data in Transit Node to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/node-node-encryption.md)
-* [Encryption Data in Transit Client to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/client-node-encryption.md)
-* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/generate-certificate.md)
-* [Authorization](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authorization.md)
+* [Encryption: Data in Transit Node to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/node-node-encryption.md)
+* [Encryption Data in Transit Client to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md)
+* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/stable/operating-scylla/security/generate-certificate.md)
+* [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md)

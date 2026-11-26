@@ -7,14 +7,14 @@ Should this fail to happen, the node may join the cluster directly into the `UN`
 Use the procedure that follows to correct situations where a node joins a cluster directly in the UN state.
 
 #### NOTE
-This procedure only covers the situation in which a new node joins the cluster. Nodes replacing existing nodes following the [Replace A Dead Node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure are expected to be in `UN` state from the start.
+This procedure only covers the situation in which a new node joins the cluster. Nodes replacing existing nodes following the [Replace A Dead Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure are expected to be in `UN` state from the start.
 
 ## The Problem
 
 A new node may not acquire data from its peers if the `seeds` parameter in the new node’s `scylla.yaml` file
 does not specify the IP of an existing node in the cluster (for example, it specifies its own IP).
 
-The scenario constitutes a user error and is the incorrect way of adding new nodes to the cluster. See [Adding New Node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md) for more details. This article explains how to restore a cluster safely in such a case.
+The scenario constitutes a user error and is the incorrect way of adding new nodes to the cluster. See [Adding New Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/add-node-to-cluster.md) for more details. This article explains how to restore a cluster safely in such a case.
 
 #### WARNING
 You mustn’t run nodetool cleanup in any other nodes in the cluster until this is fixed, as it will delete data that is not yet available from the new node.
@@ -33,7 +33,7 @@ Steps to fix:
    ```
 
    Actual directories might be different than above, check your `scylla.yaml` to validate.
-3. Once all the new nodes are decommissioned, add them again with the [correct procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md).
+3. Once all the new nodes are decommissioned, add them again with the [correct procedure](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/add-node-to-cluster.md).
 
 Other important considerations:
 

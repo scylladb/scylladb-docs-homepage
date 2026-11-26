@@ -1,13 +1,13 @@
 # Choose a Compaction Strategy
 
-ScyllaDB implements the following compaction strategies in order to reduce [read amplification](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Read-Amplification), [write amplification](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Write-Amplification), and [space amplification](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Space-amplification), which causes bottlenecks and poor performance. These strategies include:
+ScyllaDB implements the following compaction strategies in order to reduce [read amplification](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Read-Amplification), [write amplification](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Write-Amplification), and [space amplification](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Space-amplification), which causes bottlenecks and poor performance. These strategies include:
 
 * [Size-tiered compaction strategy (STCS)]() - triggered when the system has enough (four by default) similarly sized SSTables.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables distributed across different levels.
 * [Incremental Compaction Strategy (ICS)]() - shares the same read and write amplification factors as STCS, but it fixes its 2x temporary space amplification issue by breaking huge sstables into SSTable runs, which are comprised of a sorted set of smaller (1 GB by default), non-overlapping SSTables.
 * [Time-window compaction strategy (TWCS)]() - designed for time series data.
 
-This document covers how to choose a compaction strategy and presents the benefits and disadvantages of each one. If you want more information on compaction in general or on any of these strategies, refer to the [Compaction Overview](https://docs.scylladb.com/manual/stable/kb/compaction.md). If you want an explanation of the CQL commands used to create a compaction strategy, refer to [Compaction CQL Reference](https://docs.scylladb.com/manual/stable/cql/compaction.md) .
+This document covers how to choose a compaction strategy and presents the benefits and disadvantages of each one. If you want more information on compaction in general or on any of these strategies, refer to the [Compaction Overview](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md). If you want an explanation of the CQL commands used to create a compaction strategy, refer to [Compaction CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/compaction.md) .
 
 Learn more in the [Compaction Strategies lesson](https://university.scylladb.com/courses/scylla-operations/lessons/compaction-strategies/) on ScyllaDB University
 
@@ -15,7 +15,7 @@ Learn more in the [Compaction Strategies lesson](https://university.scylladb.com
 
 ## Size-tiered Compaction Strategy (STCS)
 
-The premise of [Size-tiered Compaction Strategy (STCS)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Size-tiered-compaction-strategy) is to merge SSTables of approximately the same size.
+The premise of [Size-tiered Compaction Strategy (STCS)](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Size-tiered-compaction-strategy) is to merge SSTables of approximately the same size.
 
 ### Size-tiered compaction benefits
 
@@ -31,13 +31,13 @@ This strategy has the following drawbacks (particularly with writes):
 
 **To implement this strategy**
 
-Set the parameters for [Size-tiered compaction](https://docs.scylladb.com/manual/stable/kb/compaction.md#size-tiered-compaction-strategy-stcs).
+Set the parameters for [Size-tiered compaction](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md#size-tiered-compaction-strategy-stcs).
 
 <a id="lcs1"></a>
 
 ## Leveled Compaction Strategy (LCS)
 
-[Leveled Compaction Strategy](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Leveled-compaction-strategy-LCS) (LCS) uses small, fixed-size (by default 160 MB) SSTables divided into different levels. Each level represents a run of a number of SSTables.
+[Leveled Compaction Strategy](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Leveled-compaction-strategy-LCS) (LCS) uses small, fixed-size (by default 160 MB) SSTables divided into different levels. Each level represents a run of a number of SSTables.
 
 ### Leveled Compaction benefits
 
@@ -56,7 +56,7 @@ Only one compaction operation on the same table can run at a time, so compaction
 
 **To implement this strategy**
 
-Set the parameters for [Leveled Compaction](https://docs.scylladb.com/manual/stable/kb/compaction.md#leveled-compaction-strategy-lcs).
+Set the parameters for [Leveled Compaction](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md#leveled-compaction-strategy-lcs).
 
 <a id="ics1"></a>
 
@@ -86,16 +86,16 @@ Namely:
 
 **To implement this strategy**
 
-Set the parameters for [Incremental Compaction](https://docs.scylladb.com/manual/stable/kb/compaction.md#incremental-compaction-strategy-ics).
+Set the parameters for [Incremental Compaction](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md#incremental-compaction-strategy-ics).
 
-For more information, see the [Compaction KB Article](https://docs.scylladb.com/manual/stable/kb/compaction.md#incremental-compaction-strategy-ics).
+For more information, see the [Compaction KB Article](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md#incremental-compaction-strategy-ics).
 
 <a id="twcs1"></a>
 
 ## Time-window Compaction Strategy (TWCS)
 
 Time-Window Compaction Strategy compacts SSTables within each time window using [Size-tiered Compaction Strategy (STCS)]().
-SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/stable/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
+SSTables from different time windows are never compacted together. You set the [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md#time-window-compactionstrategy-twcs) parameters when you create a table using a CQL command.
 
 #### CAUTION
 * We strongly recommend using a single TTL value for any given table.
@@ -117,7 +117,7 @@ Avoid overwriting data and deleting data explicitly at all costs, as this can po
 
 **To implement this strategy**
 
-Set the parameters for [Time-window Compaction](https://docs.scylladb.com/manual/stable/kb/compaction.md#time-window-compactionstrategy-twcs).
+Set the parameters for [Time-window Compaction](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md#time-window-compactionstrategy-twcs).
 
 Use the table in [Which strategy is best]() to determine if this is the right strategy for your needs.
 
@@ -181,6 +181,6 @@ The comments below describe the type of amplification each compaction strategy 
 
 ### References
 
-* [Compaction Overview](https://docs.scylladb.com/manual/stable/kb/compaction.md) - contains in depth information on all of the strategies
-* [Compaction CQL Reference](https://docs.scylladb.com/manual/stable/cql/compaction.md) - covers the CQL parameters used for implementing compaction
+* [Compaction Overview](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md) - contains in depth information on all of the strategies
+* [Compaction CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/compaction.md) - covers the CQL parameters used for implementing compaction
 * ScyllaDB Summit Tech Talk: [How to Ruin Performance by Choosing the Wrong Compaction Strategy](https://www.scylladb.com/tech-talk/ruin-performance-choosing-wrong-compaction-strategy-scylla-summit-2017/)

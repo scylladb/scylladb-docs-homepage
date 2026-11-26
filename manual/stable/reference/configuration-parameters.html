@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md" />
             
         
 
@@ -355,14 +355,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/reference/configuration-parameters.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md">https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md">https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md</a>.
                         </div>
                     
                     
@@ -387,6 +387,9 @@ having the highest priority:</p>
 <li><p>command line options</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code></p></li>
 </ol>
+<p>In addition to the per-node options in <code class="docutils literal notranslate"><span class="pre">scylla.yaml</span></code>, cluster-configuration options are set
+through CQL and are automatically applied by all nodes in the cluster. See
+<a class="reference internal" href="../cql/cluster-config.html"><span class="doc">Configuring a Cluster with CQL</span></a> for those options.</p>
 <section id="initialization-properties">
 <span id="confgroup-initialization-properties"></span><h2>Initialization properties<a class="headerlink" href="#initialization-properties" title="Link to this heading">¶</a></h2>
 <blockquote>
@@ -1093,7 +1096,7 @@ The change will take effect without a node restart, changing the value in the co
 <div><p>Total size in megabytes allocated for logstor storage on disk.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">2048</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
@@ -1114,30 +1117,58 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-logstor-separator-delay-limit-ms">
-<dt class="sig sig-object std" id="confval-logstor_separator_delay_limit_ms">
-<span class="sig-name descname"><span class="pre">logstor_separator_delay_limit_ms</span></span><a class="headerlink" href="#confval-logstor_separator_delay_limit_ms" title="Link to this definition">¶</a></dt>
+<dl class="std confval" id="confprop-logstor-format-on-startup">
+<dt class="sig sig-object std" id="confval-logstor_format_on_startup">
+<span class="sig-name descname"><span class="pre">logstor_format_on_startup</span></span><a class="headerlink" href="#confval-logstor_format_on_startup" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Maximum delay in milliseconds for logstor separator debt control.</p>
+<div><p>Controls when logstor data files are formatted. When enabled, all logstor files are formatted during node startup, which increases startup time but ensures optimal write performance immediately after startup.     When disabled, logstor files are formatted lazily on first write, which reduces startup time but may cause slightly degraded write performance on first access to each file.</p>
 <ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-logstor-separator-max-memory-in-mb">
-<dt class="sig sig-object std" id="confval-logstor_separator_max_memory_in_mb">
-<span class="sig-name descname"><span class="pre">logstor_separator_max_memory_in_mb</span></span><a class="headerlink" href="#confval-logstor_separator_max_memory_in_mb" title="Link to this definition">¶</a></dt>
+<dl class="std confval" id="confprop-logstor-sparse-files">
+<dt class="sig sig-object std" id="confval-logstor_sparse_files">
+<span class="sig-name descname"><span class="pre">logstor_sparse_files</span></span><a class="headerlink" href="#confval-logstor_sparse_files" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Maximum memory in megabytes for logstor separator memory buffers.</p>
+<div><p>Create logstor data files as sparse files. When disabled, each file is preallocated and fully written with zeros, guaranteeing space is available and avoiding fragmentation.     When enabled, the file is only extended to its nominal size, so unwritten regions consume no disk space. Useful for tests, where the disk space and I/O of formatting files is wasteful.</p>
 <ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">256</span></code></p></li>
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-logstor-compaction-trigger-threshold">
+<dt class="sig sig-object std" id="confval-logstor_compaction_trigger_threshold">
+<span class="sig-name descname"><span class="pre">logstor_compaction_trigger_threshold</span></span><a class="headerlink" href="#confval-logstor_compaction_trigger_threshold" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Trigger automatic logstor compaction when the number of available segments drops below this fraction of the total number of logstor segments. A value of 0 disables the trigger threshold.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-logstor-compaction-max-shares">
+<dt class="sig sig-object std" id="confval-logstor_compaction_max_shares">
+<span class="sig-name descname"><span class="pre">logstor_compaction_max_shares</span></span><a class="headerlink" href="#confval-logstor_compaction_max_shares" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Maximum CPU shares the logstor compaction controller gives the logstor compaction scheduling group, reached at full space pressure.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">2000</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -2152,7 +2183,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-vector_store_unreachable_node_detection_time_in_ms">
 <span class="sig-name descname"><span class="pre">vector_store_unreachable_node_detection_time_in_ms</span></span><a class="headerlink" href="#confval-vector_store_unreachable_node_detection_time_in_ms" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, and TCP_USER_TIMEOUT.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.</p>
+<div><p>Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, TCP_USER_TIMEOUT,     and the deadline of the health-check request used to detect that an unreachable node became available again.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">3000</span></code></p></li>
@@ -2210,6 +2241,7 @@ The change will take effect without a node restart, changing the value in the co
 <li><p>org.apache.cassandra.auth.AllowAllAuthenticator: Disables authentication; no checks are performed.</p></li>
 <li><p>org.apache.cassandra.auth.PasswordAuthenticator: Authenticates users with user names and hashed passwords stored in the system_auth.credentials table. If you use the default, 1, and the node with the lone replica goes down, you will not be able to log into the cluster because the system_auth keyspace was not replicated.</p></li>
 <li><p>com.scylladb.auth.CertificateAuthenticator: Authenticates users based on TLS certificate authentication subject. Roles and permissions still need to be defined as normal. Super user can be set using the ‘auth_superuser_name’ configuration value. Query to extract role name from subject string is set using ‘auth_certificate_role_queries’.</p></li>
+<li><p>com.scylladb.auth.CertificateOrPasswordAuthenticator: Accepts either a TLS client certificate (role name derived via ‘auth_certificate_role_queries’, no SASL exchange) or a username/password pair (SASL). Designed for use with a truststore and require_client_auth=optional (REQUEST mode), enabling a single CQL port to serve both certificate-bearing and password-authenticated clients.</p></li>
 <li><p>com.scylladb.auth.TransitionalAuthenticator: Wraps around the PasswordAuthenticator, logging them in if username/password pair provided is correct and treating them as anonymous users otherwise.</p></li>
 <li><p>com.scylladb.auth.SaslauthdAuthenticator : Use saslauthd for authentication.</p></li>
 </ul>
@@ -2305,7 +2337,7 @@ The change will take effect without a node restart, changing the value in the co
 <div><dl>
 <dt>Enable or disable inter-node encryption. You must also generate keys and provide the appropriate key and trust store locations and passwords. The available options are:</dt><dd><ul class="simple">
 <li><dl class="simple">
-<dt>internode_encryption: (Default: none) Enable or disable encryption of inter-node communication using the TLS_RSA_WITH_AES_128_CBC_SHA cipher suite for authentication, key exchange, and encryption of data transfers. The available inter-node options are:</dt><dd><ul>
+<dt>internode_encryption: (Default: none) Enable or disable encryption of inter-node communication using TLS. The available inter-node options are:</dt><dd><ul>
 <li><p>all: Encrypt all inter-node communications.</p></li>
 <li><p>none: No encryption.</p></li>
 <li><p>dc: Encrypt the traffic between the data centers (server only).</p></li>
@@ -2322,7 +2354,7 @@ The change will take effect without a node restart, changing the value in the co
 <p>The advanced settings are:</p>
 <ul class="simple">
 <li><p>priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
-<li><p>require_client_auth: (Default: false ) Enables or disables certificate authentication.</p></li>
+<li><p>require_client_auth: (Default: false) Controls peer certificate verification. Valid values: true (require a peer certificate), false (no peer certificate), optional (request but do not require a peer certificate).</p></li>
 </ul>
 <p>Related information: Node-to-node encryption</p>
 </dd>
@@ -2351,7 +2383,7 @@ The change will take effect without a node restart, changing the value in the co
 <p>The advanced settings are:</p>
 <ul class="simple">
 <li><p>priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
-<li><p>require_client_auth: (Default: false) Enables or disables certificate authentication.</p></li>
+<li><p>require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to other mechanisms, e.g., password for CQL CertificateOrPasswordAuthenticator).</p></li>
 <li><p>enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.</p></li>
 </ul>
 <p>Related information: Client-to-node encryption</p>
@@ -2374,10 +2406,12 @@ The change will take effect without a node restart, changing the value in the co
 <dt>When Alternator via HTTPS is enabled with alternator_https_port, where to take the key and certificate. The available options are:</dt><dd><ul class="simple">
 <li><p>certificate: (Default: conf/scylla.crt) The location of a PEM-encoded x509 certificate used to identify and encrypt the client/server communication.</p></li>
 <li><p>keyfile: (Default: conf/scylla.key) PEM Key file associated with certificate.</p></li>
+<li><p>truststore: (Default: &lt;not set, use system truststore&gt;) Location of the truststore containing the trusted certificate for authenticating client certificates.</p></li>
 </ul>
 <p>The advanced settings are:</p>
 <ul class="simple">
 <li><p>priority_string: GnuTLS priority string controlling TLS algorithms used/allowed.</p></li>
+<li><p>require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to SigV4 signatures in requests).</p></li>
 <li><p>enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.</p></li>
 </ul>
 </dd>
@@ -2471,6 +2505,20 @@ The change will take effect without a node restart, changing the value in the co
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-test-clocks-offset-seconds">
+<dt class="sig sig-object std" id="confval-test_clocks_offset_seconds">
+<span class="sig-name descname"><span class="pre">test_clocks_offset_seconds</span></span><a class="headerlink" href="#confval-test_clocks_offset_seconds" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Number of seconds to add to this node’s clocks - db_clock, gc_clock, and the timestamps generated for writes. For tests only! It lets a test make a TTL expire, or data become expired or collectable, without really waiting for that long. Because it is live-updatable, a test can set it and then reset it back to 0 when it is done. This option only exists in builds which enable error injection (dev, debug, sanitize), not in release builds - so a test which needs it should check whether it exists, and skip itself if it doesn’t.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int64_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -2755,6 +2803,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-small-table-optimization-for-rbno-max-table-size">
+<dt class="sig sig-object std" id="confval-small_table_optimization_for_rbno_max_table_size">
+<span class="sig-name descname"><span class="pre">small_table_optimization_for_rbno_max_table_size</span></span><a class="headerlink" href="#confval-small_table_optimization_for_rbno_max_table_size" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Maximum on-disk size (in bytes) of a user table for it to be automatically eligible for the small table optimization for repair based node operations. The size is probed on the replicas the operation syncs from. Defaults to 1 GiB. Only takes effect when enable_small_table_optimization_for_rbno is true.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1073741824</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-ring-delay-ms">
 <dt class="sig sig-object std" id="confval-ring_delay_ms">
 <span class="sig-name descname"><span class="pre">ring_delay_ms</span></span><a class="headerlink" href="#confval-ring_delay_ms" title="Link to this definition">¶</a></dt>
@@ -2913,10 +2975,10 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-prometheus_allow_protobuf">
 <span class="sig-name descname"><span class="pre">prometheus_allow_protobuf</span></span><a class="headerlink" href="#confval-prometheus_allow_protobuf" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>If set allows the experimental Prometheus protobuf with native histogram</p>
+<div><p>Enable Prometheus protobuf with native histogram. Set to false to force text exposition format.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
@@ -3236,6 +3298,20 @@ The change will take effect without a node restart, changing the value in the co
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0.95</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-speculative-retry-user-table-default">
+<dt class="sig sig-object std" id="confval-speculative_retry_user_table_default">
+<span class="sig-name descname"><span class="pre">speculative_retry_user_table_default</span></span><a class="headerlink" href="#confval-speculative_retry_user_table_default" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Default value of the speculative_retry option for user tables, i.e., tables in non-internal keyspaces.     Applied when a table is created without specifying speculative_retry explicitly; existing tables are not affected.     Materialized views and secondary indexes created without an explicit value also use this default; they do not inherit the base table’s value.     The value used for a new table is taken from the configuration of the node coordinating the table creation, so the option should be set identically on all nodes.     The option can be updated at runtime; the updated value applies to tables created after the update.     Accepted values are the same as for the table option: ALWAYS, NONE, &lt;X&gt;PERCENTILE (e.g. 99.0PERCENTILE) and &lt;N&gt;ms (e.g. 200ms).</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">sstring</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;99.0PERCENTILE&quot;</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -3919,6 +3995,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-alternator-vector-search-extra-operators">
+<dt class="sig sig-object std" id="confval-alternator_vector_search_extra_operators">
+<span class="sig-name descname"><span class="pre">alternator_vector_search_extra_operators</span></span><a class="headerlink" href="#confval-alternator_vector_search_extra_operators" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Allow comparison, range and set-membership operators (&lt;, &lt;=, &gt;, &gt;=, IN, BETWEEN)     in SearchVectors’ SearchConditionExpression, on the vector index’s INLINE_FILTER     attributes. DynamoDB currently supports only the equality operator (=) there, and     documents the others as not yet available</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-alternator-timeout-in-ms">
 <dt class="sig sig-object std" id="confval-alternator_timeout_in_ms">
 <span class="sig-name descname"><span class="pre">alternator_timeout_in_ms</span></span><a class="headerlink" href="#confval-alternator_timeout_in_ms" title="Link to this definition">¶</a></dt>
@@ -4469,6 +4559,20 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
+<dl class="std confval" id="confprop-allow-deprecated-size-tiered-compaction-strategy">
+<dt class="sig sig-object std" id="confval-allow_deprecated_size_tiered_compaction_strategy">
+<span class="sig-name descname"><span class="pre">allow_deprecated_size_tiered_compaction_strategy</span></span><a class="headerlink" href="#confval-allow_deprecated_size_tiered_compaction_strategy" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Allow the deprecated SizeTieredCompactionStrategy to be named when creating or altering a table or a materialized view.  It is an alias of IncrementalCompactionStrategy, which the table is compacted with either way, so naming it returns a CQL warning.  When disabled, naming it is an error instead.  This option defaults to true for backward compatibility, and will default to false in a future version.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="std confval" id="confprop-minimum-replication-factor-fail-threshold">
 <dt class="sig sig-object std" id="confval-minimum_replication_factor_fail_threshold">
 <span class="sig-name descname"><span class="pre">minimum_replication_factor_fail_threshold</span></span><a class="headerlink" href="#confval-minimum_replication_factor_fail_threshold" title="Link to this definition">¶</a></dt>
@@ -4735,20 +4839,6 @@ The change will take effect without a node restart, changing the value in the co
 </div></blockquote>
 </dd></dl>
 
-<dl class="std confval" id="confprop-audit-syslog-write-buffer-size">
-<dt class="sig sig-object std" id="confval-audit_syslog_write_buffer_size">
-<span class="sig-name descname"><span class="pre">audit_syslog_write_buffer_size</span></span><a class="headerlink" href="#confval-audit_syslog_write_buffer_size" title="Link to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>The size (in bytes) of a write buffer used when writing to syslog socket.</p>
-<ul class="simple">
-<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">size_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">1048576</span></code></p></li>
-<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
-The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
 <dl class="std confval" id="confprop-audit-rules">
 <dt class="sig sig-object std" id="confval-audit_rules">
 <span class="sig-name descname"><span class="pre">audit_rules</span></span><a class="headerlink" href="#confval-audit_rules" title="Link to this definition">¶</a></dt>
@@ -4912,10 +5002,10 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-auto_repair_enabled_default">
 <span class="sig-name descname"><span class="pre">auto_repair_enabled_default</span></span><a class="headerlink" href="#confval-auto_repair_enabled_default" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Set true to enable auto repair for tablet tables by default. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.</p>
+<div><p>Deprecated, use ALTER CLUSTER WITH auto_repair_enabled = true instead. Set true to enable auto repair for tablet tables when the auto_repair_enabled cluster config option is not set at cluster, keyspace or table scope. The option will be removed in a future release.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">cluster_config_registry::auto_repair_enabled_default</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -4926,10 +5016,10 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-auto_repair_threshold_default_in_seconds">
 <span class="sig-name descname"><span class="pre">auto_repair_threshold_default_in_seconds</span></span><a class="headerlink" href="#confval-auto_repair_threshold_default_in_seconds" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Set the default time in seconds for the auto repair threshold for tablet tables. If the time since last repair is bigger than the configured time, the tablet is eligible for auto repair. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.</p>
+<div><p>Deprecated, use ALTER CLUSTER WITH auto_repair_threshold_in_seconds = &lt;seconds&gt; instead. Set the auto repair threshold in seconds for tablet tables when the auto_repair_threshold_in_seconds cluster config option is not set at cluster, keyspace or table scope. A tablet is eligible for auto repair when this much time has passed since the start of its last successful repair; a repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. 0 disables time-based auto repair. The option will be removed in a future release.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int32_t</span></code></p></li>
-<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">24</span> <span class="pre">*</span> <span class="pre">3600</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">int32_t(cluster_config_registry::auto_repair_threshold_default_seconds)</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -5084,6 +5174,20 @@ The change will take effect without a node restart, changing the value in the co
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">service::default_target_tablet_size</span> <span class="pre">/</span> <span class="pre">100</span></code></p></li>
+<li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
+The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std confval" id="confprop-tablet-transition-abort-grace-period-in-seconds">
+<dt class="sig sig-object std" id="confval-tablet_transition_abort_grace_period_in_seconds">
+<span class="sig-name descname"><span class="pre">tablet_transition_abort_grace_period_in_seconds</span></span><a class="headerlink" href="#confval-tablet_transition_abort_grace_period_in_seconds" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Default grace period given to in-flight tablet transitions when disabling tablet balancing. Transitions which can     still be cancelled after it, tablet repairs included, are cancelled; the others are waited for. A cancelled repair     drops its tablets from the repair request without reporting them as failed. Cancelling a transition which was     adding a replica leaves that tablet below its replication factor until balancing is enabled again. Callers of the     API can pass their own grace period, which overrides this. 0, the default, cancels nothing.</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
+<li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
 <li><p><span data-tooltip data-tooltip-height="0" tabindex="1" title="The ability to update a configuration property without restarting the node. Properties that support live updates can be updated via the system.config virtual table or the REST API.
 The change will take effect without a node restart, changing the value in the config file, then sending SIGHUP to the scylla-process, triggering it to re-read its configuration." class="top">Liveness</span>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
@@ -5296,7 +5400,7 @@ The change will take effect without a node restart, changing the value in the co
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Configuration Parameters&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Configuration Parameters&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -5365,7 +5469,7 @@ The change will take effect without a node restart, changing the value in the co
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Configuration Parameters&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Configuration Parameters&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -5455,7 +5559,7 @@ The change will take effect without a node restart, changing the value in the co
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -5469,13 +5573,13 @@ The change will take effect without a node restart, changing the value in the co
             
                 
                     <li>
-                        <a href="../../branch-2026.4/reference/configuration-parameters.html">2026.4</a>
+                        <a href="configuration-parameters.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="configuration-parameters.html">2026.3</a>
+                        <a href="../../branch-2026.3/reference/configuration-parameters.html">2026.3</a>
                     </li>
                 
             
@@ -5522,17 +5626,16 @@ The change will take effect without a node restart, changing the value in the co
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -5581,7 +5684,6 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -5594,6 +5696,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -5623,6 +5726,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -5660,6 +5764,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cql/dml/delete.html">DELETE</a></li>
@@ -5676,6 +5781,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -5686,6 +5792,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -5713,6 +5820,7 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -5834,13 +5942,13 @@ The change will take effect without a node restart, changing the value in the co
 <li class="toctree-l2"><a class="reference internal" href="aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oci-images.html">OCI Images</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/compaction-manager.html">Compaction Manager</a></li>
@@ -5921,7 +6029,7 @@ The change will take effect without a node restart, changing the value in the co
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 Sep 2024.
+                        Last updated on 09 Sep 2026.
                     
                 </div>
             

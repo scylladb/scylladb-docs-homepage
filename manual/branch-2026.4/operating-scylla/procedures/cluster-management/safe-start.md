@@ -4,7 +4,7 @@ In cases where you needed to shut down your cluster, use this procedure to bring
 
 **Before you begin**
 
-Confirm that the cluster was shut down using the [shutdown procedure](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/safe-shutdown.md).
+Confirm that the cluster was shut down using the [shutdown procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/safe-shutdown.md).
 
 **Procedure**
 
@@ -21,5 +21,5 @@ Confirm that the cluster was shut down using the [shutdown procedure](https://do
    ```
 
    (with *some-scylla* container already running)
-2. Validate that the nodes have all returned to normal. Run [nodetool status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/status.md).
+2. Validate that the nodes have all returned to normal. Run [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md).
    If each node’s status is listed as `UN`, then the start command has been executed successfully.

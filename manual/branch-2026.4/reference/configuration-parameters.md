@@ -1,7 +1,7 @@
 # Configuration Parameters
 
 This section contains a list of properties that can be configured in `scylla.yaml` - the main configuration file for ScyllaDB.
-In addition, properties that support live updates (liveness) can be updated via the `system.config` virtual table or the [REST API](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/rest.md).
+In addition, properties that support live updates (liveness) can be updated via the `system.config` virtual table or the [REST API](https://docs.scylladb.com/manual/stable/operating-scylla/rest.md).
 
 Live update means that parameters can be modified dynamically while the server
 is running. If `liveness` of a parameter is set to `true`, sending the `SIGHUP`
@@ -21,7 +21,7 @@ having the highest priority:
 
 In addition to the per-node options in `scylla.yaml`, cluster-configuration options are set
 through CQL and are automatically applied by all nodes in the cluster. See
-[Configuring a Cluster with CQL](https://docs.scylladb.com/manual/branch-2026.4/cql/cluster-config.md) for those options.
+[Configuring a Cluster with CQL](https://docs.scylladb.com/manual/stable/cql/cluster-config.md) for those options.
 
 <!-- -*- mode: rst -*- -->
 

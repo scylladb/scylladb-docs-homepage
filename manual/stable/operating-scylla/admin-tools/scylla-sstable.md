@@ -20,6 +20,16 @@ scylla sstable <operation> <path to SStable>
 
 You can specify more than one SSTable.
 
+A single directory can be passed in place of the individual SSTables in it –
+typically the table directory – in which case all the SSTables found in it are
+processed. SSTables which are not sealed yet are left out.
+
+An SSTable with components missing fails the operation, whether it is named on
+the command line or found in a directory. Note that the data directory of a
+running node is a moving target: the node can delete an SSTable while the tool
+is loading it. Pass `--ignore-incomplete-sstables` to have such SSTables
+reported and skipped instead.
+
 Additionally, the path to SSTable can point to an object storage fully qualified
 path in the form of `s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt`
 or `gs://bucket-name/prefix/of/your/sstable/sstable-TOC.txt`. This also
@@ -567,6 +577,38 @@ $LARGE_DATA_RECORD := {
 }
 ```
 
+<a id="scylla-sstable-dump-operation"></a>
+
+### dump
+
+Dumps one or more components of the SSTable(s) into a single JSON object per
+SSTable. Useful when you need to inspect multiple components together without
+running separate commands.
+
+The components to dump are selected via `--components` (a comma-separated
+list of component names) or `--all-components` (to dump all supported
+components). If neither is provided, the command exits with an error.
+
+Supported component names: `data`, `index`, `compression-info`,
+`summary`, `statistics`, `scylla-metadata`.
+
+The content is dumped in JSON, using the following schema:
+
+```none
+$ROOT := { "$sstable_path": $SSTABLE, ... }
+
+$SSTABLE := {
+    "data":             <same as dump-data $SSTABLE>,             // optional
+    "index":            <same as dump-index $SSTABLE>,            // optional
+    "compression-info": <same as dump-compression-info $SSTABLE>, // optional
+    "summary":          <same as dump-summary $SSTABLE>,          // optional
+    "statistics":       <same as dump-statistics $SSTABLE>,       // optional
+    "scylla-metadata":  <same as dump-scylla-metadata $SSTABLE>   // optional
+}
+```
+
+Only the requested components appear as keys in the `$SSTABLE` object.
+
 ### dump-schema
 
 Dump the schema of the table or sstable in CQL describe table format.
@@ -588,6 +630,7 @@ Validates the content of the sstable on the mutation-fragment level, see [sstabl
 
 <a id="scylla-sstable-sstable-content"></a>
  for more details.
+Component digests will be validated if present in the scylla-metadata component.
 Any parsing errors will also be detected, but after successful parsing the validation will happen on the fragment level.
 The following things are validated:
 
@@ -623,7 +666,7 @@ Scrub has several modes:
 * **abort** - Aborts the scrub as soon as any error is found (recognized or not). This mode is only included for the sake of completeness. We recommend using the **validate** mode so that all errors are reported.
 * **skip** - Skips over any corruptions found, thus omitting them from the output. Note that this mode can result in omitting more than is strictly necessary, but it guarantees that all detectable corruptions will be omitted.
 * **segregate** - Fixes partition/row/mutation-fragment out-of-order errors by segregating the output into as many SStables as required so that the content of each output SStable is properly ordered.
-* **validate** - Validates the content of the SStable, reporting any corruptions found. Writes no output SStables. In this mode, scrub has the same outcome as the [validate operation]()
+* **validate** - Validates the content of the SStable and component digests, reporting any corruptions found. Writes no output SStables. In this mode, scrub has the same outcome as the [validate operation]()
 
   <a id="scylla-sstable-validate-operation"></a>
    - and the validate operation is recommended over scrub.
@@ -684,6 +727,9 @@ In both cases the input is expected to be provided via the file whose path is pa
 The input file is expected to contain `;` separated CQL statements, providing the content of the output SSTable(s).
 The following CQL statements are allowed: `INSERT`, `UPDATE` and `DELETE`.
 The statements can be in any order, the data will be sorted internally.
+The table lives in the `scylla_sstable` keyspace, which is already selected when
+the statements are run, so the table name doesn’t have to be qualified with it
+(but it can be).
 Writes are internally applied to a memtable, which is flushed to disk once its size exceeds the memory limit, specified via the `--memory-limit` command line argument (defaults to `1MiB`).
 
 Reading the statements from the input file happens via a streaming parser, it is
@@ -769,8 +815,10 @@ Custom queries can be provided either via the `--query` (on the command-line)
 or via `--query-file` (in a file).
 When writing queries by hand, there are some things to keep in in mind:
 
-* The keyspace of the table is changed to `scylla_sstable.` This is to avoid any
-  collisions in case the sstables belong to a system keyspace.
+* The keyspace of the table is changed to `scylla_sstable`. This is to avoid any
+  collisions in case the sstables belong to a system keyspace. The query is run
+  with this keyspace already selected, so the table name doesn’t have to be
+  qualified with it (but it can be).
 * If the schema is read from the sstable itself, partition key columns will be
   `$pk0..$pkN` and clustering key columns will be `$ck0..$ckN`. This is because
   the in-sstable schema doesn’t contain key column names.
@@ -830,7 +878,7 @@ $ scylla sstable query --system-schema --output-format=json /path/to/data/system
 Select a specific field in a specific partition using the command-line:
 
 ```console
-$ scylla sstable query --system-schema --query "SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks'" /path/to/data/system_schema/keyspaces-*/*-Data.db
+$ scylla sstable query --system-schema --query "SELECT replication FROM keyspaces WHERE keyspace_name='ks'" /path/to/data/system_schema/keyspaces-*/*-Data.db
  replication
 -------------------------------------------------------------------------------------
  ({class : org.apache.cassandra.locator.NetworkTopologyStrategy}, {datacenter1 : 1})
@@ -839,7 +887,7 @@ $ scylla sstable query --system-schema --query "SELECT replication FROM scylla_s
 Select a specific field in a specific partition using `--query-file`:
 
 ```console
-$ echo "SELECT replication FROM scylla_sstable.keyspaces WHERE keyspace_name='ks';" > query.cql
+$ echo "SELECT replication FROM keyspaces WHERE keyspace_name='ks';" > query.cql
 $ scylla sstable query --system-schema --query-file=./query.cql ./scylla-workdir/data/system_schema/keyspaces-*/*-Data.db
  replication
 -------------------------------------------------------------------------------------
@@ -908,7 +956,7 @@ Similar to `scylla sstable dump-data --partition|--partition-file`, with some no
 * Also supports negative filters (keep all partitions except the those specified).
 
 The partition list can be provided either via the `--partition` command line argument, or via a file path passed to the the `--partitions-file` argument. The file should contain one partition key per line.
-Partition keys should be provided in the hex format, as produced by [scylla types serialize](/operating-scylla/admin-tools/scylla-types/).
+Partition keys should be provided in the hex format, as produced by [scylla types serialize](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-types.md).
 
 With `--include`, only the specified partitions are kept from the input SSTable(s). With `--exclude`, the specified partitions are discarded and won’t be written to the output SSTable(s).
 It is possible that certain input SSTable(s) won’t have any content left after the filtering. These input SSTable(s) will not have a matching output SSTable.
@@ -972,6 +1020,102 @@ scylla sstable split --merge -t 100 -t 500 /path/to/md-123456-big-Data.db /path/
 ```
 
 This will merge both input SSTables first, then split the combined data, creating 3 output SSTables.
+
+### layout
+
+Describes how the SSTables of a table are organized by its compaction strategy.
+Incremental and size-tiered compaction organize SSTables into runs, leveled
+compaction into levels and time-window compaction into time windows. The
+SSTables are grouped accordingly, and each group is annotated with the aggregate
+of the SSTables in it.
+
+The compaction strategy, its options and the `tombstone_gc` mode are the ones
+of the schema. `--strategy` (one of `ics`, `stcs`, `lcs`, `twcs`, or a
+compaction strategy class name) and `--strategy-option` are shortcuts for
+describing the layout in the terms of another strategy, which is useful when the
+schema is not available – in which case the schema loader falls back to the
+default, incremental compaction. Everything the description depends on is a
+property of the schema, so overriding the schema itself, with `--schema-file`,
+customizes all of it.
+
+SSTables belonging to different compaction groups are described separately, as
+compaction only ever considers SSTables of the same compaction group. For a
+tablet-based table the compaction group is the tablet, which is looked up in
+`system.tablets`, located in the data dir. If `system.tablets` lives
+elsewhere, its directory can be provided with `--system-tablets-dir`, which
+only a tablet-based table has any use for. For a vnode-based table the
+compaction group is the shard, which is derived from the sharding parameters of
+the node, read from `system.topology`. `--shards` and `--ignore-msb-bits`
+provide them when they cannot be read; they describe the sharding of a
+vnode-based table, and are rejected for a tablet-based one, whose sharding is
+its tablet map.
+
+The columns to include are selected with `--columns`, which takes a
+comma-separated list of column names, or `all` for all of them. The order of
+the SSTables within each group is selected with `--sort`, which takes a
+comma-separated list of `column[:asc|desc]`, in decreasing order of relevance.
+Run `scylla sstable layout --help` for the list of supported columns.
+
+Whether a tombstone counts as expired depends on the `tombstone_gc` mode of
+the table, which is reported in the header. The mode is the one the table
+actually uses: a table created without a `tombstone_gc` option has the default
+of its keyspace resolved and recorded when it is created, which is `repair`
+unless the keyspace uses a local replication strategy. In the `timeout` mode
+the gc grace period of the schema is what decides it. In the `repair` mode it
+depends on when the token range
+of the SSTable was last repaired, less the propagation delay: the repair history
+is read from `system.tablets` for a tablet-based table and from
+`system.repair_history` for a vnode-based one. A range which was never
+repaired has nothing to purge.
+
+The layout of a table is what the operation is for, so with no SSTable arguments
+it describes the SSTables of the table `--keyspace` and `--table` name:
+
+```console
+scylla sstable layout --keyspace <keyspace> --table <table>
+```
+
+They are resolved through the storage options of the keyspace, which say whether
+they live in a directory of the data dir or in a bucket of an object store. The
+data dir is the one `--scylla-data-dir` names, or the one the scylla.yaml
+configures. The system tables the SSTables of a table are looked up in have to
+be on disk: `nodetool flush system_schema`, and for a table on object storage
+`nodetool flush system sstables` as well. Describing the table of a running
+node usually needs `--ignore-incomplete-sstables`, as the node can delete
+SSTables, e.g. by compacting them, while they are being loaded. SSTables named on the command line
+are the ones described, `--keyspace` and `--table` then only saying which
+schema to load.
+
+Supports both a text and a JSON output, selected with `--output-format`. The
+JSON output reports the raw, unformatted value of each column.
+
+**Examples:**
+
+Describe the layout of a table:
+
+```console
+scylla sstable layout --keyspace my_keyspace --table my_table
+```
+
+Describe the layout of the SSTables of a directory, which does not have to be
+the one the table of this node keeps its SSTables in:
+
+```console
+scylla sstable layout /var/lib/scylla/data/my_keyspace/my_table-8ff5d0a0a41411f0a8a1e2ba0e1e0b21
+```
+
+Describe it in the terms of time-window compaction, with 6 hour windows:
+
+```console
+scylla sstable layout --strategy twcs --strategy-option compaction_window_unit=HOURS \
+    --strategy-option compaction_window_size=6 /path/to/table_dir
+```
+
+Include all the columns, ordered by the share of expired tombstones:
+
+```console
+scylla sstable layout --columns all --sort expired-pctg:desc /path/to/table_dir
+```
 
 ## Examples
 

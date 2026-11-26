@@ -10,8 +10,8 @@ Confirm no applications are running that are using the cluster as backend storag
 
 On each node, in parallel:
 
-1. Run the command [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
-2. Validate that the drain procedure has completed by running [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md). If the node’s status is listed as `DN`, then the drain command has been executed successfully.
+1. Run the command [nodetool drain](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/drain.md).
+2. Validate that the drain procedure has completed by running [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md). If the node’s status is listed as `DN`, then the drain command has been executed successfully.
 3. Stop the node after drain completed successfully.
 
    Supported OS
@@ -25,4 +25,4 @@ On each node, in parallel:
    ```
 
    (without stopping *some-scylla* container)
-4. To start the nodes again safely, proceed to the [Start Clusters Cleanly](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/safe-start.md) procedure.
+4. To start the nodes again safely, proceed to the [Start Clusters Cleanly](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/safe-start.md) procedure.

@@ -3,7 +3,7 @@
 In some deployments, the network between the application and the ScyllaDB
 cluster is limited in bandwidth, or network traffic is expensive.
 This document surveys some mechanisms that can be used to reduce this network
-traffic. These mechanisms can be enabled through the [Alternator client libraries](https://docs.scylladb.com/manual/branch-2026.4/alternator/sdks.md).
+traffic. These mechanisms can be enabled through the [Alternator client libraries](https://docs.scylladb.com/manual/stable/alternator/sdks.md).
 
 ## Compression
 

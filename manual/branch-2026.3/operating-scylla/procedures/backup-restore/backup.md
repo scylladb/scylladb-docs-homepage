@@ -5,7 +5,7 @@ Even though ScyllaDB is a fault-tolerant system, it is recommended to regularly 
 * Backup is a per-node procedure. Make sure to back up each node in your
   cluster. For cluster-wide backup and restore, see [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/restore/).
 * Backup works the same for non-encrypted and encrypted SStables. You can use
-  [Encryption at Rest](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md)
+  [Encryption at Rest](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest.md)
   without affecting the backup procedure.
 
 You can choose one of the following:
@@ -17,8 +17,8 @@ You can choose one of the following:
 
 ## Full Backup - Snapshots
 
-Snapshots are taken using [nodetool snapshot](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/snapshot.md). First, the command flushes the MemTables from memory to SSTables on disk, and afterward, it creates a hard link for each SSTable in each keyspace.
-With time, SSTables are compacted, but the hard link keeps a copy of each file. This takes up an increasing amount of disk space. It is important to clear space by [clean unnecessary snapshots](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/delete-snapshot.md).
+Snapshots are taken using [nodetool snapshot](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/snapshot.md). First, the command flushes the MemTables from memory to SSTables on disk, and afterward, it creates a hard link for each SSTable in each keyspace.
+With time, SSTables are compacted, but the hard link keeps a copy of each file. This takes up an increasing amount of disk space. It is important to clear space by [clean unnecessary snapshots](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/delete-snapshot.md).
 
 **Procedure**
 
@@ -39,7 +39,7 @@ The command can only be executed by a superuser.
 To get a proper schema description, you need to use cqlsh at least in version `6.0.23`. Restoring a schema backup created by
 an older version of cqlsh may lead to data resurrection or data loss. To check the version of your cqlsh, you can use `cqlsh --version`.
 
-See [the relevant article to learn more](https://docs.scylladb.com/manual/stable/cql/describe-schema.md).
+See [the relevant article to learn more](https://docs.scylladb.com/manual/branch-2026.3/cql/describe-schema.md).
 
 <br/>
 2. Take a snapshot, including every keyspace you want to backup.
@@ -90,4 +90,4 @@ For example:
 
 ## Additional Resources
 
-* [ScyllaDB Snapshots](https://docs.scylladb.com/manual/stable/kb/snapshots.md)
+* [ScyllaDB Snapshots](https://docs.scylladb.com/manual/branch-2026.3/kb/snapshots.md)

@@ -30,4 +30,4 @@ The following configuration options can be used to enable or disable RBNO:
 * `allowed_repair_based_node_ops= "replace,removenode,rebuild,bootstrap,decommission"` -
   Specifies the node operations for which the RBNO mechanism is enabled.
 
-See [Configuration Parameters](https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md) for details.
+See [Configuration Parameters](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md) for details.

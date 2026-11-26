@@ -8,6 +8,6 @@ The list below contains integration projects using ScyllaDB with Spark. If you h
 * [Hooking up Spark and ScyllaDB (multi-part blog - part 2)](https://www.scylladb.com/2018/08/21/spark-scylla-2/)
 * [Hooking up Spark and ScyllaDB (multi-part blog - part 3)](https://www.scylladb.com/2018/10/08/hooking-up-spark-and-scylla-part-3/)
 * [Hooking up Spark and ScyllaDB (multi-part blog - part 4)](https://www.scylladb.com/2018/11/13/hooking-up-spark-and-scylladb-part-4/)
-* [Integration with Spark (KB article)](https://docs.scylladb.com/manual/stable/kb/scylla-and-spark-integration.md)
+* [Integration with Spark (KB article)](https://docs.scylladb.com/manual/branch-2026.3/kb/scylla-and-spark-integration.md)
 * [Analyzing flight delays with ScyllaDB on top of Spark (blog entry)](https://www.scylladb.com/2017/05/02/analyzing-flight-delays-scylla-spark-2/)
 * [Using Spark with ScyllaDB lesson](https://university.scylladb.com/courses/the-mutant-monitoring-system-training-course/lessons/using-spark-with-scylla/) on ScyllaDB University

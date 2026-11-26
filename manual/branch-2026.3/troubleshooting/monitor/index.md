@@ -6,8 +6,8 @@
                     <h5 class="panel_\_title">ScyllaDB Monitor and Manager Issues</h5>
             </div></div>
 * [Troubleshoot ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/stable/).
-* [Troubleshooting guide for ScyllaDB Manager and ScyllaDB Monitoring integration](https://docs.scylladb.com/manual/stable/troubleshooting/manager-monitoring-integration.md)
-* [ScyllaDB Manager is reporting REST API status of healthy nodes as down](https://docs.scylladb.com/manual/stable/troubleshooting/reverse-dns-sshd.md)
+* [Troubleshooting guide for ScyllaDB Manager and ScyllaDB Monitoring integration](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/manager-monitoring-integration.md)
+* [ScyllaDB Manager is reporting REST API status of healthy nodes as down](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/reverse-dns-sshd.md)
 
 
             <div class="cell my-panel">

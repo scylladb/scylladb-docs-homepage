@@ -4,18 +4,18 @@ The ScyllaDB Security checklist is a list of security recommendations that shoul
 
 ## Enable Authentication
 
-[Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authentication.md) is a security step to verify the identity of a client. When enabled, ScyllaDB requires all clients to authenticate themselves to determine their access to the cluster.
+[Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md) is a security step to verify the identity of a client. When enabled, ScyllaDB requires all clients to authenticate themselves to determine their access to the cluster.
 
 ## Enable Authorization
 
-[Authorization](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/enable-authorization.md) is a security step to verify the granted permissions of a client. When enabled, ScyllaDB will check all clients for their access permissions to the cluster objects(keyspaces, tables).
+[Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md) is a security step to verify the granted permissions of a client. When enabled, ScyllaDB will check all clients for their access permissions to the cluster objects(keyspaces, tables).
 
 ## Role Base Access
 
-Role-Based Access Control ([RBAC](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/rbac-usecase.md)), a method of reducing lists of authorized users to a few roles assigned to multiple users. RBAC is sometimes referred to as role-based security. It is recommended to:
+Role-Based Access Control ([RBAC](https://docs.scylladb.com/manual/stable/operating-scylla/security/rbac-usecase.md)), a method of reducing lists of authorized users to a few roles assigned to multiple users. RBAC is sometimes referred to as role-based security. It is recommended to:
 
-* Set [roles](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/rbac-usecase.md#rbac-usecase-grant-roles-and-permissions) per keyspace/table.
-* Use the [principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege#Details) per keyspace/table. [Start](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/rbac-usecase.md#rbac-usecase-use-case) by granting no permissions to all roles, then grant read access only to roles who need it, write access to roles who need to write, etc. It’s better to have more roles, each with fewer permissions.
+* Set [roles](https://docs.scylladb.com/manual/stable/operating-scylla/security/rbac-usecase.md#rbac-usecase-grant-roles-and-permissions) per keyspace/table.
+* Use the [principle of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege#Details) per keyspace/table. [Start](https://docs.scylladb.com/manual/stable/operating-scylla/security/rbac-usecase.md#rbac-usecase-use-case) by granting no permissions to all roles, then grant read access only to roles who need it, write access to roles who need to write, etc. It’s better to have more roles, each with fewer permissions.
 
 ## Encryption on Transit, Client to Node and Node to Node
 
@@ -26,8 +26,8 @@ You can run ScyllaDB on FIPS-enabled Ubuntu,
 which uses FIPS 140-2 certified libraries (such as OpenSSL, GnuTLS, and more) and Linux
 kernel in FIPS mode.
 
-* [Encryption Data in Transit Client to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/client-node-encryption.md)
-* [Encryption Data in Transit Node to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/node-node-encryption.md)
+* [Encryption Data in Transit Client to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md)
+* [Encryption Data in Transit Node to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/node-node-encryption.md)
 
 ## Encryption at Rest
 
@@ -36,7 +36,7 @@ In particular, it provides an additional level of protection for your data persi
 
 See:
 
-* [Encryption at Rest](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest.md)
+* [Encryption at Rest](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md)
 
 ## Reduce the Network Exposure
 
@@ -68,14 +68,14 @@ ScyllaDB uses the following ports:
 
 If you’re using ScyllaDB Alternator, ensure that the ports configured
 for Alternator with the `alternator_port` or `alternator_https_port` parameter
-are open. See [ScyllaDB Alternator](https://docs.scylladb.com/manual/branch-2026.4/alternator/alternator.md) for details.
+are open. See [ScyllaDB Alternator](https://docs.scylladb.com/manual/stable/alternator/alternator.md) for details.
 
 #### NOTE
 For ScyllaDB Manager ports, see the [ScyllaDB Manager](https://manager.docs.scylladb.com/) documentation.
 
 ## Audit System Activity
 
-Using the [auditing feature](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/auditing.md) allows the administrator to know “who did / looked at / changed what and when.” It also allows logging some or all the activities a user performs on the ScyllaDB cluster.
+Using the [auditing feature](https://docs.scylladb.com/manual/stable/operating-scylla/security/auditing.md) allows the administrator to know “who did / looked at / changed what and when.” It also allows logging some or all the activities a user performs on the ScyllaDB cluster.
 
 ## General Recommendations
 

@@ -9,7 +9,7 @@ ScyllaDB node fails to start, node status shows that the node is down (DN)
 
 ## How to Verify
 
-When there is an unknown problem, checking the [logs](https://docs.scylladb.com/manual/stable/getting-started/logging.md) is mandatory, using `journalctl -xe`
+When there is an unknown problem, checking the [logs](https://docs.scylladb.com/manual/branch-2026.3/getting-started/logging.md) is mandatory, using `journalctl -xe`
 
 For example:
 
@@ -49,6 +49,6 @@ sudo rm test-ka-2*
 `sudo systemctl start scylla-server`
 
 1. Verify that the node is up again using `nodetool status`. The node status should be Up Normal (UN)
-2. Run the [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) command on the node with the corrupted SSTable
+2. Run the [nodetool repair](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/repair.md) command on the node with the corrupted SSTable
 
-[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/index.md)

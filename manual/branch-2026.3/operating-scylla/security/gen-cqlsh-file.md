@@ -27,7 +27,7 @@ Install the Java Cryptography Extensions. You can download the extensions from [
    ```
 
    The `[ssl]` section of the above template applies to a CA signed certificate. If you are using
-   [a self-signed certificate](https://docs.scylladb.com/manual/stable/operating-scylla/security/generate-certificate.md), the `[ssl]` section will
+   [a self-signed certificate](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/generate-certificate.md), the `[ssl]` section will
    resemble the following:
    ```console
    [ssl]
@@ -61,4 +61,4 @@ Install the Java Cryptography Extensions. You can download the extensions from [
 
 ## Additional Topics
 
-* [Encryption: Data in Transit Client to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md)
+* [Encryption: Data in Transit Client to Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/client-node-encryption.md)

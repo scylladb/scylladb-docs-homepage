@@ -10,4 +10,4 @@ To disable these service, update file `/etc/scylla.d/housekeeping.cfg` as follow
 See also:
 
 * [ScyllaDB privacy](https://www.scylladb.com/privacy/)
-* [Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md)
+* [Getting Started](https://docs.scylladb.com/manual/branch-2026.3/getting-started/index.md)

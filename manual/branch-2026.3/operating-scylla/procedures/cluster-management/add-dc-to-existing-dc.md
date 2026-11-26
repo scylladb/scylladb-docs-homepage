@@ -1,6 +1,6 @@
 # Adding a New Data Center Into an Existing ScyllaDB Cluster
 
-The following procedure specifies how to add a Data Center (DC) to a live ScyllaDB Cluster, in a single data center, [multi-availability zone](https://docs.scylladb.com/manual/stable/faq.md#faq-best-scenario-node-multi-availability-zone), or multi-datacenter. Adding a DC out-scales the cluster and provides higher availability (HA).
+The following procedure specifies how to add a Data Center (DC) to a live ScyllaDB Cluster, in a single data center, [multi-availability zone](https://docs.scylladb.com/manual/branch-2026.3/faq.md#faq-best-scenario-node-multi-availability-zone), or multi-datacenter. Adding a DC out-scales the cluster and provides higher availability (HA).
 
 The procedure includes:
 
@@ -26,15 +26,15 @@ The node/nodes you add **must** be clean (no data). Otherwise, you risk data los
    * ScyllaDB version - `scylla --version`
    * Authenticator - `grep authenticator /etc/scylla/scylla.yaml`
 2. On all client applications, switch the consistency level to `LOCAL_*` (LOCAL_ONE, LOCAL_QUORUM,etc.) to prevent the coordinators from accessing the data center you’re adding.
-3. Install the new **clean** ScyllaDB nodes (See [Clean Data from Nodes]() below) on the new datacenter, see [Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md) for further instructions, create as many nodes that you need.
+3. Install the new **clean** ScyllaDB nodes (See [Clean Data from Nodes]() below) on the new datacenter, see [Getting Started](https://docs.scylladb.com/manual/branch-2026.3/getting-started/index.md) for further instructions, create as many nodes that you need.
    Follow the ScyllaDB install procedure up to `scylla.yaml` configuration phase.
-   In the case that the node starts during the installation process follow [these instructions](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/clear-data.md).
+   In the case that the node starts during the installation process follow [these instructions](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/clear-data.md).
 
 Updating the cluster topology requires at least a quorum of nodes in a cluster to be available.
 If the quorum is lost, it must be restored before you change the cluster topology.
-See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 
-You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
+You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command.
 
 ## Clean Data from Nodes
 
@@ -50,7 +50,7 @@ sudo find /var/lib/scylla/view_hints -type f -delete
 **Procedure**
 
 #### WARNING
-Make sure **all** your keyspaces are using `NetworkTopologyStrategy`. If this is not the case, follow the [these instructions](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md) to fix that.
+Make sure **all** your keyspaces are using `NetworkTopologyStrategy`. If this is not the case, follow the [these instructions](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md) to fix that.
 
 1. For each node in the **existing data-center(s)** edit the `scylla.yaml` file to use either
    * `Ec2MultiRegionSnitch` - for AWS cloud-based, multi-data-center deployments.
@@ -61,7 +61,7 @@ Make sure **all** your keyspaces are using `NetworkTopologyStrategy`. If this is
 
    `Ec2MultiRegionSnitch`
 
-   Ec2MultiRegionSnitch gives each DC and rack default names, the region name defined as datacenter name, and [availability zones](https://docs.scylladb.com/manual/stable/faq.md#faq-best-scenario-node-multi-availability-zone) are defined as racks within a datacenter.
+   Ec2MultiRegionSnitch gives each DC and rack default names, the region name defined as datacenter name, and [availability zones](https://docs.scylladb.com/manual/branch-2026.3/faq.md#faq-best-scenario-node-multi-availability-zone) are defined as racks within a datacenter.
 
    For example:
 
@@ -207,7 +207,7 @@ Make sure **all** your keyspaces are using `NetworkTopologyStrategy`. If this is
    ```
 
    #### NOTE
-   If `rf_rack_valid_keyspaces` option is set, a tablet keyspace needs to use rack list replication factor, so that a new DC (rack) can be added. See [the conversion procedure](https://docs.scylladb.com/manual/stable/cql/ddl.md#conversion-to-rack-list-rf). In this case, to add a datacenter:
+   If `rf_rack_valid_keyspaces` option is set, a tablet keyspace needs to use rack list replication factor, so that a new DC (rack) can be added. See [the conversion procedure](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#conversion-to-rack-list-rf). In this case, to add a datacenter:
 
    Before
    ```cql
@@ -229,7 +229,7 @@ Make sure **all** your keyspaces are using `NetworkTopologyStrategy`. If this is
    CREATE KEYSPACE mykeyspace3 WITH REPLICATION = {'class': 'NetworkTopologyStrategy', '<existing_dc>' : ['<existing_rack1>', '<existing_rack2>', '<existing_rack3>'], '<new_dc>' : ['<new_rack1>', '<new_rack2>', '<new_rack3>']} AND tablets = { 'enabled': true };
    ```
 
-   Consider [upgrading rf_rack_valid_keyspaces option to enforce_rack_list option](https://docs.scylladb.com/manual/stable/architecture/tablets.md#keyspace-rf-rack-valid-to-enforce-rack-list) to ensure all tablet keyspaces use rack lists.
+   Consider [upgrading rf_rack_valid_keyspaces option to enforce_rack_list option](https://docs.scylladb.com/manual/branch-2026.3/architecture/tablets.md#keyspace-rf-rack-valid-to-enforce-rack-list) to ensure all tablet keyspaces use rack lists.
 
    If the keyspace uses rack list replication, update the replication factor in one `ALTER KEYSPACE` statement, under the following rules:
    : * Existing datacenters must keep their current replication factor.
@@ -264,7 +264,7 @@ Make sure **all** your keyspaces are using `NetworkTopologyStrategy`. If this is
    CREATE KEYSPACE mykeyspace4 WITH REPLICATION = {'class': 'NetworkTopologyStrategy', '<existing_dc>' : ['<existing_rack1>', '<existing_rack2>', '<existing_rack3>'], '<new_dc>' : ['<new_rack1>', '<new_rack2>', '<new_rack3>']} AND tablets = { 'enabled': true };
    ```
 
-   You can abort the keyspace alteration using [Task manager](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/task-manager.md).
+   You can abort the keyspace alteration using [Task manager](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/task-manager.md).
 9. If any vnode keyspace was altered, run `nodetool rebuild` on each node in the new datacenter, specifying the existing datacenter name in the rebuild command.
 
    For example:
@@ -272,7 +272,7 @@ Make sure **all** your keyspaces are using `NetworkTopologyStrategy`. If this is
    `nodetool rebuild <existing_data_center_name>`
 
    The rebuild ensures that the new nodes that were just added to the cluster will recognize the existing datacenters in the cluster.
-10. If any vnode keyspace was altered, run a full cluster repair, using [nodetool repair -pr](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on each node, or using [ScyllaDB Manager ad-hoc repair](https://manager.docs.scylladb.com/stable/repair)
+10. If any vnode keyspace was altered, run a full cluster repair, using [nodetool repair -pr](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/repair.md) on each node, or using [ScyllaDB Manager ad-hoc repair](https://manager.docs.scylladb.com/stable/repair)
 11. If you are using ScyllaDB Monitoring, update the [monitoring stack](https://monitoring.docs.scylladb.com/stable/install/monitoring_stack.html#configure-scylla-nodes-from-files) to monitor it. If you are using ScyllaDB Manager, make sure you install the [Manager Agent](https://manager.docs.scylladb.com/stable/install-scylla-manager-agent.html) and Manager can access the new DC.
 
 <a id="add-dc-to-existing-dc-not-connect-clients"></a>

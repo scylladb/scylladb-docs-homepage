@@ -17,7 +17,7 @@ parameter in `scylla.yaml`:
 
 `ms`
 : Introduces a trie-based SSTable index.
-  For details, see [SSTable ms Index (Trie-Based)](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstable-ms-index.md).
+  For details, see [SSTable ms Index (Trie-Based)](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable3/sstable-ms-index.md).
 
 `me`
 : The baseline 3.x format, default from ScyllaDB 2022.2 through 2026.1.
@@ -29,7 +29,7 @@ parameter in `scylla.yaml`:
 Existing SSTables are not rewritten automatically when upgrading to 2026.2.
 They are upgraded to the `ms` format on the next compaction.
 
-[ScyllaDB Architecture](https://docs.scylladb.com/manual/stable/architecture/index.md)
+[ScyllaDB Architecture](https://docs.scylladb.com/manual/branch-2026.3/architecture/index.md)
 
 Copyright
 

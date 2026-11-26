@@ -35,7 +35,7 @@ Cluster Information:
 ## Solution
 
 1. Wait for five minutes and run `nodetool describecluster` to verify that the schema is synced.
-2. If there is still a mismatch error message execute a [rolling restart](/operating-scylla/procedures/config-change/rolling_restart/).
+2. If there is still a mismatch error message execute a [rolling restart](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/rolling-restart.md).
 3. Verify schema is synced
 
 For example:

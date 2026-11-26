@@ -93,8 +93,8 @@ manifest.json
 
 ### Additional Resources
 
-* [Backup your data](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/backup.md)
-* [ScyllaDB Snapshots](https://docs.scylladb.com/manual/stable/kb/snapshots.md)
+* [Backup your data](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/backup.md)
+* [ScyllaDB Snapshots](https://docs.scylladb.com/manual/branch-2026.3/kb/snapshots.md)
 
 Copyright
 

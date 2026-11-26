@@ -15,7 +15,7 @@ license or subscription.
   Marketplace images in the target compartment. See
   [Managing Compartments](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm).
 * A [VCN](https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingVCNs.htm) with a subnet to
-  launch the instance into, and the [ScyllaDB ports](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/security-checklist.md#networking-ports) allowed by the
+  launch the instance into, and the [ScyllaDB ports](https://docs.scylladb.com/manual/stable/operating-scylla/security/security-checklist.md#networking-ports) allowed by the
   [security rules](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securityrules.htm) that
   apply to the instance - either in a security list attached to the subnet, or in a
   [network security group](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm)
@@ -24,7 +24,7 @@ license or subscription.
   Open each port only to the peers that need it: the inter-node ports to the other nodes of the cluster,
   the CQL ports to your clients, and keep the REST API port closed to anything outside the cluster. You
   also need TCP port 22 open, from your administrators’ addresses only, for the SSH step below. See
-  [ScyllaDB Security Checklist](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/security-checklist.md) for the full set of
+  [ScyllaDB Security Checklist](https://docs.scylladb.com/manual/stable/operating-scylla/security/security-checklist.md) for the full set of
   recommendations.
 * An SSH key pair. See
   [Managing Key Pairs on Linux Instances](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/managingkeypairs.htm).
@@ -48,11 +48,11 @@ greater than one, and back it up - for example with
 
 ## Launching ScyllaDB from the OCI Console
 
-1. Choose a shape. See [Cloud Instance Recommendations for OCI](https://docs.scylladb.com/manual/branch-2026.4/getting-started/cloud-instance-recommendations.md#system-requirements-oci) for the list
+1. Choose a shape. See [Cloud Instance Recommendations for OCI](https://docs.scylladb.com/manual/stable/getting-started/cloud-instance-recommendations.md#system-requirements-oci) for the list
    of recommended shapes.
 
    Other shapes will work, but with lesser performance. If you choose a shape other than the recommended
-   ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md#system-configuration-scripts) script.
+   ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md#system-configuration-scripts) script.
 2. Sign in to the [OCI Console](https://cloud.oracle.com/) and select the region you want to deploy in.
 3. Open the navigation menu, select **Marketplace**, and then select **All Applications**.
 4. Search for *ScyllaDB* and select the ScyllaDB listing for the version you want to deploy. Listings are
@@ -106,11 +106,11 @@ in the Console.
 The following steps use the `us-ashburn-1` region as an example. Replace it with your region, or omit
 `--region` to use the region from your CLI configuration.
 
-1. Choose a shape. See [Cloud Instance Recommendations for OCI](https://docs.scylladb.com/manual/branch-2026.4/getting-started/cloud-instance-recommendations.md#system-requirements-oci) for the list
+1. Choose a shape. See [Cloud Instance Recommendations for OCI](https://docs.scylladb.com/manual/stable/getting-started/cloud-instance-recommendations.md#system-requirements-oci) for the list
    of recommended shapes.
 
    Other shapes will work, but with lesser performance. If you choose a shape other than the recommended
-   ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md#system-configuration-scripts) script.
+   ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md#system-configuration-scripts) script.
 2. Find the OCID of the ScyllaDB Marketplace listing:
    ```console
    oci marketplace listing list --region us-ashburn-1 --all \
@@ -250,7 +250,7 @@ the Console, or `--user-data-file` in the CLI). The most popular options are:
 
 * `cluster_name` - The name of the cluster.
 * `seed_provider` - The IP of the first node. New nodes will use the IP of this seed node to connect to
-  the cluster and learn the cluster topology and state. See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/branch-2026.4/kb/seed-nodes.md).
+  the cluster and learn the cluster topology and state. See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/stable/kb/seed-nodes.md).
 * `post_configuration_script` - A base64 encoded bash script that will be executed after the
   configuration is completed.
 * `start_scylla_on_first_boot` - Starts ScyllaDB once the configuration is completed.
@@ -272,7 +272,7 @@ Example:
 }
 ```
 
-See [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#admin-scylla-yaml) for information about the supported `scylla_yaml` options, and
+See [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-scylla-yaml) for information about the supported `scylla_yaml` options, and
 the [ScyllaDB Image documentation](https://github.com/scylladb/scylla-machine-image) for the full
 documentation of ScyllaDB image user data.
 
@@ -309,8 +309,8 @@ nodetool status
 
 ## Next Steps
 
-* [Configure ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md)
+* [Configure ScyllaDB](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md)
 * Manage your clusters with [ScyllaDB Manager](https://manager.docs.scylladb.com/)
 * Monitor your cluster and data with [ScyllaDB Monitoring](https://monitoring.docs.scylladb.com/)
-* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md).
+* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md).
 * Learn about ScyllaDB at [ScyllaDB University](https://university.scylladb.com/)

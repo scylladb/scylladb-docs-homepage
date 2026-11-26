@@ -1,16 +1,16 @@
 # Compaction
 
-This document gives a high level overview of Compaction, focusing on what compaction is, and how it works. There is a different document that covers the [CQL syntax](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md) for setting a compaction strategy. There is also another document, [Compaction Strategy Matrix](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md), that covers how to decide which strategy works best.
+This document gives a high level overview of Compaction, focusing on what compaction is, and how it works. There is a different document that covers the [CQL syntax](https://docs.scylladb.com/manual/stable/cql/compaction.md) for setting a compaction strategy. There is also another document, [Compaction Strategy Matrix](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md), that covers how to decide which strategy works best.
 
 ## How ScyllaDB Writes Data
 
 ScyllaDB’s write path follows the well-known **Log Structured Merge (LSM)** design for efficient writes that are immediately available for reads. ScyllaDB is not the first project to use this method. Popular projects to use this method include Lucene Search Engine, Google BigTable, and Apache Cassandra.
 
-ScyllaDB writes its updates to a [memory table (MemTable)](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-MemTable), and when that becomes too big, it is flushed to a new file. This file is sorted to make it easy to search and later merge. This is why the tables are known as Sorted String Tables or [SSTables](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-SSTable).
+ScyllaDB writes its updates to a [memory table (MemTable)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-MemTable), and when that becomes too big, it is flushed to a new file. This file is sorted to make it easy to search and later merge. This is why the tables are known as Sorted String Tables or [SSTables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-SSTable).
 
 ![image](kb/write-path-image-memtable-sstable.png)
 
-In time, two major problems start to appear. First, data in one SSTable which is later modified or deleted in another SSTable wastes space as both tables are present in the system. Second, when data is split across many SSTables, read requests are processed slower as many SSTables need to be read. ScyllaDB mitigates the second problem by using a bloom filter and other techniques to avoid reading from SSTables that do not include the desired partition. However, as the number of SSTables grows, inevitably so do the number of disk blocks from which we need to read on every read query. For these reasons, as soon as enough SSTables have accumulated, ScyllaDB performs a [compaction](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Compaction).
+In time, two major problems start to appear. First, data in one SSTable which is later modified or deleted in another SSTable wastes space as both tables are present in the system. Second, when data is split across many SSTables, read requests are processed slower as many SSTables need to be read. ScyllaDB mitigates the second problem by using a bloom filter and other techniques to avoid reading from SSTables that do not include the desired partition. However, as the number of SSTables grows, inevitably so do the number of disk blocks from which we need to read on every read query. For these reasons, as soon as enough SSTables have accumulated, ScyllaDB performs a [compaction](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Compaction).
 
 ## Compaction Overview
 
@@ -19,7 +19,7 @@ Compaction merges several SSTables into new SSTable(s) which contain(s) only the
 There are two types of compactions:
 
 * Minor Compaction
-  : ScyllaDB automatically triggers a compaction of some SSTables, according to a [compaction strategy](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Compaction-Strategy) (as described below). This is the recommended method.
+  : ScyllaDB automatically triggers a compaction of some SSTables, according to a [compaction strategy](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Compaction-Strategy) (as described below). This is the recommended method.
 * Major Compaction
   : A user triggers (using nodetool) a compaction over all SSTables, merging the individual tables according to the selected compaction strategy.
 
@@ -28,11 +28,11 @@ It is always best to allow ScyllaDB to automatically run minor compactions. Majo
 
 ## View Compaction Statistics
 
-ScyllaDB has tools you can use to see the status of your compactions. These include nodetool ([compactionhistory](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/compactionhistory.md)  and [compactionstats](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/compactionstats.md))  and the Grafana dashboards which are part of the [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/) which display the compaction statistics on a per cluster and per node basis.  Compaction errors can be seen in the [logs](https://manager.docs.scylladb.com/stable/config/scylla-manager-config.html).
+ScyllaDB has tools you can use to see the status of your compactions. These include nodetool ([compactionhistory](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/compactionhistory.md)  and [compactionstats](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/compactionstats.md))  and the Grafana dashboards which are part of the [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/) which display the compaction statistics on a per cluster and per node basis.  Compaction errors can be seen in the [logs](https://manager.docs.scylladb.com/stable/config/scylla-manager-config.html).
 
 ## Compaction strategy
 
-A compaction strategy is what determines which of the SSTables will be compacted, and when. The following compaction strategies are available and are described in greater detail below. For a matrix which compares each strategy to its workload, refer to [Compaction Strategy Matrix](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md)
+A compaction strategy is what determines which of the SSTables will be compacted, and when. The following compaction strategies are available and are described in greater detail below. For a matrix which compares each strategy to its workload, refer to [Compaction Strategy Matrix](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md)
 
 * [Incremental compaction strategy (ICS)](#incremental-compaction-strategy-ics) - (default setting) Uses runs of sorted, fixed size (by default 1 GB) SSTables in a similar way that LCS does, organized into size-tiers. ICS replaces STCS. It has the same read and write amplification, but has lower space amplification, as the temporary space overhead is reduced to a constant manageable level.
 * [Leveled compaction strategy (LCS)]() - the system uses small, fixed-size (by default 160 MB) SSTables divided into different levels and  lowers both Read and Space Amplification.
@@ -41,7 +41,7 @@ A compaction strategy is what determines which of the SSTables will be compacted
 
 ### How to Set a Compaction Strategy
 
-Compaction strategies are set as part of the `CREATE` or `ALTER` statement when creating or altering tables. Refer to the [CQL syntax](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md) for details.
+Compaction strategies are set as part of the `CREATE` or `ALTER` statement when creating or altering tables. Refer to the [CQL syntax](https://docs.scylladb.com/manual/stable/cql/compaction.md) for details.
 
 #### CAUTION
 Changing the parameters for compaction strategies or changing from one strategy to another (using the `ALTER` statement) can create issues. See [Changing Compaction Strategies or Properties]() for more information.
@@ -67,7 +67,7 @@ window by [Time-window compaction strategy (TWCS)]() and for level 0 by
 
 The premise of size-tiered compaction (STCS) is to merge SSTables of approximately the same size.
 All SSTables are put into different buckets depending on their size.
-An SSTable is added to an existing bucket if size of the SSTable is within the parameters: [bucket_low](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#ics-options) and [bucket_high](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#ics-options), which is based on calculating the current average size of the SSTables already in the bucket.
+An SSTable is added to an existing bucket if size of the SSTable is within the parameters: [bucket_low](https://docs.scylladb.com/manual/stable/cql/compaction.md#ics-options) and [bucket_high](https://docs.scylladb.com/manual/stable/cql/compaction.md#ics-options), which is based on calculating the current average size of the SSTables already in the bucket.
 
 This will create several buckets and when the threshold number of tables(`min_threshold`) within a bucket is reached, the tables in that bucket are compacted.
 Following the compaction, the tables are merged, resulting in one larger SSTable. As time progresses and several large SSTables have accumulated, they will be merged to form one even-larger SSTable and so on.
@@ -84,7 +84,7 @@ Leveled Compaction uses small, fixed-size (by default 160 MB) SSTables divided i
 
 ### A run of SSTables
 
-A **run** is a [log-structured-merge (LSM)](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Log-structured-merge-LSM) term for a large SSTable split into several smaller SSTables. In other words, a run is a collection of SSTables with non-overlapping key ranges. The benefit of a run is that when a compaction is done, only parts of it (small individual SSTables) are compacted and deleted. Following a compaction, SSTables are smaller and there is no need to compact a huge SSTable all at once.
+A **run** is a [log-structured-merge (LSM)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Log-structured-merge-LSM) term for a large SSTable split into several smaller SSTables. In other words, a run is a collection of SSTables with non-overlapping key ranges. The benefit of a run is that when a compaction is done, only parts of it (small individual SSTables) are compacted and deleted. Following a compaction, SSTables are smaller and there is no need to compact a huge SSTable all at once.
 
 ![image](kb/compaction-leveled.png)
 
@@ -109,7 +109,7 @@ The compaction method works as follows:
 
 When new data is written very quickly, the Leveled Compaction strategy may be temporarily unable to keep up with the demand. This can result in an accumulation of a large number of SSTables in L0 which in turn create very slow reads as all read requests read from all SSTables in L0. So as an emergency measure, when the number of SSTables in L0 grows to 32, LCS falls back to STCS to quickly reduce the number of SSTables in L0. Eventually, LCS will move this data again to fixed-sized SSTables in higher levels.
 
-Likewise, when [bootstrapping](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Bootstrap) a new node, SSTables are streamed from other nodes. The level of the remote SSTable is kept to avoid many compactions until after the bootstrap is done. During the bootstrap, the new node receives regular write requests while it is streaming the data from the remote node. Just like any other write, these writes are flushed to L0. If ScyllaDB did an LCS compaction on these L0 SSTables and created SSTables in higher level, this could have blocked the remote SSTables from going to the correct level (remember that SSTables in a run must not have overlapping key ranges). To remedy this from happening, ScyllaDB compacts the tables using STCS only in L0 until the bootstrap process is complete. Once done, all resumes as normal under LCS.
+Likewise, when [bootstrapping](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Bootstrap) a new node, SSTables are streamed from other nodes. The level of the remote SSTable is kept to avoid many compactions until after the bootstrap is done. During the bootstrap, the new node receives regular write requests while it is streaming the data from the remote node. Just like any other write, these writes are flushed to L0. If ScyllaDB did an LCS compaction on these L0 SSTables and created SSTables in higher level, this could have blocked the remote SSTables from going to the correct level (remember that SSTables in a run must not have overlapping key ranges). To remedy this from happening, ScyllaDB compacts the tables using STCS only in L0 until the bootstrap process is complete. Once done, all resumes as normal under LCS.
 
 <a id="incremental-compaction-strategy-ics"></a>
 
@@ -173,7 +173,7 @@ Avoid overwriting data and deleting data explicitly at all costs, as this can po
 
 The strategy works as follows:
 
-1. A time window is configured. The window is determined by the compaction window size [compaction_window_size](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#twcs-options)  and the time unit ([compaction_window_unit](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md#twcs-options)).
+1. A time window is configured. The window is determined by the compaction window size [compaction_window_size](https://docs.scylladb.com/manual/stable/cql/compaction.md#twcs-options)  and the time unit ([compaction_window_unit](https://docs.scylladb.com/manual/stable/cql/compaction.md#twcs-options)).
 2. SSTables created within the time window are compacted using [Size-tiered Compaction Strategy (STCS)]().
 3. Once a time window ends, take all SSTables which were created during the time window and compact the data into one SSTable.
 4. The final resulting SSTable is never compacted with other time-windows’ SSTables.
@@ -206,7 +206,7 @@ If you want to change the time window you can do so, but keep in mind that this 
 
 ## Which Strategy is best to use
 
-Use the table in [Which strategy is best](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md#which-strategy-is-best) to determine the right strategy for your needs.
+Use the table in [Which strategy is best](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md#which-strategy-is-best) to determine the right strategy for your needs.
 
 <a id="compaction-off-strategy-compaction"></a>
 
@@ -240,8 +240,8 @@ You can monitor off-strategy compaction in the following ways:
 
 ## References
 
-* [CQL Reference for Compaction](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md)
-* [How to Choose a Compaction Strategy](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md).
+* [CQL Reference for Compaction](https://docs.scylladb.com/manual/stable/cql/compaction.md)
+* [How to Choose a Compaction Strategy](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md).
 * [Blog: ScyllaDB’s Compaction Strategies Series: Write Amplification in Leveled Compaction](https://www.scylladb.com/2018/01/31/compaction-series-leveled-compaction/)
 * [Blog: ScyllaDB’s Compaction Strategies Series: Space Amplification in Size-Tiered Compaction](https://www.scylladb.com/2018/01/17/compaction-series-space-amplification/)
 * Size Tiered: [Shrikant Bang’s Notes](https://shrikantbang.wordpress.com/2014/04/22/size-tiered-compaction-strategy-in-apache-cassandra/)

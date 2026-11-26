@@ -6,4 +6,4 @@ To install ScyllaDB on an air-gapped server, you first need to download the rele
 There are two ways to install ScyllaDB on an air-gapped server:
 
 - With root privileges (recommended): download the OS specific packages (rpms and debs) and install them with the package manager (dnf and apt). See [Install ScyllaDB on an Air-gapped Server Using the Packages (Option 2)](https://www.scylladb.com/download/?platform=tar).
-- Without root privileges: using the [ScyllaDB Unified Installer](https://docs.scylladb.com/manual/branch-2026.4/getting-started/installation-common/unified-installer.md).
+- Without root privileges: using the [ScyllaDB Unified Installer](https://docs.scylladb.com/manual/stable/getting-started/installation-common/unified-installer.md).

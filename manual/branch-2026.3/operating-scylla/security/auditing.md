@@ -5,7 +5,7 @@ The information is stored in a Syslog or a ScyllaDB table.
 
 ## Prerequisite
 
-Enable ScyllaDB [Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md) and [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md).
+Enable ScyllaDB [Authentication](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authentication.md) and [Authorization](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/enable-authorization.md).
 
 ## Enabling Audit
 
@@ -30,10 +30,10 @@ The audit can be tuned using the following flags or `scylla.yaml` entries:
 | audit_keyspaces  | Comma-separated list of keyspaces that should be audited. You must specify at least one keyspace.<br/>If you leave this option empty, no keyspace will be audited.                                                                            |
 
 The default value and liveness of each option are listed in
-[Configuration Parameters](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md): see
-[audit_categories](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confprop-audit-categories),
-[audit_tables](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confprop-audit-tables) and
-[audit_keyspaces](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confprop-audit-keyspaces).
+[Configuration Parameters](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md): see
+[audit_categories](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md#confprop-audit-categories),
+[audit_tables](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md#confprop-audit-tables) and
+[audit_keyspaces](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md#confprop-audit-keyspaces).
 
 To audit all the tables in a keyspace, set the `audit_keyspaces` with the keyspace you want to audit and leave `audit_tables` empty.
 
@@ -41,14 +41,14 @@ You can use DCL, AUTH, and ADMIN audit categories without including any keyspace
 
 ### audit_categories parameter description
 
-| Parameter   | Logs Description                                                                                                                                                                                                                            | Applies To      |
-|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| AUTH        | Logs login events                                                                                                                                                                                                                           | CQL             |
-| DML         | Logs insert, update, delete, and other data manipulation language (DML) events                                                                                                                                                              | CQL, Alternator |
-| DDL         | Logs object and role create, alter, drop, and other data definition language (DDL) events                                                                                                                                                   | CQL, Alternator |
-| DCL         | Logs grant, revoke, create role, drop role, and list roles events                                                                                                                                                                           | CQL             |
-| QUERY       | Logs all queries                                                                                                                                                                                                                            | CQL, Alternator |
-| ADMIN       | Logs service level operations: create, alter, drop, attach, detach, list.<br/>For [service level](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md#workload-priorization-service-level-management)<br/>auditing. | CQL             |
+| Parameter   | Logs Description                                                                                                                                                                                                                                   | Applies To      |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| AUTH        | Logs login events                                                                                                                                                                                                                                  | CQL             |
+| DML         | Logs insert, update, delete, and other data manipulation language (DML) events                                                                                                                                                                     | CQL, Alternator |
+| DDL         | Logs object and role create, alter, drop, and other data definition language (DDL) events                                                                                                                                                          | CQL, Alternator |
+| DCL         | Logs grant, revoke, create role, drop role, and list roles events                                                                                                                                                                                  | CQL             |
+| QUERY       | Logs all queries                                                                                                                                                                                                                                   | CQL, Alternator |
+| ADMIN       | Logs service level operations: create, alter, drop, attach, detach, list.<br/>For [service level](https://docs.scylladb.com/manual/branch-2026.3/features/workload-prioritization.md#workload-priorization-service-level-management)<br/>auditing. | CQL             |
 
 For details on auditing Alternator operations, see [Auditing Alternator Requests](#alternator-auditing).
 
@@ -198,7 +198,7 @@ roles.
 
 `audit_rules` is a live-updatable parameter. To apply changes at runtime, edit
 `scylla.yaml` and send `SIGHUP` to the ScyllaDB process. See
-[Configuration Parameters](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md) for details on live updates and
+[Configuration Parameters](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md) for details on live updates and
 configuration precedence.
 
 Example `scylla.yaml` configuration:
@@ -259,7 +259,7 @@ docker exec -it some-scylla supervisorctl restart scylla
 
 (without restarting *some-scylla* container)
 
-By default, audit messages are written to the same destination as ScyllaDB [logging](https://docs.scylladb.com/manual/stable/getting-started/logging.md), with `scylla-audit` as the process name.
+By default, audit messages are written to the same destination as ScyllaDB [logging](https://docs.scylladb.com/manual/branch-2026.3/getting-started/logging.md), with `scylla-audit` as the process name.
 
 Logging output example (CQL drop table):
 
@@ -381,5 +381,5 @@ The following example shows audit information in the regular ScyllaDB logs in th
 
 ## Additional Resources
 
-* [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md)
-* [Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md)
+* [Authorization](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md)
+* [Authentication](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authentication.md)

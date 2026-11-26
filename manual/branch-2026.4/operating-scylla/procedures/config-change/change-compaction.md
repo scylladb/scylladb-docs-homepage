@@ -24,7 +24,7 @@ CREATE TABLE nba.team_roster (
 ) WITH compaction = {'class': 'IncrementalCompactionStrategy'};
 ```
 
-1. Change the compaction strategy to a new one. If you are unsure of which strategy to use, refer to [Choose a Compaction Strategy](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md#which-strategy-is-best) for more information.
+1. Change the compaction strategy to a new one. If you are unsure of which strategy to use, refer to [Choose a Compaction Strategy](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md#which-strategy-is-best) for more information.
 
 ```shell
 ALTER TABLE nba.team_roster WITH compaction = {'class' :  'LeveledCompactionStrategy'}

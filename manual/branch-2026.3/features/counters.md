@@ -47,7 +47,7 @@ However, counters have limitations not present in other column types:
 * ScyllaDB does not support USING TIMESTAMP or USING TTL in the command to update a counter column.
 * Once deleted, counter column values **should** not be used again. If you reuse them, proper behavior is not guaranteed.
 * Counters cannot be set to a specific value other than when incrementing from 0 using the UPDATE command at initialization.
-* Updates are **not** [idempotent](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Idempotent). In the case of a write failure, the client cannot safely retry the request.
+* Updates are **not** [idempotent](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Idempotent). In the case of a write failure, the client cannot safely retry the request.
 
 ## Example:
 
@@ -86,5 +86,5 @@ Remember that once deleted, counter column values should not be used again. If y
 
 ## More Information
 
-* Read our [blog](http://www.scylladb.com/2017/04/04/counters/) on counters, or see the data type [description](https://docs.scylladb.com/manual/stable/cql/types.md#counters).
+* Read our [blog](http://www.scylladb.com/2017/04/04/counters/) on counters, or see the data type [description](https://docs.scylladb.com/manual/branch-2026.3/cql/types.md#counters).
 * [ScyllaDB University: Advanced Data Modeling lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/) - Covers advanced Data Modeling topics. We recommend that you start with the basic data modeling lesson first. It covers the application workflow, query analysis, denormalization, and more, providing practical hands-on examples.

@@ -44,7 +44,7 @@ Note that:
 - A LOGGED batch to a single partition will be converted to an UNLOGGED batch as an optimization.
 
 `BATCH` supports the `TIMESTAMP` option with the same semantics as the TIMESTAMP parameter in `UPDATE` statement.
-For more information on the `update_parameter` refer to the [UPDATE](https://docs.scylladb.com/manual/branch-2026.4/cql/dml.md#update-parameters) section.
+For more information on the `update_parameter` refer to the [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section.
 
 <a id="unlogged-batches"></a>
 
@@ -72,7 +72,7 @@ atomicity is always guaranteed by the underlying Raft consensus protocol, not by
 
 `COUNTER` batches are not supported with strongly consistent tables.
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
 
 Copyright
 

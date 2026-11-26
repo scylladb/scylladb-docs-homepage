@@ -40,8 +40,8 @@ index_property: OPTIONS = `map_literal`
               :| view_property
 ```
 
-where view_property is any [property](https://docs.scylladb.com/manual/branch-2026.4/cql/mv.md#mv-options) that can be used when creating
-a [materialized view](https://docs.scylladb.com/manual/branch-2026.4/features/materialized-views.md). The only exception is CLUSTERING ORDER BY,
+where view_property is any [property](https://docs.scylladb.com/manual/stable/cql/mv.md#mv-options) that can be used when creating
+a [materialized view](https://docs.scylladb.com/manual/stable/features/materialized-views.md). The only exception is CLUSTERING ORDER BY,
 which is not supported by secondary indexes.
 
 If the statement is provided with a materialized view property, it will not be applied to the index itself.
@@ -94,7 +94,7 @@ automatically at insertion time.
 
 ## Local Secondary Index
 
-[Local Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.4/features/local-secondary-indexes.md) is an enhancement of [Global Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.4/features/secondary-indexes.md), which allows ScyllaDB to optimize the use case in which the partition key of the base table is also the partition key of the index. Local Secondary Index syntax is the same as above, with extra parentheses on the partition key.
+[Local Secondary Indexes](https://docs.scylladb.com/manual/stable/features/local-secondary-indexes.md) is an enhancement of [Global Secondary Indexes](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md), which allows ScyllaDB to optimize the use case in which the partition key of the base table is also the partition key of the index. Local Secondary Index syntax is the same as above, with extra parentheses on the partition key.
 
 ```cql
 index_identifier: `column_name`
@@ -108,7 +108,7 @@ CREATE TABLE menus (location text, name text, price float, dish_type text, PRIMA
 CREATE INDEX ON menus((location),dish_type);
 ```
 
-More on [Local Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.4/features/local-secondary-indexes.md)
+More on [Local Secondary Indexes](https://docs.scylladb.com/manual/stable/features/local-secondary-indexes.md)
 
 <!-- Attempting to create an already existing index will return an error unless the ``IF NOT EXISTS`` option is used. If it -->
 <!-- is used, the statement will be a no-op if the index already exists. -->
@@ -274,7 +274,7 @@ columns** (the CassIO metadata-map pattern).
 
 Using an SAI class name on any other non-vector column (e.g., `text` or `int`) will
 result in an error. General SAI indexing is not supported by ScyllaDB; use a
-[secondary index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md) instead.
+[secondary index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md) instead.
 
 Example of the metadata-map rewrite:
 
@@ -294,7 +294,7 @@ CREATE INDEX ON my_table (ENTRIES(metadata_s));
 #### NOTE
 Full-text indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
 For the full list of unsupported ScyllaDB features, see the
-[Full-Text Search documentation](https://docs.scylladb.com/manual/branch-2026.4/features/fulltext-search.md).
+[Full-Text Search documentation](https://docs.scylladb.com/manual/stable/features/fulltext-search.md).
 
 ScyllaDB supports creating full-text indexes on text columns, enabling full-text search queries that rank results
 by relevance using the BM25 scoring algorithm. A full-text index is a custom index created using the `CUSTOM`
@@ -355,7 +355,7 @@ The analyzers differ in how they tokenize and normalize text:
 
 #### NOTE
 Pattern indexes are supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
-For the full description, see the [Pattern Search documentation](https://docs.scylladb.com/manual/branch-2026.4/features/pattern-search.md).
+For the full description, see the [Pattern Search documentation](https://docs.scylladb.com/manual/stable/features/pattern-search.md).
 
 A pattern index serves `LIKE` restrictions on a text column. Such a query does not need
 `ALLOW FILTERING`; if it is given, it is ignored and the index is still used.
@@ -398,7 +398,7 @@ that queries the column, not only the one the index was created for. Once the in
 
 `CREATE INDEX` returns a warning that summarizes these changes. To restore filtered `LIKE`, drop the
 index with [DROP INDEX](#drop-index-statement). For all the differences from a filtered
-`LIKE`, see [Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/branch-2026.4/features/pattern-search.md#pattern-search-indexed-vs-filtered).
+`LIKE`, see [Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/stable/features/pattern-search.md#pattern-search-indexed-vs-filtered).
 
 The following options are supported for pattern indexes:
 
@@ -424,7 +424,7 @@ the system stops the build process and cleans up any partially built data associ
 
 Dropping a [pattern index](#create-pattern-index-statement) restores filtered `LIKE` on its
 column: from then on, a `LIKE` on the column is a filter again, requires `ALLOW FILTERING`, and
-follows the rules of [LIKE Operator](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#like-operator).
+follows the rules of [LIKE Operator](https://docs.scylladb.com/manual/stable/cql/dml/select.md#like-operator).
 
 <!-- If the index does not exists, the statement will return an error, unless ``IF EXISTS`` is used in which case the -->
 <!-- operation is a no-op. -->
@@ -455,8 +455,8 @@ the new table holds before that position is skipped without an error.
 
 ## Additional Information
 
-* [Global Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.4/features/secondary-indexes.md)
-* [Local Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.4/features/local-secondary-indexes.md)
+* [Global Secondary Indexes](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md)
+* [Local Secondary Indexes](https://docs.scylladb.com/manual/stable/features/local-secondary-indexes.md)
 
 The following courses are available from ScyllaDB University:
 

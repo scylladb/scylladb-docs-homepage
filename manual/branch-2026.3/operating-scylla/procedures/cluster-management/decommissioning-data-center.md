@@ -6,7 +6,7 @@ removed does not hold any unique data.
 ## Prerequisites
 
 * Verify that there are no client writes to nodes in the data-center that is to be decommissioned.
-* Check the cluster status using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command to understand the cluster deployment.
+* Check the cluster status using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command to understand the cluster deployment.
 
 ```shell
 Datacenter: US-DC
@@ -78,7 +78,7 @@ UN  172.91.202.33  124.42 KB  256     32.6%             975edbm4-6564-63bd-san8-
    ```
 
    #### NOTE
-   If `rf_rack_valid_keyspaces` option is set, a tablet keyspace needs to use rack list replication factor, so that the DC can be removed. See [the conversion procedure](https://docs.scylladb.com/manual/stable/cql/ddl.md#conversion-to-rack-list-rf). In this case, to remove a datacenter:
+   If `rf_rack_valid_keyspaces` option is set, a tablet keyspace needs to use rack list replication factor, so that the DC can be removed. See [the conversion procedure](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#conversion-to-rack-list-rf). In this case, to remove a datacenter:
    ```shell
    cqlsh> DESCRIBE nba3
    cqlsh> CREATE KEYSPACE nba3 WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'US-DC' : ['RAC1', 'RAC2', 'RAC3'], 'ASIA-DC' : ['RAC4', 'RAC5'], 'EUROPE-DC' : ['RAC6', 'RAC7', 'RAC8']} AND tablets = { 'enabled': true };
@@ -89,7 +89,7 @@ UN  172.91.202.33  124.42 KB  256     32.6%             975edbm4-6564-63bd-san8-
    cqlsh> ALTER KEYSPACE nba3 WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'US-DC' : ['RAC1', 'RAC2', 'RAC3'], 'ASIA-DC' : [], 'EUROPE-DC' : ['RAC6', 'RAC7', 'RAC8']} AND tablets = { 'enabled': true };
    ```
 
-   Consider [upgrading rf_rack_valid_keyspaces option to enforce_rack_list option](https://docs.scylladb.com/manual/stable/architecture/tablets.md#keyspace-rf-rack-valid-to-enforce-rack-list) to ensure all tablet keyspaces use rack lists.
+   Consider [upgrading rf_rack_valid_keyspaces option to enforce_rack_list option](https://docs.scylladb.com/manual/branch-2026.3/architecture/tablets.md#keyspace-rf-rack-valid-to-enforce-rack-list) to ensure all tablet keyspaces use rack lists.
 
    If the keyspace uses rack list replication, update the replication factor in one `ALTER KEYSPACE` statement, under the following rules:
    : * Existing datacenters must keep their current replication factor.
@@ -127,13 +127,13 @@ UN  172.91.202.33  124.42 KB  256     32.6%             975edbm4-6564-63bd-san8-
 
    #### WARNING
    Removal of replicas from a datacenter cannot be aborted. To get back to the previous replication, wait until the ALTER KEYSPACE finishes and then add the replicas back by running another ALTER KEYSPACE statement.
-4. Run [nodetool decommission](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/decommission.md) on every node in the data center that is to be removed.
-   Refer to [Remove a Node from a ScyllaDB Cluster - Down Scale](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md) for further information.
+4. Run [nodetool decommission](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/decommission.md) on every node in the data center that is to be removed.
+   Refer to [Remove a Node from a ScyllaDB Cluster - Down Scale](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/remove-node.md) for further information.
 
    For example:
 
    If ASIA-DC is to be removed, then, execute the `nodetool decommission` command on all the nodes in this data-center.
-5. Verify that the data-center was successfully removed by using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
+5. Verify that the data-center was successfully removed by using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command.
 
    For example:
    ```shell

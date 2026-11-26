@@ -1,11 +1,11 @@
 # How to Safely Increase the Replication Factor
 
 A replication factor (RF) is configured per keyspace. You can change the RF
-using the [ALTER KEYSPACE](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#alter-keyspace-statement) command.
+using the [ALTER KEYSPACE](https://docs.scylladb.com/manual/stable/cql/ddl.md#alter-keyspace-statement) command.
 
 To increase the RF safely, ensure you follow the guidelines below.
 The guidelines differ depending on whether your a keyspace is tablets-based
-(the default) or has tablets disabled. See [Data Distribution with Tablets](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md)
+(the default) or has tablets disabled. See [Data Distribution with Tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md)
 for more information about tablets.
 
 ## Increasing the RF in Tablets-based Keyspaces
@@ -22,7 +22,7 @@ that changes the RF completes successfully.
 
 ## Increasing the RF in Keyspaces with Tablets Disabled
 
-If you [opted out of tablets when creating a keyspace](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md#tablets-enable-tablets),
+If you [opted out of tablets when creating a keyspace](https://docs.scylladb.com/manual/stable/architecture/tablets.md#tablets-enable-tablets),
 so your keyspace is vnodes-based, increasing the RF will impact data consistency.
 
 Data consistency in your cluster is effectively dropped by the difference
@@ -62,6 +62,6 @@ If you do not follow the procedure above, you may start reading stale or null da
 
 ## References
 
-* [Fault Tolerance](https://docs.scylladb.com/manual/branch-2026.4/architecture/architecture-fault-tolerance.md)
-* [Set the RF (first time)](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#create-keyspace-statement)
-* [Change the RF (increase or decrease)](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#alter-keyspace-statement)
+* [Fault Tolerance](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md)
+* [Set the RF (first time)](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-keyspace-statement)
+* [Change the RF (increase or decrease)](https://docs.scylladb.com/manual/stable/cql/ddl.md#alter-keyspace-statement)

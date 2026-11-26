@@ -93,4 +93,4 @@ For example:
 ## Additional Information
 
 * [Configure swap for ScyllaDB](https://github.com/scylladb/scylla/blob/master/dist/common/scripts/scylla_swap_setup)
-* [Setup Scripts](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md).
+* [Setup Scripts](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md).

@@ -18,7 +18,7 @@ executed. They do not retroactively validate existing keyspaces, tables, or
 previously completed writes.
 
 For the full list of configuration properties, including types, defaults, and
-liveness information, see [Configuration Parameters](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md).
+liveness information, see [Configuration Parameters](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md).
 
 <a id="guardrails-replication-factor"></a>
 
@@ -110,7 +110,7 @@ schema ready for future topology changes.
 
 The default configuration warns on `SimpleStrategy`, which is appropriate
 for most deployments. If you have existing keyspaces that use
-`SimpleStrategy`, see [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md)
+`SimpleStrategy`, see [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md)
 for the migration procedure.
 
 ### `replication_strategy_fail_list`
@@ -317,11 +317,11 @@ deployments. `COMPACT STORAGE` is a legacy feature that will be permanently
 removed in a future version of ScyllaDB. Set to `true` only if you have a specific,
 temporary need to create compact storage tables (e.g., compatibility with legacy
 applications during a migration). For details on the `COMPACT STORAGE` option, see
-[Compact Tables](https://docs.scylladb.com/manual/stable/cql/ddl.md#compact-tables) in the Data Definition documentation.
+[Compact Tables](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#compact-tables) in the Data Definition documentation.
 
 ## Additional References
 
-* [Consistency Level](https://docs.scylladb.com/manual/stable/cql/consistency.md)
-* [Data Definition (CREATE/ALTER KEYSPACE)](https://docs.scylladb.com/manual/stable/cql/ddl.md)
-* [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/stable/kb/rf-increase.md)
-* [Metrics Reference](https://docs.scylladb.com/manual/stable/reference/metrics.md)
+* [Consistency Level](https://docs.scylladb.com/manual/branch-2026.3/cql/consistency.md)
+* [Data Definition (CREATE/ALTER KEYSPACE)](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md)
+* [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/branch-2026.3/kb/rf-increase.md)
+* [Metrics Reference](https://docs.scylladb.com/manual/branch-2026.3/reference/metrics.md)

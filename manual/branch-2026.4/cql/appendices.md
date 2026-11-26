@@ -172,4 +172,4 @@ names as their name.
 
 © 2016, The Apache Software Foundation.
 
-[Apache Cassandra Query Language](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+[Apache Cassandra Query Language](https://docs.scylladb.com/manual/stable/cql/index.md)

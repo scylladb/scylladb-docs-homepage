@@ -35,7 +35,7 @@ path in the form of `s3://bucket-name/prefix/of/your/sstable/sstable-TOC.txt`
 or `gs://bucket-name/prefix/of/your/sstable/sstable-TOC.txt`. This also
 supports live object-storage SSTables; see [SSTables on Object Storage]().
 To use this feature, you need to have object-storage credentials set up in your
-environment. For more information, see [Configuring Object Storage](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#object-storage-configuration).
+environment. For more information, see [Configuring Object Storage](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-configuration).
 
 Additionally, you must ensure the tool is able to load the correct scylla.yaml
 file, which can be done using the `--scylla-yaml-file` parameter or by
@@ -184,7 +184,7 @@ Each SStable contains a schema in its Statistics component. This schema is incom
 ## SStable Content
 
 All operations target either one specific sstable component or all of them as a whole.
-For more information about the sstable components and the format itself, visit [SSTable Format](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/index.md).
+For more information about the sstable components and the format itself, visit [SSTable Format](https://docs.scylladb.com/manual/stable/architecture/sstable/index.md).
 
 On a conceptual level, the data in SStables is represented by objects called mutation fragments. There are the following kinds of fragments:
 
@@ -914,9 +914,9 @@ Alternatively, you can provide each key-value pair via a separate `--script-arg`
 --script-arg $key1=$value1 --script-arg $key2=$value2
 ```
 
-Command line arguments will be received by the [consume_stream_start()](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable-script-api.md#scylla-consume-stream-start-method) API method.
+Command line arguments will be received by the [consume_stream_start()](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable-script-api.md#scylla-consume-stream-start-method) API method.
 
-See the [scripting API](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable-script-api.md) for more details.
+See the [scripting API](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable-script-api.md) for more details.
 
 #### Examples
 
@@ -924,7 +924,7 @@ You can find example scripts at [https://github.com/scylladb/scylladb/tree/maste
 
 ### upgrade
 
-Offline, scylla-sstable variant of [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md).
+Offline, scylla-sstable variant of [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md).
 Rewrites the input SSTable(s) to the latest supported version and latest schema version.
 The SSTable version to be used can be overridden with the `--version` flag, allowing for switching sstables between all versions supported for writing (some SSTable versions are supported for reading only).
 
@@ -956,7 +956,7 @@ Similar to `scylla sstable dump-data --partition|--partition-file`, with some no
 * Also supports negative filters (keep all partitions except the those specified).
 
 The partition list can be provided either via the `--partition` command line argument, or via a file path passed to the the `--partitions-file` argument. The file should contain one partition key per line.
-Partition keys should be provided in the hex format, as produced by [scylla types serialize](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-types.md).
+Partition keys should be provided in the hex format, as produced by [scylla types serialize](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-types.md).
 
 With `--include`, only the specified partitions are kept from the input SSTable(s). With `--exclude`, the specified partitions are discarded and won’t be written to the output SSTable(s).
 It is possible that certain input SSTable(s) won’t have any content left after the filtering. These input SSTable(s) will not have a matching output SSTable.

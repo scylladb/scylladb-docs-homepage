@@ -11,11 +11,19 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
 
 ## Launching ScyllaDB on GCP
 
-1. Choose an instance type. See [Cloud Instance Recommendations for GCP](https://docs.scylladb.com/manual/branch-2026.4/getting-started/cloud-instance-recommendations.md#system-requirements-gcp) for the list of recommended instances.
+1. Choose an instance type. See [Cloud Instance Recommendations for GCP](https://docs.scylladb.com/manual/stable/getting-started/cloud-instance-recommendations.md#system-requirements-gcp) for the list of recommended instances.
 
-   Other instance types will work, but with lesser performance. If you choose an instance type other than the recommended ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md#system-configuration-scripts) script.
+   Other instance types will work, but with lesser performance. If you choose an instance type other than the recommended ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md#system-configuration-scripts) script.
 2. See the following table to obtain image information for the latest patch release.
-   For earlier releases, see [GCP Images](https://docs.scylladb.com/manual/branch-2026.4/reference/gcp-images.md)
+   For earlier releases, see [GCP Images](https://docs.scylladb.com/manual/stable/reference/gcp-images.md)
+   <!-- -*- mode: rst -*- -->
+
+   ### 2026.4.0
+
+   | Image Name                |            Image ID |
+   |---------------------------|---------------------|
+   | scylladb-2026-4-0         | 2549207730542188874 |
+   | scylladb-2026-4-0-aarch64 | 8890007548949010126 |
 
    For Arm-based machine types, such as C4A, use the arm64 image (its name ends in `-aarch64`).
 3. Launch a ScyllaDB instance on GCP with `gcloud` using the information from the previous step. Use the following syntax:
@@ -53,7 +61,7 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
    [Configuring ScyllaDB with User Data](#launch-on-gcp-user-data).
 4. (Optional) Configure firewall rules.
 
-   Ensure that all [ScyllaDB ports](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/security-checklist.md#networking-ports) are open.
+   Ensure that all [ScyllaDB ports](https://docs.scylladb.com/manual/stable/operating-scylla/security/security-checklist.md#networking-ports) are open.
 5. Connect to the servers:
    > > ```console
    > > gcloud compute ssh <name of the created instance>
@@ -88,7 +96,7 @@ The user data is a JSON or YAML document. The most commonly used options are:
 
 | Option                              | Type    | Default     | Description                                                                                                                                                                                                                                                                                                                                        |
 |-------------------------------------|---------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `scylla_yaml`                       | object  | `{}`        | Settings passed directly to `scylla.yaml` (for example `cluster_name` and `seed_provider`). See [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#admin-scylla-yaml).                                                                                                                                         |
+| `scylla_yaml`                       | object  | `{}`        | Settings passed directly to `scylla.yaml` (for example `cluster_name` and `seed_provider`). See [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-scylla-yaml).                                                                                                                                                |
 | `developer_mode`                    | boolean | `false`     | Enable developer mode (relaxes production checks; not recommended for production).                                                                                                                                                                                                                                                                 |
 | `post_configuration_script`         | string  | `""`        | A bash script (optionally base64-encoded) executed after ScyllaDB configuration completes.                                                                                                                                                                                                                                                         |
 | `post_configuration_script_timeout` | integer | `600`       | Timeout, in seconds, for `post_configuration_script`.                                                                                                                                                                                                                                                                                              |
@@ -157,7 +165,7 @@ network interface, and
 
 ## Next Steps
 
-* [Configure ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md)
+* [Configure ScyllaDB](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md)
 * Manage your clusters with [ScyllaDB Manager](https://manager.docs.scylladb.com/)
 * Monitor your cluster and data with [ScyllaDB Monitoring](https://monitoring.docs.scylladb.com/)
-* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md).
+* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md).

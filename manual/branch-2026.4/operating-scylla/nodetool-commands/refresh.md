@@ -4,14 +4,14 @@
 
 Copy the files to the table’s upload directory, by default it is located under `/var/lib/scylla/data/keyspace_name/table_name-UUID/upload`.
 
-If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/branch-2026.4/cql/mv.md) or [Secondary Indexes (SI)](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md), content view updates will be generated from the uploaded SSTables. Uploading MV or SI SSTables is not required and will fail.
+If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/stable/cql/mv.md) or [Secondary Indexes (SI)](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md), content view updates will be generated from the uploaded SSTables. Uploading MV or SI SSTables is not required and will fail.
 
 <a id="nodetool-refresh-local"></a>
 
 ## Local refresh
 
 #### NOTE
-This mode is not supported for [tablets](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md).
+This mode is not supported for [tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md).
 
 SSTables are copied from the upload directory to the table’s data directory and added to the table’s SSTable registry.
 
@@ -73,7 +73,7 @@ The `--scope` parameter allows for more advanced constraining of the subset of n
 
 ## Compatibility with Apache Cassandra SSTables
 
-Uploading SSTable from Apache Cassandra is supported. For the supported SSTable versions, see [ScyllaDB SSTable Format](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/index.md). Note that SSTables using Trie-Based Indexes are *not* supported.
+Uploading SSTable from Apache Cassandra is supported. For the supported SSTable versions, see [ScyllaDB SSTable Format](https://docs.scylladb.com/manual/stable/architecture/sstable/index.md). Note that SSTables using Trie-Based Indexes are *not* supported.
 
 ### Known Problems
 
@@ -94,4 +94,4 @@ sstables::malformed_sstable_exception Failed to read partition from SSTable .../
 Workaround: delete the Digest component (`me-*-big-Digest.crc32`) and remove it from the TOC file (`me-*-big-TOC.txt`) too.
 Before doing so, it is important to confirm that the cause of the digest mismatch is indeed a trailing 0-sized chunk, not a genuine corruption.
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

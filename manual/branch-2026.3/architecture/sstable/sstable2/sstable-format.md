@@ -10,7 +10,7 @@ own subset of SSTables. This internal sharding allows each core (shard)
 to work more efficiently, avoiding the complexity and delays of multiple
 cores competing for the same data
 
-[ScyllaDB Architecture](https://docs.scylladb.com/manual/stable/architecture/index.md)
+[ScyllaDB Architecture](https://docs.scylladb.com/manual/branch-2026.3/architecture/index.md)
 
 Copyright
 

@@ -8,11 +8,11 @@
 
 ## Synopsis
 
-It is not always clear under which circumstances data is deleted when using Time to Live (TTL) and [gc_grace_seconds](https://docs.scylladb.com/manual/stable/cql/ddl.md#gc-grace-seconds) arguments in table definitions.
+It is not always clear under which circumstances data is deleted when using Time to Live (TTL) and [gc_grace_seconds](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#gc-grace-seconds) arguments in table definitions.
 This article clarifies what may not be apparent.
 It corrects some assumptions you may have that are not exactly true.
 
-This document is about CQL’s [per-write TTL feature](https://docs.scylladb.com/manual/stable/cql/time-to-live.md),
+This document is about CQL’s [per-write TTL feature](https://docs.scylladb.com/manual/branch-2026.3/cql/time-to-live.md),
 the [per-row TTL](https://docs.scylladb.com/stable/cql/cql-extensions.html#per-row-ttl)
 feature behaves differently.
 
@@ -74,6 +74,6 @@ feature behaves differently.
 
 ## Additional Information
 
-* [How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/stable/kb/gc-grace-seconds.md)
-* [Expiring Data with Time to Live (TTL)](https://docs.scylladb.com/manual/stable/cql/time-to-live.md)
-* [CQL Reference: Table Options](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-general-options)
+* [How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/branch-2026.3/kb/gc-grace-seconds.md)
+* [Expiring Data with Time to Live (TTL)](https://docs.scylladb.com/manual/branch-2026.3/cql/time-to-live.md)
+* [CQL Reference: Table Options](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#create-table-general-options)

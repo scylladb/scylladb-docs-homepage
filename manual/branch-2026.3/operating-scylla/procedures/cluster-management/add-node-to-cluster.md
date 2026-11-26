@@ -1,7 +1,7 @@
 # Adding a New Node Into an Existing ScyllaDB Cluster (Out Scale)
 
 When you add a new node, other nodes in the cluster stream data to the new node. This operation is called bootstrapping and may
-be time-consuming, depending on the data size and network bandwidth. If using a [multi-availability-zone](https://docs.scylladb.com/manual/stable/faq.md#faq-best-scenario-node-multi-availability-zone), make sure they are balanced.
+be time-consuming, depending on the data size and network bandwidth. If using a [multi-availability-zone](https://docs.scylladb.com/manual/branch-2026.3/faq.md#faq-best-scenario-node-multi-availability-zone), make sure they are balanced.
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ be time-consuming, depending on the data size and network bandwidth. If using a 
 
 You cannot add new nodes to the cluster if any existing node is down.
 Before adding new nodes, check the status of the nodes in the cluster using
-[nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
+[nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command.
 
 ### Collect Cluster Information
 
@@ -25,9 +25,9 @@ Log into one of the nodes in the cluster to collect the following information:
 
 ## Procedure
 
-1. Install ScyllaDB on the nodes you want to add to the cluster. See [Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md) for further instructions. Follow the ScyllaDB installation procedure up to `scylla.yaml` configuration phase. Make sure that the ScyllaDB version of the new node is identical to the other nodes in the cluster.
+1. Install ScyllaDB on the nodes you want to add to the cluster. See [Getting Started](https://docs.scylladb.com/manual/branch-2026.3/getting-started/index.md) for further instructions. Follow the ScyllaDB installation procedure up to `scylla.yaml` configuration phase. Make sure that the ScyllaDB version of the new node is identical to the other nodes in the cluster.
 
-   If the node starts during the process, follow [What to do if a Node Starts Automatically](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/clear-data.md).
+   If the node starts during the process, follow [What to do if a Node Starts Automatically](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/clear-data.md).
 
    #### NOTE
    Make sure to use the same ScyllaDB **patch release** on the new/replaced node, to match the rest of the cluster. It is not recommended to add a new node with a different release to the cluster.
@@ -53,7 +53,7 @@ Log into one of the nodes in the cluster to collect the following information:
    > * **seeds** - Specifies the IP address of an existing node in the cluster. The new node will use this IP to connect to the cluster and learn the cluster topology and state.
 
 #### WARNING
-Adding a node in a new rack in an existing datacenter may violate the [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace) constraints of some keyspace.
+Adding a node in a new rack in an existing datacenter may violate the [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-RF-rack-valid-keyspace) constraints of some keyspace.
 
 If a keyspace uses tablets and contains a Materialized View or Secondary Index, or if the rf_rack_valid_keyspaces option is set,
 the invariant is enforced for the keyspace, and the new node will be rejected if adding it would violate the invariant.
@@ -70,7 +70,7 @@ the invariant is enforced for the keyspace, and the new node will be rejected if
    > ```
 
    > (with *some-scylla* container already running)
-2. Verify that the nodes were added to the cluster using [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command. Other nodes in the cluster will be streaming data to the new nodes, so the new nodes will be in Up Joining (UJ) status. Wait until the nodes’ status changes to Up Normal (UN) - the time depends on the data size and network bandwidth.
+2. Verify that the nodes were added to the cluster using [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command. Other nodes in the cluster will be streaming data to the new nodes, so the new nodes will be in Up Joining (UJ) status. Wait until the nodes’ status changes to Up Normal (UN) - the time depends on the data size and network bandwidth.
 
    **Example:**
 
@@ -95,7 +95,7 @@ the invariant is enforced for the keyspace, and the new node will be rejected if
    UN  192.168.1.202  91.11 KB   256     32.9%             125ed9f4-7777-1dbn-mac8-43fddce9123e   B1
    UN  192.168.1.203  124.42 KB  256     32.6%             675ed9f4-6564-6dbd-ca08-43fddce952de   B1
    ```
-3. When the new node status is Up Normal (UN), run the [nodetool cleanup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cleanup.md) command on all nodes in the cluster except for the new node that has just been added. Cleanup removes keys that were streamed to the newly added node and are no longer owned by the node.
+3. When the new node status is Up Normal (UN), run the [nodetool cleanup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/cleanup.md) command on all nodes in the cluster except for the new node that has just been added. Cleanup removes keys that were streamed to the newly added node and are no longer owned by the node.
 
    #### NOTE
    To prevent data resurrection, it’s essential to complete cleanup after adding nodes and before any node is decommissioned or removed.
@@ -106,5 +106,5 @@ the invariant is enforced for the keyspace, and the new node will be rejected if
    Tip 2: Postpone cleanup to low demand hours while ensuring it completes successfully before any node is decommissioned or removed.
 
    Tip 3: Run cleanup one node at a time, reducing overall cluster impact.
-4. Wait until the new node becomes UN (Up Normal) in the output of [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) on one of the old nodes.
+4. Wait until the new node becomes UN (Up Normal) in the output of [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) on one of the old nodes.
 5. If you are using ScyllaDB Monitoring, update the [monitoring stack](https://monitoring.docs.scylladb.com/stable/install/monitoring_stack.html#configure-scylla-nodes-from-files) to monitor it. If you are using ScyllaDB Manager, make sure you install the [Manager Agent](https://manager.docs.scylladb.com/stable/install-scylla-manager-agent.html), and Manager can access it.

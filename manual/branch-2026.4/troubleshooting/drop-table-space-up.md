@@ -10,7 +10,7 @@ This is caused by the fact that by default, ScyllaDB creates a snapshot of every
 
 ## Solution
 
-1. Locate `/var/lib/scylla/data/<your_keyspace>/<your_table>`. Inside that directory you will see a `snapshots` subdirectory with your dropped data. Follow the procedure to use nodetool to [remove the snapshot](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/delete-snapshot.md).
+1. Locate `/var/lib/scylla/data/<your_keyspace>/<your_table>`. Inside that directory you will see a `snapshots` subdirectory with your dropped data. Follow the procedure to use nodetool to [remove the snapshot](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/delete-snapshot.md).
 2. If you are deleting an entire keyspace, repeat the procedure above for every table inside the keyspace.
 3. This behavior is controlled by the `auto_snapshot` flag in `/etc/scylla/scylla.yaml`, which set to true by default. To stop taking snapshots on deletion, set that flag to false and restart all your scylla nodes.
 

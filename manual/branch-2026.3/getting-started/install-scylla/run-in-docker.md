@@ -6,7 +6,7 @@ a ScyllaDB container.
 Running ScyllaDB in Docker is the simplest way to experiment with ScyllaDB in
 non-production environments. In production environments, additional tuning is
 required to run a stateful container and maximize performance; follow
-[Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md).
+[Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md).
 
 ## Prerequisites
 
@@ -50,7 +50,7 @@ docker exec -it scylla cqlsh
 ## Useful Resources
 
 * [Documentation for the ScyllaDB Docker image](https://hub.docker.com/r/scylladb/scylla) on DockerHub.
-* [Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md)
+* [Best Practices for Running ScyllaDB on Docker](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/tips/best-practices-scylla-on-docker.md)
   in the ScyllaDB documentation.
 * [Quick Wins Lab](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/quick-wins-install-and-run-scylla/topic/quick-wins-lab/)
   using Docker on ScyllaDB University.

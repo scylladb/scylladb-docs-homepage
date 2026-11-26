@@ -9,8 +9,8 @@ For cluster-wide backup and restore, see the [ScyllaDB Manager](https://manager.
 
 ScyllaDB supports several restore methods. Choose the one that matches where your backup files are and whether the cluster topology changed since the backup was taken:
 
-* [Restore a cluster backup](#restore-cluster-backup) - restore a backup made with [nodetool cluster backup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/backup.md) into a tablet-based table. Each replica downloads the SSTables of its own tablets straight from object storage, with no streaming between nodes. Runs on a running cluster.
-* [Restore from object storage](#restore-object-storage) - restore SSTables backed up to S3-compatible object storage with [nodetool backup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/backup.md). Runs on a running cluster and works regardless of cluster topology changes since the backup.
+* [Restore a cluster backup](#restore-cluster-backup) - restore a backup made with [nodetool cluster backup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/backup.md) into a tablet-based table. Each replica downloads the SSTables of its own tablets straight from object storage, with no streaming between nodes. Runs on a running cluster.
+* [Restore from object storage](#restore-object-storage) - restore SSTables backed up to S3-compatible object storage with [nodetool backup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/backup.md). Runs on a running cluster and works regardless of cluster topology changes since the backup.
 * [Restore with load and stream](#restore-load-and-stream) - upload backed-up SSTable files to a running cluster; the data is streamed to the nodes owning it. Works regardless of cluster topology changes since the backup.
 * [Restore to an identical cluster](#restore-procedure) - copy snapshot files back in place and restart the nodes. Requires a cluster with the same number of nodes and the same token distribution as at the time of the backup, and each node must be restored from the backup of the **same node**. Suitable for vnode-based keyspaces only.
 
@@ -45,25 +45,25 @@ For example:
 `cqlsh -e "TRUNCATE mykeyspace.team_players"`
 
 #### NOTE
-If you are restoring [encrypted backup files](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest.md), make sure ScyllaDB is configured with the same keys that were used to encrypt the data before starting the restore process.
+If you are restoring [encrypted backup files](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md), make sure ScyllaDB is configured with the same keys that were used to encrypt the data before starting the restore process.
 
 <a id="restore-cluster-backup"></a>
 
 ## Restore a cluster backup
 
-Use this method to restore a backup made with [nodetool cluster backup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/backup.md#backup-native-backup) into a tablet-based table.
+Use this method to restore a backup made with [nodetool cluster backup](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/backup.md#backup-native-backup) into a tablet-based table.
 The restore runs as a topology operation: the replicas of each tablet download the SSTables that belong to the tablet
 directly from object storage and attach them, so no data is streamed between nodes. Repaired data that the backup
 stored as a single copy is restored to every replica it was taken from.
 
-The object storage endpoint must be configured on the nodes, as described in [Configuring Object Storage](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#object-storage-configuration).
+The object storage endpoint must be configured on the nodes, as described in [Configuring Object Storage](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-configuration).
 
 The backup holds the SSTables and their manifests only. It does not include the schema, so the keyspace and table
 must exist before the restore starts: recreate them from the schema backup taken with `DESC SCHEMA WITH INTERNALS AND PASSWORDS`,
 as described in the [prerequisites](#restore-prerequisites).
 
 There is no nodetool command for this restore yet. It is started through the REST API
-(see the [storage_service API reference](https://docs.scylladb.com/manual/branch-2026.4/reference/api/storage-service.md)), with
+(see the [storage_service API reference](https://docs.scylladb.com/manual/stable/reference/api/storage-service.md)), with
 `POST /storage_service/tablets/restore`. The query parameters are the destination `keyspace` and `table`
 and the `snapshot` name. The request body is a JSON array with one entry per datacenter the keyspace replicates to,
 each giving the `datacenter`, the `endpoint`, `bucket` and `prefix` of the backup location, and `manifests`,
@@ -84,7 +84,7 @@ the paths of the table’s backup manifests relative to that prefix.
    ```
 
    The call returns the ID of the restore task.
-3. Monitor the restore with the [nodetool tasks](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tasks/index.md) commands, for example
+3. Monitor the restore with the [nodetool tasks](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/index.md) commands, for example
    `nodetool tasks wait <task ID>` to wait for it to finish, or `nodetool tasks status <task ID>` to see its progress.
 
 #### NOTE
@@ -95,12 +95,12 @@ Bring the node back, or remove it from the cluster, and run the restore again.
 
 ## Restore from object storage
 
-Use this method to restore SSTables backed up to S3-compatible object storage with [nodetool backup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/backup.md). The node downloads the SSTables from the bucket and streams their contents to the nodes owning the data (load and stream), so the restore works regardless of cluster topology changes since the backup, and the cluster stays online.
+Use this method to restore SSTables backed up to S3-compatible object storage with [nodetool backup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/backup.md). The node downloads the SSTables from the bucket and streams their contents to the nodes owning the data (load and stream), so the restore works regardless of cluster topology changes since the backup, and the cluster stays online.
 
-The object storage endpoint must be configured on the nodes, as described in [Configuring Object Storage](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#object-storage-configuration).
+The object storage endpoint must be configured on the nodes, as described in [Configuring Object Storage](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-configuration).
 
 #### NOTE
-If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/branch-2026.4/features/materialized-views.md) or [Secondary Indexes (SI)](https://docs.scylladb.com/manual/branch-2026.4/features/secondary-indexes.md), view updates are generated automatically as the base table data is streamed. Restore the base table SSTables only; restoring MV or SI SSTables is not supported and will fail.
+If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/stable/features/materialized-views.md) or [Secondary Indexes (SI)](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md), view updates are generated automatically as the base table data is streamed. Restore the base table SSTables only; restoring MV or SI SSTables is not supported and will fail.
 
 **Procedure**
 
@@ -109,7 +109,7 @@ If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/
    ```shell
    aws s3 ls --recursive s3://bucket-foo/ks/cf/24601/ | awk '/-TOC.txt$/ { print $4 }' | sed 's|^ks/cf/24601/||'
    ```
-3. Run [nodetool restore](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/restore.md), passing the endpoint, bucket, prefix, target keyspace and table, and the list of prefix-relative TOC paths:
+3. Run [nodetool restore](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/restore.md), passing the endpoint, bucket, prefix, target keyspace and table, and the list of prefix-relative TOC paths:
    ```shell
    nodetool restore --endpoint s3.us-east-2.amazonaws.com --bucket bucket-foo --prefix ks/cf/24601 \
      --keyspace ks --table cf \
@@ -127,13 +127,13 @@ If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/
    nodetool restore --endpoint s3.us-east-2.amazonaws.com --bucket bucket-foo --prefix ks/cf/24601 \
      --keyspace ks --table cf --sstables-file-list sstables.list
    ```
-4. Monitor the restore. By default, the command waits for the restore to finish and reports its final status. With the `--nowait` option, it returns a task ID immediately; use the [nodetool tasks](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tasks/index.md) commands to track progress or cancel the operation.
+4. Monitor the restore. By default, the command waits for the restore to finish and reports its final status. With the `--nowait` option, it returns a task ID immediately; use the [nodetool tasks](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/index.md) commands to track progress or cancel the operation.
 
 **Speeding up the restore**
 
-A single `nodetool restore` invocation runs on one node, which downloads and streams all the listed SSTables. To parallelize the work, split the list of SSTables between the nodes and run `nodetool restore` on each of them. The `--scope` option (`node`, `rack`, `dc`, or `all`) constrains where each node streams the data, so that concurrent restores don’t stream the same partition to a replica more than once. See [nodetool restore](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/restore.md) for details on combining `--scope` with per-node SSTable lists.
+A single `nodetool restore` invocation runs on one node, which downloads and streams all the listed SSTables. To parallelize the work, split the list of SSTables between the nodes and run `nodetool restore` on each of them. The `--scope` option (`node`, `rack`, `dc`, or `all`) constrains where each node streams the data, so that concurrent restores don’t stream the same partition to a replica more than once. See [nodetool restore](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/restore.md) for details on combining `--scope` with per-node SSTable lists.
 
-With the `--primary-replica-only` option, each partition is streamed only to its primary replica. This reduces the amount of streamed data, but you **must** run a full cluster repair after the restore completes to replicate the data to the remaining replicas: for vnode-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/repair.md) on **every** node; for tablet-based keyspaces, run [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cluster/repair.md) on any single node.
+With the `--primary-replica-only` option, each partition is streamed only to its primary replica. This reduces the amount of streamed data, but you **must** run a full cluster repair after the restore completes to replicate the data to the remaining replicas: for vnode-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on **every** node; for tablet-based keyspaces, run [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md) on any single node.
 
 <a id="restore-load-and-stream"></a>
 
@@ -142,7 +142,7 @@ With the `--primary-replica-only` option, each partition is streamed only to its
 Use this method when the backed-up SSTable files are available on disk (for example, snapshot files copied back from external storage). The SSTables are read and their contents are streamed to the nodes owning the data, so the method works regardless of cluster topology changes since the backup. Each SSTable needs to be uploaded to only **one** node, any node, and the cluster stays online.
 
 #### NOTE
-If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/branch-2026.4/features/materialized-views.md) or [Secondary Indexes (SI)](https://docs.scylladb.com/manual/branch-2026.4/features/secondary-indexes.md), view updates are generated automatically as the base table data is streamed. Upload the base table SSTables only; uploading MV or SI SSTables is not supported and will fail.
+If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/stable/features/materialized-views.md) or [Secondary Indexes (SI)](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md), view updates are generated automatically as the base table data is streamed. Upload the base table SSTables only; uploading MV or SI SSTables is not supported and will fail.
 
 **Procedure**
 
@@ -154,12 +154,12 @@ If the table has any [Materialized Views (MV)](https://docs.scylladb.com/manual/
    ```
 
    You can distribute the backup files between several nodes to parallelize the restore; make sure each SSTable is uploaded to only one node.
-3. Run [nodetool refresh](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh.md) with the `--load-and-stream` option on each node holding uploaded files:
+3. Run [nodetool refresh](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/refresh.md) with the `--load-and-stream` option on each node holding uploaded files:
    ```shell
    nodetool refresh mykeyspace team_players --load-and-stream
    ```
 
-   See [Load and Stream](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh.md#nodetool-refresh-load-and-stream) for the `--scope` and `--primary-replica-only` options that constrain the set of target replicas. If `--primary-replica-only` is used, run a full cluster repair after the restore completes to replicate the data to the remaining replicas: for vnode-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/repair.md) on **every** node; for tablet-based keyspaces, run [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cluster/repair.md) on any single node.
+   See [Load and Stream](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/refresh.md#nodetool-refresh-load-and-stream) for the `--scope` and `--primary-replica-only` options that constrain the set of target replicas. If `--primary-replica-only` is used, run a full cluster repair after the restore completes to replicate the data to the remaining replicas: for vnode-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on **every** node; for tablet-based keyspaces, run [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md) on any single node.
 
 <a id="restore-procedure"></a>
 
@@ -176,12 +176,12 @@ The following procedure assumes data is restored to the same cluster that was ba
 The procedure restores each node using the backup file of the **same node**.
 If this is not the case, use the [load and stream](#restore-load-and-stream) method described above instead. It works regardless of topology changes, but is slower than restoring to an identical cluster.
 
-This method is suitable for vnode-based keyspaces only. For [tablet-based](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md) keyspaces, use the [object storage](#restore-object-storage) or [load and stream](#restore-load-and-stream) method instead.
+This method is suitable for vnode-based keyspaces only. For [tablet-based](https://docs.scylladb.com/manual/stable/architecture/tablets.md) keyspaces, use the [object storage](#restore-object-storage) or [load and stream](#restore-load-and-stream) method instead.
 
 Complete the [prerequisites](#restore-prerequisites) first.
 
 #### NOTE
-Best practise is **not** to restore [Materialized Views (MV)](https://docs.scylladb.com/manual/branch-2026.4/features/materialized-views.md) and [Secondary Indexes (SI)](https://docs.scylladb.com/manual/branch-2026.4/features/secondary-indexes.md) SSTables.
+Best practise is **not** to restore [Materialized Views (MV)](https://docs.scylladb.com/manual/stable/features/materialized-views.md) and [Secondary Indexes (SI)](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md) SSTables.
 It is recommended to:
 
 - Drop the MV and SI using DROP MATERIALIZED VIEW or DROP INDEX
@@ -190,7 +190,7 @@ It is recommended to:
 
 ### Repeat the following steps for each node in the cluster:
 
-1. Run the [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md) command to ensure the data is flushed to the SSTables
+1. Run the [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md) command to ensure the data is flushed to the SSTables
 2. Shut down the node
 
    Supported OS
@@ -254,7 +254,7 @@ It is recommended to:
    ```
 
    #### WARNING
-   Copying files into the table’s data directory is only allowed while the ScyllaDB service is **stopped**. To load SSTables into a running node, place them in the table’s `upload` directory and use [nodetool refresh](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh.md) instead.
+   Copying files into the table’s data directory is only allowed while the ScyllaDB service is **stopped**. To load SSTables into a running node, place them in the table’s `upload` directory and use [nodetool refresh](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/refresh.md) instead.
 7. If you have incremental backup files, copy them from the **backups** folder `/var/lib/scylla/data/keyspace_name/table_name-UUID/backups` to  the `/var/lib/scylla/data/keyspace_name/table_name-UUID/` directory
 
    For example:
@@ -279,4 +279,4 @@ It is recommended to:
 
    (with *some-scylla* container already running)
 
-After performing the above on all nodes, run a full cluster repair: for vnode-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/repair.md) on **every** node; for tablet-based keyspaces, run [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cluster/repair.md) on any single node; run both if you restored keyspaces of both kinds. This makes sure that the data is consistent on all nodes and between each node.
+After performing the above on all nodes, run a full cluster repair: for vnode-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on **every** node; for tablet-based keyspaces, run [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md) on any single node; run both if you restored keyspaces of both kinds. This makes sure that the data is consistent on all nodes and between each node.

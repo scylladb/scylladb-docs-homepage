@@ -36,4 +36,4 @@ Drop quarantined SSTables from multiple specific tables (mytable1, mytable2) in 
 > nodetool dropquarantinedsstables mykeyspace mytable1 mytable2
 ```
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

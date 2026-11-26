@@ -10,13 +10,13 @@ This procedure is for replacing one dead node. You can replace more than one dea
 
 Updating the cluster topology requires at least a quorum of nodes in a cluster to be available.
 If the quorum is lost, it must be restored before you change the cluster topology.
-See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 
-You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
+You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command.
 
 ### Verify the Node Status
 
-Verify the status of the node you want to replace using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
+Verify the status of the node you want to replace using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command.
 
 In the following example, the status of the node with the IP address 192.168.1.203 is
 Down (DN), and the node can be replaced.
@@ -53,7 +53,7 @@ Login to one of the nodes in the cluster with the UN status. Collect the followi
 
 ## Procedure
 
-1. Install ScyllaDB on a new node, see [Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md) for further instructions. Follow the ScyllaDB install procedure up to `scylla.yaml` configuration phase. Ensure that the ScyllaDB version of the new node is identical to the other nodes in the cluster.
+1. Install ScyllaDB on a new node, see [Getting Started](https://docs.scylladb.com/manual/branch-2026.3/getting-started/index.md) for further instructions. Follow the ScyllaDB install procedure up to `scylla.yaml` configuration phase. Ensure that the ScyllaDB version of the new node is identical to the other nodes in the cluster.
 
    #### NOTE
    Make sure to use the same ScyllaDB **patch release** on the new/replaced node, to match the rest of the cluster. It is not recommended to add a new node with a different release to the cluster.
@@ -152,7 +152,7 @@ Login to one of the nodes in the cluster with the UN status. Collect the followi
    > ```
 6. Run the `nodetool repair` command on the node that was replaced to make sure that the data is synced with the other nodes in the cluster. You can use [ScyllaDB Manager](https://manager.docs.scylladb.com/) to run the repair.
    > #### NOTE
-   > When [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/repair-based-node-operation.md) for **replace** is enabled, there is no need to rerun repair.
+   > When [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/repair-based-node-operation.md) for **replace** is enabled, there is no need to rerun repair.
 
 ## Setup RAID Following a Restart
 

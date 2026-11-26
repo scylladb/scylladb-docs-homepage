@@ -22,7 +22,7 @@ Use Flame Graphs when you:
    git clone https://github.com/brendangregg/FlameGraph
    cd FlameGraph
    ```
-2. Run the following perf commands, using [Map CPU to ScyllaDB Shards](https://docs.scylladb.com/manual/branch-2026.4/kb/map-cpu.md)  and [Using the perf utility with ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/kb/use-perf.md) for reference.
+2. Run the following perf commands, using [Map CPU to ScyllaDB Shards](https://docs.scylladb.com/manual/stable/kb/map-cpu.md)  and [Using the perf utility with ScyllaDB](https://docs.scylladb.com/manual/stable/kb/use-perf.md) for reference.
    ```shell
    sudo perf record --call-graph dwarf -C <CPU on which you are onrecording>
    sudo perf script | stackcollapse-perf.pl | flamegraph.pl > some_name.svg

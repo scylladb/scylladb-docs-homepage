@@ -34,7 +34,7 @@ If the dead node’s IP address is in the seeds list, it needs to be replaced.
 
 1. Perform steps 1-3 for all the nodes in the cluster:
    > 1. Promote an existing node from the cluster to be a seed node by adding the node IP to the seed list in the `scylla.yaml` file in `/etc/scylla/`.
-   > 2. Remove the dead node IP from the seeds providers list. See [Remove a Seed Node from Seed List](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-seed.md) for instructions.
+   > 2. Remove the dead node IP from the seeds providers list. See [Remove a Seed Node from Seed List](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/remove-seed.md) for instructions.
    > 3. Restart the node in the cluster by running the following command:
 
    > Supported OS
@@ -52,4 +52,4 @@ If the dead node’s IP address is in the seeds list, it needs to be replaced.
    > #### NOTE
    > This operation needs to be performed on all the nodes in the cluster. For this reason, you need to orchestrate the procedure so that only a small number of nodes are restarted simultaneously.
    > Use `nodetool status` to verify that restarted nodes are online before restarting more nodes. If too many nodes are offline, the cluster may suffer temporary service degradation or outage.
-2. Replace the dead node using the [dead node replacement procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md).
+2. Replace the dead node using the [dead node replacement procedure](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md).

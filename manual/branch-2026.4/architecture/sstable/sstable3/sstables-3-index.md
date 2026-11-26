@@ -1,6 +1,6 @@
 # SSTables 3.0 Index File Format
 
-The SSTables index file, together with the [SSTables summary file](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-summary.md) , provides a way to efficiently locate a partition with a specific key or some position within a partition in the [SSTables data file](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-data-file-format.md).
+The SSTables index file, together with the [SSTables summary file](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-summary.md) , provides a way to efficiently locate a partition with a specific key or some position within a partition in the [SSTables data file](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-data-file-format.md).
 
 Broadly, the index file lists the keys in the data file in order, giving for each key its position in the data file. The summary file, which is held in memory, contains samples of these keys, pointing to their position in the index file. So to efficiently search for a specific key, we use the summary to find a (relatively short) range of positions in the index file which may hold this key, then read this range from the index file and look for the specific key. The details on how to further pinpoint specific columns inside very long partitions are explained below.
 
@@ -8,12 +8,12 @@ Broadly, the index file lists the keys in the data file in order, giving for eac
 
 ### Building Blocks
 
-The [building blocks](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-data-file-format.md#sstables-3-building-blocks) of the new index format are same as those of the new data format.
+The [building blocks](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-data-file-format.md#sstables-3-building-blocks) of the new index format are same as those of the new data format.
 This includes `varints`, `optional` values and delta encoding.
 
 ### Description
 
-The index file format changes in v3.0 from the [old format](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable2/sstable-format.md) are moderate compared to how significantly has changed the data file layout. Still, there are some new fields and entities that are worth a detailed look. Such fields are the `offsets` array added to `index_entry` and `end_open_marker` structure added to `promoted_index_block`.
+The index file format changes in v3.0 from the [old format](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-format.md) are moderate compared to how significantly has changed the data file layout. Still, there are some new fields and entities that are worth a detailed look. Such fields are the `offsets` array added to `index_entry` and `end_open_marker` structure added to `promoted_index_block`.
 
 The index file is a long sequence of entries:
 
@@ -53,7 +53,7 @@ struct promoted_index {
 
 The first field, `partition_header_length`, stores the length of serialized partition key, partition tombstone and static row, if present, in the data file. This allows to skip over the partition prefix straight to the first clustered row.
 
-The deletion time structure is described in [SSTables 3.0 data file format](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-data-file-format.md) article.  It is simply a copy of the partition `deletion_time`, either live or a partition tombstone. We need this copy inside the index, because normally the deletion_time of a partition appears in its very beginning in the data file, but with the promoted index we intend to skip directly to the middle of a very large partition, so we don’t want to also read the beginning of the partition just to read its partition tombstone.
+The deletion time structure is described in [SSTables 3.0 data file format](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-data-file-format.md) article.  It is simply a copy of the partition `deletion_time`, either live or a partition tombstone. We need this copy inside the index, because normally the deletion_time of a partition appears in its very beginning in the data file, but with the promoted index we intend to skip directly to the middle of a very large partition, so we don’t want to also read the beginning of the partition just to read its partition tombstone.
 
 After deletion time mark, the number of promoted index blocks is stored as a varint. It can be zero for small partitions or >= 2 (apparently, it makes no sense to store a single promoted index block).
 
@@ -84,12 +84,12 @@ struct clustering_prefix {
 };
 ```
 
-The first byte, kind, stores the serialised ordinal of the value from the `bound_kind` enum (see [SSTables 3.0 data file format](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-data-file-format.md)) for the enum definition).
+The first byte, kind, stores the serialised ordinal of the value from the `bound_kind` enum (see [SSTables 3.0 data file format](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-data-file-format.md)) for the enum definition).
 It can be either 4 (for CLUSTERING) when corresponds to a row or one of 0, 1 and 2 (for `EXCL_END_BOUND`, `INCL_START_BOUND` or `EXCL_END_INCL_START_BOUNDARY` accordingly) for a range tombstone marker.
 
 The next field, `size`, is only present for range tombstone markers, i.e., when `kind != 4`. It contains the actual number of values in the clustering prefix (the prefix length). For rows, it is not needed as rows have all the clustering columns values (full clustering prefix) so the count is taken from the table schema definition.
 
-The sequence of clustering blocks is serialised in exactly the same way as clustering blocks in rows or range tombstone markers in data files. You can refer to the detailed description [here](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-data-file-format.md#sstables-3-building-blocks)
+The sequence of clustering blocks is serialised in exactly the same way as clustering blocks in rows or range tombstone markers in data files. You can refer to the detailed description [here](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-data-file-format.md#sstables-3-building-blocks)
 
 ### Other Promoted Index Blocks Fields
 

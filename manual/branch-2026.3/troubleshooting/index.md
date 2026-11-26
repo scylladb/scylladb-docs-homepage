@@ -1,20 +1,20 @@
 # Troubleshooting ScyllaDB
 
-ScyllaDB’s troubleshooting section contains articles which are targeted to pinpoint and answer problems with ScyllaDB. For broader issues and workarounds, consult the [Knowledge base](https://docs.scylladb.com/manual/stable/kb/index.md).
+ScyllaDB’s troubleshooting section contains articles which are targeted to pinpoint and answer problems with ScyllaDB. For broader issues and workarounds, consult the [Knowledge base](https://docs.scylladb.com/manual/branch-2026.3/kb/index.md).
 Keep your versions up-to-date. The two latest versions are supported. Also, always install the latest patches for your version.
 
 
             <div class="cell my-panel">
                 <div class="panel">
                     <h5 class="panel_\_title">Troubleshooting Topics</h5>
-            * [Errors and ScyllaDB Customer Support](https://docs.scylladb.com/manual/stable/troubleshooting/support/index.md)
-* [ScyllaDB Startup](https://docs.scylladb.com/manual/stable/troubleshooting/startup/index.md)
-* [ScyllaDB Cluster and Node](https://docs.scylladb.com/manual/stable/troubleshooting/cluster/index.md)
-* [Data Modeling](https://docs.scylladb.com/manual/stable/troubleshooting/modeling/index.md)
-* [Data Storage and SSTables](https://docs.scylladb.com/manual/stable/troubleshooting/storage/index.md)
-* [CQL errors](https://docs.scylladb.com/manual/stable/troubleshooting/CQL/index.md)
-* [ScyllaDB Monitoring and ScyllaDB Manager](https://docs.scylladb.com/manual/stable/troubleshooting/monitor/index.md)
-* [Installation and Removal](https://docs.scylladb.com/manual/stable/troubleshooting/install-remove/index.md)
+            * [Errors and ScyllaDB Customer Support](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/support/index.md)
+* [ScyllaDB Startup](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/startup/index.md)
+* [ScyllaDB Cluster and Node](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/cluster/index.md)
+* [Data Modeling](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/modeling/index.md)
+* [Data Storage and SSTables](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/storage/index.md)
+* [CQL errors](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/CQL/index.md)
+* [ScyllaDB Monitoring and ScyllaDB Manager](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/monitor/index.md)
+* [Installation and Removal](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/install-remove/index.md)
 
 </div></div>
 

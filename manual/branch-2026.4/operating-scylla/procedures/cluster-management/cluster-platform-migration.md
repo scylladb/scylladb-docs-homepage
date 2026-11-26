@@ -13,7 +13,7 @@ and ensures zero downtime for client applications.
 #### NOTE
 This procedure does **not** change the ScyllaDB software version. All nodes
 (both existing and new) must run the same ScyllaDB version. For software
-version upgrades, see [Upgrade](https://docs.scylladb.com/manual/branch-2026.4/upgrade/index.md).
+version upgrades, see [Upgrade](https://docs.scylladb.com/manual/stable/upgrade/index.md).
 
 ## Overview
 
@@ -359,7 +359,7 @@ If a decommission operation gets stuck:
    nodetool removenode <host-id>
    ```
 
-   See [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/remove-node.md)
+   See [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md)
    for more details.
 
 ### Full rollback
@@ -400,7 +400,7 @@ If nodes report different schema versions:
 
 ## Additional resources
 
-* [Adding a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
-* [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/remove-node.md)
-* [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/replace-running-node.md)
-* [Upgrade](https://docs.scylladb.com/manual/branch-2026.4/upgrade/index.md)
+* [Adding a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
+* [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md)
+* [Replace a Running Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-running-node.md)
+* [Upgrade](https://docs.scylladb.com/manual/stable/upgrade/index.md)

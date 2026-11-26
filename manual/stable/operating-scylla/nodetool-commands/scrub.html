@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/scrub.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/scrub.md" />
             
         
 
@@ -361,14 +361,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/nodetool-commands/scrub.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/scrub.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/scrub.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/scrub.md">https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/scrub.md</a>.
                         </div>
                     
                     
@@ -394,7 +394,7 @@ Remove faulty data, eliminate tombstoned rows that have surpassed the table’s 
 <span class="w">                </span><span class="o">[</span>--drop-unfixable-sstables<span class="o">]</span>
 <span class="w">                </span><span class="o">[</span>--<span class="o">]</span><span class="w"> </span>&lt;keyspace&gt;<span class="w"> </span><span class="o">[</span>&lt;table...&gt;<span class="o">]</span>
 
-Supported<span class="w"> </span>scrub<span class="w"> </span>modes:<span class="w"> </span>ABORT,<span class="w"> </span>SKIP,<span class="w"> </span>SEGREGATE,<span class="w"> </span>VALIDATE
+Supported<span class="w"> </span>scrub<span class="w"> </span>modes:<span class="w"> </span>VALIDATE,<span class="w"> </span>ABORT,<span class="w"> </span>SKIP,<span class="w"> </span>SEGREGATE
 Supported<span class="w"> </span>quarantine<span class="w"> </span>modes:<span class="w"> </span>INCLUDE,<span class="w"> </span>EXCLUDE,<span class="w"> </span>ONLY
 </pre></div>
 </div>
@@ -416,13 +416,16 @@ Supported<span class="w"> </span>quarantine<span class="w"> </span>modes:<span c
 (Deprecated, use <code class="docutils literal notranslate"><span class="pre">--mode</span></code> instead. default false)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">&lt;scrub_mode&gt;</span></code> / <code class="docutils literal notranslate"><span class="pre">--mode</span> <span class="pre">&lt;scrub_mode&gt;</span></code></p></td>
-<td><p>How to handle corrupt data (one of: ABORT|SKIP|SEGREGATE|VALIDATE, default ABORT; overrides <code class="docutils literal notranslate"><span class="pre">--skip-corrupted</span></code>)</p></td>
+<td><p>How to handle corrupt data (one of: VALIDATE|ABORT|SKIP|SEGREGATE, default VALIDATE; overrides <code class="docutils literal notranslate"><span class="pre">--skip-corrupted</span></code>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-q</span> <span class="pre">&lt;quarantine_mode&gt;</span></code> / <code class="docutils literal notranslate"><span class="pre">--quarantine-mode</span> <span class="pre">&lt;quarantine_mode&gt;</span></code></p></td>
 <td><p>How to handle quarantined SSTables (one of: INCLUDE|EXCLUDE|ONLY, default INCLUDE)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--drop-unfixable-sstables</span></code></p></td>
 <td><p>Drop unfixable SSTables instead of aborting the entire scrub (only valid with <code class="docutils literal notranslate"><span class="pre">--mode=SEGREGATE</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--quarantine-invalid-sstables</span> <span class="pre">&lt;true|false&gt;</span></code></p></td>
+<td><p>Should corrupt sstables be quarantined (default true, only valid with <code class="docutils literal notranslate"><span class="pre">--mode=VALIDATE</span></code>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -439,20 +442,22 @@ Supported<span class="w"> </span>quarantine<span class="w"> </span>modes:<span c
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>ABORT</p></td>
-<td><p>Abort scrubbing when the first validation error occurs. (default).</p></td>
+<tr class="row-even"><td><p>VALIDATE</p></td>
+<td><p>Read-only mode: report any corruptions found while scrubbing but do not fix them.
+Additionally, validate component integrity by verifying the stored digests if available.
+By default, corrupt SSTables are moved into a “quarantine” subdirectory so they will not be subject to compaction.
+(default).</p></td>
 </tr>
-<tr class="row-odd"><td><p>SKIP</p></td>
+<tr class="row-odd"><td><p>ABORT</p></td>
+<td><p>Abort scrubbing when the first validation error occurs.</p></td>
+</tr>
+<tr class="row-even"><td><p>SKIP</p></td>
 <td><p>Skip corrupted rows or partitions. (equivalent to the legacy –skip-corrupted option).
 <strong>Warning</strong>: This mode can cause data loss by removing invalid data portions or entire
 SSTables if severely corrupted (e.g., digest mismatch detected).</p></td>
 </tr>
-<tr class="row-even"><td><p>SEGREGATE</p></td>
+<tr class="row-odd"><td><p>SEGREGATE</p></td>
 <td><p>Sort out-of-order rows or partitions by segregating them into additional SSTables.</p></td>
-</tr>
-<tr class="row-odd"><td><p>VALIDATE</p></td>
-<td><p>Read-only mode: report any corruptions found while scrubbing but do not fix them.
-By default, corrupt SSTables are moved into a “quarantine” subdirectory so they will not be subject to compaction.</p></td>
 </tr>
 </tbody>
 </table>
@@ -493,7 +498,7 @@ By default, corrupt SSTables are moved into a “quarantine” subdirectory so t
 </pre></div>
 </div>
 <p>Scrub <strong>a</strong> specific table (mytable) in a keyspace (mykeyspace) in VALIDATE mode without taking a preliminary snapshot</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>VALIDATE<span class="w"> </span>--no-snapshot<span class="w"> </span>mykeyspace<span class="w"> </span>mytable
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>--no-snapshot<span class="w"> </span>mykeyspace<span class="w"> </span>mytable
 </pre></div>
 </div>
 <p>Scrub <strong>a</strong> specific table (mytable) in a keyspace (mykeyspace) in SEGREGATE mode dropping unfixable SSTables</p>
@@ -503,14 +508,40 @@ By default, corrupt SSTables are moved into a “quarantine” subdirectory so t
 </section>
 <section id="procedures-for-removing-bad-sstables">
 <h2>Procedures for Removing Bad SSTables<a class="headerlink" href="#procedures-for-removing-bad-sstables" title="Link to this heading">¶</a></h2>
-<section id="method-1-quarantine-and-drop">
-<h3>Method 1: Quarantine and Drop<a class="headerlink" href="#method-1-quarantine-and-drop" title="Link to this heading">¶</a></h3>
+<section id="method-1-replace-the-node">
+<h3>Method 1: Replace the node<a class="headerlink" href="#method-1-replace-the-node" title="Link to this heading">¶</a></h3>
+<p>Replacing the node is the only supported way to remove bad sstables.
+The replacing node streams its data from the other replicas, so this method carries no risk of data resurrection.</p>
+<p>See <a class="reference internal" href="../procedures/cluster-management/replace-running-node.html"><span class="doc">Replace a Running Node in a ScyllaDB Cluster</span></a>,
+or <a class="reference internal" href="../procedures/cluster-management/replace-dead-node.html"><span class="doc">Replace a Dead Node in a ScyllaDB Cluster</span></a> if the node is down.</p>
+</section>
+<section id="method-2-quarantine-and-drop">
+<h3>Method 2: Quarantine and Drop<a class="headerlink" href="#method-2-quarantine-and-drop" title="Link to this heading">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The last step of this procedure is unsafe and may lead to data resurrection.
+This can happen regardless of the consistency level and of the <code class="docutils literal notranslate"><span class="pre">repair</span></code> tombstone GC mode.
+Because of that, this method should only be used as a backup when no viable alternatives remain
+and with the full understanding of the risks it carries.</p>
+<p>The only exception are tables which never produce tombstones.
+For such sstables this procedure is safe.</p>
+</div>
 <p><strong>Step 1</strong>: Run scrub in VALIDATE mode to identify and quarantine corrupted SSTables:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>VALIDATE<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
 </pre></div>
 </div>
 <p>This will move corrupted SSTables to a <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory.
-The <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory is a sub-directory of the table’s respective data directory.</p>
+The <code class="docutils literal notranslate"><span class="pre">quarantine</span></code> directory is a sub-directory of the table’s respective data directory.
+Quarantined SSTables are handled distinctly:</p>
+<ul class="simple">
+<li><p>They participate in reads.</p></li>
+<li><p>They participate in streaming and data migration.</p></li>
+<li><p>They participate in repairs.</p></li>
+<li><p>They do not participate in compaction, but participate in overlap checks for
+the purpose of tombstone-gc.</p></li>
+</ul>
+<p>The purpose of the quarantine is to keep corrupt SSTables out of compaction, which can spread the compaction or can get in a fail-retry loop. It also makes corrupt SSTables easy to find and retrieve for investigation.</p>
+<p>It is possible to opt-out from quarantining SSTables by passing <code class="docutils literal notranslate"><span class="pre">--quarantine-invalid-sstables=false</span></code> to nodetool.</p>
 <p><strong>Step 2</strong> (Optional): Preserve quarantined SSTables for analysis:</p>
 <p>Before permanently dropping the corrupted SSTables, consider copying some or all of them aside,
 somewhere outside of the ScyllaDB data directory, so they are preserved for later investigation by the ScyllaDB R&amp;D team,
@@ -520,29 +551,10 @@ to determine the root cause of the corruption.</p>
 </pre></div>
 </div>
 <p><strong>Step 3</strong>: Drop the quarantined SSTables using <a class="reference internal" href="dropquarantinedsstables.html"><span class="doc">dropquarantinedsstables</span></a>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>dropquarantinedsstables<span class="w"> </span>--i-accept-data-resurrection-risk<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
 </pre></div>
 </div>
 <p>This permanently removes the quarantined SSTables from the specified table.</p>
-</section>
-<section id="method-2-segregate-with-drop-unfixable-flag">
-<h3>Method 2: Segregate with Drop Unfixable Flag<a class="headerlink" href="#method-2-segregate-with-drop-unfixable-flag" title="Link to this heading">¶</a></h3>
-<p>This approach attempts to fix what can be fixed and automatically drops SSTables that cannot be fixed.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method should be used for the subset of corruption issues where SEGREGATE mode can actually help: where corruption manifests at least partly in reordered partitions or rows.</p>
-</div>
-<p><strong>Step 1</strong>: Run scrub in SEGREGATE mode with the <code class="docutils literal notranslate"><span class="pre">--drop-unfixable-sstables</span></code> flag:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>nodetool<span class="w"> </span>scrub<span class="w"> </span>-m<span class="w"> </span>SEGREGATE<span class="w"> </span>--drop-unfixable-sstables<span class="w"> </span>keyspace_name<span class="w"> </span>table_name
-</pre></div>
-</div>
-<p>This will:</p>
-<ul class="simple">
-<li><p>Attempt to segregate and fix out-of-order data where possible</p></li>
-<li><p>Remove faulty data</p></li>
-<li><p>Automatically drop SSTables that cannot be fixed</p></li>
-<li><p>Create new properly ordered SSTables from the recoverable data</p></li>
-</ul>
 <p>Copyright</p>
 <p>© 2016, The Apache Software Foundation.</p>
 <p>Apache®, Apache Cassandra®, Cassandra®, the Apache feather logo and the Apache Cassandra® Eye logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. No endorsement by The Apache Software Foundation is implied by the use of these marks.</p>
@@ -582,7 +594,7 @@ to determine the root cause of the corruption.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool scrub&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/scrub%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool scrub&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/scrub%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -651,7 +663,7 @@ to determine the root cause of the corruption.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool scrub&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/scrub%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool scrub&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/scrub%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -678,8 +690,8 @@ to determine the root cause of the corruption.</p>
 <li><a class="reference internal" href="#quarantine-modes">QUARANTINE MODES</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 <li><a class="reference internal" href="#procedures-for-removing-bad-sstables">Procedures for Removing Bad SSTables</a><ul>
-<li><a class="reference internal" href="#method-1-quarantine-and-drop">Method 1: Quarantine and Drop</a></li>
-<li><a class="reference internal" href="#method-2-segregate-with-drop-unfixable-flag">Method 2: Segregate with Drop Unfixable Flag</a></li>
+<li><a class="reference internal" href="#method-1-replace-the-node">Method 1: Replace the node</a></li>
+<li><a class="reference internal" href="#method-2-quarantine-and-drop">Method 2: Quarantine and Drop</a></li>
 </ul>
 </li>
 </ul>
@@ -730,7 +742,7 @@ to determine the root cause of the corruption.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -744,13 +756,13 @@ to determine the root cause of the corruption.</p>
             
                 
                     <li>
-                        <a href="../../../branch-2026.4/operating-scylla/nodetool-commands/scrub.html">2026.4</a>
+                        <a href="scrub.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="scrub.html">2026.3</a>
+                        <a href="../../../branch-2026.3/operating-scylla/nodetool-commands/scrub.html">2026.3</a>
                     </li>
                 
             
@@ -797,17 +809,16 @@ to determine the root cause of the corruption.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -856,7 +867,6 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l3"><a class="reference internal" href="../procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -869,6 +879,7 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l3"><a class="reference internal" href="../security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -898,6 +909,7 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -935,6 +947,7 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/delete.html">DELETE</a></li>
@@ -951,6 +964,7 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -961,6 +975,7 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -988,6 +1003,7 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1109,13 +1125,13 @@ to determine the root cause of the corruption.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1196,7 +1212,7 @@ to determine the root cause of the corruption.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Jun 2026.
+                        Last updated on 23 Sep 2026.
                     
                 </div>
             

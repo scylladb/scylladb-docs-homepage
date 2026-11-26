@@ -28,20 +28,20 @@ For further information, see [AWS instance addressing](http://docs.aws.amazon.co
 ## Prerequisites
 
 * EC2 instance with SSH access.
-* Ensure that all the relevant [ports](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#cqlsh-networking) are open in your EC2 Security Group.
+* Ensure that all the relevant [ports](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#cqlsh-networking) are open in your EC2 Security Group.
 * Select a unique name as `cluster_name` for the cluster (identical for all the nodes in the cluster).
 * Choose one of the nodes to be a seed node. You’ll need to provide the IP of that node using
   the `seeds` parameter in the `scylla.yaml` configuration file on each node.
 
 ## Procedure
 
-1. Install ScyllaDB on the nodes you want to add to the cluster. See [Getting Started](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md) for installation instructions and
+1. Install ScyllaDB on the nodes you want to add to the cluster. See [Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md) for installation instructions and
    follow the procedure up to  the `scylla.yaml` configuration phase.
 
-   If the ScyllaDB service is already running (for example, if you are using [ScyllaDB AMI](https://www.scylladb.com/download/?platform=aws)), stop it before moving to the next step by using [these instructions](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/clear-data.md).
+   If the ScyllaDB service is already running (for example, if you are using [ScyllaDB AMI](https://www.scylladb.com/download/?platform=aws)), stop it before moving to the next step by using [these instructions](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/clear-data.md).
 2. On each node, edit the `scylla.yaml` file in `/etc/scylla/` to configure the parameters listed below. See the [EC2 Configuration Table](#table) above on how to configure your cluster.
    > * **cluster_name** - Set the selected cluster_name.
-   > * **seeds** - Specify the IP of the node you chose to be a seed node. See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/branch-2026.4/kb/seed-nodes.md) for details.
+   > * **seeds** - Specify the IP of the node you chose to be a seed node. See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/stable/kb/seed-nodes.md) for details.
    > * **listen_address** - IP address that ScyllaDB used to connect to other ScyllaDB nodes in the cluster.
    > * **endpoint_snitch** - Set the selected snitch.
    > * **rpc_address** - Address for CQL client connection.
@@ -65,7 +65,7 @@ For further information, see [AWS instance addressing](http://docs.aws.amazon.co
 
 ### EC2snitch’s Default DC and Rack Names, and how to Override DC Names
 
-EC2snitch and Ec2MultiRegionSnitch give each DC and rack default names. The region name is defined as the datacenter name, and [availability zones](https://docs.scylladb.com/manual/branch-2026.4/faq.md#faq-best-scenario-node-multi-availability-zone) are defined as racks within a datacenter. The rack names cannot be changed.
+EC2snitch and Ec2MultiRegionSnitch give each DC and rack default names. The region name is defined as the datacenter name, and [availability zones](https://docs.scylladb.com/manual/stable/faq.md#faq-best-scenario-node-multi-availability-zone) are defined as racks within a datacenter. The rack names cannot be changed.
 
 #### Example
 

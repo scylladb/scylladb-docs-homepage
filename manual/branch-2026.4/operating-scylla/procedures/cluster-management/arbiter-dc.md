@@ -14,7 +14,7 @@ Adding another DC would mitigate the risk of losing a quorum, but it comes
 with network and storage costs. To prevent the quorum loss with minimum costs,
 you can configure an arbiter (tie-breaker) DC.
 
-An arbiter DC is a datacenter with a [zero-token node](https://docs.scylladb.com/manual/branch-2026.4/architecture/zero-token-nodes.md)
+An arbiter DC is a datacenter with a [zero-token node](https://docs.scylladb.com/manual/stable/architecture/zero-token-nodes.md)
 – a node that doesn’t replicate any data but is only used for Raft quorum
 voting. An arbiter DC maintains the cluster quorum if one of the other DCs
 fails, while it doesn’t incur extra network and storage costs as it has no
@@ -23,17 +23,17 @@ user data.
 ## Adding an Arbiter DC
 
 To set up an arbiter DC, follow the procedure to
-[add a new datacenter to an existing cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md).
+[add a new datacenter to an existing cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md).
 When editing the *scylla.yaml* file, set the `join_ring` parameter to
 `false` following these guidelines:
 
 * Set `join_ring=false` before you start the node(s). If you set that
   parameter on a node that has already been bootstrapped and owns a token
   range, the node startup will fail. In such a case, you’ll need to
-  [decommission](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/decommissioning-data-center.md)
-  the node, [wipe it clean](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/clear-data.md),
+  [decommission](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/decommissioning-data-center.md)
+  the node, [wipe it clean](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/clear-data.md),
   and add it back to the arbiter DC properly following
-  the [procedure](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md).
+  the [procedure](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md).
 * As a rule, one node is sufficient for an arbiter to serve as a tie-breaker.
   In case you add more than one node to the arbiter DC, ensure that you set
   `join_ring=false` on all the nodes in that DC.
@@ -43,11 +43,11 @@ When editing the *scylla.yaml* file, set the `join_ring` parameter to
 * An arbiter DC has a replication factor of 0 (RF=0) for all keyspaces. You
   need to `ALTER` the keyspaces to update their RF.
 * Since zero-token nodes are ignored by drivers, you can skip
-  [configuring the client not to connect to the new DC](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md#add-dc-to-existing-dc-not-connect-clients).
+  [configuring the client not to connect to the new DC](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md#add-dc-to-existing-dc-not-connect-clients).
 
 ## References
 
-* [Zero-token Nodes](https://docs.scylladb.com/manual/branch-2026.4/architecture/zero-token-nodes.md)
-* [Raft Consensus Algorithm in ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/architecture/raft.md)
-* [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/handling-node-failures.md)
-* [Adding a New Data Center Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md)
+* [Zero-token Nodes](https://docs.scylladb.com/manual/stable/architecture/zero-token-nodes.md)
+* [Raft Consensus Algorithm in ScyllaDB](https://docs.scylladb.com/manual/stable/architecture/raft.md)
+* [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md)
+* [Adding a New Data Center Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md)

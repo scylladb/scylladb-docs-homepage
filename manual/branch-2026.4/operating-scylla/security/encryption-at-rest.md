@@ -8,8 +8,8 @@ meet regulatory requirements. In particular, it provides an additional level of
 protection for your data persisted in storage or its backups.
 
 When ScyllaDB’s Encryption at Rest is used together with Encryption in Transit
-([Node to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/node-node-encryption.md) and
-[Client to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/client-node-encryption.md)), you
+([Node to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/node-node-encryption.md) and
+[Client to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md)), you
 benefit from end to end data encryption.
 
 ## About Encryption at Rest
@@ -35,7 +35,7 @@ same time.
 ### When is Data Encrypted?
 
 As SSTables are immutable, they are encrypted only once, as a result of memtable
-flush, compaction, or upgrade (with [Nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md)). Similarly, system
+flush, compaction, or upgrade (with [Nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md)). Similarly, system
 artifacts are encrypted when they are written. Encryption configuration takes
 effect at the time of write, and is persisted in the given SSTable’s metadata
 file (`Scylla.db`), or the given system artifact’s (e.g. commit log’s)
@@ -408,7 +408,7 @@ and [generating a key](https://learn.microsoft.com/en-us/azure/key-vault/keys/qu
 
 ## Set the KMIP Host
 
-If you are using [KMIP](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Key-Management-Interoperability-Protocol-KMIP)
+If you are using [KMIP](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Key-Management-Interoperability-Protocol-KMIP)
 to encrypt tables or system information, add the KMIP server information to the
 `scylla.yaml` configuration file.
 
@@ -458,7 +458,7 @@ to encrypt tables or system information, add the KMIP server information to the
          keyfile: /etc/kmip/key.pem
    ```
 2. Save the file.
-3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 4. Restart the scylla-server service.
 
    Supported OS
@@ -603,7 +603,7 @@ Before configuring AWS KMS integration, ensure you have:
         environment variable.
       * If neither is defined, defaults to the `default` profile.
 2. Save the file.
-3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 4. Restart the scylla-server service.
 
    Supported OS
@@ -728,7 +728,7 @@ Before configuring GCP KMS integration, ensure you have:
       If running on GCE, it uses the metadata server to obtain credentials
       for the service account attached to the VM instance.
 2. Save the file.
-3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 4. Restart the scylla-server service.
 
    Supported OS
@@ -844,7 +844,7 @@ but this is offered only for testing purposes.
       with an assigned managed identity, ScyllaDB will be querying the IMDS
       for access tokens.
 2. Save the file.
-3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md)
+3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md)
 4. Restart the scylla-server service.
 
 Supported OS
@@ -1092,7 +1092,7 @@ Azure Key Provider
      azure_host: my-azure1
    ```
 2. Save the file.
-3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 4. Restart the scylla-server service.
 
    Supported OS
@@ -1146,7 +1146,7 @@ commands on each node:
    ```yaml
    allow_per_table_encryption: false
    ```
-2. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+2. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 3. Restart the scylla-server service.
 
    Supported OS
@@ -1244,7 +1244,7 @@ Azure Key Provider
 
 1. Create the keyspace if it doesn’t exist.
 2. Create the table using the following `CREATE TABLE` CQL statement, adding
-   any [additional options](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#create-table-statement).
+   any [additional options](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-statement).
 
    Local Key Provider
    ```cql
@@ -1514,7 +1514,7 @@ ALTER TABLE myks.mytable (pk text primary key, c0 int) WITH
 #### NOTE
 Existing SSTables will remain unencrypted until the next compaction
 re-creates them using the new encryption configuration. To encrypt them
-immediately instead, run [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) **on each node**:
+immediately instead, run [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) **on each node**:
 
 ```none
 nodetool upgradesstables --include-all-sstables <keyspace> <table>
@@ -1587,7 +1587,7 @@ remain encrypted with the old key until the next compaction automatically
 re-encrypts them with the new key. In the meantime, ScyllaDB will still be
 able to read them as long as the old key remains available. If the old key is
 gone, the old data will be unreadable. If you don’t want to wait for
-compaction, run [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) **on each node**:
+compaction, run [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) **on each node**:
 
 ```none
 nodetool upgradesstables --include-all-sstables <keyspace> <table>
@@ -1621,7 +1621,7 @@ If you disable encryption, the SSTables that existed before this change will
 remain encrypted until the next compaction. In the meantime, ScyllaDB will
 still be able to read them as long as the key remains available. If the key
 is gone, the old data will be unreadable. If you don’t want to wait for
-compaction, run [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) **on each node**:
+compaction, run [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) **on each node**:
 
 ```none
 nodetool upgradesstables --include-all-sstables <keyspace> <table>
@@ -1863,7 +1863,7 @@ Azure Key Provider
      azure_host: my-azure1
    ```
 2. Save the file.
-3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+3. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 4. Restart the scylla-server service.
 
    Supported OS
@@ -1915,7 +1915,7 @@ Local Key Provider
         key_provider: LocalFileSystemKeyProviderFactory
         secret_key_file: /etc/scylla/encryption_keys/secret_key_20250613
       ```
-   2. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+   2. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
    3. Restart the scylla-server service to load the updated configuration.
 
       Supported OS
@@ -1963,7 +1963,7 @@ docker exec -it some-scylla supervisorctl restart scylla
      }
    ;
    ```
-2. Optionally, force the upgrade of all SSTables by running [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) on each node.
+2. Optionally, force the upgrade of all SSTables by running [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) on each node.
    This will re-encrypt old SSTables with the new key. If you do not run
    this command, old SSTables will remain encrypted with the old key until
    they are naturally compacted.
@@ -2004,7 +2004,7 @@ KMIP Key Provider
      is picked up within about four times `key_cache_refresh` (2 minutes
      with the default of 30s), or
    * You can clear the key cache of each node manually by draining the node
-     with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md)
+     with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md)
      and then restarting the scylla-server service:
 
      Supported OS
@@ -2033,7 +2033,7 @@ docker exec -it some-scylla supervisorctl restart scylla
 
 (without restarting *some-scylla* container)
 
-1. Optionally, force the upgrade of all SSTables by running [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) on each node.
+1. Optionally, force the upgrade of all SSTables by running [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) on each node.
    This will re-encrypt old SSTables with the new key. If you do not run
    this command, old SSTables will remain encrypted with the old key until
    they are naturally compacted.
@@ -2071,7 +2071,7 @@ re-encrypted with the new key version when they are naturally compacted.
 If you prefer not to wait for this process to complete on its own, you can
 run the following steps on each node:
 
-1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 2. Restart the scylla-server service to discard any cached data encryption
    keys wrapped with the old key version:
 
@@ -2101,7 +2101,7 @@ docker exec -it some-scylla supervisorctl restart scylla
 
 (without restarting *some-scylla* container)
 
-1. Force the upgrade of all SSTables with [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) to re-encrypt
+1. Force the upgrade of all SSTables with [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) to re-encrypt
    them with the new key version:
    ```none
    nodetool upgradesstables --include-all-sstables
@@ -2131,7 +2131,7 @@ re-encrypted with the new key version when they are naturally compacted.
 If you prefer not to wait for this process to complete on its own, you can
 run the following steps on each node:
 
-1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 2. Restart the scylla-server service to discard any cached data encryption
    keys wrapped with the old key version:
 
@@ -2161,7 +2161,7 @@ docker exec -it some-scylla supervisorctl restart scylla
 
 (without restarting *some-scylla* container)
 
-1. Force the upgrade of all SSTables with [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) to re-encrypt
+1. Force the upgrade of all SSTables with [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) to re-encrypt
    them with the new key version:
    ```none
    nodetool upgradesstables --include-all-sstables
@@ -2193,7 +2193,7 @@ re-encrypted with the new key version when they are naturally compacted.
 If you prefer not to wait for this process to complete on its own, you can
 run the following steps on each node:
 
-1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/drain.md).
+1. Drain the node with [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md).
 2. Restart the scylla-server service to discard any cached data encryption
    keys wrapped with the old key version:
 
@@ -2223,7 +2223,7 @@ docker exec -it some-scylla supervisorctl restart scylla
 
 (without restarting *some-scylla* container)
 
-1. Force the upgrade of all SSTables with [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md) to re-encrypt
+1. Force the upgrade of all SSTables with [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md) to re-encrypt
    them with the new key version:
    ```none
    nodetool upgradesstables --include-all-sstables
@@ -2237,5 +2237,5 @@ data encrypted with that key will be unreadable.
 
 ## Additional Resources
 
-* [nodetool upgradesstables](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/upgradesstables.md)
-* [CREATE TABLE parameters](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#create-table-statement)
+* [nodetool upgradesstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/upgradesstables.md)
+* [CREATE TABLE parameters](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-statement)

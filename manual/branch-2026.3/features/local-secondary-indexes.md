@@ -1,6 +1,6 @@
 # Local Secondary Indexes
 
-Local Secondary Indexes is an enhancement to [Global Secondary Indexes](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md),
+Local Secondary Indexes is an enhancement to [Global Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.3/features/secondary-indexes.md),
 which allows ScyllaDB to optimize workloads where the partition key of the base table and the index are the same key.
 
 #### NOTE
@@ -103,8 +103,8 @@ When the same table has both LSI and GSI, ScyllaDB will automatically use the ri
 
 ## More information
 
-* [Global Secondary Indexes](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md)
-* [CQL Reference](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md) - CQL Reference for Secondary Indexes
+* [Global Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.3/features/secondary-indexes.md)
+* [CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md) - CQL Reference for Secondary Indexes
 
 The following courses are available from ScyllaDB University:
 

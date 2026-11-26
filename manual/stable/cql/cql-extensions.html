@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/cql/cql-extensions.md" />
             
         
 
@@ -349,14 +349,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/cql/cql-extensions.md"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md">https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/cql/cql-extensions.md">https://docs.scylladb.com/manual/branch-2026.4/cql/cql-extensions.md</a>.
                         </div>
                     
                     
@@ -654,8 +654,11 @@ a TRUE with an unknown value the result is also unknown: <code class="docutils l
 TRUE but <code class="docutils literal notranslate"><span class="pre">TRUE</span> <span class="pre">AND</span> <span class="pre">FALSE</span></code> is FALSE.</p>
 <p>Because <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">NULL</span></code> always evaluates to NULL, a <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> filter <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">NULL</span></code>
 matches no row (<em>matching</em> means evaluating to TRUE). It does <strong>not</strong> match
-rows where x is missing. If you really want to match rows with missing x,
-SQL offers a different syntax <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NULL</span></code> (and similarly, also <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code>), Scylla does not yet implement this syntax.</p>
+rows where x is missing. If you want to match rows with missing x, you can use
+<code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NULL</span></code> (and similarly, <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> for rows where x is present).
+On a regular or static column these operators require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code> to be specified;
+on a primary key column the rules differ per column kind. See
+<a class="reference internal" href="#is-null-and-is-not-null-in-where-clause">IS NULL and IS NOT NULL in WHERE clause</a>.</p>
 <p>In contrast, Cassandra is less consistent in its handling of nulls.
 The example <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">NULL</span></code> is considered an error, not a valid expression
 whose result is NULL.</p>
@@ -692,6 +695,114 @@ Scylla. The result of the pattern match is <code class="docutils literal notrans
 <li><p><a class="reference internal" href="../features/lwt.html"><span class="std std-doc">Lightweight Transactions</span></a></p></li>
 <li><p><a class="reference internal" href="../kb/lwt-differences.html"><span class="std std-doc">How does ScyllaDB LWT Differ from Apache Cassandra?</span></a></p></li>
 </ul>
+</section>
+<section id="is-null-and-is-not-null-in-where-clause">
+<h2>IS NULL and IS NOT NULL in WHERE clause<a class="headerlink" href="#is-null-and-is-not-null-in-where-clause" title="Link to this heading">¶</a></h2>
+<p>ScyllaDB supports <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> operators in the WHERE clause of SELECT
+statements. These operators allow filtering rows based on whether a column value is present or absent:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> returns rows where the column has no value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> returns rows where the column has a value.</p></li>
+</ul>
+<p>Whether these operators require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code> depends on the column:</p>
+<ul class="simple">
+<li><p>On a <strong>partition key column</strong>, <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> never requires <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>. Such a
+column can never be null, so the restriction matches every row and is dropped entirely.
+Being dropped, it also doesn’t count as restricting the partition key for the rules
+below. <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> on a partition key column matches no row, but it is still a
+restriction, so it requires <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>.</p></li>
+<li><p>On a <strong>clustering key column</strong>, both operators are ordinary restrictions on that column
+and neither is dropped, because a clustering key column <em>can</em> read as null - see below.
+They therefore need the partition key fully restricted by <code class="docutils literal notranslate"><span class="pre">=</span></code> or <code class="docutils literal notranslate"><span class="pre">IN</span></code> (a <code class="docutils literal notranslate"><span class="pre">token()</span></code> range
+is not enough) and every preceding clustering key column restricted; otherwise they
+require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>.</p></li>
+<li><p>On any <strong>other column</strong> - regular or static - both operators require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>,
+because every row’s value has to be inspected. This holds even when the column is
+indexed: the index is not consulted for a null check.</p></li>
+</ul>
+<p>A clustering key column reads as null in one case: a partition that holds a static row but
+no clustering rows is returned as a single row whose clustering key columns are all null.
+So on a clustering key column <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> selects exactly those static-only rows, and
+<code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> selects exactly the clustering rows. In a table with no static columns there
+are no such rows, which makes <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> match nothing and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> match everything -
+but the two are still ordinary restrictions there, subject to the same rules.</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span><span class="n">p</span> <span class="nb">int</span><span class="p">,</span> <span class="n">c</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="nb">int</span><span class="p">,</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">));</span>
+
+<span class="c1">-- no ALLOW FILTERING needed: p is a partition key column, so IS NOT NULL is</span>
+<span class="c1">-- dropped and this is a full scan</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+
+<span class="c1">-- no ALLOW FILTERING needed: the partition key is fixed, so IS [NOT] NULL on</span>
+<span class="c1">-- the clustering key is an ordinary clustering key restriction</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
+
+<span class="c1">-- ALLOW FILTERING needed: no partition key restriction to anchor the clustering</span>
+<span class="c1">-- key restriction</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">c</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+
+<span class="c1">-- ALLOW FILTERING needed: v is a regular column</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">events</span> <span class="k">WHERE</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">1</span> <span class="k">AND</span> <span class="n">v</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Like other Scylla filtering predicates, they can also be combined with additional
+restrictions on the same column. The result follows ordinary conjunction semantics:
+contradictory predicates such as <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NULL</span> <span class="pre">AND</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">3</span></code> match no rows, while
+compatible predicates such as <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span> <span class="pre">AND</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">3</span></code> work normally.</p>
+<blockquote>
+<div><p><strong>Note:</strong> In a materialized view definition <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> on a base table primary key column is a no-op,
+because a view row is only ever built from a base clustering row, and such a row has a value for every one
+of the base table’s primary key columns. This is why a view definition may name those columns with
+<code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> freely. On a regular base table column
+promoted into the view’s primary key it is <em>not</em> a no-op - see <strong>Usage in Materialized Views</strong> below.
+For the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> rules, which differ between partition key and clustering key columns, see the list
+above rather than this note.</p>
+</div></blockquote>
+<p>Unlike the other filtering operators, <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> may also be used on
+non-frozen collection columns, because they only test whether the column has a value
+rather than compare it against one. Note that a non-frozen collection with no elements
+is indistinguishable from a missing one, so an empty collection is considered null:</p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">tags</span> <span class="p">(</span><span class="n">id</span> <span class="nb">int</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">tags</span> <span class="k">set</span><span class="o">&lt;</span><span class="nb">text</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tags</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">'a'</span><span class="p">});</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tags</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">2</span><span class="p">,</span> <span class="p">{});</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">tags</span> <span class="k">WHERE</span> <span class="n">tags</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+
+ <span class="n">id</span> <span class="o">|</span> <span class="n">tags</span>
+<span class="c1">----+------</span>
+  <span class="mf">2</span> <span class="o">|</span> <span class="k">null</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-cql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">users</span> <span class="p">(</span><span class="n">id</span> <span class="nb">int</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="n">name</span> <span class="nb">text</span><span class="p">,</span> <span class="n">email</span> <span class="nb">text</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">users</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="s1">'Alice'</span><span class="p">,</span> <span class="s1">'alice@example.com'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">users</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mf">2</span><span class="p">,</span> <span class="s1">'Bob'</span><span class="p">);</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">email</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+
+ <span class="n">id</span> <span class="o">|</span> <span class="n">email</span> <span class="o">|</span> <span class="n">name</span>
+<span class="c1">----+-------+------</span>
+  <span class="mf">2</span> <span class="o">|</span>  <span class="k">null</span> <span class="o">|</span>  <span class="n">Bob</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">users</span> <span class="k">WHERE</span> <span class="n">email</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">ALLOW</span> <span class="k">FILTERING</span><span class="p">;</span>
+
+ <span class="n">id</span> <span class="o">|</span> <span class="n">email</span>             <span class="o">|</span> <span class="n">name</span>
+<span class="c1">----+-------------------+-------</span>
+  <span class="mf">1</span> <span class="o">|</span> <span class="n">alice</span><span class="o">@</span><span class="n">example</span><span class="mf">.</span><span class="n">com</span> <span class="o">|</span> <span class="n">Alice</span>
+</pre></div>
+</div>
+<p><strong>Usage in Materialized Views:</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> is also used in materialized view definitions to ensure that columns
+included in the view’s primary key are not null. This usage does not require <code class="docutils literal notranslate"><span class="pre">ALLOW</span> <span class="pre">FILTERING</span></code>.
+On a base table primary key column the restriction is a no-op, because a view row is only ever
+built from a base clustering row, and such a row has a value for every one of the base table’s
+primary key columns. On a regular base table column promoted into the view’s primary key it is
+not a no-op: it is what excludes the base rows
+where that column is null from the view.
+<code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> is not supported in materialized view definitions, and neither operator can be
+used in a view definition on a column that is not part of the view’s primary key - views
+do not support filtering on non-key columns.</p>
 </section>
 <section id="reducefunc-for-uda">
 <h2>REDUCEFUNC for UDA<a class="headerlink" href="#reducefunc-for-uda" title="Link to this heading">¶</a></h2>
@@ -942,7 +1053,7 @@ both features in the same table, or even the same row.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -1011,7 +1122,7 @@ both features in the same table, or even the same row.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page ScyllaDB CQL Extensions&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/cql/cql-extensions%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -1047,6 +1158,7 @@ both features in the same table, or even the same row.</p>
 </li>
 <li><a class="reference internal" href="#null-is-valid-input-for-lwt-if-clause-element-access"><code class="docutils literal notranslate"><span class="pre">NULL</span></code> is valid input for LWT IF clause element access</a></li>
 <li><a class="reference internal" href="#null-is-valid-input-for-lwt-if-clause-like-patterns"><code class="docutils literal notranslate"><span class="pre">NULL</span></code> is valid input for LWT IF clause <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> patterns</a></li>
+<li><a class="reference internal" href="#is-null-and-is-not-null-in-where-clause">IS NULL and IS NOT NULL in WHERE clause</a></li>
 <li><a class="reference internal" href="#reducefunc-for-uda">REDUCEFUNC for UDA</a><ul>
 <li><a class="reference internal" href="#behavior-of-bind-variables-references-with-the-same-name">Behavior of bind variables references with the same name</a></li>
 <li><a class="reference internal" href="#name-of-the-bind-variable-of-an-in-restriction">Name of the bind variable of an IN restriction</a></li>
@@ -1105,7 +1217,7 @@ both features in the same table, or even the same row.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -1119,13 +1231,13 @@ both features in the same table, or even the same row.</p>
             
                 
                     <li>
-                        <a href="../../branch-2026.4/cql/cql-extensions.html">2026.4</a>
+                        <a href="cql-extensions.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="cql-extensions.html">2026.3</a>
+                        <a href="../../branch-2026.3/cql/cql-extensions.html">2026.3</a>
                     </li>
                 
             
@@ -1172,17 +1284,16 @@ both features in the same table, or even the same row.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -1231,7 +1342,6 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../operating-scylla/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1244,6 +1354,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -1273,6 +1384,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../operating-scylla/admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -1310,6 +1422,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l2"><a class="reference internal" href="ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dml/delete.html">DELETE</a></li>
@@ -1326,6 +1439,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l2"><a class="reference internal" href="json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="service-levels.html">Service Levels</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -1336,6 +1450,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1363,6 +1478,7 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l2"><a class="reference internal" href="../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -1484,13 +1600,13 @@ both features in the same table, or even the same row.</p>
 <li class="toctree-l2"><a class="reference internal" href="../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/api/compaction-manager.html">Compaction Manager</a></li>

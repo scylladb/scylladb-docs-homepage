@@ -9,8 +9,8 @@ If you have tested your application with ScyllaDB and Kafka and want to publish 
 
 **Documentation**
 
-* [Shard-Aware Kafka Connector for ScyllaDB](https://docs.scylladb.com/manual/stable/using-scylla/integrations/sink-kafka-connector.md)
-* [ScyllaDB CDC Source Connector](https://docs.scylladb.com/manual/stable/using-scylla/integrations/scylla-cdc-source-connector.md)
+* [Shard-Aware Kafka Connector for ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/using-scylla/integrations/sink-kafka-connector.md)
+* [ScyllaDB CDC Source Connector](https://docs.scylladb.com/manual/branch-2026.3/using-scylla/integrations/scylla-cdc-source-connector.md)
 
 **Blog Posts**
 

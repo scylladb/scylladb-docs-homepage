@@ -9,7 +9,7 @@ To configure a zero-token node, set the `join_ring` parameter to `false`.
 
 You can use zero-token nodes in multi-DC deployments to reduce the risk of
 losing a quorum of nodes.
-See [Preventing Quorum Loss in Symmetrical Multi-DC Clusters](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/arbiter-dc.md) for details.
+See [Preventing Quorum Loss in Symmetrical Multi-DC Clusters](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/arbiter-dc.md) for details.
 
 Note that:
 
@@ -20,7 +20,7 @@ Note that:
   `nodetool repair`, and `nodetool cleanup` can be skipped as it does not
   affect zero-token nodes.
 * Racks consisting solely of zero-token nodes are not taken into consideration
-  when deciding whether a keyspace is [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace).
+  when deciding whether a keyspace is [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace).
   However, an RF-rack-valid keyspace must have the replication factor equal to 0
-  in an [arbiter DC](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/arbiter-dc.md).
+  in an [arbiter DC](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/arbiter-dc.md).
   Otherwise, it is RF-rack-invalid.

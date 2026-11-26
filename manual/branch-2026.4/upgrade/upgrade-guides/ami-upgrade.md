@@ -3,11 +3,11 @@
 ScyllaDB images are based on **Ubuntu 22.04**.
 
 If you’re using the ScyllaDB official image (recommended), follow the upgrade
-instructions on the **Debian/Ubuntu** tab in the [upgrade guide](https://docs.scylladb.com/manual/branch-2026.4/upgrade/index.md)
+instructions on the **Debian/Ubuntu** tab in the [upgrade guide](https://docs.scylladb.com/manual/stable/upgrade/index.md)
 for your ScyllaDB version.
 
 If you’re using your own image and have installed ScyllaDB packages for Ubuntu or Debian,
 follow the extended upgrade procedure on the **EC2/GCP/Azure Ubuntu image** tab
-in the [upgrade guide](https://docs.scylladb.com/manual/branch-2026.4/upgrade/index.md) for your ScyllaDB version.
+in the [upgrade guide](https://docs.scylladb.com/manual/stable/upgrade/index.md) for your ScyllaDB version.
 
 To check your ScyllaDB version, run the `scylla --version` command.

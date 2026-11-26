@@ -63,7 +63,7 @@ it could use LWT only for the read-modify-write operations.
 Therefore, Alternator must be explicitly configured to tell it which of the
 above assumptions it may make on the write workload. This configuration is
 mandatory, and described in the “Write isolation policies” section of
-[Alternator-specific APIs](https://docs.scylladb.com/manual/stable/alternator/new-apis.md). One of the options, `always_use_lwt`,
+[Alternator-specific APIs](https://docs.scylladb.com/manual/branch-2026.3/alternator/new-apis.md). One of the options, `always_use_lwt`,
 is always safe, but the other options result in significantly better write
 performance and should be considered when the workload involves pure writes
 (e.g., ingestion of new data) or if pure writes and read-modify-writes go
@@ -226,7 +226,7 @@ ATTACH SERVICE_LEVEL oltp TO bob;
 Note that `alternator_enforce_authorization` has to be enabled in ScyllaDB configuration.
 
 See [Authorization]() section to learn more about roles and authorization.
-See [Workload Prioritization](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md)
+See [Workload Prioritization](https://docs.scylladb.com/manual/branch-2026.3/features/workload-prioritization.md)
 to read about Workload Prioritization in detail.
 
 ## Metrics

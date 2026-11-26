@@ -9,13 +9,13 @@ This procedure describes the steps that need to be done when switching from one 
 Such a scenario can be when increasing the cluster and adding more data-centers in different locations.
 Snitches are responsible for specifying how ScyllaDB distributes the replicas. The procedure is dependent on any changes in the cluster topology.
 
-**Note** - Switching a snitch requires a full cluster shutdown, so It is highly recommended to choose the [right snitch](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/system-configuration/snitch.md) for your needs at the cluster setup phase.
+**Note** - Switching a snitch requires a full cluster shutdown, so It is highly recommended to choose the [right snitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md) for your needs at the cluster setup phase.
 
 For example:
 
-Original cluster: three nodes cluster on a single data-center with [Simplesnitch](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/system-configuration/snitch.md#snitch-simple-snitch) or [Ec2snitch](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/system-configuration/snitch.md#snitch-ec2-snitch).
+Original cluster: three nodes cluster on a single data-center with [Simplesnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-simple-snitch) or [Ec2snitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-ec2-snitch).
 
-Change to: three nodes in one data-center and one rack using a [GossipingPropertyFileSnitch](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/system-configuration/snitch.md#snitch-gossiping-property-file-snitch) or [Ec2multiregionsnitch](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/system-configuration/snitch.md#snitch-ec2-multi-region-snitch).
+Change to: three nodes in one data-center and one rack using a [GossipingPropertyFileSnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-gossiping-property-file-snitch) or [Ec2multiregionsnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-ec2-multi-region-snitch).
 
 ## Procedure
 

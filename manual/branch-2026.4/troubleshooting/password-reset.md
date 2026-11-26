@@ -7,7 +7,7 @@ If a node does not have maintenance socket available, node has to be restarted w
 ## Prerequisites
 
 Enable maintenance socket on the node. If already done, skip to the `Procedure` section.
-To check if the maintenance socket is enabled, see [Admin Tools: Maintenance Socket](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/maintenance-socket.md) for details.
+To check if the maintenance socket is enabled, see [Admin Tools: Maintenance Socket](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-socket.md) for details.
 
 1. Stop the ScyllaDB node.
 
@@ -16,7 +16,7 @@ sudo systemctl stop scylla-server
 ```
 
 1. Edit `/etc/scylla/scylla.yaml` file and configure the maintenance socket.
-   See [Admin Tools: Maintenance Socket](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/maintenance-socket.md) for details.
+   See [Admin Tools: Maintenance Socket](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-socket.md) for details.
 2. Start the ScyllaDB node.
 
 ```shell
@@ -49,4 +49,4 @@ Password:
 #### NOTE
 Enter the value of <new_password> password when prompted. The input is not displayed.
 
-[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)

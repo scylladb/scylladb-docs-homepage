@@ -90,7 +90,7 @@
          "operations":[
             {
                "method":"GET",
-               "summary":"Returns a list of the tokens endpoint mapping, provide keyspace and cf param to get tablet mapping",
+               "summary":"Returns the token to endpoint mapping: the vnode ring by default, or the per-table (tablet) mapping when keyspace and cf are given",
                "type":"array",
                "items":{
                   "type":"mapper"
@@ -102,7 +102,7 @@
                "parameters":[
                   {
                      "name":"keyspace",
-                     "description":"The keyspace to provide the tablet mapping for",
+                     "description":"The keyspace. Alone, it must be a vnode keyspace and the vnode ring is returned; tablet keyspaces also require cf",
                      "required":false,
                      "allowMultiple":false,
                      "type":"string",
@@ -110,7 +110,7 @@
                   },
                   {
                      "name":"cf",
-                     "description":"The table to provide the tablet mapping for",
+                     "description":"The table to provide the per-table mapping for; requires keyspace",
                      "required":false,
                      "allowMultiple":false,
                      "type":"string",
@@ -1012,7 +1012,7 @@
                   },
                   {
                      "name":"backup_source_location",
-                     "description":"Array of backup location objects. Currently, the array must contain exactly one entry.",
+                     "description":"Array of backup location objects, exactly one entry per datacenter the keyspace replicates to.",
                      "required":true,
                      "allowMultiple":false,
                      "type":"array",
@@ -1181,7 +1181,7 @@
          "operations":[
             {
                "method":"GET",
-               "summary":"Scrub (deserialize + reserialize at the latest version, resolving corruptions if any) the given keyspace. If columnFamilies array is empty, all CFs are scrubbed. Scrubbed CFs will be snapshotted first, if disableSnapshot is false. Scrub has the following modes: Abort (default) - abort scrub if corruption is detected; Skip (same as `skip_corrupted=true`) skip over corrupt data, omitting them from the output; Segregate - segregate data into multiple sstables if needed, such that each sstable contains data with valid order; Validate - read (no rewrite) and validate data, logging any problems found.",
+               "summary":"Scrub (deserialize + reserialize at the latest version, resolving corruptions if any) the given keyspace. If columnFamilies array is empty, all CFs are scrubbed. Scrubbed CFs will be snapshotted first, if disableSnapshot is false. Scrub has the following modes: Abort - abort scrub if corruption is detected; Skip (same as `skip_corrupted=true`) skip over corrupt data, omitting them from the output; Segregate - segregate data into multiple sstables if needed, such that each sstable contains data with valid order; Validate (default) - read (no rewrite) and validate data, logging any problems found.",
                "type": "long",
                "nickname":"scrub",
                "produces":[
@@ -1229,6 +1229,14 @@
                         "EXCLUDE",
                         "ONLY"
                      ],
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"quarantine_invalid_sstables",
+                     "description":"Controls whether invalid sstable identified by scrub (validate-mode) should be quarantined (default true)",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"boolean",
                      "paramType":"query"
                   },
                   {
@@ -3170,6 +3178,14 @@
                      "allowMultiple":false,
                      "type":"boolean",
                      "paramType":"query"
+                  },
+                  {
+                     "name":"grace_period_in_seconds",
+                     "description":"When disabling balancing, how long in-flight tablet transitions are given before those which can still be cancelled, tablet repairs included, are cancelled. A cancelled repair drops its tablets from the repair request without reporting them as failed. Cancelling a transition which was adding a replica leaves that tablet below its replication factor until balancing is enabled again. Transitions which cannot be cancelled, or which drain a node, are waited for. 0 cancels nothing. Defaults to the tablet_transition_abort_grace_period_in_seconds configuration option.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"long",
+                     "paramType":"query"
                   }
                ]
             }
@@ -3303,6 +3319,66 @@
          }]
       },
       {
+          "path":"/storage_service/tablets/backup",
+          "operations":[
+              {
+                  "method":"POST",
+                  "summary":"Starts copying SSTables from a specified keyspace across all nodes to a designated bucket in object storage",
+                  "type":"string",
+                  "nickname":"start_global_backup",
+                  "produces":[
+                      "application/json"
+                  ],
+                  "parameters":[
+                      {
+                         "name":"keyspace",
+                         "description":"Keyspace(s) in snapshot to backup. Multiple keyspaces can be provided using a comma-separated list. If omitted, snapshot all keyspaces.",
+                         "required":false,
+                         "allowMultiple":false,
+                         "type":"string",
+                         "paramType":"query"
+                      },
+                      {
+                         "name":"table",
+                         "description":"Table(s) in snapshot to backup. Multiple tables (in a single keyspace) can be provided using a comma-separated list. If omitted, snapshot all tables in the given keyspace(s).",
+                         "required":false,
+                         "allowMultiple":false,
+                         "type":"string",
+                         "paramType":"query"
+                      },
+                      {
+                          "name":"snapshot",
+                          "description":"Name of a snapshot to copy sstables from. If not existing, a new snapshot will be made",
+                          "required":true,
+                          "allowMultiple":false,
+                          "type":"string",
+                          "paramType":"query"
+                      },
+                      {
+                          "name":"move_files",
+                          "description":"Move component files instead of copying them",
+                          "required":false,
+                          "allowMultiple":false,
+                          "type":"boolean",
+                          "paramType":"query"
+                      },
+                      {
+                         "name":"backup_location",
+                         "description":"JSON array of backup location objects. Each object must contain: 'datacenter' (string), 'endpoint' (string), 'bucket' (string), and 'prefix' (string). 'manifests' must not be set.",
+                         "required":true,
+                         "allowMultiple":false,
+                         "type":"array",
+                         "items":{
+                            "$ref":"backup_location"
+                         },
+                         "paramType":"body"
+                      }
+                  ]
+              }
+          ]
+      },
+
+      {
          "path":"/storage_service/quiesce_topology",
          "operations":[
             {
@@ -3431,38 +3507,6 @@
                      "name":"cf",
                      "description":"column family name",
                      "required":false,
-                     "allowMultiple":false,
-                     "type":"string",
-                     "paramType":"query"
-                  }
-               ]
-            }
-         ]
-      },
-      {
-         "path":"/storage_service/logstor_info",
-         "operations":[
-            {
-               "method":"GET",
-               "summary":"Logstor segment information for one table",
-               "type":"table_logstor_info",
-               "nickname":"logstor_info",
-               "produces":[
-                  "application/json"
-               ],
-               "parameters":[
-                  {
-                     "name":"keyspace",
-                     "description":"The keyspace",
-                     "required":true,
-                     "allowMultiple":false,
-                     "type":"string",
-                     "paramType":"query"
-                  },
-                  {
-                     "name":"table",
-                     "description":"table name",
-                     "required":true,
                      "allowMultiple":false,
                      "type":"string",
                      "paramType":"query"
@@ -3623,6 +3667,14 @@
                      "required":false,
                      "allowMultiple":false,
                      "type":"string",
+                     "paramType":"query"
+                  },
+                  {
+                     "name":"accept_data_resurrection_risk",
+                     "description":"The drop quarantined SSTables operation is unsafe. Accept the risk of data resurrection. Required for the operation to execute.",
+                     "required":false,
+                     "allowMultiple":false,
+                     "type":"boolean",
                      "paramType":"query"
                   }
                ]
@@ -3908,47 +3960,6 @@
             }
         }
       },
-        "logstor_hist_bucket":{
-         "id":"logstor_hist_bucket",
-         "properties":{
-            "bucket":{
-               "type":"long"
-            },
-            "count":{
-               "type":"long"
-            },
-            "min_data_size":{
-               "type":"long"
-            },
-            "max_data_size":{
-               "type":"long"
-            }
-         }
-        },
-        "table_logstor_info":{
-         "id":"table_logstor_info",
-         "description":"Per-table logstor segment distribution",
-         "properties":{
-            "keyspace":{
-               "type":"string"
-            },
-            "table":{
-               "type":"string"
-            },
-            "compaction_groups":{
-               "type":"long"
-            },
-            "segments":{
-               "type":"long"
-            },
-            "data_size_histogram":{
-               "type":"array",
-               "items":{
-                  "$ref":"logstor_hist_bucket"
-               }
-            }
-         }
-        },
       "tablet_repair_result":{
         "id":"tablet_repair_result",
         "description":"Tablet repair result",
@@ -3991,6 +4002,10 @@
             "host_id":{
                "type":"string",
                "description":"The host ID"
+            },
+            "endpoint":{
+               "type":"string",
+               "description":"The node IP address. Empty if the address is not known."
             },
             "current_mode":{
                "type":"string",
@@ -4086,7 +4101,7 @@
       },
       "backup_location":{
          "id":"backup_location",
-         "description":"A backup location entry describing where to find SSTables",
+         "description":"A backup location entry describing where to find or place SSTables",
          "properties":{
             "datacenter":{
                "type":"string",
@@ -4100,12 +4115,16 @@
                "type":"string",
                "description":"The object store bucket name"
             },
+            "prefix":{
+               "type":"string",
+               "description":"The object store bucket prefix"
+            },
             "manifests":{
                "type":"array",
                "items":{
                   "type":"string"
                },
-               "description":"List of manifest file paths"
+               "description":"List of manifest file paths, relative to 'prefix'. Only used by tablet-aware restore; must not be set for backup."
             }
          }
       }

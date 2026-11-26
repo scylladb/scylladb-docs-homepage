@@ -1,6 +1,6 @@
 # Wasm support for user-defined functions
 
-This document describes the details of Wasm language support in user-defined functions (UDF). The language `wasm` is one of the possible languages to use, besides Lua, to implement these functions. To learn more about User-defined functions in ScyllaDB, click [here](https://docs.scylladb.com/manual/branch-2026.4/cql/functions.md#udfs).
+This document describes the details of Wasm language support in user-defined functions (UDF). The language `wasm` is one of the possible languages to use, besides Lua, to implement these functions. To learn more about User-defined functions in ScyllaDB, click [here](https://docs.scylladb.com/manual/stable/cql/functions.md#udfs).
 
 ## How to generate a correct Wasm UDF source code
 

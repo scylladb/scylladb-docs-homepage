@@ -63,4 +63,4 @@ This will send ScyllaDB only logs to `/var/log/scylla/scylla.log`
 
 Starting from ScyllaDB 1.3, [ScyllaDB Docker](https://hub.docker.com/r/scylladb/scylla/), you should use `docker logs` command to access ScyllaDB server logs.
 
-[Getting Started](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md)
+[Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md)

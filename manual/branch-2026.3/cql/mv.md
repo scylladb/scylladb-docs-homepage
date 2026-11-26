@@ -66,9 +66,9 @@ used. If it is used, the statement will be a no-op if the materialized view alre
 The select statement of a materialized view creation defines which of the base table columns are included in the view. That
 statement is limited in a number of ways:
 
-- The [selection](https://docs.scylladb.com/manual/stable/cql/dml/select.md#selection-clause) is limited to those that only select columns of the base table. In other
+- The [selection](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md#selection-clause) is limited to those that only select columns of the base table. In other
   words, you can’t use any function (aggregate or not), casting, term, etc. Aliases are also not supported. You can,
-  however, use \* as a shortcut to selecting all columns. Further, [static columns](https://docs.scylladb.com/manual/stable/cql/ddl.md#static-columns) cannot be
+  however, use \* as a shortcut to selecting all columns. Further, [static columns](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#static-columns) cannot be
   included in a materialized view (which means `SELECT *` isn’t allowed if the base table has static columns).
 - The `WHERE` clause has the following restrictions:
   - It cannot include any `bind_marker`.
@@ -77,9 +77,9 @@ statement is limited in a number of ways:
     `IS NOT NULL` restriction (or any other restriction, but they must have one).
   - They can also be restricted by relational operations (=, >, <).
 - The SELECT statement cannot include **any** of the following:
-  - An [ordering clause](https://docs.scylladb.com/manual/stable/cql/dml/select.md#ordering-clause)
-  - A [limit](https://docs.scylladb.com/manual/stable/cql/dml/select.md#limit-clause) clause
-  - An [ALLOW FILTERING](https://docs.scylladb.com/manual/stable/cql/dml/select.md#allow-filtering) clause.
+  - An [ordering clause](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md#ordering-clause)
+  - A [limit](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md#limit-clause) clause
+  - An [ALLOW FILTERING](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md#allow-filtering) clause.
 
 <a id="mv-primary-key"></a>
 
@@ -135,7 +135,7 @@ CREATE MATERIALIZED VIEW mv1 AS
 ## MV Options
 
 A materialized view is internally implemented by a table, and as such, creating a MV allows the [same options than
-creating a table](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-options).
+creating a table](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#create-table-options).
 
 Additionally, the following ScyllaDB-specific options are supported:
 
@@ -153,7 +153,7 @@ After creation, you can alter the options of a materialized view using the `ALTE
 alter_materialized_view_statement: ALTER MATERIALIZED VIEW `view_name` WITH `table_options`
 ```
 
-The options that can be updated with an ALTER statement are the same as those used with a CREATE statement (see [Create table options](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-options)).
+The options that can be updated with an ALTER statement are the same as those used with a CREATE statement (see [Create table options](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#create-table-options)).
 
 <a id="drop-materialized-view-statement"></a>
 
@@ -168,7 +168,7 @@ drop_materialized_view_statement: DROP MATERIALIZED VIEW [ IF EXISTS ] `view_nam
 If the materialized view does not exist, the statement will return an error unless `IF EXISTS` is used, in which case
 the operation is a no-op.
 
-* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
 
 Copyright
 

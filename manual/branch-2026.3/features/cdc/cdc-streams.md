@@ -3,7 +3,7 @@
 Streams are partitions in CDC log tables. They are identified by their keys: *stream identifiers*.
 When you perform a base table write, ScyllaDB chooses a stream ID for the corresponding CDC log entries based on two things:
 
-* in a vnode-based keyspace, the currently operating *CDC generation* ([CDC Stream Changes](https://docs.scylladb.com/manual/stable/features/cdc/cdc-stream-changes.md)),
+* in a vnode-based keyspace, the currently operating *CDC generation* ([CDC Stream Changes](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-stream-changes.md)),
 * in a tablets-based keyspace, the current stream set associated with the base table,
 * the base write’s partition key.
 

@@ -1,6 +1,6 @@
 # Configure ScyllaDB
 
-System configuration steps are performed automatically by the ScyllaDB RPM and deb packages. For information on getting started with ScyllaDB, see [Getting Started](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md).
+System configuration steps are performed automatically by the ScyllaDB RPM and deb packages. For information on getting started with ScyllaDB, see [Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md).
 
 All ScyllaDB AMIs and Docker images are pre-configured by a script with the following steps. This document is provided as a reference.
 
@@ -101,7 +101,7 @@ On the ScyllaDB AMI, the RAID configuration is handled automatically in the `/us
 
 ## CPU Pinning
 
-When installing ScyllaDB, it is highly recommended to use the [scylla_setup](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-configuration.md) script.
+When installing ScyllaDB, it is highly recommended to use the [scylla_setup](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md) script.
 ScyllaDB should not share CPUs with any CPU consuming process. In addition, when running ScyllaDB on AWS, we recommend pinning all NIC IRQs to CPU0 (due to the same reason). As a result, ScyllaDB should be prevented from running on CPU0 and its hyper-threading siblings. To verify that ScyllaDB is pinning CPU0, use the command below:
 If the node has four or fewer CPUs, don’t use this option.
 
@@ -125,11 +125,11 @@ Example output:
 > * `--tune net`
 > * `--nic <your network interface name>`
 
-See [Seastar Perftune](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/perftune.md) for details.
+See [Seastar Perftune](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/perftune.md) for details.
 
 ## Configuring ScyllaDB
 
-Configuration for ScyllaDB itself is in the [ScyllaDB Configuration](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#admin-scylla-configuration) section of the administration guide.
+Configuration for ScyllaDB itself is in the [ScyllaDB Configuration](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-scylla-configuration) section of the administration guide.
 
 ## Development System Configuration
 
@@ -150,6 +150,6 @@ Huge page configuration is written to `/etc/sysconfig/scylla-server` by the scri
 
 ## Related Topics
 
-[System Limits](https://docs.scylladb.com/manual/branch-2026.4/kb/system-limits.md) - outlines the system limits which should be set or removed.
+[System Limits](https://docs.scylladb.com/manual/stable/kb/system-limits.md) - outlines the system limits which should be set or removed.
 
-[Getting Started](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md)
+[Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md)

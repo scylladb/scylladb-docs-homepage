@@ -12,7 +12,7 @@ How is it different?
 * ScyllaDB does not store  hints for lightweight transaction writes, since this is redundant as all such writes are already present in system.paxos table.
 * ScyllaDB supports arithmetic `SET` operations (`col = col + value` and `col = col - value`) on non-counter numeric columns inside LWT conditional updates. Cassandra does not support this syntax.
 
-More on [Lightweight Transactions (LWT)](https://docs.scylladb.com/manual/stable/features/lwt.md)
+More on [Lightweight Transactions (LWT)](https://docs.scylladb.com/manual/branch-2026.3/features/lwt.md)
 
 ## Additional Notes
 

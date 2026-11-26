@@ -8,7 +8,7 @@ This document focuses on enumerating the available tools and information sources
 
 The most obvious source of information to find out more about why ScyllaDB is misbehaving.
 On production systems, ScyllaDB logs to syslog; thus logs can usually be viewed via `journalctl`.
-See [Logging](https://docs.scylladb.com/manual/branch-2026.4/getting-started/logging.md) on more information on how to access the logs.
+See [Logging](https://docs.scylladb.com/manual/stable/getting-started/logging.md) on more information on how to access the logs.
 
 ScyllaDB has the following log levels: `trace`, `debug`, `info`, `warn`, `error`.
 By default only logs with level `info` or above are logged. Some administrators might even set this to `warn` to reduce the amount of logs.
@@ -51,19 +51,19 @@ See [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/stable/) fo
 Tracing allows you to retrieve the internal log of events happening in the context of a single query.
 Therefore, tracing is only useful to diagnose problems related to a certain query and cannot be used to diagnose generic problems.
 That said, when it comes to diagnosing problems with a certain query, tracing is an excellent tool, allowing you to have a peek at what happens when that query is processed, including the timestamp of each event.
-For more details, see [Tracing](https://docs.scylladb.com/manual/branch-2026.4/using-scylla/tracing.md).
+For more details, see [Tracing](https://docs.scylladb.com/manual/stable/using-scylla/tracing.md).
 
 ## Nodetool
 
 Although `nodetool` is primarily an administration tool, it has various commands that retrieve and display useful information about the state of a certain ScyllaDB node.
 Look for commands with “stats”, “info”, “describe”, “get”, “histogram” in their names.
-For a comprehensive list of all available nodetool commands, see the [Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md).
+For a comprehensive list of all available nodetool commands, see the [Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md).
 
 ## REST API
 
 ScyllaDB has a REST API which is a superset of all `nodetool` commands, in the sense that it is the backend serving all of them.
 It has many more endpoints, many of which can supply valuable information about the internal state of ScyllaDB.
-For more information, see [REST API](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/rest.md).
+For more information, see [REST API](https://docs.scylladb.com/manual/stable/operating-scylla/rest.md).
 
 ## System Tables
 
@@ -84,8 +84,8 @@ The diagnostics is dumped on every shard. The diagnostics dump of a shard has mu
 ScyllaDB has various other tools, mainly to work with sstables.
 If you are diagnosing a problem that is related to sstables misbehaving or being corrupt, you may find these useful:
 
-* [ScyllaDB SStable](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-sstable.md)
-* [ScyllaDB Types](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/scylla-types.md)
+* [ScyllaDB SStable](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md)
+* [ScyllaDB Types](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-types.md)
 
 ## GDB
 

@@ -17,7 +17,7 @@ When setting up a new cluster, use the maintenance socket approach to create the
 
 If no superuser account exists in the cluster, which is the case for new clusters, you can create a superuser using the ScyllaDB Maintenance Socket.
 In order to do that, the node must have the maintenance socket enabled.
-See [Admin Tools: Maintenance Socket](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-socket.md).
+See [Admin Tools: Maintenance Socket](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/maintenance-socket.md).
 
 To create a superuser using the maintenance socket, you should:
 

@@ -2,7 +2,7 @@
 
 There are many ways to configure IP addresses in scylla.yaml. Setting the IP addresses incorrectly, can yield less than optimal results. This article focuses on configuring the addresses which are vital to network communication.
 
-This article contains examples of the different ways to configure networking in scylla.yaml. The entire scope for address configuration is in the [Admin guide](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#admin-address-configuration-in-scylla).
+This article contains examples of the different ways to configure networking in scylla.yaml. The entire scope for address configuration is in the [Admin guide](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-address-configuration-in-scylla).
 
 As these values depend on a particular network configuration in your setup there are a few ways to configure the address parameters. In the examples below, we will provide instructions for the most common use cases (all in the resolution of a single ScyllaDB node).
 
@@ -60,4 +60,4 @@ endpoint_snitch: no restrictions
 
 ## Additional References
 
-[Administration Guide](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md) - User guide for ScyllaDB Administration
+[Administration Guide](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md) - User guide for ScyllaDB Administration

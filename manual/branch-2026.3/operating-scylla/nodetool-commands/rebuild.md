@@ -8,11 +8,11 @@ If `source-dc-name` is provided, ScyllaDB will stream data only from nodes in th
 Otherwise, an alternative datacenter that lost no nodes will be considered, and if none exist, all datacenters will be considered.
 Use the `--force` option to enforce rebuild using the source datacenter, even if it is unsafe to do so.
 
-When `rebuild` is enabled in [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/repair-based-node-operation.md),
+When `rebuild` is enabled in [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/repair-based-node-operation.md),
 data is rebuilt using repair-based-rebuild by reading all source replicas in each token range and repairing any discrepancies between them.
 Otherwise, data is streamed from a single source replica when rebuilding each token range.
 
-When [adding a new data-center into an existing ScyllaDB cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md) use the rebuild command.
+When [adding a new data-center into an existing ScyllaDB cluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/add-dc-to-existing-dc.md) use the rebuild command.
 
 #### NOTE
 The ScyllaDB rebuild process continues to run in the background, even if the nodetool command is killed or interrupted.
@@ -25,6 +25,6 @@ nodetool rebuild <source-dc-name>
 
 `nodetool rebuild` command works only for vnode keyspaces. For tablet keyspaces, use `nodetool cluster repair` instead.
 
-See [Data Distribution with Tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md).
+See [Data Distribution with Tablets](https://docs.scylladb.com/manual/branch-2026.3/architecture/tablets.md).
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

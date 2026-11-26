@@ -1,21 +1,21 @@
 # ScyllaDB Hinted Handoff
 
-A typical write in ScyllaDB works according to the scenarios described in our [Fault Tolerance documentation](https://docs.scylladb.com/manual/branch-2026.4/architecture/architecture-fault-tolerance.md).
+A typical write in ScyllaDB works according to the scenarios described in our [Fault Tolerance documentation](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md).
 
-But what happens when a write request is sent to a ScyllaDB node that is unresponsive due to reasons including heavy write load on a node, network issues, or even hardware failure? To ensure availability and consistency, ScyllaDB implements [hinted handoff](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Hinted-Handoff).
+But what happens when a write request is sent to a ScyllaDB node that is unresponsive due to reasons including heavy write load on a node, network issues, or even hardware failure? To ensure availability and consistency, ScyllaDB implements [hinted handoff](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Hinted-Handoff).
 
-> [Hint](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Hint) = target replica ID + [mutation](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Mutation) data
+> [Hint](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Hint) = target replica ID + [mutation](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Mutation) data
 
 In other words, ScyllaDB saves a copy of the writes intended for down nodes, and replays them to the nodes when they are up later.  Thus, the write operation flow, when a node is down, looks like this:
 
 1. The co-ordinator determines all the replica nodes;
-2. Based on the replication factor (RF) , the co-ordinator [attempts to write to RF nodes](https://docs.scylladb.com/manual/branch-2026.4/architecture/architecture-fault-tolerance.md);
+2. Based on the replication factor (RF) , the co-ordinator [attempts to write to RF nodes](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md);
 
 ![image](architecture/1-write_op_RF_3.jpg)
 1. If one node is down, acknowledgments are only returned from two nodes:
 
 ![image](architecture/anti-entropy/hinted-handoff-3.png)
-1. If the consistency level does not require responses from all replicas, the co-ordinator, *V* in this case,  will respond to the client that the write was successful.   The co-ordinator will write and store a [hint](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Hint) for the missing node:
+1. If the consistency level does not require responses from all replicas, the co-ordinator, *V* in this case,  will respond to the client that the write was successful.   The co-ordinator will write and store a [hint](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Hint) for the missing node:
 
 ![image](architecture/anti-entropy/hinted-handoff-4.png)
 1. Once the down node comes up, the co-ordinator will replay the hint for that node.  After the co-ordinator receives an acknowledgement of the write, the hint is deleted.
@@ -35,7 +35,7 @@ Hinted handoff is enabled and managed by these settings in `scylla.yaml`:
 * `max_hint_window_in_ms`: do not generate hints if the destination node has been down for more than this value.  If  a node is down longer than this period, new hints are not created.  Hint generation resumes once the destination node is back up. By default, this is set to 3 hours.
 * `hints_directory`: the directory where ScyllaDB will store hints. By default this is `$SCYLLA_HOME/hints`.
 
-Storing of the hint can also fail. Enabling hinted handoff therefore does not eliminate the need for repair; a user must recurrently [run a full repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/maintenance/repair.md) to ensure data consistency across the cluster nodes.
+Storing of the hint can also fail. Enabling hinted handoff therefore does not eliminate the need for repair; a user must recurrently [run a full repair](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/maintenance/repair.md) to ensure data consistency across the cluster nodes.
 
 ## Sync point HTTP API
 
@@ -91,7 +91,7 @@ $ curl -X GET "http://127.0.0.1:10000/hinted_handoff/sync_point?timeout=-1"
 {"message": "Missing mandatory parameter 'id'", "code": 400}
 ```
 
-See also the Hinted Handoff section of the [API reference](https://docs.scylladb.com/manual/branch-2026.4/reference/api/hinted-handoff.md).
+See also the Hinted Handoff section of the [API reference](https://docs.scylladb.com/manual/stable/reference/api/hinted-handoff.md).
 
 #### NOTE
 If the node is turned off while you are awaiting a sync point on it, you will receive an error as the response. You should try awaiting the sync point again when the node has been turned on again.

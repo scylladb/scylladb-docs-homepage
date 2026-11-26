@@ -11,9 +11,9 @@ During the regular operation, a ScyllaDB cluster continues to function and remai
 
 As long as the cluster can satisfy the required consistency level (usually quorum), availability and consistency will be maintained. However, in order to automatically mitigate data inconsistency (entropy), ScyllaDB uses three processes:
 
-* [Hinted Handoff](https://docs.scylladb.com/manual/stable/architecture/anti-entropy/hinted-handoff.md)
-* [Read Repair](https://docs.scylladb.com/manual/stable/architecture/anti-entropy/read-repair.md)
-* [Repair Based Node Operations](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/repair-based-node-operation.md)
+* [Hinted Handoff](https://docs.scylladb.com/manual/branch-2026.3/architecture/anti-entropy/hinted-handoff.md)
+* [Read Repair](https://docs.scylladb.com/manual/branch-2026.3/architecture/anti-entropy/read-repair.md)
+* [Repair Based Node Operations](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/repair-based-node-operation.md)
 * Repair - described in the following sections
 
 ## Repair Overview
@@ -25,11 +25,11 @@ Running repairs is necessary to ensure that data on a given node is consistent w
 You can manually run the `nodetool repair` and `nodetool cluster repair` commands or schedule repair with [ScyllaDB Manager](https://manager.docs.scylladb.com/stable/repair),
 which can run repairs for you.
 
-To synchronize all data in clusters that have both tablets- and vnodes-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on **all**
-of the nodes in the cluster, and [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md) on  **any** of the nodes in the cluster.
+To synchronize all data in clusters that have both tablets- and vnodes-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/repair.md) on **all**
+of the nodes in the cluster, and [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/cluster/repair.md) on  **any** of the nodes in the cluster.
 
 #### NOTE
-Run the [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) and [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md) command regularly. If you delete data frequently, it should be more often than the value of `gc_grace_seconds` (by default: 10 days), for example, every week. Use the **nodetool repair -pr** on each node in the cluster, sequentially.
+Run the [nodetool repair](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/repair.md) and [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/cluster/repair.md) command regularly. If you delete data frequently, it should be more often than the value of `gc_grace_seconds` (by default: 10 days), for example, every week. Use the **nodetool repair -pr** on each node in the cluster, sequentially.
 
 In most cases, the proportion of data that is out of sync is very small.  In a few cases, for example, if a node was down for a day, the difference might be more significant.
 
@@ -51,8 +51,8 @@ See also the [ScyllaDB Manager documentation](https://manager.docs.scylladb.com/
 
 ## Incremental Repair
 
-Built on top of [Row-level Repair](#row-level-repair) and [Tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md), Incremental Repair enables frequent and quick repairs. For more details, see [Incremental Repair](https://docs.scylladb.com/manual/stable/features/incremental-repair.md).
+Built on top of [Row-level Repair](#row-level-repair) and [Tablets](https://docs.scylladb.com/manual/branch-2026.3/architecture/tablets.md), Incremental Repair enables frequent and quick repairs. For more details, see [Incremental Repair](https://docs.scylladb.com/manual/branch-2026.3/features/incremental-repair.md).
 
 ## Automatic Repair
 
-Built on top of [Incremental Repair](https://docs.scylladb.com/manual/stable/features/incremental-repair.md), [Automatic Repair](https://docs.scylladb.com/manual/stable/features/automatic-repair.md) offers repair scheduling and execution directly in ScyllaDB, without external processes.
+Built on top of [Incremental Repair](https://docs.scylladb.com/manual/branch-2026.3/features/incremental-repair.md), [Automatic Repair](https://docs.scylladb.com/manual/branch-2026.3/features/automatic-repair.md) offers repair scheduling and execution directly in ScyllaDB, without external processes.

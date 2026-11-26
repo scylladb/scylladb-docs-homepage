@@ -27,7 +27,7 @@ This section will guide you through the steps for setting up the cluster:
 By default, ScyllaDB run in this way will not have authentication or
 authorization enabled, and any DynamoDB API request will be honored without
 requiring them to be signed appropriately. See the
-[ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/branch-2026.4/alternator/compatibility.md#authentication-and-authorization)
+[ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/stable/alternator/compatibility.md#authentication-and-authorization)
 document on how to configure authentication and authorization.
 
 ## Testing ScyllaDB’s DynamoDB API support:

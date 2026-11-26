@@ -1,7 +1,7 @@
 # Configuration Parameters
 
 This section contains a list of properties that can be configured in `scylla.yaml` - the main configuration file for ScyllaDB.
-In addition, properties that support live updates (liveness) can be updated via the `system.config` virtual table or the [REST API](https://docs.scylladb.com/manual/stable/operating-scylla/rest.md).
+In addition, properties that support live updates (liveness) can be updated via the `system.config` virtual table or the [REST API](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/rest.md).
 
 Live update means that parameters can be modified dynamically while the server
 is running. If `liveness` of a parameter is set to `true`, sending the `SIGHUP`

@@ -55,17 +55,17 @@ cluster nodes proceed without coordination. Cell values
 supplied by a statement with the highest timestamp will prevail.
 If two `UPDATE` statements or `UPDATE` and `INSERT`
 statements have the same timestamp, a conflict resolution algorithm determines which cells prevails
-(see [update ordering](https://docs.scylladb.com/manual/branch-2026.4/cql/dml.md#update-ordering)).
+(see [update ordering](https://docs.scylladb.com/manual/stable/cql/dml.md#update-ordering)).
 
 Regarding the `assignment`:
 
 - `c = c + 3` is used to increment/decrement counters. The column name after the ‘=’ sign **must** be the same as
   the one before the ‘=’ sign. Note that increment/decrement is only allowed on counters, and are the *only* update
-  operations allowed on counters. See the section on [counters](https://docs.scylladb.com/manual/branch-2026.4/cql/types.md#counters) for details.
-- `id = id + <some-collection>` and `id[value1] = value2` are for collections, see the [relevant section](https://docs.scylladb.com/manual/branch-2026.4/cql/types.md#collections) for details.
+  operations allowed on counters. See the section on [counters](https://docs.scylladb.com/manual/stable/cql/types.md#counters) for details.
+- `id = id + <some-collection>` and `id[value1] = value2` are for collections, see the [relevant section](https://docs.scylladb.com/manual/stable/cql/types.md#collections) for details.
 - `id.field = 3` is for setting the value of a field on non-frozen user-defined types.
 
-Please refer to the [update parameters](https://docs.scylladb.com/manual/branch-2026.4/cql/dml.md#update-parameters) section for more information on the `update_parameter`.
+Please refer to the [update parameters](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section for more information on the `update_parameter`.
 
 <a id="if"></a>
 
@@ -76,7 +76,7 @@ unless the conditions are met. Each such `UPDATE` gets a globally unique timesta
 But, please note that using `IF` conditions will incur a non-negligible performance
 cost (internally, Paxos will be used), so this should be used sparingly.
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
 
 Copyright
 

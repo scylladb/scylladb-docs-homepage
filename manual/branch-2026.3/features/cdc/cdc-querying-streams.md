@@ -18,7 +18,7 @@ With the above approach you can, for instance, build a distributed CDC consumer,
 
 ## Reacting to stream changes
 
-As explained in [CDC Stream Changes](https://docs.scylladb.com/manual/stable/features/cdc/cdc-stream-changes.md), the set of used CDC stream IDs may change due to some events. You should then query the CDC description table to read the new set of stream IDs and the corresponding timestamp.
+As explained in [CDC Stream Changes](https://docs.scylladb.com/manual/branch-2026.3/features/cdc/cdc-stream-changes.md), the set of used CDC stream IDs may change due to some events. You should then query the CDC description table to read the new set of stream IDs and the corresponding timestamp.
 
 If you’re periodically querying streams and you don’t want to miss any writes that are sent to the old generation, you should query it at least one time **after** the old generation stops operating (which happens when the new generation starts operating).
 

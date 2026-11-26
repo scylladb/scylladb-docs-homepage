@@ -39,8 +39,8 @@ CREATE CUSTOM INDEX ON ks.t (v) USING 'fulltext_index'
 
 * The indexed column must be of type `text`, `varchar`, or `ascii`.
   Other types are rejected.
-* The indexed column must be a regular or clustering-key column. Partition-key
-  columns cannot be indexed.
+* The indexed column must be a regular column. Primary-key and static columns
+  cannot be indexed.
 * The table must use tablets (not vnodes).
 * CDC must be enabled on the table with a TTL of at least 86400 seconds
   (24 hours) and either `delta = 'full'` or postimage enabled.
@@ -71,6 +71,10 @@ Neither clause works on its own - a query with only `WHERE BM25()` or only
 `ORDER BY BM25()` is rejected, and both must reference the **same column** and
 the **same search term**. Every FTS query also requires a `LIMIT`.
 
+The exception is a [hybrid query](https://docs.scylladb.com/manual/stable/cql/dml/select.md#hybrid-queries), which ranks the rows by a
+full-text search together with other searches, such as a vector search, and takes
+no `WHERE` clause.
+
 For the full syntax reference, see [Full-Text Search queries (BM25)](https://docs.scylladb.com/manual/stable/cql/dml/select.md#fulltext-queries).
 
 ### Basic query
@@ -87,6 +91,70 @@ SELECT * FROM ks.t
 In the `WHERE` clause, `>` is the only supported operator and the right-hand
 side must be the literal `0`. Operators such as `>=`, `=`, `<`, `<=`,
 and `!=` are rejected, as is any non-zero threshold.
+
+`WHERE BM25(v, 'search term') > 0` compares the **score**, and is the same as
+`WHERE BM25_SCORE(v, 'search term') > 0`. Those are the only two calls the clause accepts.
+
+`BM25()` may also be selected. It returns a `tuple<float, int>`: the **score** the index gave
+the row, and the row’s **rank**, its position in the index’s result counted from 1:
+
+```default
+SELECT id, BM25(v, 'search term') AS score_and_rank FROM ks.t
+    WHERE BM25(v, 'search term') > 0
+    ORDER BY BM25(v, 'search term')
+    LIMIT 10;
+```
+
+`BM25_SCORE()` and `BM25_RANK()` return the two values on their own, which is usually what a
+query wants:
+
+```default
+SELECT id, BM25_SCORE(v, 'search term') AS score, BM25_RANK(v, 'search term') AS rank
+    FROM ks.t
+    WHERE BM25(v, 'search term') > 0
+    ORDER BY BM25(v, 'search term')
+    LIMIT 10;
+```
+
+All three describe the search the rows are ranked by, so each needs a BM25 search on the same
+column in the `ORDER BY` clause, and has to use the same search term as that search. A query using
+several of them still makes a single request.
+
+The rank is the position in the index’s result, not in the result set. If the index returns a row
+that is no longer in the base table, that row’s rank is missing from the result and the ranks after
+it are not renumbered.
+
+<a id="fulltext-highlighting"></a>
+
+### Highlighting
+
+`BM25_HIGHLIGHT()` returns an excerpt of the searched text with the matched
+terms marked, for showing the reader why a row was returned:
+
+```default
+SELECT id, BM25_HIGHLIGHT(v, 'search term') AS excerpt FROM ks.t
+    WHERE BM25(v, 'search term') > 0
+    ORDER BY BM25(v, 'search term')
+    LIMIT 10;
+```
+
+It is accepted only in the `SELECT` clause, under the same rules as `BM25()`
+there: the `ORDER BY` clause must have a BM25 search on the same column, and
+the call must use the same search term as that search.
+
+The result is a single fragment of type `text`, holding HTML: the matched
+terms are wrapped in `<b>` and `</b>`, and the text around them is
+HTML-escaped, so the fragment can be inserted into an HTML document as returned.
+
+The value is `null` for a row in which no fragment could be found, as happens
+when the query consists only of stop words. Such a row is still returned.
+
+A query that asks for an excerpt costs one additional round trip to the
+full-text index, made after the matching rows have been read, carrying the text
+of the highlighted column of those rows. In a query that ranks the rows by
+several searches, only the rows the full-text search returned are sent, and the
+others get a `null` excerpt. Queries that do not ask for an excerpt are
+unaffected.
 
 ### Filtering support
 
@@ -105,9 +173,10 @@ SELECT * FROM ks.t
     LIMIT 10;
 ```
 
-Both bind markers are checked at execution time and must be given the same
-value; binding different values for the `WHERE` and `ORDER BY` markers
-causes the query to be rejected.
+All the search-term bind markers are checked at execution time and must be
+given the same value; binding different values for the `WHERE` and
+`ORDER BY` clauses or for a selected `BM25()` causes the query to be
+rejected.
 
 ### Disambiguating from a user-defined function
 
@@ -119,16 +188,18 @@ built-in operator as `system.bm25(...)` to select it explicitly.
 
 FTS queries enforce the following rules:
 
-| Constraint                          | Details                                                                                                                                                                                              |
-|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Both clauses required               | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own. |
-| `>` and literal `0` only            | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                         |
-| Filtering support                   | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.         |
-| `LIMIT` is required                 | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                   |
-| `PER PARTITION LIMIT` not supported | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                               |
-| Aggregation not supported           | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                      |
-| Fulltext index required             | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                    |
-| `BM25()` cannot appear in `SELECT`  | `BM25()` is only valid in `WHERE` and `ORDER BY` clauses, not<br/>as a selector.                                                                                                                     |
-| Single ordering only                | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns,<br/>a second `BM25()` ordering, or with `ANN` ordering.                                                                          |
-| Paging not supported                | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                |
-| Grouping not supported              | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                      |
+| Constraint                                                    | Details                                                                                                                                                                                                                                                                                                                                                  |
+|---------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Both clauses required                                         | A query must include both a `WHERE BM25() > 0` filter and an<br/>`ORDER BY BM25()` ranking. Both must reference the same column and<br/>the same search term. Neither clause is accepted on its own. The<br/>exception is a [hybrid query](https://docs.scylladb.com/manual/stable/cql/dml/select.md#hybrid-queries), which takes no<br/>`WHERE` clause. |
+| `>` and literal `0` only                                      | In `WHERE`, the only accepted form is `BM25(column, 'term') > 0`.<br/>Other operators (`>=`, `=`, `<`, `<=`, `!=`) and non-zero<br/>thresholds are rejected.                                                                                                                                                                                             |
+| Filtering support                                             | Only `BM25(column, 'term') > 0` is accepted in `WHERE`. Any additional<br/>restriction (e.g., a partition key equality) is rejected. Combined filtering<br/>is planned for a future release.                                                                                                                                                             |
+| `LIMIT` is required                                           | Every FTS query must include a `LIMIT` clause of at most 1000.<br/>Queries without `LIMIT`, or with a `LIMIT` greater than 1000,<br/>are rejected.                                                                                                                                                                                                       |
+| `PER PARTITION LIMIT` not supported                           | `PER PARTITION LIMIT` cannot be used with FTS queries.                                                                                                                                                                                                                                                                                                   |
+| Aggregation not supported                                     | FTS queries cannot include aggregate functions (e.g., `COUNT(*)`,<br/>`SUM()`).                                                                                                                                                                                                                                                                          |
+| Fulltext index required                                       | The queried column must have a `fulltext_index`. A regular secondary<br/>index does not satisfy this requirement.                                                                                                                                                                                                                                        |
+| Selecting a score or a rank needs a BM25 search in `ORDER BY` | `BM25()` returns a `tuple<float, int>`, the row’s relevance score and<br/>its rank; `BM25_SCORE()` and `BM25_RANK()` return one element each.<br/>Any of them may be used as a selector, but only in a query whose<br/>`ORDER BY` clause has a BM25 search on the same column, and every<br/>occurrence must use the same search term as that search.    |
+| `BM25_HIGHLIGHT()` is a selector only                         | `BM25_HIGHLIGHT()` is accepted in the `SELECT` clause under the same<br/>rules as `BM25()`, and rejected in every other clause. See<br/>[Highlighting](#fulltext-highlighting).                                                                                                                                                                          |
+| Single ordering only                                          | `ORDER BY BM25()` cannot be combined with other `ORDER BY` columns.<br/>To rank the rows by several searches, fuse them in a<br/>[hybrid query](https://docs.scylladb.com/manual/stable/cql/dml/select.md#hybrid-queries).                                                                                                                               |
+| Paging not supported                                          | FTS queries do not support paging; all matching rows up to `LIMIT`<br/>are returned in a single page.                                                                                                                                                                                                                                                    |
+| Grouping not supported                                        | FTS queries cannot include a `GROUP BY` clause.                                                                                                                                                                                                                                                                                                          |
+| `DISTINCT` not supported                                      | `SELECT DISTINCT` is not supported in FTS queries. It is currently<br/>accepted, but does not remove duplicate partition keys: one row is<br/>returned per matching row.                                                                                                                                                                                 |

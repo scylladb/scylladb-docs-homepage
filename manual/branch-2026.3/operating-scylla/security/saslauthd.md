@@ -53,4 +53,4 @@ Once configured, any login to ScyllaDB is authenticated with the SaslauthdAuthen
    ```
 
    (without restarting *some-scylla* container)
-9. Create ScyllaDB roles which **match** the same roles in the LDAP server. To create a role, refer to the [CQL Reference](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#cql-security) and the [RBAC example](https://docs.scylladb.com/manual/stable/operating-scylla/security/rbac-usecase.md).
+9. Create ScyllaDB roles which **match** the same roles in the LDAP server. To create a role, refer to the [CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#cql-security) and the [RBAC example](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/rbac-usecase.md).

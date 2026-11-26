@@ -2,11 +2,11 @@
 
 Stream IDs used for CDC log entries change over time. A single base partition key might be mapped to one stream in the log today, but to a different stream tomorrow. If you build a query which follows changes made to your favorite partition by using a `WHERE` clause to specify the proper stream ID, you might need to update the query due to CDC streams changes.
 
-The good news is, it is easy to learn what the used stream IDs are ([Querying CDC Streams](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-querying-streams.md)). The method depends on whether the keyspace is vnode-based or tablets-based.
+The good news is, it is easy to learn what the used stream IDs are ([Querying CDC Streams](https://docs.scylladb.com/manual/stable/features/cdc/cdc-querying-streams.md)). The method depends on whether the keyspace is vnode-based or tablets-based.
 
 ## CDC Stream Generations (vnodes-based keyspaces)
 
-In a vnode-based keyspace, stream IDs will change if you join a new node to the cluster or by running the `checkAndRepairCdcStreams` command ([Nodetool checkAndRepairCdcStreams](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/checkandrepaircdcstreams.md)).
+In a vnode-based keyspace, stream IDs will change if you join a new node to the cluster or by running the `checkAndRepairCdcStreams` command ([Nodetool checkAndRepairCdcStreams](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/checkandrepaircdcstreams.md)).
 
 #### NOTE
 Stream IDs are chosen to maintain the following invariant:
@@ -23,7 +23,7 @@ A CDC generation consists of:
 * a set of stream IDs,
 * a mapping from the set of tokens (in the entire token ring) to the set of stream IDs in this generation.
 
-This is the mapping used to decide on which stream IDs to use when making writes, as explained in the [CDC Streams](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-streams.md) document. It is a global property of the cluster: it doesn’t depend on the table you’re making writes to.
+This is the mapping used to decide on which stream IDs to use when making writes, as explained in the [CDC Streams](https://docs.scylladb.com/manual/stable/features/cdc/cdc-streams.md) document. It is a global property of the cluster: it doesn’t depend on the table you’re making writes to.
 
 ### When CDC generations change
 

@@ -18,4 +18,4 @@ For example:
 
 ## See also
 
-- [tasks list](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/list.md)
+- [tasks list](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/tasks/list.md)

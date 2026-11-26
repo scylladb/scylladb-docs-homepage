@@ -7,7 +7,7 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
 
 1. Choose your region, and click the **Node** link to open the EC2 instance creation wizard.
 
-   The following table shows the latest patch release. See [AWS Images](https://docs.scylladb.com/manual/stable/reference/aws-images.md) for earlier releases.
+   The following table shows the latest patch release. See [AWS Images](https://docs.scylladb.com/manual/branch-2026.3/reference/aws-images.md) for earlier releases.
    <!-- -*- mode: rst -*- -->
 
    ### 2026.3.6
@@ -36,21 +36,21 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
    | US East (Ohio)            | ami-01b07e5ee886047f4 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-01b07e5ee886047f4)  / [Cluster](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.6_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-01b07e5ee886047f4)                | ami-08d35fc2953d2d3fb | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:ami=ami-08d35fc2953d2d3fb)  / [Cluster](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.6_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-08d35fc2953d2d3fb)                |
    | US West (N. California)   | ami-0b7e7b55e5f7abb3b | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-0b7e7b55e5f7abb3b)  / [Cluster](https://us-west-1.console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.6_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0b7e7b55e5f7abb3b)                | ami-0d7587d587016d328 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-1#LaunchInstanceWizard:ami=ami-0d7587d587016d328)  / [Cluster](https://us-west-1.console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.6_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-0d7587d587016d328)                |
    | US West (Oregon)          | ami-075825edaf31b67c0 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-075825edaf31b67c0)  / [Cluster](https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.6_x86_64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-075825edaf31b67c0)                | ami-03261bf3bc591d991 | [Node](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-03261bf3bc591d991)  / [Cluster](https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/quickcreate?templateURL=http://downloads.scylladb.com.s3.amazonaws.com/downloads/scylla/aws/cloudformation/scylla_cluster_2026.3.6_aarch64.yaml&stackName=scylla-cluster&param_ScyllaDBAmi=ami-03261bf3bc591d991)                |
-2. Choose the instance type. See [Cloud Instance Recommendations for AWS](https://docs.scylladb.com/manual/stable/getting-started/cloud-instance-recommendations.md#system-requirements-aws) for the list of recommended instances.
+2. Choose the instance type. See [Cloud Instance Recommendations for AWS](https://docs.scylladb.com/manual/branch-2026.3/getting-started/cloud-instance-recommendations.md#system-requirements-aws) for the list of recommended instances.
 
-   Other instance types will work, but with lesser performance. If you choose an instance type other than the recommended ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md#system-configuration-scripts) script.
+   Other instance types will work, but with lesser performance. If you choose an instance type other than the recommended ones, make sure to run the [scylla_setup](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-configuration.md#system-configuration-scripts) script.
 3. Configure your instance details.
    * **Number of instances** – If you are launching more than one instance, make sure to correctly set the IP of the first instance with the `seeds` parameter - either in the User Data (see below) or after launch.
    * **Network** – Configure the network settings.
      * Select your VPC.
-     * Configure the security group. Ensure that all [ScyllaDB ports](https://docs.scylladb.com/manual/stable/operating-scylla/security/security-checklist.md#networking-ports) are open.
+     * Configure the security group. Ensure that all [ScyllaDB ports](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/security-checklist.md#networking-ports) are open.
    * **Advanced Details> User Data** – Here, you can add ScyllaDB configuration options in the JSON format.
-     See [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-scylla-yaml) for information about supported options.
+     See [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#admin-scylla-yaml) for information about supported options.
      <!-- TODO Replace the link to scylla.yaml to the full list of supported options - when all the options are documented. -->
 
      The following example shows a configuration using the most popular options.
      * `cluster_name` - The name of the cluster.
-     * `seed_provider` - The IP of the first node. New nodes will use the IP of this seed node to connect to the cluster and learn the cluster topology and state. See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/stable/kb/seed-nodes.md).
+     * `seed_provider` - The IP of the first node. New nodes will use the IP of this seed node to connect to the cluster and learn the cluster topology and state. See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/branch-2026.3/kb/seed-nodes.md).
      * `post_configuration_script` - A base64 encoded bash script that will be executed after the configuration is completed.
      * `start_scylla_on_first_boot` - Starts ScyllaDB once the configuration is completed.
 
@@ -91,8 +91,8 @@ as-a-service, see [ScyllaDB Cloud documentation](https://cloud.docs.scylladb.com
 
 ## Next Steps
 
-* [Configure ScyllaDB](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md)
+* [Configure ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-configuration.md)
 * Manage your clusters with [ScyllaDB Manager](https://manager.docs.scylladb.com/)
 * Monitor your cluster and data with [ScyllaDB Monitoring](https://monitoring.docs.scylladb.com/)
-* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md).
+* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md).
 * Learn about ScyllaDB at [ScyllaDB University](https://university.scylladb.com/)

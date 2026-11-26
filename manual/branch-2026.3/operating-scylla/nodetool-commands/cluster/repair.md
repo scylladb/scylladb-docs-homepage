@@ -1,15 +1,15 @@
 # Nodetool cluster repair
 
 **cluster repair** - A process that runs in the background and synchronizes the data between nodes. It only repairs keyspaces with tablets enabled (default).
-To repair keyspaces with tablets disabled (vnodes-based), see [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md).
+To repair keyspaces with tablets disabled (vnodes-based), see [nodetool repair](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/repair.md).
 
 Running `cluster repair` on a **single node** synchronizes all data on all nodes in the cluster.
 
-To synchronize all data in clusters that have both tablets-based and vnodes-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on **all**
-of the nodes in the cluster, and [nodetool cluster repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md) on  **any** of the nodes in the cluster.
+To synchronize all data in clusters that have both tablets-based and vnodes-based keyspaces, run [nodetool repair -pr](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/repair.md) on **all**
+of the nodes in the cluster, and [nodetool cluster repair](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/cluster/repair.md) on  **any** of the nodes in the cluster.
 
 #### WARNING
-[Colocated Tables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Colocated-Table) cannot be synchronized using cluster repair in this version.
+[Colocated Tables](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-Colocated-Table) cannot be synchronized using cluster repair in this version.
 
 To check if a keyspace enables tablets, use:
 

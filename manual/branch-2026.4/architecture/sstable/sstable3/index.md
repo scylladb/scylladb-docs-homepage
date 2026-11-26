@@ -1,6 +1,6 @@
 # ScyllaDB SSTable - 3.x
 
-[Sorted Strings Table (SSTable)](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-SSTable) is the persistent file format used by ScyllaDB and Apache Cassandra. SSTable is saved as a persistent, ordered, immutable set of files on disk.
+[Sorted Strings Table (SSTable)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-SSTable) is the persistent file format used by ScyllaDB and Apache Cassandra. SSTable is saved as a persistent, ordered, immutable set of files on disk.
 Immutable means SSTables are never modified; they are created by a MemTable flush and are deleted by a compaction.
 The location of ScyllaDB SSTables is specified in scylla.yaml `data_file_directories` parameter (default location: `/var/lib/scylla/data`).
 
@@ -8,8 +8,8 @@ SSTable 3.x is more efficient and requires less disk space than the SSTable 2.x.
 
 For more information on each of the SSTable formats, see below:
 
-* [SSTable 2.x](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable2/index.md)
-* [SSTable 3.x](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/index.md)
+* [SSTable 2.x](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/index.md)
+* [SSTable 3.x](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/index.md)
 
 ## SSTable Version Support
 
@@ -34,15 +34,15 @@ For more information on each of the SSTable formats, see below:
 
 The `ms` format introduces a *trie-based* SSTable index.
 
-For a detailed description of the trie index format, see [SSTable ms Index](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstable-ms-index.md).
+For a detailed description of the trie index format, see [SSTable ms Index](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstable-ms-index.md).
 
 ## Additional Information
 
 For more information on ScyllaDB 3.x SSTable formats, see below:
 
-* [SSTable 3.0 Data File Format](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-data-file-format.md)
-* [SSTable 3.0 Statistics](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-statistics.md)
-* [SSTable 3.0 Summary](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-summary.md)
-* [SSTable 3.0 Index (me/md format)](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstables-3-index.md)
-* [SSTable ms Index (Trie-Based)](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstable-ms-index.md)
-* [SSTable 3.0 Format in ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstable-format.md)
+* [SSTable 3.0 Data File Format](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-data-file-format.md)
+* [SSTable 3.0 Statistics](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-statistics.md)
+* [SSTable 3.0 Summary](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-summary.md)
+* [SSTable 3.0 Index (me/md format)](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-index.md)
+* [SSTable ms Index (Trie-Based)](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstable-ms-index.md)
+* [SSTable 3.0 Format in ScyllaDB](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstable-format.md)

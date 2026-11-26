@@ -11,7 +11,7 @@ Syntax:
 
 Where:
 
-`<options>` are the [Nodetool Generic Options](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md#nodetool-generic-options)
+`<options>` are the [Nodetool Generic Options](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md#nodetool-generic-options)
 
 `[upgrade target]` indicates what you are upgrading and can be any of the following:
 
@@ -51,6 +51,6 @@ To upgrade all tables (old and new format) in both keyspaces:
 
 ## Additional References
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
 
-[Encryption at Rest](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest.md)
+[Encryption at Rest](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md)

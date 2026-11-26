@@ -9,14 +9,14 @@ ScyllaDB runs on 64-bit Linux. The x86_64 and AArch64 architectures are supporte
 See [OS Support by Platform and Version](https://docs.scylladb.com/stable/versioning/os-support-per-version.html) for information about
 supported operating systems, distros, and versions.
 
-See [Cloud Instance Recommendations for AWS, GCP, Azure, and OCI](https://docs.scylladb.com/manual/branch-2026.4/getting-started/cloud-instance-recommendations.md) for information
+See [Cloud Instance Recommendations for AWS, GCP, Azure, and OCI](https://docs.scylladb.com/manual/stable/getting-started/cloud-instance-recommendations.md) for information
 about instance types recommended for cloud deployments.
 
 <a id="system-requirements-hardware"></a>
 
 ## Hardware Requirements
 
-It’s recommended to have a balanced setup. If there are only 4-8 [Logical Cores](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Logical-Core-lcore), large disks or 10Gbps networking may not be needed.
+It’s recommended to have a balanced setup. If there are only 4-8 [Logical Cores](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Logical-Core-lcore), large disks or 10Gbps networking may not be needed.
 This works in the opposite direction as well.
 ScyllaDB can be used in many types of installation environments.
 
@@ -84,7 +84,7 @@ Use the following table as a guidelines for the minimum disk space requirements 
 | Leveled Compaction Strategy (LCS)      | 50%           | 80%       |
 | Time-window Compaction Strategy (TWCS) | 50%           | 70%       |
 
-Use the default ICS unless you’ll have a clear understanding that another strategy is better for your use case. More on [choosing a Compaction Strategy](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md).
+Use the default ICS unless you’ll have a clear understanding that another strategy is better for your use case. More on [choosing a Compaction Strategy](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md).
 In order to maintain a high level of service availability, keep 50% to 20% free disk space at all times!
 
 <a id="system-requirements-network"></a>

@@ -83,7 +83,7 @@ If starting ScyllaDB from the command line, simply append
 ## Other Restrictions
 
 When starting up, ScyllaDB will check the hardware and operating system
-configuration to verify that it is compatible with ScyllaDB’s performance requirements. See [developer mode](https://docs.scylladb.com/manual/branch-2026.4/getting-started/installation-common/dev-mod.md) for more instructions.
+configuration to verify that it is compatible with ScyllaDB’s performance requirements. See [developer mode](https://docs.scylladb.com/manual/stable/getting-started/installation-common/dev-mod.md) for more instructions.
 
 ## Summary
 
@@ -92,4 +92,4 @@ performance but may need to be tuned for development or test uses. This
 tuning is simple to apply and results in a ScyllaDB server that can
 coexist with other processes or a GUI on the system.
 
-[Getting Started](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md)
+[Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md)

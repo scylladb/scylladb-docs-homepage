@@ -72,7 +72,7 @@ For each of the samplers (WRITES and READS in this specific example), nodetool t
 | Write Count   | The total number of writes since last boot                                                    |
 | Write Latency | The average read latency                                                                      |
 
-To know which node hold the partition key use the nodetool [getendpoints](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/getendpoints.md) command.
+To know which node hold the partition key use the nodetool [getendpoints](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/getendpoints.md) command.
 
 If the margin of error column (+/-) approaches the Count column, the measurement is inaccurate. You can increase accuracy by specifying
 the `--capacity` option.
@@ -91,5 +91,5 @@ Example output:
 
 ## Additional Information
 
-* [Catching a Hot Partition](https://docs.scylladb.com/manual/branch-2026.4/using-scylla/tracing.md#tracing-catching-a-hot-partition) - Information on how to locate a hot partition
-* [Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+* [Catching a Hot Partition](https://docs.scylladb.com/manual/stable/using-scylla/tracing.md#tracing-catching-a-hot-partition) - Information on how to locate a hot partition
+* [Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

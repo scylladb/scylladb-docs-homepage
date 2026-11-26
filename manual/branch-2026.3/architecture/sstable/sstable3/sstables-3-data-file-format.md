@@ -23,7 +23,7 @@ Note that the file on-disk format applies to all “m\*” SSTable format versio
 * The “me” format added the `host_id` of the host writing the SStable to the SSTable Statistics file.
   It is used to qualify the commit log replay position that is also stored in the SSTable Statistics file.
 
-See [SSTables 3.0 Statistics File Format](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstables-3-statistics.md) for more details.
+See [SSTables 3.0 Statistics File Format](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable3/sstables-3-statistics.md) for more details.
 
 Since Scylla 2025.4, there are “ms”-“mt” formats in Scylla which is a hybrid of “me” and the “da” format introduced in Cassandra 5.0.
 Most components in those are exactly the same as in “me”, but the index components (Index.db and Summary.db) are replaced
@@ -37,7 +37,7 @@ for a description.
 
 The storage format has been significantly revamped in Cassandra 3.0 compared to the 2.x series. The primary driver for that was the fact that the previous storage format has been devised long before CQL and did not reflect its concepts and abstractions. This, in turn, hindered various fixes and led to suboptimal disk space usage.
 
-To understand what that means, you can refer to the [SSTables 2.x data file format](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-data-file.md) description. In brief, in 2.x every data file is a sequence of partitions (called “rows” in pre-CQL terminology) where each partition is more or less a sequence of cells (or, more precisely, atoms with a majority of them being cells). There is no notion of columns or rows (in CQL terminology) at this level. Each cell has its full name comprised of the clustering prefix (values of all the clustering columns) followed by the non-PK column name.
+To understand what that means, you can refer to the [SSTables 2.x data file format](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-data-file.md) description. In brief, in 2.x every data file is a sequence of partitions (called “rows” in pre-CQL terminology) where each partition is more or less a sequence of cells (or, more precisely, atoms with a majority of them being cells). There is no notion of columns or rows (in CQL terminology) at this level. Each cell has its full name comprised of the clustering prefix (values of all the clustering columns) followed by the non-PK column name.
 
 This scheme causes a lot of duplication since for every row in a given partition determined by a set of clustering columns values those values are stored in names of all the cells that belong to this row. For composite primary keys with long clustering columns values that would mean a lot of disk space wasted for no good reason. Another consequence is that the storage engine has to recognize and group cells from the row itself without knowing in advance their count or overall size.
 

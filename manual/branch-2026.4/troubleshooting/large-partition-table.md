@@ -72,7 +72,7 @@ keyspace_name | table_name | sstable_name     | partition_size | partition_key  
 Configure the detection thresholds of large partitions with the `compaction_large_partition_warning_threshold_mb` parameter (default: 1000MB)
 and the `compaction_rows_count_warning_threshold` parameter (default 100000)
 in the scylla.yaml configuration file.
-Partitions that are bigger than the size threshold and/or hold more than the rows count threshold are reported in the `system.large_partitions` table and generate a warning in the ScyllaDB log (refer to [log](https://docs.scylladb.com/manual/branch-2026.4/getting-started/logging.md)).
+Partitions that are bigger than the size threshold and/or hold more than the rows count threshold are reported in the `system.large_partitions` table and generate a warning in the ScyllaDB log (refer to [log](https://docs.scylladb.com/manual/stable/getting-started/logging.md)).
 
 For example (set to 500MB / 50000, respectively):
 
@@ -171,8 +171,8 @@ on each node:
 Once the SSTables have been rewritten, the virtual tables will show the
 current large data records.
 
-[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)
 
 ## Additional Resources
 
-[Large Partitions Hunting](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/debugging-large-partition.md)
+[Large Partitions Hunting](https://docs.scylladb.com/manual/stable/troubleshooting/debugging-large-partition.md)

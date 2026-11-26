@@ -2,7 +2,7 @@
 
 ## Introduction
 
-ScyllaDB Alternator is fully (or [almost fully](https://docs.scylladb.com/manual/branch-2026.4/alternator/compatibility.md)) compatible
+ScyllaDB Alternator is fully (or [almost fully](https://docs.scylladb.com/manual/stable/alternator/compatibility.md)) compatible
 with the Amazon DynamoDB™ HTTP- and JSON-based API. Applications that
 use this API typically use one of Amazon’s SDK libraries available for many
 programming languages. These SDKs can connect well to a ScyllaDB Alternator
@@ -88,7 +88,7 @@ extensions over the AWS SDK:
   LWT and makes sure that they are sent to a ScyllaDB node chosen consistently
   based on the written partition key.
 * **Compression**: The ability to configure compression of requests, responses,
-  or both. This can help [reduce network costs](https://docs.scylladb.com/manual/branch-2026.4/alternator/network.md) when the network
+  or both. This can help [reduce network costs](https://docs.scylladb.com/manual/stable/alternator/network.md) when the network
   traffic is expensive, but when the network is free and plentiful, it may be
   a waste of CPU time.
 * Request **header stripping**: The ability to strip unnecessary HTTP request
@@ -96,9 +96,9 @@ extensions over the AWS SDK:
   For example, the `User-Agent` header contains verbose SDK name and version
   information that serves no purpose in Alternator but adds bytes to every
   request. Removing such headers can reduce network costs.
-* **Vector search**: Support for [DynamoDB’s Vector Search API](https://docs.scylladb.com/manual/branch-2026.4/alternator/vector-search.md),
+* **Vector search**: Support for [DynamoDB’s Vector Search API](https://docs.scylladb.com/manual/stable/alternator/vector-search.md),
   which Alternator implements, and specifically for ScyllaDB’s
-  [`FLOAT32VECTOR`](https://docs.scylladb.com/manual/branch-2026.4/alternator/vector-search.md#the-float32vector-type-scylladb-extension)
+  [`FLOAT32VECTOR`](https://docs.scylladb.com/manual/stable/alternator/vector-search.md#the-float32vector-type-scylladb-extension)
   extension to it - a more compact way to store and send vectors than
   DynamoDB’s own encoding. A recent enough AWS SDK version already
   understands the standard `SearchVectors` operation on its own; what an

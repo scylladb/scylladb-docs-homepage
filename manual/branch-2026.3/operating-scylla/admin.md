@@ -4,15 +4,15 @@ For training material, also check out the [Admin Procedures lesson](https://univ
 
 ## System Requirements
 
-Make sure you have met the [System Requirements](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md)  before you install and configure ScyllaDB.
+Make sure you have met the [System Requirements](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-requirements.md)  before you install and configure ScyllaDB.
 
 ## Download and Install
 
-See the [getting started page](https://docs.scylladb.com/manual/stable/getting-started/index.md) for info on installing ScyllaDB on your platform.
+See the [getting started page](https://docs.scylladb.com/manual/branch-2026.3/getting-started/index.md) for info on installing ScyllaDB on your platform.
 
 ### System Configuration
 
-See [System Configuration Guide](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md#system-configuration-files-and-scripts) for details on optimum OS settings for ScyllaDB. (These settings are performed automatically in the ScyllaDB packages, Docker containers, and Amazon AMIs.)
+See [System Configuration Guide](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-configuration.md#system-configuration-files-and-scripts) for details on optimum OS settings for ScyllaDB. (These settings are performed automatically in the ScyllaDB packages, Docker containers, and Amazon AMIs.)
 
 <a id="admin-scylla-configuration"></a>
 
@@ -30,8 +30,8 @@ ScyllaDB configuration files are:
 
 ### Check your current version of ScyllaDB
 
-This command allows you to check your current version of ScyllaDB. Note that this command is not the [nodetool version](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/version.md) command which reports the CQL version.
-If you are looking for the CQL or Cassandra version, refer to the CQLSH reference for [SHOW VERSION](https://docs.scylladb.com/manual/stable/cql/cqlsh.md#cqlsh-show-version).
+This command allows you to check your current version of ScyllaDB. Note that this command is not the [nodetool version](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/version.md) command which reports the CQL version.
+If you are looking for the CQL or Cassandra version, refer to the CQLSH reference for [SHOW VERSION](https://docs.scylladb.com/manual/branch-2026.3/cql/cqlsh.md#cqlsh-show-version).
 
 ```shell
 scylla --version
@@ -49,17 +49,17 @@ Output displays the ScyllaDB version. Your results may differ.
 
 The following addresses can be configured in scylla.yaml:
 
-| Address Type            | Description                                                                                                                                                                                                                                 |
-|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| listen_address          | Address ScyllaDB listens for connections from other nodes. See storage_port and ssl_storage_ports.                                                                                                                                          |
-| rpc_address             | Address on which ScyllaDB is going to expect CQL client connections. See rpc_port, native_transport_port and native_transport_port_ssl in the [Networking](#cqlsh-networking) parameters.                                                   |
-| broadcast_address       | Address that is broadcasted to tell other ScyllaDB nodes to connect to. Related to listen_address above.                                                                                                                                    |
-| broadcast_rpc_address   | Address that is broadcasted to tell the clients to connect to. Related to rpc_address.                                                                                                                                                      |
-| seeds                   | The broadcast_addresses of the existing nodes. You must specify the address of at least one existing node.                                                                                                                                  |
-| endpoint_snitch         | Node’s address resolution helper.                                                                                                                                                                                                           |
-| api_address             | Address for REST API requests. See api_port in the [Networking](#cqlsh-networking) parameters.                                                                                                                                              |
-| prometheus_address      | Address for Prometheus queries. See prometheus_port in the [Networking](#cqlsh-networking) parameters and [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/stable/) for more details.                                       |
-| replace_node_first_boot | Host ID of a dead node this ScyllaDB node is replacing. Refer to [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md) for more details. |
+| Address Type            | Description                                                                                                                                                                                                                                        |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| listen_address          | Address ScyllaDB listens for connections from other nodes. See storage_port and ssl_storage_ports.                                                                                                                                                 |
+| rpc_address             | Address on which ScyllaDB is going to expect CQL client connections. See rpc_port, native_transport_port and native_transport_port_ssl in the [Networking](#cqlsh-networking) parameters.                                                          |
+| broadcast_address       | Address that is broadcasted to tell other ScyllaDB nodes to connect to. Related to listen_address above.                                                                                                                                           |
+| broadcast_rpc_address   | Address that is broadcasted to tell the clients to connect to. Related to rpc_address.                                                                                                                                                             |
+| seeds                   | The broadcast_addresses of the existing nodes. You must specify the address of at least one existing node.                                                                                                                                         |
+| endpoint_snitch         | Node’s address resolution helper.                                                                                                                                                                                                                  |
+| api_address             | Address for REST API requests. See api_port in the [Networking](#cqlsh-networking) parameters.                                                                                                                                                     |
+| prometheus_address      | Address for Prometheus queries. See prometheus_port in the [Networking](#cqlsh-networking) parameters and [ScyllaDB Monitoring Stack](https://monitoring.docs.scylladb.com/stable/) for more details.                                              |
+| replace_node_first_boot | Host ID of a dead node this ScyllaDB node is replacing. Refer to [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md) for more details. |
 
 #### NOTE
 When the listen_address, rpc_address, broadcast_address, and broadcast_rpc_address parameters are not set correctly, ScyllaDB does not work as expected.
@@ -195,9 +195,9 @@ To enable IPv6 addressing, set the following parameter in scylla.yaml:
 enable_ipv6_dns_lookup: true
 ```
 
-To read the rest of the [Administration Guide](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md) (from the top).
+To read the rest of the [Administration Guide](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md) (from the top).
 
-To go to the System Configuration documentation, click [here](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/index.md).
+To go to the System Configuration documentation, click [here](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/index.md).
 
 <a id="object-storage-configuration"></a>
 
@@ -269,7 +269,7 @@ which fails in ways that are hard to diagnose.
 
 The `name` of an endpoint is also its identifier: statements that select an
 object-storage endpoint - such as
-[CREATE KEYSPACE](https://docs.scylladb.com/manual/stable/cql/cql-extensions.md#cql-keyspace-storage-options) - must repeat this string
+[CREATE KEYSPACE](https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md#cql-keyspace-storage-options) - must repeat this string
 **exactly**. The lookup is an exact string comparison, so
 `https://s3.us-east-1.amazonaws.com` and `https://s3.us-east-1.amazonaws.com:443`
 are two different endpoints even though they address the same server.
@@ -405,7 +405,7 @@ internode_compression controls whether traffic between nodes is compressed.
 
 ## Configuring TLS/SSL in scylla.yaml
 
-ScyllaDB supports encryption between nodes and between client and node. See the ScyllaDB [ScyllaDB TLS/SSL guide:](https://docs.scylladb.com/manual/stable/operating-scylla/security/index.md) for configuration settings.
+ScyllaDB supports encryption between nodes and between client and node. See the ScyllaDB [ScyllaDB TLS/SSL guide:](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/index.md) for configuration settings.
 
 <a id="cqlsh-networking"></a>
 
@@ -433,7 +433,7 @@ ScyllaDB uses the following ports:
 
 If you’re using ScyllaDB Alternator, ensure that the ports configured
 for Alternator with the `alternator_port` or `alternator_https_port` parameter
-are open. See [ScyllaDB Alternator](https://docs.scylladb.com/manual/stable/alternator/alternator.md) for details.
+are open. See [ScyllaDB Alternator](https://docs.scylladb.com/manual/branch-2026.3/alternator/alternator.md) for details.
 
 #### NOTE
 For ScyllaDB Manager ports, see the [ScyllaDB Manager](https://manager.docs.scylladb.com/) documentation.
@@ -458,7 +458,7 @@ If other nodes can connect directly to `listen_address`, then `broadcast_address
 If clients can connect directly to `rpc_address`, then `broadcast_rpc_address` does not need to be set.
 
 #### NOTE
-For tips and examples on how to configure these addresses, refer to [How to Properly Set Address Values in scylla.yaml](https://docs.scylladb.com/manual/stable/kb/yaml-address.md)
+For tips and examples on how to configure these addresses, refer to [How to Properly Set Address Values in scylla.yaml](https://docs.scylladb.com/manual/branch-2026.3/kb/yaml-address.md)
 
 <a id="admin-core-dumps"></a>
 
@@ -466,7 +466,7 @@ For tips and examples on how to configure these addresses, refer to [How to Prop
 
 On RHEL and CentOS, the [Automatic Bug Reporting Tool](https://abrt.readthedocs.io/en/latest/) conflicts with ScyllaDB coredump configuration. Remove it before installing ScyllaDB: `sudo yum remove -y abrt`
 
-ScyllaDB places any core dumps in `var/lib/scylla/coredump`. They are not visible with the `coredumpctl` command. See the [System Configuration Guide](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md) for details on core dump configuration scripts. Check with ScyllaDB support before sharing any core dump, as they may contain sensitive data.
+ScyllaDB places any core dumps in `var/lib/scylla/coredump`. They are not visible with the `coredumpctl` command. See the [System Configuration Guide](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-configuration.md) for details on core dump configuration scripts. Check with ScyllaDB support before sharing any core dump, as they may contain sensitive data.
 
 ## Schedule fstrim
 
@@ -493,7 +493,7 @@ Before creating keyspaces with object storage, you need to
 [configure](#object-storage-configuration) the object storage
 credentials and endpoint. The keyspace is then created with a `STORAGE`
 option naming that endpoint - see
-[Keyspace storage options](https://docs.scylladb.com/manual/stable/cql/cql-extensions.md#cql-keyspace-storage-options) for the CQL
+[Keyspace storage options](https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md#cql-keyspace-storage-options) for the CQL
 syntax.
 
 #### IMPORTANT
@@ -601,7 +601,7 @@ goes away.
 ## Views with Tablets
 
 Materialized Views (MV) and Secondary Indexes (SI) are supported in keyspaces that use tablets
-only when the keyspaces are [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace).
+only when the keyspaces are [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-RF-rack-valid-keyspace).
 
 When a keyspace contains a Materialized View or Secondary Index, some operations are restricted to maintain
 the RF-rack condition. The following actions are not allowed while the view or index is present:
@@ -630,7 +630,7 @@ ScyllaDB exposes a REST API to retrieve administrative information from a node a
 administrative operations. For example, it allows you to check or update configuration,
 retrieve cluster-level information, and more.
 
-The [nodetool](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md) CLI tool uses the REST API
+The [nodetool](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md) CLI tool uses the REST API
 to interact with the ScyllaDB process.
 
 You can interact with the REST API directly using `curl`, ScyllaDB’s CLI for REST API, or the Swagger UI.

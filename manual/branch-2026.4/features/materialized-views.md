@@ -73,11 +73,11 @@ InvalidRequest: code=2200 [Invalid query] message="Cannot directly modify a mate
 
 To modify views, remember that you must instead modify the base table associated with the view.
 
-See the [CQL Reference for Materialized Views](https://docs.scylladb.com/manual/branch-2026.4/cql/mv.md) for more examples.
+See the [CQL Reference for Materialized Views](https://docs.scylladb.com/manual/stable/cql/mv.md) for more examples.
 
 ## Compaction Strategies with Materialized Views
 
-Materialized views, just like regular tables, use one of the available [compaction strategies](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md).
+Materialized views, just like regular tables, use one of the available [compaction strategies](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md).
 When a materialized view is created, it does not inherit its base table compaction strategy settings, because the data model
 of a view does not necessarily have the same characteristics as the one from its base table.
 Instead, the default compaction strategy (IncrementalCompactionStrategy) is used.
@@ -103,7 +103,7 @@ ALTER MATERIALIZED VIEW ks.mv
 
 ### More information
 
-* [CQL Reference for Materialized Views](https://docs.scylladb.com/manual/branch-2026.4/cql/mv.md)
+* [CQL Reference for Materialized Views](https://docs.scylladb.com/manual/stable/cql/mv.md)
 * Learn more about Materialized Views with ScyllaDB University (Free, registration required)
   - [Materialized Views, Secondary Indexes, and Filtering Lesson](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/)
   - [Hands-on Lab Part 1](https://university.scylladb.com/courses/data-modeling/lessons/materialized-views-secondary-indexes-and-filtering/topic/materialized-views-and-indexes-hands-on-lab-1/)

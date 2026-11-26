@@ -111,7 +111,7 @@ to determine the root cause of the corruption.
 > cp -r /path/to/data/keyspace_name/table_dir/quarantine /path/to/backup/location/
 ```
 
-**Step 3**: Drop the quarantined SSTables using [dropquarantinedsstables](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/dropquarantinedsstables.md):
+**Step 3**: Drop the quarantined SSTables using [dropquarantinedsstables](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/dropquarantinedsstables.md):
 
 ```shell
 > nodetool dropquarantinedsstables keyspace_name table_name

@@ -113,8 +113,8 @@ Enabling encrypted CQL connections between client and server
 
 ## See Also
 
-* [Encryption: Encryption: Data in Transit Node to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/node-node-encryption.md)
-* [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md)
+* [Encryption: Encryption: Data in Transit Node to Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/node-node-encryption.md)
+* [Authorization](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md)
 
 Copyright
 

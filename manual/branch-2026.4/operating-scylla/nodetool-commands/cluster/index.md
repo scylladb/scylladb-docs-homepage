@@ -4,5 +4,5 @@
 
 ## Supported cluster suboperations
 
-* [repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cluster/repair.md)  `<keyspace>` `<table>` - Repair one or more tablet tables.
-* [cleanup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cluster/cleanup.md)  - Clean up all non tablet (vnode-based) keyspaces in a cluster
+* [repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/repair.md)  `<keyspace>` `<table>` - Repair one or more tablet tables.
+* [cleanup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cluster/cleanup.md)  - Clean up all non tablet (vnode-based) keyspaces in a cluster

@@ -4,7 +4,7 @@ You can remove nodes from your cluster to reduce its size.
 
 ## Removing a Running Node
 
-1. Run the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command to check the status of the nodes in your cluster.
+1. Run the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command to check the status of the nodes in your cluster.
    ```console
    Datacenter: DC1
       Status=Up/Down
@@ -14,11 +14,11 @@ You can remove nodes from your cluster to reduce its size.
       UN  192.168.1.202  91.11 KB   256     32.9%             125ed9f4-7777-1dbn-mac8-43fddce9123e   B1
       UN  192.168.1.203  124.42 KB  256     32.6%             675ed9f4-6564-6dbd-ca08-43fddce952de   B1
    ```
-2. If the node status is **Up Normal (UN)**, run the [nodetool decommission](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/decommission.md) command
+2. If the node status is **Up Normal (UN)**, run the [nodetool decommission](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/decommission.md) command
    to remove the node you are connected to. Using `nodetool decommission` is the recommended method for cluster scale-down operations. It prevents data loss
    by ensuring that the node you’re removing streams its data to the remaining nodes in the cluster.
 
-   If the node is **Joining**, see [Safely Remove a Joining Node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/safely-removing-joining-node.md).
+   If the node is **Joining**, see [Safely Remove a Joining Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/safely-removing-joining-node.md).
 
    If the node status is **Down**, see [Removing an Unavailable Node]().
 
@@ -26,7 +26,7 @@ You can remove nodes from your cluster to reduce its size.
    Review current disk space utilization on existing nodes and make sure the amount of data streamed from the node being removed can fit into the disk space available on the remaining nodes. If there is not enough disk space on the remaining nodes, the removal of a node will fail. Add more storage to remaining nodes **before** starting the removal procedure.
 
    #### WARNING
-   Removing a node in a rack may violate the [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace) constraints of some keyspace.
+   Removing a node in a rack may violate the [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-RF-rack-valid-keyspace) constraints of some keyspace.
 
    If a keyspace uses tablets and contains a Materialized View or Secondary Index, or if the rf_rack_valid_keyspaces option is set,
    the invariant is enforced for the keyspace, and the node removal will be rejected if it would violate the invariant.
@@ -57,7 +57,7 @@ If the node status is **Down Normal (DN)**, you should try to restore it. Once t
 command (see [Removing a Running Node]()) to remove it.
 
 If all attempts to restore the node have failed and the node is **permanently down**, you can remove the node by running the `nodetool removenode`
-command providing the Host ID of the node you are removing. See [nodetool removenode](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/removenode.md) for details.
+command providing the Host ID of the node you are removing. See [nodetool removenode](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/removenode.md) for details.
 
 #### WARNING
 * Using `nodetool removenode` is a fallback procedure that should only be used when a node is permanently down and cannot
@@ -75,12 +75,12 @@ the nodes should redistribute the data using streaming. Using the command does n
 stream sources do not have the most recent data. In addition, if some nodes are unavailable or another error occurs,
 the `nodetool removenode` operation will fail. To ensure successful operation and preserve consistency among replicas, you should:
 
-* Make sure the status of all other nodes in the cluster is Up Normal (UN). If one or more nodes are unavailable, see [nodetool removenode](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/removenode.md) for instructions.
+* Make sure the status of all other nodes in the cluster is Up Normal (UN). If one or more nodes are unavailable, see [nodetool removenode](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/removenode.md) for instructions.
 * Run a full cluster repair **before** `nodetool removenode`, so all existing replicas have the most up-to-date data.
 * In the case of node failures during the `removenode` operation, re-run repair before running
-  `nodetool removenode` (not required when [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/repair-based-node-operation.md) for `removenode`
+  `nodetool removenode` (not required when [Repair Based Node Operations (RBNO)](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/repair-based-node-operation.md) for `removenode`
   is enabled).
 
 ### Additional Information
 
-* [Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+* [Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

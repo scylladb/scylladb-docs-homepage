@@ -51,7 +51,7 @@ INFO  2016-11-09 10:27:48,191 [shard 1] database - Setting compaction strategy o
 
 ### Checking Server Status with Nodetool
 
-The Docker image also has ScyllaDB’s utilities installed. [Nodetool](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md) is a command line tool for querying and managing a ScyllaDB cluster. The simplest `nodetool` command is `nodetool status`, which displays information about the cluster state:
+The Docker image also has ScyllaDB’s utilities installed. [Nodetool](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md) is a command line tool for querying and managing a ScyllaDB cluster. The simplest `nodetool` command is `nodetool status`, which displays information about the cluster state:
 
 ```console
 docker exec -it some-scylla nodetool status
@@ -199,7 +199,7 @@ For example, to configure ScyllaDB to run with the seed node `192.168.0.100`, ru
 docker run --name some-scylla -d scylladb/scylla --seeds 192.168.0.100
 ```
 
-See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/branch-2026.4/kb/seed-nodes.md) for details.
+See [ScyllaDB Seed Nodes](https://docs.scylladb.com/manual/stable/kb/seed-nodes.md) for details.
 
 #### –listen-address ADDR
 
@@ -313,7 +313,7 @@ First, download the file locally to the node:
 sudo docker exec -it some-scylla.2.0.1 curl -o file.csv https://<url>.com/<path>/<path>/<file>.csv
 ```
 
-Once you have the `.csv` downloaded, you can use the CQL `COPY FROM` command as explained [here](https://docs.scylladb.com/manual/branch-2026.4/cql/cqlsh.md) to load the data into ScyllaDB.
+Once you have the `.csv` downloaded, you can use the CQL `COPY FROM` command as explained [here](https://docs.scylladb.com/manual/stable/cql/cqlsh.md) to load the data into ScyllaDB.
 
 Such a copy command might look like this:
 

@@ -19,6 +19,10 @@ having the highest priority:
 3. command line options
 4. `scylla.yaml`
 
+In addition to the per-node options in `scylla.yaml`, cluster-configuration options are set
+through CQL and are automatically applied by all nodes in the cluster. See
+[Configuring a Cluster with CQL](https://docs.scylladb.com/manual/stable/cql/cluster-config.md) for those options.
+
 <!-- -*- mode: rst -*- -->
 
 <a id="confgroup-initialization-properties"></a>
@@ -532,7 +536,7 @@ having the highest priority:
 > Total size in megabytes allocated for logstor storage on disk.
 
 > * **Type:** `uint32_t`
-> * **Default value:** `2048`
+> * **Default value:** `0`
 > * Liveness: `False`
 
 <a id="confprop-logstor-file-size-in-mb"></a>
@@ -545,25 +549,45 @@ having the highest priority:
 > * **Default value:** `32`
 > * Liveness: `False`
 
-<a id="confprop-logstor-separator-delay-limit-ms"></a>
+<a id="confprop-logstor-format-on-startup"></a>
 
-### logstor_separator_delay_limit_ms
+### logstor_format_on_startup
 
-> Maximum delay in milliseconds for logstor separator debt control.
+> Controls when logstor data files are formatted. When enabled, all logstor files are formatted during node startup, which increases startup time but ensures optimal write performance immediately after startup.     When disabled, logstor files are formatted lazily on first write, which reduces startup time but may cause slightly degraded write performance on first access to each file.
 
-> * **Type:** `uint32_t`
-> * **Default value:** `100`
+> * **Type:** `bool`
+> * **Default value:** `true`
 > * Liveness: `False`
 
-<a id="confprop-logstor-separator-max-memory-in-mb"></a>
+<a id="confprop-logstor-sparse-files"></a>
 
-### logstor_separator_max_memory_in_mb
+### logstor_sparse_files
 
-> Maximum memory in megabytes for logstor separator memory buffers.
+> Create logstor data files as sparse files. When disabled, each file is preallocated and fully written with zeros, guaranteeing space is available and avoiding fragmentation.     When enabled, the file is only extended to its nominal size, so unwritten regions consume no disk space. Useful for tests, where the disk space and I/O of formatting files is wasteful.
 
-> * **Type:** `uint32_t`
-> * **Default value:** `256`
+> * **Type:** `bool`
+> * **Default value:** `false`
 > * Liveness: `False`
+
+<a id="confprop-logstor-compaction-trigger-threshold"></a>
+
+### logstor_compaction_trigger_threshold
+
+> Trigger automatic logstor compaction when the number of available segments drops below this fraction of the total number of logstor segments. A value of 0 disables the trigger threshold.
+
+> * **Type:** `double`
+> * **Default value:** `0.05`
+> * Liveness: `True`
+
+<a id="confprop-logstor-compaction-max-shares"></a>
+
+### logstor_compaction_max_shares
+
+> Maximum CPU shares the logstor compaction controller gives the logstor compaction scheduling group, reached at full space pressure.
+
+> * **Type:** `float`
+> * **Default value:** `2000`
+> * Liveness: `True`
 
 <a id="confgroup-cache-and-index-settings"></a>
 
@@ -1295,7 +1319,7 @@ having the highest priority:
 
 ### vector_store_unreachable_node_detection_time_in_ms
 
-> Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, and TCP_USER_TIMEOUT.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.
+> Time in milliseconds for detecting an unreachable vector store node. This value is applied to the TCP connect timeout, keepalive parameters, TCP_USER_TIMEOUT,     and the deadline of the health-check request used to detect that an unreachable node became available again.     When any of these mechanisms detects that a node is unreachable within this window, the client fails over to the next available vector store node.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `3000`
@@ -1336,6 +1360,7 @@ having the highest priority:
 > : * org.apache.cassandra.auth.AllowAllAuthenticator: Disables authentication; no checks are performed.
 >   * org.apache.cassandra.auth.PasswordAuthenticator: Authenticates users with user names and hashed passwords stored in the system_auth.credentials table. If you use the default, 1, and the node with the lone replica goes down, you will not be able to log into the cluster because the system_auth keyspace was not replicated.
 >   * com.scylladb.auth.CertificateAuthenticator: Authenticates users based on TLS certificate authentication subject. Roles and permissions still need to be defined as normal. Super user can be set using the ‘auth_superuser_name’ configuration value. Query to extract role name from subject string is set using ‘auth_certificate_role_queries’.
+>   * com.scylladb.auth.CertificateOrPasswordAuthenticator: Accepts either a TLS client certificate (role name derived via ‘auth_certificate_role_queries’, no SASL exchange) or a username/password pair (SASL). Designed for use with a truststore and require_client_auth=optional (REQUEST mode), enabling a single CQL port to serve both certificate-bearing and password-authenticated clients.
 >   * com.scylladb.auth.TransitionalAuthenticator: Wraps around the PasswordAuthenticator, logging them in if username/password pair provided is correct and treating them as anonymous users otherwise.
 >   * com.scylladb.auth.SaslauthdAuthenticator : Use saslauthd for authentication.
 >   <br/>
@@ -1398,7 +1423,7 @@ having the highest priority:
 ### server_encryption_options
 
 > Enable or disable inter-node encryption. You must also generate keys and provide the appropriate key and trust store locations and passwords. The available options are:
-> : * internode_encryption: (Default: none) Enable or disable encryption of inter-node communication using the TLS_RSA_WITH_AES_128_CBC_SHA cipher suite for authentication, key exchange, and encryption of data transfers. The available inter-node options are:
+> : * internode_encryption: (Default: none) Enable or disable encryption of inter-node communication using TLS. The available inter-node options are:
 >     : * all: Encrypt all inter-node communications.
 >       * none: No encryption.
 >       * dc: Encrypt the traffic between the data centers (server only).
@@ -1411,7 +1436,7 @@ having the highest priority:
 >   The advanced settings are:
 >   <br/>
 >   * priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.
->   * require_client_auth: (Default: false ) Enables or disables certificate authentication.
+>   * require_client_auth: (Default: false) Controls peer certificate verification. Valid values: true (require a peer certificate), false (no peer certificate), optional (request but do not require a peer certificate).
 >   <br/>
 >   Related information: Node-to-node encryption
 
@@ -1433,7 +1458,7 @@ having the highest priority:
 >   The advanced settings are:
 >   <br/>
 >   * priority_string: (Default: not set, use default) GnuTLS priority string controlling TLS algorithms used/allowed.
->   * require_client_auth: (Default: false) Enables or disables certificate authentication.
+>   * require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to other mechanisms, e.g., password for CQL CertificateOrPasswordAuthenticator).
 >   * enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.
 >   <br/>
 >   Related information: Client-to-node encryption
@@ -1449,10 +1474,12 @@ having the highest priority:
 > When Alternator via HTTPS is enabled with alternator_https_port, where to take the key and certificate. The available options are:
 > : * certificate: (Default: conf/scylla.crt) The location of a PEM-encoded x509 certificate used to identify and encrypt the client/server communication.
 >   * keyfile: (Default: conf/scylla.key) PEM Key file associated with certificate.
+>   * truststore: (Default: <not set, use system truststore>) Location of the truststore containing the trusted certificate for authenticating client certificates.
 >   <br/>
 >   The advanced settings are:
 >   <br/>
 >   * priority_string: GnuTLS priority string controlling TLS algorithms used/allowed.
+>   * require_client_auth: (Default: false) Controls client certificate verification. Valid values: true (require a client certificate), false (no client certificate), optional (request but do not require a client certificate; clients may authenticate via certificate or fall back to SigV4 signatures in requests).
 >   * enable_session_tickets: (Default: true) Enables or disables TLS1.3 session tickets.
 
 > * **Type:** `string_map`
@@ -1518,6 +1545,16 @@ having the highest priority:
 > * **Type:** `bool`
 > * **Default value:** `false`
 > * Liveness: `False`
+
+<a id="confprop-test-clocks-offset-seconds"></a>
+
+### test_clocks_offset_seconds
+
+> Number of seconds to add to this node’s clocks - db_clock, gc_clock, and the timestamps generated for writes. For tests only! It lets a test make a TTL expire, or data become expired or collectable, without really waiting for that long. Because it is live-updatable, a test can set it and then reset it back to 0 when it is done. This option only exists in builds which enable error injection (dev, debug, sanitize), not in release builds - so a test which needs it should check whether it exists, and skip itself if it doesn’t.
+
+> * **Type:** `int64_t`
+> * **Default value:** `0`
+> * Liveness: `True`
 
 <a id="confprop-api-port"></a>
 
@@ -1719,6 +1756,16 @@ having the highest priority:
 > * **Default value:** `true`
 > * Liveness: `True`
 
+<a id="confprop-small-table-optimization-for-rbno-max-table-size"></a>
+
+### small_table_optimization_for_rbno_max_table_size
+
+> Maximum on-disk size (in bytes) of a user table for it to be automatically eligible for the small table optimization for repair based node operations. The size is probed on the replicas the operation syncs from. Defaults to 1 GiB. Only takes effect when enable_small_table_optimization_for_rbno is true.
+
+> * **Type:** `uint64_t`
+> * **Default value:** `1073741824`
+> * Liveness: `True`
+
 <a id="confprop-ring-delay-ms"></a>
 
 ### ring_delay_ms
@@ -1833,10 +1880,10 @@ having the highest priority:
 
 ### prometheus_allow_protobuf
 
-> If set allows the experimental Prometheus protobuf with native histogram
+> Enable Prometheus protobuf with native histogram. Set to false to force text exposition format.
 
 > * **Type:** `bool`
-> * **Default value:** `false`
+> * **Default value:** `true`
 > * Liveness: `False`
 
 <a id="confprop-abort-on-lsa-bad-alloc"></a>
@@ -2062,6 +2109,16 @@ having the highest priority:
 
 > * **Type:** `float`
 > * **Default value:** `0.95`
+> * Liveness: `True`
+
+<a id="confprop-speculative-retry-user-table-default"></a>
+
+### speculative_retry_user_table_default
+
+> Default value of the speculative_retry option for user tables, i.e., tables in non-internal keyspaces.     Applied when a table is created without specifying speculative_retry explicitly; existing tables are not affected.     Materialized views and secondary indexes created without an explicit value also use this default; they do not inherit the base table’s value.     The value used for a new table is taken from the configuration of the node coordinating the table creation, so the option should be set identically on all nodes.     The option can be updated at runtime; the updated value applies to tables created after the update.     Accepted values are the same as for the table option: ALWAYS, NONE, <X>PERCENTILE (e.g. 99.0PERCENTILE) and <N>ms (e.g. 200ms).
+
+> * **Type:** `sstring`
+> * **Default value:** `"99.0PERCENTILE"`
 > * Liveness: `True`
 
 <a id="confprop-table-digest-insensitive-to-expiry"></a>
@@ -2545,6 +2602,16 @@ having the highest priority:
 > * **Default value:** `false`
 > * Liveness: `True`
 
+<a id="confprop-alternator-vector-search-extra-operators"></a>
+
+### alternator_vector_search_extra_operators
+
+> Allow comparison, range and set-membership operators (<, <=, >, >=, IN, BETWEEN)     in SearchVectors’ SearchConditionExpression, on the vector index’s INLINE_FILTER     attributes. DynamoDB currently supports only the equality operator (=) there, and     documents the others as not yet available
+
+> * **Type:** `bool`
+> * **Default value:** `false`
+> * Liveness: `True`
+
 <a id="confprop-alternator-timeout-in-ms"></a>
 
 ### alternator_timeout_in_ms
@@ -2937,6 +3004,16 @@ having the highest priority:
 > * **Default value:** `false`
 > * Liveness: `True`
 
+<a id="confprop-allow-deprecated-size-tiered-compaction-strategy"></a>
+
+### allow_deprecated_size_tiered_compaction_strategy
+
+> Allow the deprecated SizeTieredCompactionStrategy to be named when creating or altering a table or a materialized view.  It is an alias of IncrementalCompactionStrategy, which the table is compacted with either way, so naming it returns a CQL warning.  When disabled, naming it is an error instead.  This option defaults to true for backward compatibility, and will default to false in a future version.
+
+> * **Type:** `bool`
+> * **Default value:** `true`
+> * Liveness: `True`
+
 <a id="confprop-minimum-replication-factor-fail-threshold"></a>
 
 ### minimum_replication_factor_fail_threshold
@@ -3123,16 +3200,6 @@ having the highest priority:
 > * **Default value:** `"/dev/log"`
 > * Liveness: `False`
 
-<a id="confprop-audit-syslog-write-buffer-size"></a>
-
-### audit_syslog_write_buffer_size
-
-> The size (in bytes) of a write buffer used when writing to syslog socket.
-
-> * **Type:** `size_t`
-> * **Default value:** `1048576`
-> * Liveness: `False`
-
 <a id="confprop-audit-rules"></a>
 
 ### audit_rules
@@ -3252,20 +3319,20 @@ having the highest priority:
 
 ### auto_repair_enabled_default
 
-> Set true to enable auto repair for tablet tables by default. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.
+> Deprecated, use ALTER CLUSTER WITH auto_repair_enabled = true instead. Set true to enable auto repair for tablet tables when the auto_repair_enabled cluster config option is not set at cluster, keyspace or table scope. The option will be removed in a future release.
 
 > * **Type:** `bool`
-> * **Default value:** `false`
+> * **Default value:** `cluster_config_registry::auto_repair_enabled_default`
 > * Liveness: `True`
 
 <a id="confprop-auto-repair-threshold-default-in-seconds"></a>
 
 ### auto_repair_threshold_default_in_seconds
 
-> Set the default time in seconds for the auto repair threshold for tablet tables. If the time since last repair is bigger than the configured time, the tablet is eligible for auto repair. The value will be overridden by the per keyspace or per table configuration which is not implemented yet.
+> Deprecated, use ALTER CLUSTER WITH auto_repair_threshold_in_seconds = <seconds> instead. Set the auto repair threshold in seconds for tablet tables when the auto_repair_threshold_in_seconds cluster config option is not set at cluster, keyspace or table scope. A tablet is eligible for auto repair when this much time has passed since the start of its last successful repair; a repair restricted to some hosts or datacenters does not count, and a tablet that was never repaired is eligible immediately. 0 disables time-based auto repair. The option will be removed in a future release.
 
 > * **Type:** `int32_t`
-> * **Default value:** `24 * 3600`
+> * **Default value:** `int32_t(cluster_config_registry::auto_repair_threshold_default_seconds)`
 > * Liveness: `True`
 
 <a id="confprop-view-flow-control-delay-limit-in-ms"></a>
@@ -3376,6 +3443,16 @@ having the highest priority:
 
 > * **Type:** `uint64_t`
 > * **Default value:** `service::default_target_tablet_size / 100`
+> * Liveness: `True`
+
+<a id="confprop-tablet-transition-abort-grace-period-in-seconds"></a>
+
+### tablet_transition_abort_grace_period_in_seconds
+
+> Default grace period given to in-flight tablet transitions when disabling tablet balancing. Transitions which can     still be cancelled after it, tablet repairs included, are cancelled; the others are waited for. A cancelled repair     drops its tablets from the repair request without reporting them as failed. Cancelling a transition which was     adding a replica leaves that tablet below its replication factor until balancing is enabled again. Callers of the     API can pass their own grace period, which overrides this. 0, the default, cancels nothing.
+
+> * **Type:** `uint32_t`
+> * **Default value:** `0`
 > * Liveness: `True`
 
 <a id="confgroup-ungrouped-properties"></a>

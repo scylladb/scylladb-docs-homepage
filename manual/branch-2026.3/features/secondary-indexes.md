@@ -14,7 +14,7 @@ Secondary indexes provide the following advantages:
 
 What’s more, the size of an index is proportional to the size of the indexed data. As data in ScyllaDB is distributed to multiple nodes, it’s impractical to store the whole index on a single node, as it limits the size of the index to the capacity of a single node, not the capacity of the whole cluster.
 
-For this reason, secondary indexes in ScyllaDB are **global** rather than local. With global indexing, a materialized view is created for each index. This [materialized view](https://docs.scylladb.com/manual/stable/features/materialized-views.md) has the indexed column as a partition key and primary key (partition key and clustering keys) of the indexed row as clustering keys.
+For this reason, secondary indexes in ScyllaDB are **global** rather than local. With global indexing, a materialized view is created for each index. This [materialized view](https://docs.scylladb.com/manual/branch-2026.3/features/materialized-views.md) has the indexed column as a partition key and primary key (partition key and clustering keys) of the indexed row as clustering keys.
 
 Secondary indexes created globally provide a further advantage: you can use the value of the indexed column to find the corresponding index table row in the cluster so reads are scalable. Note however, that with this approach, writes are slower than with local indexing because of the overhead required to keep the indexed view up to date.
 
@@ -35,7 +35,7 @@ In the example above:
 
 ## Example
 
-The following is an example and does not contain all of the options available. To see all of the options available, refer to the [CQL Reference](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md).
+The following is an example and does not contain all of the options available. To see all of the options available, refer to the [CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md).
 
 Given the following schema:
 
@@ -118,8 +118,8 @@ Note the Secondary Index is implemented as MATERIALIZED VIEW.
 
 ## More information
 
-* [Local Secondary Indexes](https://docs.scylladb.com/manual/stable/features/local-secondary-indexes.md)
-* [CQL Reference](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md) - CQL Reference for Secondary Indexes
+* [Local Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.3/features/local-secondary-indexes.md)
+* [CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md) - CQL Reference for Secondary Indexes
 
 The following courses are available from ScyllaDB University:
 

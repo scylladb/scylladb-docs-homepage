@@ -19,13 +19,13 @@ For details about ScyllaDB Cloud, see the
 
 ## Documentation Highlights
 
-* [Install ScyllaDB](https://docs.scylladb.com/manual/stable/getting-started/install-scylla/index.md)
-* [Configure ScyllaDB](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md)
-* [Cluster Management Procedures](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/index.md)
-* [Upgrade ScyllaDB](https://docs.scylladb.com/manual/stable/upgrade/index.md)
-* [CQL Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+* [Install ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/getting-started/install-scylla/index.md)
+* [Configure ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-configuration.md)
+* [Cluster Management Procedures](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/index.md)
+* [Upgrade ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/upgrade/index.md)
+* [CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
 * [ScyllaDB Drivers](https://docs.scylladb.com/stable/drivers/index.html)
-* [Features](https://docs.scylladb.com/manual/stable/features/index.md)
+* [Features](https://docs.scylladb.com/manual/branch-2026.3/features/index.md)
 
 ## ScyllaDB Support
 

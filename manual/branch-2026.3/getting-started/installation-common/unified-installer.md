@@ -3,7 +3,7 @@
 This document covers installing, uninstalling, and upgrading ScyllaDB using Unified Installer.
 Unified Installer is recommended when you do not have root privileges to the server.
 If you have root privileges, we recommend installing ScyllaDB with
-[ScyllaDB Web Installer](https://docs.scylladb.com/manual/stable/getting-started/installation-common/scylla-web-installer.md)
+[ScyllaDB Web Installer](https://docs.scylladb.com/manual/branch-2026.3/getting-started/installation-common/scylla-web-installer.md)
 or by downloading the OS-specific packages (RPMs and DEBs) and installing them with
 the package manager (dnf and apt).
 
@@ -113,8 +113,8 @@ To downgrade to your original ScyllaDB version, use the [Uninstall]() procedure,
 
 ## Next Steps
 
-* [Configure ScyllaDB](https://docs.scylladb.com/manual/stable/getting-started/system-configuration.md)
+* [Configure ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-configuration.md)
 * Manage your clusters with [ScyllaDB Manager](https://manager.docs.scylladb.com/)
 * Monitor your cluster and data with [ScyllaDB Monitoring](https://monitoring.docs.scylladb.com/)
-* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md).
+* Get familiar with ScyllaDB’s [command line reference guide](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md).
 * Learn about ScyllaDB at [ScyllaDB University](https://university.scylladb.com/)

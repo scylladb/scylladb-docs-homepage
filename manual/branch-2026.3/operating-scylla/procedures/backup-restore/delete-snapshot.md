@@ -5,7 +5,7 @@ Old snapshots must be deleted in order to clear disk space.
 
 ## Procedure
 
-Use the [nodetool clearsnapshot](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/clearsnapshot.md) command to delete all the existing snapshots files from their directory, `nodetool clearsnapshot` can be applied on a single KEYSPACE or multiple KEYSPACES.
+Use the [nodetool clearsnapshot](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/clearsnapshot.md) command to delete all the existing snapshots files from their directory, `nodetool clearsnapshot` can be applied on a single KEYSPACE or multiple KEYSPACES.
 
 `$ nodetool clearsnapshot  <KEYSPACE_NAME>`
 

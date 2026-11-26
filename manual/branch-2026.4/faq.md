@@ -58,15 +58,15 @@ For example:
 * If the node `total_mem` is 18GB `swap` size should be set to 6GB.
 * If the node `total_mem` is 240GB `swap` size should be set to 16GB.
 
-Swap can be set up in several ways. One way to set up swap is detailed in the KB Article [How to Set up a Swap Space](https://docs.scylladb.com/manual/branch-2026.4/kb/set-up-swap.md).
+Swap can be set up in several ways. One way to set up swap is detailed in the KB Article [How to Set up a Swap Space](https://docs.scylladb.com/manual/stable/kb/set-up-swap.md).
 
 ### My query does not return any or some of the data? What happened?
 
-If you are using a time range in the query, refer to the solution in the troubleshooting document, [Time Range Queries Do Not Return Some or All of the Data](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/time-zone.md).
+If you are using a time range in the query, refer to the solution in the troubleshooting document, [Time Range Queries Do Not Return Some or All of the Data](https://docs.scylladb.com/manual/stable/troubleshooting/time-zone.md).
 
 ### DESC SCHEMA shows that I am using many materialized views (MVs) when I know I only added Secondary Indexes (SI). Why are there MVs in my schema?
 
-As SI is built on top of MV, you can expect to see MV in your schema. There is nothing wrong with your system. More information on [Global Secondary Indexes](https://docs.scylladb.com/manual/branch-2026.4/features/secondary-indexes.md).
+As SI is built on top of MV, you can expect to see MV in your schema. There is nothing wrong with your system. More information on [Global Secondary Indexes](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md).
 
 ### Using the Java driver SimpleStatements are slow. Why does this happen?
 
@@ -84,7 +84,7 @@ You can find the snapshot in the `snapshots` directory, under the table SSTable.
 `/var/lib/scylla/data/mykeyspace/users-bdba4e60f6d511e7a2ab000000000000/snapshots/1515678531438-users`
 
 As the snapshot take the same space as the dropped table, disk usage will remain the same.
-You can clean snapshots by using [nodetool clearsnapshot](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/clearsnapshot.md). Read more on [snapshot and clearsnapshot](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/delete-snapshot.md)
+You can clean snapshots by using [nodetool clearsnapshot](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/clearsnapshot.md). Read more on [snapshot and clearsnapshot](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/delete-snapshot.md)
 
 ## Features
 
@@ -200,7 +200,7 @@ If you are creating a production cluster or if your cluster is going to have mor
 
 Our general recommendation is to always use a `NetworkTopologyStrategy` and use `Ec2XXX` snitches on AWS based clusters and `GossipingPropertyFileSnitch` in all other cases.
 
-A description of all snitch options we support may be found in [Snitches](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/system-configuration/snitch.md).
+A description of all snitch options we support may be found in [Snitches](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md).
 
 Note: trying to mix a `SimpleSnitch` with a `DC-aware strategy` or a `DC-aware snitch` with a `SimpleStrategy` may cause your cluster not to work as intended therefore we **strongly discourage** these types of configurations in general.
 
@@ -249,10 +249,10 @@ After that, if you are using a `DC-aware` configuration, make sure that the repl
 
 Yes, but it will require running a full repair (or cleanup) to change the replica count of existing data:
 
-- [Alter](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#alter-keyspace-statement) the replication factor for desired keyspace (using cqlsh for instance).
+- [Alter](https://docs.scylladb.com/manual/stable/cql/ddl.md#alter-keyspace-statement) the replication factor for desired keyspace (using cqlsh for instance).
 - If you’re reducing the replication factor, run `nodetool cleanup <updated Keyspace>` on the keyspace you modified to remove surplus replicated data.
   Cleanup runs on a per-node basis.
-- If you’re increasing the replication factor, refer to [How to Safely Increase the RF](https://docs.scylladb.com/manual/branch-2026.4/kb/rf-increase.md)
+- If you’re increasing the replication factor, refer to [How to Safely Increase the RF](https://docs.scylladb.com/manual/stable/kb/rf-increase.md)
 - Note that you need to provide the keyspace name. If you do not, the cleanup or repair operation runs on all keyspaces for the specific node.
 
 ### Why can’t I set `listen_address` to listen to 0.0.0.0 (all my addresses)?
@@ -337,14 +337,14 @@ Similarly, ScyllaDB AMI on EC2 will automatically mount all available SSD drives
 
 ### Should I use RAID for replications, such as RAID1, RAID4 or higher?
 
-You can, but it is not recommended. ScyllaDB [clustering architecture](https://docs.scylladb.com/manual/branch-2026.4/architecture/ringarchitecture/index.md) already provides data replication across nodes and DCs.
+You can, but it is not recommended. ScyllaDB [clustering architecture](https://docs.scylladb.com/manual/stable/architecture/ringarchitecture/index.md) already provides data replication across nodes and DCs.
 Adding another layer of replication in each node is redundant, slows down I/O operation and reduces available storage.
 Want a higher level of replication?
-Increase the Replication Factor (RF) of [relevant Keyspaces](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md).
+Increase the Replication Factor (RF) of [relevant Keyspaces](https://docs.scylladb.com/manual/stable/cql/ddl.md).
 
 ### Can I use JBOD and not use RAID0?
 
-[JBOD](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-JBOD) is not supported by ScyllaDB.
+[JBOD](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-JBOD) is not supported by ScyllaDB.
 
  may be a reasonable solution for Cassandra because it rebuilds nodes very slowly. As this is not an issue for ScyllaDB, it’s more efficient to use RAID.
 
@@ -357,7 +357,7 @@ As a result, it is much more advantageous to use RAID with ScyllaDB
 
 ### Is `Nodetool Repair` a Local (One Node) Operation or a Global (Full Cluster) Operation?
 
-When running [nodetool repair](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/repair.md) on a node, it performs a repair on every token range this node owns; this will also repair other nodes that share the same range.
+When running [nodetool repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) on a node, it performs a repair on every token range this node owns; this will also repair other nodes that share the same range.
 
 If you wish to repair the entire cluster, it is recommended to run `nodetool repair -pr` on each node in the cluster, sequentially, or use the [ScyllaDB Manager](https://manager.docs.scylladb.com/).
 
@@ -374,7 +374,7 @@ You can restrict the number of items in the IN clause with the following options
 We recommend that you use these options with caution. Changing the maximum number of IN restrictions to more than 100 may result in server instability.
 
 The options can be configured on the command line, passed with `SCYLLA_ARGS` in `/etc/default/scylla-server` or `/etc/sysconfig/scylla-server`,
-or added to your `scylla.yaml` (see [ScyllaDB Configuration](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md)).
+or added to your `scylla.yaml` (see [ScyllaDB Configuration](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md)).
 
 ### Can I change the coredump mount point?
 

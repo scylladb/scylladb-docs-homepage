@@ -3,7 +3,7 @@
 ## Introduction
 
 ScyllaDB was originally designed, following Apache Cassandra, to use gossip for topology and schema updates and the Paxos consensus algorithm for
-strong data consistency ([LWT](https://docs.scylladb.com/manual/branch-2026.4/features/lwt.md)). To achieve stronger consistency without performance penalty, ScyllaDB has turned to Raft - a consensus algorithm designed as an alternative to both gossip and Paxos.
+strong data consistency ([LWT](https://docs.scylladb.com/manual/stable/features/lwt.md)). To achieve stronger consistency without performance penalty, ScyllaDB has turned to Raft - a consensus algorithm designed as an alternative to both gossip and Paxos.
 
 Raft is a consensus algorithm that implements a distributed, consistent, replicated log across members (nodes). Raft implements consensus by first electing a distinguished leader, then giving the leader complete responsibility for managing the replicated log. The leader accepts log entries from clients, replicates them on other servers, and tells servers when it is safe to apply log entries to their state machines.
 
@@ -32,13 +32,13 @@ of the DCs is down.
 **We recommend configuring three DCs per cluster to ensure that the cluster remains available and operational when one DC is down.**
 In the case of two-DC cluster with the same number of nodes in each DC, it is sufficient for the third DC to contain only one node.
 That node can be configured with `join_ring=false` and run on a weaker machine.
-See [Configuration Parameters](https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md) for details about the `join_ring` option.
+See [Configuration Parameters](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md) for details about the `join_ring` option.
 
 <a id="raft-schema-changes"></a>
 
 ## Safe Schema Changes with Raft
 
-In ScyllaDB, schema is based on [Data Definition Language (DDL)](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md). In earlier ScyllaDB versions, schema changes were tracked via the gossip protocol, which might lead to schema conflicts if the updates are happening concurrently.
+In ScyllaDB, schema is based on [Data Definition Language (DDL)](https://docs.scylladb.com/manual/stable/cql/ddl.md). In earlier ScyllaDB versions, schema changes were tracked via the gossip protocol, which might lead to schema conflicts if the updates are happening concurrently.
 
 Implementing Raft eliminates schema conflicts and allows full automation of DDL changes under any conditions, as long as a quorum
 of nodes in the cluster is available. The following examples illustrate how Raft provides the solution to problems with schema changes.
@@ -103,7 +103,7 @@ You can verify that consistent topology management is enabled on your cluster in
 
 ## Handling Failures
 
-See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/handling-node-failures.md).
+See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md).
 
 <a id="raft-learn-more"></a>
 

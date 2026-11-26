@@ -12,6 +12,6 @@ nodetool [options] getcompactionthroughput
 
 See also
 
-* [setcompactionthroughput](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/setcompactionthroughput.md)
+* [setcompactionthroughput](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/setcompactionthroughput.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

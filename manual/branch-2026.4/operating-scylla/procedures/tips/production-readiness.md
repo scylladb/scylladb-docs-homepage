@@ -9,12 +9,12 @@ recommendations provided. Click the links for more information on each topic.
 
 ### Pre-Deployment Requirements
 
-* [ScyllaDB System Requirements](https://docs.scylladb.com/manual/branch-2026.4/getting-started/system-requirements.md) - verify your instances, system, OS, etc are supported by ScyllaDB for production machines.
-* [ScyllaDB Getting Started](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md)
+* [ScyllaDB System Requirements](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md) - verify your instances, system, OS, etc are supported by ScyllaDB for production machines.
+* [ScyllaDB Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md)
 
 ### Choose a Compaction Strategy
 
-Each workload may require a specific strategy. Refer to [Choose a Compaction Strategy](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md) for details.
+Each workload may require a specific strategy. Refer to [Choose a Compaction Strategy](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md) for details.
 
 #### Incremental Compaction Strategy (ICS)
 
@@ -24,8 +24,8 @@ You will have much less Space Amplification with ICS as it only requires 25% add
 #### NOTE
 ICS is the default compaction strategy.
 
-* Refer to [Incremental Compaction Strategy](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md#ics1) for an overview of the benefits.
-* Refer to [Incremental Compaction Strategy Overview](https://docs.scylladb.com/manual/branch-2026.4/kb/compaction.md#incremental-compaction-strategy-ics) for a description of how it works.
+* Refer to [Incremental Compaction Strategy](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md#ics1) for an overview of the benefits.
+* Refer to [Incremental Compaction Strategy Overview](https://docs.scylladb.com/manual/stable/kb/compaction.md#incremental-compaction-strategy-ics) for a description of how it works.
 
 ## Resiliency
 
@@ -33,7 +33,7 @@ When rolling out to production it is important to make sure your data is recover
 
 ### Replication Factors
 
-Verify the [Replication Factor](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Replication-Factor-RF) is set properly **for each keyspace**.
+Verify the [Replication Factor](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Replication-Factor-RF) is set properly **for each keyspace**.
 
 We recommend using an  of **at least** three.
 
@@ -41,19 +41,19 @@ If you have a multi-datacenter architecture we recommend to have `RF=3` on each 
 
 For additional information:
 
-* Read more about [ScyllaDB Fault Tolerance](https://docs.scylladb.com/manual/branch-2026.4/architecture/architecture-fault-tolerance.md)
+* Read more about [ScyllaDB Fault Tolerance](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md)
 * Take a course at [ScyllaDB University on RF](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/high-availability/topic/fault-tolerance-replication-factor/).
 
 ### Consistency Levels
 
-Verify the [Consistency Level (CL)](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Consistency-Level-CL) is set properly **for each table**.
+Verify the [Consistency Level (CL)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Consistency-Level-CL) is set properly **for each table**.
 
 We recommend using `LOCAL_QUORUM` across **the cluster and DCs**
 
 For additional information:
 
-* Refer to [ScyllaDB Fault Tolerance](https://docs.scylladb.com/manual/branch-2026.4/architecture/architecture-fault-tolerance.md)
-* Watch a [Demo](https://docs.scylladb.com/manual/branch-2026.4/architecture/console-CL-full-demo.md)
+* Refer to [ScyllaDB Fault Tolerance](https://docs.scylladb.com/manual/stable/architecture/architecture-fault-tolerance.md)
+* Watch a [Demo](https://docs.scylladb.com/manual/stable/architecture/console-CL-full-demo.md)
 * Take a course at [ScyllaDB University on CL](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/high-availability/topic/consistency-level/)
 
 ### Gossip Configuration
@@ -64,8 +64,8 @@ For additional information:
    **Do Not** use SimpleStrategy on any production machine, even if you only have a single DC.
 
    For additional information:
-   * Refer to [Gossip in ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/kb/gossip.md)
-   * Follow the [How to Switch Snitches](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/config-change/switch-snitch.md) procedure if required.
+   * Refer to [Gossip in ScyllaDB](https://docs.scylladb.com/manual/stable/kb/gossip.md)
+   * Follow the [How to Switch Snitches](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/config-change/switch-snitch.md) procedure if required.
    * Take a course at [ScyllaDB University on Gossip](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/architecture/topic/gossip/)
 2. Use the correct Data Replication strategy.
 
@@ -98,7 +98,7 @@ Enable Inter-node Compression by editing the ScyllaDB Configuration file (/etc/s
 
 `internode_compression: all`
 
-For additional information, see the Admin Guide [Inter-node Compression](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#internode-compression) section.
+For additional information, see the Admin Guide [Inter-node Compression](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#internode-compression) section.
 
 ### Driver Compression
 
@@ -161,10 +161,10 @@ See this [article](https://www.softwaretestinghelp.com/top-5-software-configurat
 
 Use the following guidelines to keep your data and database secure.
 
-* Enable [Authentication](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authentication.md)
-* Create Roles for all users and use [RBAC](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/rbac-usecase.md) with or without LDAP (coming soon).
-* Use Encryption in Transit [between nodes](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/node-node-encryption.md) and [client to node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/client-node-encryption.md).
-* Refer to the [Security Checklist](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/security-checklist.md) for more information.
+* Enable [Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md)
+* Create Roles for all users and use [RBAC](https://docs.scylladb.com/manual/stable/operating-scylla/security/rbac-usecase.md) with or without LDAP (coming soon).
+* Use Encryption in Transit [between nodes](https://docs.scylladb.com/manual/stable/operating-scylla/security/node-node-encryption.md) and [client to node](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md).
+* Refer to the [Security Checklist](https://docs.scylladb.com/manual/stable/operating-scylla/security/security-checklist.md) for more information.
 
 ## HA Testing
 
@@ -181,7 +181,7 @@ HA testing in multi DC - for example:
 
 ## Additional Topics
 
-* [Add a Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
+* [Add a Node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)
 * [Repair](https://manager.docs.scylladb.com/branch-2.2/repair/index.html)
-* [Cleanup](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/cleanup.md)
+* [Cleanup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cleanup.md)
 * Tech Talk: [How to be successful with ScyllaDB](https://www.scylladb.com/tech-talk/how-to-be-successful-with-scylla/)

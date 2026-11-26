@@ -5,7 +5,7 @@ You must never use the `nodetool removenode` command to remove a running node th
 Before using the command, make sure the node is permanently down and cannot be recovered.
 
 If the node is up and reachable by other nodes, use `nodetool decommission`.
-See [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md) for more information.
+See [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/remove-node.md) for more information.
 
 This command allows you to remove a node from the cluster when the status of the node is Down Normal (DN) and all attempts to restore the node have failed.
 
@@ -20,12 +20,12 @@ is removed from the cluster or replaced.
 
 * Using `removenode` requires at least a quorum of nodes in a cluster to be available.
   If the quorum is lost, it must be restored before you change the cluster topology.
-  See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+  See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 * Make sure that the number of nodes remaining in the DC after you remove a node
   will be the same or higher than the Replication Factor configured for the keyspace
   in this DC. If the number of remaining nodes is lower than the RF, the removenode
   request may fail. In such a case, you should follow the procedure to
-  [replace a dead node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md)
+  [replace a dead node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md)
   instead of running `nodetool removenode`.
 
 ## Usage
@@ -42,7 +42,7 @@ Example:
 nodetool removenode 675ed9f4-6564-6dbd-ca08-43fddce952de
 ```
 
-To only mark the node as permanently down without doing actual removal, use [nodetool excludenode](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/excludenode.md):
+To only mark the node as permanently down without doing actual removal, use [nodetool excludenode](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/excludenode.md):
 
 ```console
 nodetool excludenode <Host ID of the node>
@@ -59,7 +59,7 @@ those from other removenode operations.
 
 Removenode which is still in the tablet rebuild phase can be canceled using Task Manager API.
 Tablets which are already rebuilt will remain on their new replicas.
-See [Task manager](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/task-manager.md).
+See [Task manager](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/task-manager.md).
 
 ## Ignoring Dead Nodes
 
@@ -74,4 +74,4 @@ Example:
 nodetool removenode --ignore-dead-nodes 8d5ed9f4-7764-4dbd-bad8-43fddce94b7c,125ed9f4-7777-1db0-aac8-43fddce9123e 675ed9f4-6564-6dbd-ca08-43fddce952de
 ```
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

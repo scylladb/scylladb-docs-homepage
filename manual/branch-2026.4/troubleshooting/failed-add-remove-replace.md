@@ -4,5 +4,5 @@ ScyllaDB relies on the Raft consensus algorithm, which requires at least a quoru
 of nodes in a cluster to be available. If some nodes are down and the quorum is
 lost, adding, removing, and replacing a node fails.
 
-See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/handling-node-failures.md) for information about
+See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for information about
 recovery actions depending on the number of nodes and DCs in your cluster.

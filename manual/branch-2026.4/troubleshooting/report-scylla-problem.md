@@ -108,7 +108,7 @@ If ScyllaDB restarts for some reason and there is no core dump file, the OS syst
 **Procedure**
 
 1. Open the custom configuration file. `/etc/systemd/coredump.conf.d/custom.conf`.
-2. Refer to [generate core dumps](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#admin-core-dumps) for details.
+2. Refer to [generate core dumps](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-core-dumps) for details.
 
 #### NOTE
 You will need spare disk space larger than that of ScyllaDB’s RAM.
@@ -133,7 +133,7 @@ Include the following information in your report:
 * Complete [ScyllaDB Doctor Vitals](#report-scylla-problem-scylla-doctor)
 * A [Server Metrics]() Report
 * A [Client Metrics]() Report
-* The contents of your tracing data. See [Collecting Tracing Data](https://docs.scylladb.com/manual/branch-2026.4/using-scylla/tracing.md#tracing-collecting-tracing-data).
+* The contents of your tracing data. See [Collecting Tracing Data](https://docs.scylladb.com/manual/stable/using-scylla/tracing.md#tracing-collecting-tracing-data).
 
 ### Metrics Reports
 

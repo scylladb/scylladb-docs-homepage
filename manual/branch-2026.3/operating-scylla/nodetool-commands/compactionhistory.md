@@ -37,4 +37,4 @@ Explanation:
 | total_tombstone_purge_failure_due_to_overlapping_with_memtable             | purgeable tombstone which couldn’t be collected because memtable contains possibly shadowed data       |
 | total_tombstone_purge_failure_due_to_overlapping_with_uncompacting_sstable | purgeable tombstone which couldn’t be collected because other sstables contains possibly shadowed data |
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

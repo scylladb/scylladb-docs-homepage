@@ -3,16 +3,16 @@
 #### NOTE
 Replacing a node requires at least a quorum of nodes in a cluster to be available.
 If the quorum is lost, it must be restored before a node is replaced.
-See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 
 ## Prerequisites
 
 * Updating the cluster topology requires at least a quorum of nodes in a cluster to be available.
   If the quorum is lost, it must be restored before you change the cluster topology.
-  See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+  See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 
-  You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
-* Verify the status of the cluster using [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command. A node with status `DN` is down and needs to be replaced.
+  You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command.
+* Verify the status of the cluster using [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command. A node with status `DN` is down and needs to be replaced.
 
 ```shell
 Datacenter: DC1
@@ -35,5 +35,5 @@ Login to one of the nodes in the cluster with (UN) status, collect the following
 
 Depend on the Replication Factor (RF)
 
-* If the number of failed nodes is smaller than your keyspaces RF, you still have at least one available replica with your data, and you can use [Replace a Dead Node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure.
-* If the number of failed nodes is equal or larger than your keyspaces RF, then some of the data is lost, and you need to retrieve it from backup. Use the [Replace a Dead Node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure and [restore the data from backup](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/restore.md).
+* If the number of failed nodes is smaller than your keyspaces RF, you still have at least one available replica with your data, and you can use [Replace a Dead Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure.
+* If the number of failed nodes is equal or larger than your keyspaces RF, then some of the data is lost, and you need to retrieve it from backup. Use the [Replace a Dead Node](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure and [restore the data from backup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore.md).

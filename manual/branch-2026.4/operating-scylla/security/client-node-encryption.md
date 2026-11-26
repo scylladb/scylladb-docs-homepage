@@ -85,7 +85,7 @@ To enable 128-bit and 192-bit secure ciphers, while disabling all TLS versions e
 
 In order for cqlsh to work in client to node encryption SSL mode, you need to generate cqlshrc file.
 
-For Complete instructions, see [Generate a cqlshrc File](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/gen-cqlsh-file.md)
+For Complete instructions, see [Generate a cqlshrc File](https://docs.scylladb.com/manual/stable/operating-scylla/security/gen-cqlsh-file.md)
 
 **Procedure**
 
@@ -136,6 +136,6 @@ For Complete instructions, see [Generate a cqlshrc File](https://docs.scylladb.c
 
 ### See Also
 
-* [Encryption Data in Transit Node to Node](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/node-node-encryption.md)
-* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/generate-certificate.md)
-* [Authorization](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authorization.md)
+* [Encryption Data in Transit Node to Node](https://docs.scylladb.com/manual/stable/operating-scylla/security/node-node-encryption.md)
+* [Generating a self-signed Certificate Chain Using openssl](https://docs.scylladb.com/manual/stable/operating-scylla/security/generate-certificate.md)
+* [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md)

@@ -28,4 +28,4 @@ For example:
 
 There is a single 1TB file in the snapshot directory. If that file also exists in the main column family directory, the size on the disk is 1TB and the true size is 0 because it is already backed up to disk.
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

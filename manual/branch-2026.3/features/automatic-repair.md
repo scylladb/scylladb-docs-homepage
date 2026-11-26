@@ -2,9 +2,9 @@
 
 # Automatic Repair
 
-Traditionally, launching [repairs](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/maintenance/repair.md) in a ScyllaDB cluster is left to an external process, typically done via [Scylla Manager](https://manager.docs.scylladb.com/stable/repair/index.html).
+Traditionally, launching [repairs](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/maintenance/repair.md) in a ScyllaDB cluster is left to an external process, typically done via [Scylla Manager](https://manager.docs.scylladb.com/stable/repair/index.html).
 
-Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the last repair is greater than the configured repair interval, ScyllaDB will start a repair for the [tablet table](https://docs.scylladb.com/manual/stable/architecture/tablets.md) automatically.
+Automatic repair offers built-in scheduling in ScyllaDB itself. If the time since the last repair is greater than the configured repair interval, ScyllaDB will start a repair for the [tablet table](https://docs.scylladb.com/manual/branch-2026.3/architecture/tablets.md) automatically.
 Repairs are spread over time and among nodes and shards, to avoid load spikes or any adverse effects on user workloads.
 
 To enable automatic repair, add this to the configuration (`scylla.yaml`):
@@ -19,4 +19,4 @@ More featureful configuration methods will be implemented in the future.
 
 To disable, set `auto_repair_enabled_default: false`.
 
-Automatic repair relies on [Incremental Repair](https://docs.scylladb.com/manual/stable/features/incremental-repair.md) and as such it only works with [tablet](https://docs.scylladb.com/manual/stable/architecture/tablets.md) tables.
+Automatic repair relies on [Incremental Repair](https://docs.scylladb.com/manual/branch-2026.3/features/incremental-repair.md) and as such it only works with [tablet](https://docs.scylladb.com/manual/branch-2026.3/architecture/tablets.md) tables.

@@ -4,10 +4,10 @@ This document describes how to detect large rows and large cells in ScyllaDB.
 ScyllaDB is not optimized for very large rows or large cells. They require allocation of large, contiguous memory areas and therefore may increase latency.
 Rows may also grow over time. For example, many insert operations may add elements to the same collection, or a large blob can be inserted in a single operation.
 
-Similar to the [large partitions table](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/large-partition-table.md), the large rows and large cells tables are updated when sstables are written or deleted, for example, on memtable flush or during compaction.
+Similar to the [large partitions table](https://docs.scylladb.com/manual/stable/troubleshooting/large-partition-table.md), the large rows and large cells tables are updated when sstables are written or deleted, for example, on memtable flush or during compaction.
 
 #### NOTE
-The procedures described below require you to be using SSTables in [MC Format (SSTable 3.0)](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable3/sstable-format.md) or higher.
+The procedures described below require you to be using SSTables in [MC Format (SSTable 3.0)](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstable-format.md) or higher.
 
 ## Find Large Rows
 
@@ -81,7 +81,7 @@ Configure the detection threshold of large rows and large cells with the corresp
 * `compaction_collection_elements_count_warning_threshold` parameter (default: 10000).
 
 Once the threshold is reached, the relevant information is captured in the `system.large_rows` / `system.large_cells` tables.
-In addition,  a warning message is logged in the ScyllaDB log (refer to [logging](https://docs.scylladb.com/manual/branch-2026.4/getting-started/logging.md)).
+In addition,  a warning message is logged in the ScyllaDB log (refer to [logging](https://docs.scylladb.com/manual/stable/getting-started/logging.md)).
 
 ## Storing
 
@@ -145,7 +145,7 @@ In order to prevent stale data from appearing, all rows in the `system.large_row
 
 Starting with ScyllaDB 2026.2, `system.large_rows` and `system.large_cells`
 are implemented as virtual tables that read from SSTable metadata. See
-[Virtual Tables (LARGE_DATA_VIRTUAL_TABLES Feature)](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/large-partition-table.md#large-data-virtual-tables) for details on the
+[Virtual Tables (LARGE_DATA_VIRTUAL_TABLES Feature)](https://docs.scylladb.com/manual/stable/troubleshooting/large-partition-table.md#large-data-virtual-tables) for details on the
 `LARGE_DATA_VIRTUAL_TABLES` feature and upgrade considerations.
 
-[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)

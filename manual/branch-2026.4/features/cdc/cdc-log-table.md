@@ -65,7 +65,7 @@ There are different types of entries appearing in the CDC log:
 To understand the basics:
 
 1. start by reading about metadata columns (`cdc$stream_id`, `cdc$time`, `cdc$operation`, and `cdc$ttl`) in the sections below,
-2. then consult the [Basic operations in CDC](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-basic-operations.md) document to understand how basic modification statements, such as single UPDATEs or DELETEs, which don’t involve collections, are reflected in CDC using delta rows.
+2. then consult the [Basic operations in CDC](https://docs.scylladb.com/manual/stable/features/cdc/cdc-basic-operations.md) document to understand how basic modification statements, such as single UPDATEs or DELETEs, which don’t involve collections, are reflected in CDC using delta rows.
 
 ### Stream ID column
 
@@ -79,7 +79,7 @@ When a change is performed in the base table, a stream identifier is chosen for 
 
 Partitions in the log table are called *streams*; within one stream, all entries are sorted according to the base table writes’ timestamps, using standard clustering key properties (note that `cdc$time`, which represents the time of the write, is the first part of the clustering key).
 
-If you want to use CDC efficiently, it’s important to understand how stream IDs are managed and chosen. Consult the [CDC Streams](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-streams.md) document for basic definitions and properties, [CDC Stream Changes](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-stream-changes.md) document to understand how streams are managed and how they change over time, and finally [Querying CDC Streams](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-querying-streams.md) to learn how streams can be queried efficiently, and how to find out which streams to query. Reading these documents is not a prerequisite for understanding the rest of the log table related sections.
+If you want to use CDC efficiently, it’s important to understand how stream IDs are managed and chosen. Consult the [CDC Streams](https://docs.scylladb.com/manual/stable/features/cdc/cdc-streams.md) document for basic definitions and properties, [CDC Stream Changes](https://docs.scylladb.com/manual/stable/features/cdc/cdc-stream-changes.md) document to understand how streams are managed and how they change over time, and finally [Querying CDC Streams](https://docs.scylladb.com/manual/stable/features/cdc/cdc-querying-streams.md) to learn how streams can be queried efficiently, and how to find out which streams to query. Reading these documents is not a prerequisite for understanding the rest of the log table related sections.
 
 ### Time column
 
@@ -315,7 +315,7 @@ The `cdc$operation` column, of type `int`, distinguishes between delta rows, pre
 |       8 | row range delete exclusive right bound |
 |       9 | post-image                             |
 
-Values 1-8 are for delta rows. Read about the different operations in the [Basic operations in CDC](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-basic-operations.md) document.
+Values 1-8 are for delta rows. Read about the different operations in the [Basic operations in CDC](https://docs.scylladb.com/manual/stable/features/cdc/cdc-basic-operations.md) document.
 
 ### Time-to-live column
 

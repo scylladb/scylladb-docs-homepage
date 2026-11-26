@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/refresh.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh.md" />
             
         
 
@@ -361,14 +361,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/nodetool-commands/refresh.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/refresh.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/refresh.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh.md">https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh.md</a>.
                         </div>
                     
                     
@@ -377,65 +377,81 @@
 
                     <section id="nodetool-refresh">
 <h1>Nodetool refresh<a class="headerlink" href="#nodetool-refresh" title="Link to this heading">¶</a></h1>
-<p><strong>refresh</strong> - Load newly placed SSTables to the system without a restart.</p>
-<p>Add the files to the upload directory, by default it is located under <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/upload</span></code></p>
-<p><a class="reference internal" href="../../cql/mv.html"><span class="doc">Materialized Views (MV)</span></a> and <a class="reference internal" href="../../cql/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a> of the upload table, and if they exist, they are automatically updated. Uploading MV or SI SSTables is not required and will fail.</p>
+<p><strong>refresh</strong> - Load newly placed SSTables to the system without a restart. This is the only supported way to upload SSTables directly to a node. Placing them directly in the node’s data directory is not supported and will lead to failures.</p>
+<p>Copy the files to the table’s upload directory, by default it is located under <code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/keyspace_name/table_name-UUID/upload</span></code>.</p>
+<p>If the table has any <a class="reference internal" href="../../cql/mv.html"><span class="doc">Materialized Views (MV)</span></a> or <a class="reference internal" href="../../cql/secondary-indexes.html"><span class="doc">Secondary Indexes (SI)</span></a>, content view updates will be generated from the uploaded SSTables. Uploading MV or SI SSTables is not required and will fail.</p>
+<section id="local-refresh">
+<span id="nodetool-refresh-local"></span><h2>Local refresh<a class="headerlink" href="#local-refresh" title="Link to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>ScyllaDB node will ignore the partitions in the sstables which are not assigned to this node. For example, if sstable are copied from a different node.</p>
+<p>This mode is not supported for <a class="reference internal" href="../../architecture/tablets.html"><span class="doc">tablets</span></a>.</p>
 </div>
-<p>Execute the <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code> command</p>
-<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span> <span class="pre">&lt;my_keyspace&gt;</span> <span class="pre">&lt;my_table&gt;</span></code></p>
-<p>For example:</p>
-<p><code class="docutils literal notranslate"><span class="pre">/var/lib/scylla/data/nba/player_stats-91cd2060f99d11e6a47/upload</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span> <span class="pre">nba</span> <span class="pre">player_stats</span></code></p>
+<p>SSTables are copied from the upload directory to the table’s data directory and added to the table’s SSTable registry.</p>
+<p>After the upload, ScyllaDB will run cleanup on the uploaded SSTables, to remove any partition which is not owned by the target node.
+Use <code class="docutils literal notranslate"><span class="pre">--skip-cleanup</span></code> to skip this step. Note that this can lead to increased disk utilization, use only if you are certain the SSTables contain only data owned by the target node.</p>
+<p>The uploaded SSTables may disrupt the SSTable layout maintained by the table’s compaction strategy. To remedy this, ScyllaDB runs an off-strategy compaction after the upload.
+Use <code class="docutils literal notranslate"><span class="pre">--skip-reshape</span></code> to skip this step. Note that this can lead to increased read amplification and increased latencies due to reads having to consult more SSTables than optimal.</p>
+<p>Although this is the default mode for <code class="docutils literal notranslate"><span class="pre">nodetool</span> <span class="pre">refresh</span></code>, using this mode to restore backed up SSTables is not efficient. For restoring backup use <a class="reference internal" href="#nodetool-refresh-load-and-stream"><span class="std std-ref">–load-and-stream</span></a> instead.
+Use local upload if you are certain that uploaded SSTables contain data only for the target node.</p>
+<p>Syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">cleanup</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">reshape</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">sstables</span><span class="o">/*</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">scylla</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nba</span><span class="o">/</span><span class="n">player_stats</span><span class="o">-</span><span class="mi">91</span><span class="n">cd2060f99d11e6a47</span><span class="o">/</span><span class="n">upload</span>
+
+<span class="n">nodetool</span> <span class="n">refresh</span> <span class="n">nba</span> <span class="n">player_stats</span>
+</pre></div>
+</div>
+</section>
 <section id="load-and-stream">
 <span id="nodetool-refresh-load-and-stream"></span><h2>Load and Stream<a class="headerlink" href="#load-and-stream" title="Link to this heading">¶</a></h2>
+<p>SSTables are read and each partition is streamed to its respective replica(s). Allows efficient upload of SSTables to a cluster.
+Each SSTable has to be uploaded only once, as <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> will ensure that all partitions reach their respective replicas.
+The <code class="docutils literal notranslate"><span class="pre">--scope</span></code> and <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> options can be used to filter the set of target replicas for each partition.</p>
+<p>Syntax:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[(</span><span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="ow">and</span><span class="o">-</span><span class="n">stream</span> <span class="o">|</span> <span class="o">-</span><span class="n">las</span><span class="p">)</span> <span class="p">[[(</span><span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="n">replica</span><span class="o">-</span><span class="n">only</span> <span class="o">|</span> <span class="o">-</span><span class="n">pro</span><span class="p">)]</span> <span class="o">|</span> <span class="p">[</span><span class="o">--</span><span class="n">scope</span> <span class="o">&lt;</span><span class="n">scope</span><span class="o">&gt;</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<p>The Load and Stream feature extends nodetool refresh.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option loads arbitrary sstables into the cluster by reading the sstable data and streaming each partition to the replica(s) that owns it. In addition, the <code class="docutils literal notranslate"><span class="pre">--scope</span></code> and <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> options are applied to filter the set of target replicas for each partition.  For example, say the old cluster has 6 nodes and the new cluster has 3 nodes. One can copy the sstables from the old cluster to any of the new nodes and trigger refresh with load and stream.</p>
-<p>Load and Stream make restores and migrations much easier:</p>
+<section id="filter-target-replicas">
+<h3>Filter target replicas<a class="headerlink" href="#filter-target-replicas" title="Link to this heading">¶</a></h3>
+<p>By default, each partition is streamed to all nodes which are replicas for the partition.
+This can be inefficient in a large cluster, especially if there are multiple Datacenters.
+Constraining the subset of replicas where data will be streamed to allows orchestrating concurrent upload to multiple nodes without duplicate work – the same partition being streamed to a replica from multiple source nodes.</p>
+<p>There are two options available to manipulate the replica(s) to stream data to: <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> and <code class="docutils literal notranslate"><span class="pre">--scope</span></code>.
+The two are mutually exclusive.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> (or <code class="docutils literal notranslate"><span class="pre">-pro</span></code>) option makes ScyllaDB only stream each partition to its primary replica.
+After all SSTables are uploaded to the cluster, a repair is required to replicate data to all replicas.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--scope</span></code> parameter allows for more advanced constraining of the subset of nodes where data will be streamed:</p>
 <ul class="simple">
-<li><p>You can place sstable from every node to every node</p></li>
-<li><p>No need to run nodetool cleanup to remove unused data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">node</span></code> - the local node (roughly equivalent to <a class="reference internal" href="#nodetool-refresh-local"><span class="std std-ref">local refresh</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rack</span></code> - replicas in the local rack</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dc</span></code> - replicas in the local datacenter (DC)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> (default) - all replicas in the cluster</p></li>
 </ul>
-<p>With <code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> (or <code class="docutils literal notranslate"><span class="pre">-pro</span></code>) option, only the primary replica of each partition in an sstable will be used as the target.
-<code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> must be applied together with <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code>.
-<code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> cannot be used with <code class="docutils literal notranslate"><span class="pre">--scope</span></code>, they are mutually exclusive.
-<code class="docutils literal notranslate"><span class="pre">--primary-replica-only</span></code> requires repair to be run after the load and stream operation is completed.</p>
 </section>
-<section id="scope">
-<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading">¶</a></h2>
-<p>The <cite>scope</cite> parameter describes the subset of cluster nodes where you want to load data:</p>
-<ul class="simple">
-<li><p><cite>node</cite> - On the local node.</p></li>
-<li><p><cite>rack</cite> - On the local rack.</p></li>
-<li><p><cite>dc</cite> - In the datacenter (DC) where the local node lives.</p></li>
-<li><p><cite>all</cite> (default) - Everywhere across the cluster.</p></li>
-</ul>
-<p>Scope supports a variety of options for filtering out the destination nodes.
-On one extreme, one node is given all SStables with the scope <code class="docutils literal notranslate"><span class="pre">all</span></code>; on the other extreme, all
-nodes are loading only their own SStables with the scope <code class="docutils literal notranslate"><span class="pre">node</span></code>. In between, you can choose
-a subset of nodes to load only SStables that belong to the rack or DC.</p>
-<p>This option is only valid when using the <code class="docutils literal notranslate"><span class="pre">--load-and-stream</span></code> option.</p>
 </section>
-<section id="skip-cleanup">
-<h2>Skip cleanup<a class="headerlink" href="#skip-cleanup" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">cleanup</span><span class="p">]</span>
+<section id="compatibility-with-apache-cassandra-sstables">
+<h2>Compatibility with Apache Cassandra SSTables<a class="headerlink" href="#compatibility-with-apache-cassandra-sstables" title="Link to this heading">¶</a></h2>
+<p>Uploading SSTable from Apache Cassandra is supported. For the supported SSTable versions, see <a class="reference internal" href="../../architecture/sstable/index.html"><span class="doc">ScyllaDB SSTable Format</span></a>. Note that SSTables using Trie-Based Indexes are <em>not</em> supported.</p>
+<section id="known-problems">
+<h3>Known Problems<a class="headerlink" href="#known-problems" title="Link to this heading">¶</a></h3>
+<section id="digest-mismatch">
+<h4>Digest mismatch<a class="headerlink" href="#digest-mismatch" title="Link to this heading">¶</a></h4>
+<p>Apache Cassandra and ScyllaDB slightly diverged on how digests are calculated on SSTable Data components.
+For compressed SSTables, Apache Cassandra allows for a trailing zero-sized (pre-compression) chunk in the Data component.
+This chunk has no data but has non-zero size after compression.
+This trailing chunk is ignored by ScyllaDB and thus excluded from the Digest calculation, therefore the digest calculated by ScyllaDB will not match that in the Digest component.
+Consequently ScyllaDB will reject the SSTable file.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sstables</span><span class="p">::</span><span class="n">malformed_sstable_exception</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">read</span> <span class="n">partition</span> <span class="kn">from</span><span class="w"> </span><span class="nn">SSTable</span> <span class="o">.../</span><span class="n">me</span><span class="o">-</span><span class="mi">71</span><span class="o">-</span><span class="n">big</span><span class="o">-</span><span class="n">Data</span><span class="o">.</span><span class="n">db</span> <span class="n">due</span> <span class="n">to</span> <span class="n">Digest</span> <span class="n">mismatch</span><span class="p">:</span> <span class="n">expected</span><span class="o">=</span><span class="mi">1580246239</span><span class="p">,</span> <span class="n">actual</span><span class="o">=</span><span class="mi">3782253270</span>
 </pre></div>
 </div>
-<p>When loading an SSTable, Scylla will cleanup it from keys that the node is not responsible for. To skip this step, use the <code class="docutils literal notranslate"><span class="pre">--skip-cleanup</span></code> option.
-See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span class="std std-ref">nodetool cleanup</span></a>.</p>
-</section>
-<section id="skip-reshape">
-<h2>Skip reshape<a class="headerlink" href="#skip-reshape" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodetool</span> <span class="n">refresh</span> <span class="o">&lt;</span><span class="n">my_keyspace</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">my_table</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">reshape</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>When refreshing, the SSTables to load might be out of shape, Scylla will attempt to reshape them if that’s the case. To skip this step, use the <code class="docutils literal notranslate"><span class="pre">--skip-reshape</span></code> option.</p>
+<p>Workaround: delete the Digest component (<code class="docutils literal notranslate"><span class="pre">me-*-big-Digest.crc32</span></code>) and remove it from the TOC file (<code class="docutils literal notranslate"><span class="pre">me-*-big-TOC.txt</span></code>) too.
+Before doing so, it is important to confirm that the cause of the digest mismatch is indeed a trailing 0-sized chunk, not a genuine corruption.</p>
 <p><a class="reference internal" href="../nodetool.html"><span class="doc">Nodetool Reference</span></a></p>
+</section>
+</section>
 </section>
 </section>
 
@@ -471,7 +487,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -540,7 +556,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Nodetool refresh&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/refresh%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -560,10 +576,18 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             <p class="topic-title">On this page</p>
             <ul>
 <li><a class="reference internal" href="#">Nodetool refresh</a><ul>
-<li><a class="reference internal" href="#load-and-stream">Load and Stream</a></li>
-<li><a class="reference internal" href="#scope">Scope</a></li>
-<li><a class="reference internal" href="#skip-cleanup">Skip cleanup</a></li>
-<li><a class="reference internal" href="#skip-reshape">Skip reshape</a></li>
+<li><a class="reference internal" href="#local-refresh">Local refresh</a></li>
+<li><a class="reference internal" href="#load-and-stream">Load and Stream</a><ul>
+<li><a class="reference internal" href="#filter-target-replicas">Filter target replicas</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compatibility-with-apache-cassandra-sstables">Compatibility with Apache Cassandra SSTables</a><ul>
+<li><a class="reference internal" href="#known-problems">Known Problems</a><ul>
+<li><a class="reference internal" href="#digest-mismatch">Digest mismatch</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -612,7 +636,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -626,13 +650,13 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             
                 
                     <li>
-                        <a href="../../../branch-2026.4/operating-scylla/nodetool-commands/refresh.html">2026.4</a>
+                        <a href="refresh.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="refresh.html">2026.3</a>
+                        <a href="../../../branch-2026.3/operating-scylla/nodetool-commands/refresh.html">2026.3</a>
                     </li>
                 
             
@@ -679,17 +703,16 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -738,7 +761,6 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l3"><a class="reference internal" href="../procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -751,6 +773,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l3"><a class="reference internal" href="../security/enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -780,6 +803,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -817,6 +841,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l2"><a class="reference internal" href="../../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/delete.html">DELETE</a></li>
@@ -833,6 +858,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l2"><a class="reference internal" href="../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -843,6 +869,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -870,6 +897,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -991,13 +1019,13 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -1078,7 +1106,7 @@ See <a class="reference internal" href="cleanup.html#nodetool-cleanup-cmd"><span
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 23 Jun 2026.
+                        Last updated on 14 Aug 2026.
                     
                 </div>
             

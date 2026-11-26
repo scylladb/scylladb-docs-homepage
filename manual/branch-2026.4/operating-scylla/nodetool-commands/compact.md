@@ -8,7 +8,7 @@ Major compactions will take all the SSTables for a column family and merge them 
 If a keyspace is provided, the compaction will run on all of the tables within that keyspace. If one or more tables are provided as command-line arguments, the compaction will run only on those tables.
 
 #### CAUTION
-It is always best to allow ScyllaDB to automatically run minor compactions using a [compaction strategy](https://docs.scylladb.com/manual/branch-2026.4/kb/compaction.md). Using Nodetool to run compaction can quickly exhaust all resources, increase operational costs, and take up valuable disk space. For this reason, major compactions should be avoided and are not recommended for any production system.
+It is always best to allow ScyllaDB to automatically run minor compactions using a [compaction strategy](https://docs.scylladb.com/manual/stable/kb/compaction.md). Using Nodetool to run compaction can quickly exhaust all resources, increase operational costs, and take up valuable disk space. For this reason, major compactions should be avoided and are not recommended for any production system.
 
 ## Syntax
 
@@ -35,10 +35,10 @@ nodetool compact keyspace1 standard1
 
 ## See Also
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
 
-[Compaction Overview](https://docs.scylladb.com/manual/branch-2026.4/kb/compaction.md)
+[Compaction Overview](https://docs.scylladb.com/manual/stable/kb/compaction.md)
 
-[CQL compaction Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/compaction.md)
+[CQL compaction Reference](https://docs.scylladb.com/manual/stable/cql/compaction.md)
 
-[How to choose a Compaction Strategy](https://docs.scylladb.com/manual/branch-2026.4/architecture/compaction/compaction-strategies.md)
+[How to choose a Compaction Strategy](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md)

@@ -21,4 +21,4 @@ For example:
 SCYLLA_ARGS="--log-to-syslog 1 --log-to-stdout 0 --default-log-level info --network-stack posix --memory 2G --reserve-memory 2G"
 ```
 
-[Knowledge Base](https://docs.scylladb.com/manual/branch-2026.4/kb/index.md)
+[Knowledge Base](https://docs.scylladb.com/manual/stable/kb/index.md)

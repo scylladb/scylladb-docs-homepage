@@ -39,7 +39,7 @@ of eventual consistency on an event of a timestamp collision:
 
 `INSERT` statements happening concurrently at different cluster
 nodes proceed without coordination. Eventually cell values
-supplied by a statement with the highest timestamp will prevail (see [update ordering](https://docs.scylladb.com/manual/stable/cql/dml.md#update-ordering)).
+supplied by a statement with the highest timestamp will prevail (see [update ordering](https://docs.scylladb.com/manual/branch-2026.3/cql/dml.md#update-ordering)).
 
 Unless a timestamp is provided by the client, ScyllaDB will automatically
 generate a timestamp with microsecond precision for each
@@ -48,9 +48,9 @@ by the same node are unique. Timestamps assigned at different
 nodes are not guaranteed to be globally unique.
 With a steadily high write rate timestamp collision
 is not unlikely. If it happens, i.e. two `INSERTS` have the same
-timestamp, a conflict resolution algorithm determines which of the inserted cells prevails (see [update ordering](https://docs.scylladb.com/manual/stable/cql/dml.md#update-ordering)).
+timestamp, a conflict resolution algorithm determines which of the inserted cells prevails (see [update ordering](https://docs.scylladb.com/manual/branch-2026.3/cql/dml.md#update-ordering)).
 
-Please refer to the [update parameters](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section for more information on the `update_parameter`.
+Please refer to the [update parameters](https://docs.scylladb.com/manual/branch-2026.3/cql/dml.md#update-parameters) section for more information on the `update_parameter`.
 
 ```cql
 INSERT INTO NerdMovies  (movie, director, main_actor)
@@ -94,11 +94,11 @@ Also note that `INSERT` does not support counters, while `UPDATE` does.
 #### NOTE
 You can use the `IF NOT EXISTS` condition with the `INSERT` statement. When this is used, the insert is only made if the row does not exist prior to the insertion. Each such `INSERT` gets a globally unique timestamp. Using `IF NOT EXISTS` incurs a non-negligible performance cost (internally, as Paxos will be used), so use `IF NOT EXISTS` wisely.
 
-If [enabled](https://docs.scylladb.com/manual/stable/cql/ddl.md#cdc-options) on a table, you can use UPDATE, INSERT, and DELETE statements with Change Data Capture (CDC) tables.
+If [enabled](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#cdc-options) on a table, you can use UPDATE, INSERT, and DELETE statements with Change Data Capture (CDC) tables.
 
 <!-- to-do - add link to cdc doc -->
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
 
 Copyright
 

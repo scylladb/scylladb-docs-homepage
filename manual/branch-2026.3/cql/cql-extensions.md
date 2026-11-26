@@ -117,13 +117,13 @@ In addition, the timeout parameter can be applied to SELECT queries as well.
 
 To store a keyspace’s SSTables on Amazon S3, Google Cloud Storage, or another
 S3-compatible object store, you first configure the storage endpoints.
-See [Configuring Object Storage](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-configuration) for instructions.
+See [Configuring Object Storage](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#object-storage-configuration) for instructions.
 
 #### NOTE
 Object-storage keyspaces are a **Preview** feature and are not generally
 available. They are supported for tablets only, and a number of features
 are not available for them. Review
-[Object storage keyspaces: status and limitations](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-limitations)
+[Object storage keyspaces: status and limitations](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#object-storage-limitations)
 before using this feature.
 
 After your storage endpoints are configured, you can select object storage when
@@ -384,8 +384,8 @@ Scylla. The result of the pattern match is `FALSE`.
 
 For more details, see:
 
-- [Lightweight Transactions](https://docs.scylladb.com/manual/stable/features/lwt.md)
-- [How does ScyllaDB LWT Differ from Apache Cassandra?](https://docs.scylladb.com/manual/stable/kb/lwt-differences.md)
+- [Lightweight Transactions](https://docs.scylladb.com/manual/branch-2026.3/features/lwt.md)
+- [How does ScyllaDB LWT Differ from Apache Cassandra?](https://docs.scylladb.com/manual/branch-2026.3/kb/lwt-differences.md)
 
 ## REDUCEFUNC for UDA
 
@@ -548,7 +548,7 @@ We extended the semantics of `DESCRIBE SCHEMA WITH INTERNALS`: aside from descri
 it also describes authentication/authorization and service levels. Additionally, we introduced a new tier of the
 statement: `DESCRIBE SCHEMA WITH INTERNALS AND PASSWORDS`, which also includes the information about hashed passwords of the roles.
 
-For more details, see [the article on DESCRIBE SCHEMA](https://docs.scylladb.com/manual/stable/cql/describe-schema.md).
+For more details, see [the article on DESCRIBE SCHEMA](https://docs.scylladb.com/manual/branch-2026.3/cql/describe-schema.md).
 
 <a id="cql-per-row-ttl"></a>
 

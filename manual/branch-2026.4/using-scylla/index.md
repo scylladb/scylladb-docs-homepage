@@ -13,14 +13,14 @@
                 <div class="panel">
                     <h5 class="panel_\_title">Develop Your App with ScyllaDB</h5>
             * [ScyllaDB Drivers](https://docs.scylladb.com/stable/drivers/index.html) - ScyllaDB and third-party drivers for CQL and DynamoDB
-* [ScyllaDB Alternator](https://docs.scylladb.com/manual/branch-2026.4/using-scylla/alternator/index.md) - DynamoDB-compatible API
-* [CQL Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md) - Reference for the Apache Cassandra Query Language (CQL) and its ScyllaDB extensions
+* [ScyllaDB Alternator](https://docs.scylladb.com/manual/stable/using-scylla/alternator/index.md) - DynamoDB-compatible API
+* [CQL Reference](https://docs.scylladb.com/manual/stable/cql/index.md) - Reference for the Apache Cassandra Query Language (CQL) and its ScyllaDB extensions
 
 </div></div>
             <div class="cell my-panel">
                 <div class="panel">
                     <h5 class="panel_\_title">ScyllaDB Tools and Resources</h5>
-            * [ScyllaDB Tools](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin-tools/index.md) - Tools for testing and integrating with ScyllaDB
-* [cqlsh](https://docs.scylladb.com/manual/branch-2026.4/cql/cqlsh.md) - A command line shell for interacting with ScyllaDB through CQL
+            * [ScyllaDB Tools](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/index.md) - Tools for testing and integrating with ScyllaDB
+* [cqlsh](https://docs.scylladb.com/manual/stable/cql/cqlsh.md) - A command line shell for interacting with ScyllaDB through CQL
 
 </div></div>

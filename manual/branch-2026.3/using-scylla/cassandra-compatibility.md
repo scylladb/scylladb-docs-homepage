@@ -5,7 +5,7 @@ This page contains information about ScyllaDB compatibility with Apache Cassandr
 
 The tables on this page include information about ScyllaDB support for Apache Cassandra features.
 They do not include the ScyllaDB-specific features with no match in
-Apache Cassandra.  See [ScyllaDB Features](https://docs.scylladb.com/manual/stable/features/index.md) for more information about ScyllaDB features.
+Apache Cassandra.  See [ScyllaDB Features](https://docs.scylladb.com/manual/branch-2026.3/features/index.md) for more information about ScyllaDB features.
 
 ## How to Read the Tables on This Page
 
@@ -15,37 +15,37 @@ Apache Cassandra.  See [ScyllaDB Features](https://docs.scylladb.com/manual/stab
 
 ## Interfaces
 
-| Apache Cassandra Interface     | Version Supported by ScyllaDB                                                                                                                                                                                                                                                      | Comments                                                                                                                        |
-|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| CQL                            | Fully compatible with version 3.3.1, with additional features from later CQL versions (for example, [Duration type](https://docs.scylladb.com/manual/stable/cql/types.md#durations)).<br/><br/><br/>Fully compatible with protocol v4, with additional features from v5.<br/><br/> | More below                                                                                                                      |
-| Thrift                         | Not supported anymore in ScyllaDB 6.0                                                                                                                                                                                                                                              | deprecated in Apache Cassandra and got dropped in 4.0<br/><br/><br/>deprecated in ScyllaDB 5.2 and got dropped in 6.0<br/><br/> |
-| SSTable format (all versions)  | 3.11(mc / md / me), 2.2(la), 2.1.8 (ka)                                                                                                                                                                                                                                            | `me` - supported in ScyllaDB 2022.2.0 and later<br/><br/><br/>`md` - supported in ScyllaDB 2021.1.0 and later<br/><br/>         |
-| JMX                            | 3.11                                                                                                                                                                                                                                                                               | More below                                                                                                                      |
-| Configuration (cassandra.yaml) | 3.11                                                                                                                                                                                                                                                                               |                                                                                                                                 |
-| Log                            | NC                                                                                                                                                                                                                                                                                 |                                                                                                                                 |
-| Gossip and internal streaming  | NC                                                                                                                                                                                                                                                                                 |                                                                                                                                 |
-| SSL                            | NC                                                                                                                                                                                                                                                                                 |                                                                                                                                 |
+| Apache Cassandra Interface     | Version Supported by ScyllaDB                                                                                                                                                                                                                                                             | Comments                                                                                                                        |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| CQL                            | Fully compatible with version 3.3.1, with additional features from later CQL versions (for example, [Duration type](https://docs.scylladb.com/manual/branch-2026.3/cql/types.md#durations)).<br/><br/><br/>Fully compatible with protocol v4, with additional features from v5.<br/><br/> | More below                                                                                                                      |
+| Thrift                         | Not supported anymore in ScyllaDB 6.0                                                                                                                                                                                                                                                     | deprecated in Apache Cassandra and got dropped in 4.0<br/><br/><br/>deprecated in ScyllaDB 5.2 and got dropped in 6.0<br/><br/> |
+| SSTable format (all versions)  | 3.11(mc / md / me), 2.2(la), 2.1.8 (ka)                                                                                                                                                                                                                                                   | `me` - supported in ScyllaDB 2022.2.0 and later<br/><br/><br/>`md` - supported in ScyllaDB 2021.1.0 and later<br/><br/>         |
+| JMX                            | 3.11                                                                                                                                                                                                                                                                                      | More below                                                                                                                      |
+| Configuration (cassandra.yaml) | 3.11                                                                                                                                                                                                                                                                                      |                                                                                                                                 |
+| Log                            | NC                                                                                                                                                                                                                                                                                        |                                                                                                                                 |
+| Gossip and internal streaming  | NC                                                                                                                                                                                                                                                                                        |                                                                                                                                 |
+| SSL                            | NC                                                                                                                                                                                                                                                                                        |                                                                                                                                 |
 
 ## Supported Tools
 
 The tools are based on Apache Cassandra 3.11.
 
-* [Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md) - ScyllaDB commands for managing ScyllaDB node or cluster using the command-line nodetool utility.
-* [CQLSh - the CQL shell](https://docs.scylladb.com/manual/stable/cql/cqlsh.md).
-* [Admin REST API - ScyllaDB Node Admin API](https://docs.scylladb.com/manual/stable/operating-scylla/rest.md).
-* [Tracing](https://docs.scylladb.com/manual/stable/using-scylla/tracing.md) - a ScyllaDB tool for debugging and analyzing internal flows in the server.
-* [SSTableloader](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/sstableloader.md) - Bulk load the sstables found in the directory to a ScyllaDB cluster
-* [ScyllaDB SStable](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md) - Validates and dumps the content of SStables, generates a histogram, dumps the content of the SStable index.
-* [ScyllaDB Types](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
-* [cassandra-stress](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
-* scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/stable/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
+* [Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md) - ScyllaDB commands for managing ScyllaDB node or cluster using the command-line nodetool utility.
+* [CQLSh - the CQL shell](https://docs.scylladb.com/manual/branch-2026.3/cql/cqlsh.md).
+* [Admin REST API - ScyllaDB Node Admin API](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/rest.md).
+* [Tracing](https://docs.scylladb.com/manual/branch-2026.3/using-scylla/tracing.md) - a ScyllaDB tool for debugging and analyzing internal flows in the server.
+* [SSTableloader](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/sstableloader.md) - Bulk load the sstables found in the directory to a ScyllaDB cluster
+* [ScyllaDB SStable](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md) - Validates and dumps the content of SStables, generates a histogram, dumps the content of the SStable index.
+* [ScyllaDB Types](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-types.md) - Examines raw values obtained from SStables, logs, coredumps, etc.
+* [cassandra-stress](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/cassandra-stress.md) A tool for benchmarking and load testing a ScyllaDB and Cassandra clusters.
+* scylla local-file-key-generator - Generate a local file (system) key for [encryption at rest](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest.md), with the provided length, Key algorithm, Algorithm block mode and Algorithm padding method.
 * [scyllatop](https://www.scylladb.com/2016/03/22/scyllatop/) - A terminal base top-like tool for scylladb collectd/prometheus metrics.
-* [scylla_dev_mode_setup](https://docs.scylladb.com/manual/stable/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
-* [perftune](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/perftune.md) - performance configuration.
-* [Reading mutation fragments](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.
-* [Maintenance socket](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-socket.md) - a Unix domain socket for full-permission CQL connection.
-* [Maintenance mode](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-mode.md) - a mode for performing maintenance tasks on an offline ScyllaDB node.
-* [Task manager](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/task-manager.md) - a tool for tracking long-running background operations.
+* [scylla_dev_mode_setup](https://docs.scylladb.com/manual/branch-2026.3/getting-started/installation-common/dev-mod.md) - run ScyllaDB in Developer Mode.
+* [perftune](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/perftune.md) - performance configuration.
+* [Reading mutation fragments](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/select-from-mutation-fragments.md) - dump the underlying mutation data from tables.
+* [Maintenance socket](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/maintenance-socket.md) - a Unix domain socket for full-permission CQL connection.
+* [Maintenance mode](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/maintenance-mode.md) - a mode for performing maintenance tasks on an offline ScyllaDB node.
+* [Task manager](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/task-manager.md) - a tool for tracking long-running background operations.
 
 Run each tool with `-h`, `--help` for full options description.
 
@@ -69,22 +69,22 @@ Run each tool with `-h`, `--help` for full options description.
 | SERIAL                   | <i class="inline-icon icon-check" aria-hidden="true"></i> <sub>\*</sub> |
 | LOCAL_SERIAL             | <i class="inline-icon icon-check" aria-hidden="true"></i><sub>\*</sub>  |
 
-<sub>\*</sub> See [ScyllaDB LWT](https://docs.scylladb.com/manual/stable/features/lwt.md).
+<sub>\*</sub> See [ScyllaDB LWT](https://docs.scylladb.com/manual/branch-2026.3/features/lwt.md).
 
 ### Snitches
 
-| Options                                                                                                                                                      | Support                                                    |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| [SimpleSnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-simple-snitch)                                 | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| [RackInferringSnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-rack-inferring-snitch)                  | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| PropertyFileSnitch                                                                                                                                           | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
-| [GossipingPropertyFileSnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-gossiping-property-file-snitch) | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| Dynamic snitching                                                                                                                                            | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
-| [EC2Snitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-ec2-snitch)                                       | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| [EC2MultiRegionSnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#snitch-ec2-multi-region-snitch)               | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| [GoogleCloudSnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#googlecloudsnitch)                               | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| CloudstackSnitch                                                                                                                                             | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
-| [AzureSnitch](https://docs.scylladb.com/manual/stable/operating-scylla/system-configuration/snitch.md#azuresnitch)                                           | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| Options                                                                                                                                                             | Support                                                    |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| [SimpleSnitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/snitch.md#snitch-simple-snitch)                                 | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| [RackInferringSnitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/snitch.md#snitch-rack-inferring-snitch)                  | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| PropertyFileSnitch                                                                                                                                                  | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
+| [GossipingPropertyFileSnitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/snitch.md#snitch-gossiping-property-file-snitch) | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| Dynamic snitching                                                                                                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
+| [EC2Snitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/snitch.md#snitch-ec2-snitch)                                       | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| [EC2MultiRegionSnitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/snitch.md#snitch-ec2-multi-region-snitch)               | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| [GoogleCloudSnitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/snitch.md#googlecloudsnitch)                               | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| CloudstackSnitch                                                                                                                                                    | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
+| [AzureSnitch](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/system-configuration/snitch.md#azuresnitch)                                           | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
 
 ### Partitioners
 
@@ -98,38 +98,38 @@ Run each tool with `-h`, `--help` for full options description.
 
 ### Protocol Options
 
-| Options                                                                                                         | Support                                                   |
-|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-| [Encryption](https://docs.scylladb.com/manual/stable/operating-scylla/security/client-node-encryption.md)       | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| [Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md)           | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| [Compression](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-compression)  (see below) | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| Options                                                                                                                | Support                                                   |
+|------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| [Encryption](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/client-node-encryption.md)       | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| [Authentication](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authentication.md)           | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| [Compression](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#admin-compression)  (see below) | <i class="inline-icon icon-check" aria-hidden="true"></i> |
 
 ### Compression
 
-| Options                                                                                                                       | Support                                                   |
-|-------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-| CQL Compression                                                                                                               | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| LZ4                                                                                                                           | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| Snappy                                                                                                                        | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| [Node to Node Compression](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#internode-compression)           | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| [Client to Node Compression](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-client-node-compression) | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| Options                                                                                                                              | Support                                                   |
+|--------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| CQL Compression                                                                                                                      | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| LZ4                                                                                                                                  | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| Snappy                                                                                                                               | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| [Node to Node Compression](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#internode-compression)           | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| [Client to Node Compression](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#admin-client-node-compression) | <i class="inline-icon icon-check" aria-hidden="true"></i> |
 
 ### Backup and Restore
 
-| Options                                                                                                                                      | Support                                                   |
-|----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-| [Snapshot](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/backup.md#backup-full-backup-snapshots)        | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| [Incremental backup](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/backup.md#backup-incremental-backup) | <i class="inline-icon icon-check" aria-hidden="true"></i> |
-| [Restore](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/restore.md)                                     | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| Options                                                                                                                                             | Support                                                   |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| [Snapshot](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/backup.md#backup-full-backup-snapshots)        | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| [Incremental backup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/backup.md#backup-incremental-backup) | <i class="inline-icon icon-check" aria-hidden="true"></i> |
+| [Restore](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/backup-restore/restore.md)                                     | <i class="inline-icon icon-check" aria-hidden="true"></i> |
 
 ### Repair and Consistency
 
-| Options                                                                                                 | Support                                                    |
-|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| [Nodetool Repair](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/repair.md) | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| Incremental Repair                                                                                      | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
-| [Hinted Handoff](https://docs.scylladb.com/manual/stable/architecture/anti-entropy/hinted-handoff.md)   | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
-| [Lightweight Transactions](https://docs.scylladb.com/manual/stable/features/lwt.md)                     | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| Options                                                                                                        | Support                                                    |
+|----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| [Nodetool Repair](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/repair.md) | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| Incremental Repair                                                                                             | <i class="inline-icon icon-cancel" aria-hidden="true"></i> |
+| [Hinted Handoff](https://docs.scylladb.com/manual/branch-2026.3/architecture/anti-entropy/hinted-handoff.md)   | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
+| [Lightweight Transactions](https://docs.scylladb.com/manual/branch-2026.3/features/lwt.md)                     | <i class="inline-icon icon-check" aria-hidden="true"></i>  |
 
 ### Replica Replacement Strategy
 
@@ -146,12 +146,12 @@ Run each tool with `-h`, `--help` for full options description.
 
 ### Indexing and Caching
 
-| Options                                                                                                               | Support                                                                 |
-|-----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| [Secondary Index](https://docs.scylladb.com/manual/stable/features/secondary-indexes.md)                              | <i class="inline-icon icon-check" aria-hidden="true"></i>               |
-| StorageAttachedIndex (SAI)                                                                                            | <i class="inline-icon icon-cancel" aria-hidden="true"></i>              |
-| [SAI for vector search](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#cassandra-sai-compatibility) | <i class="inline-icon icon-check" aria-hidden="true"></i> <sub>\*</sub> |
-| [Materialized Views](https://docs.scylladb.com/manual/stable/features/materialized-views.md)                          | <i class="inline-icon icon-check" aria-hidden="true"></i>               |
+| Options                                                                                                                      | Support                                                                 |
+|------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| [Secondary Index](https://docs.scylladb.com/manual/branch-2026.3/features/secondary-indexes.md)                              | <i class="inline-icon icon-check" aria-hidden="true"></i>               |
+| StorageAttachedIndex (SAI)                                                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>              |
+| [SAI for vector search](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md#cassandra-sai-compatibility) | <i class="inline-icon icon-check" aria-hidden="true"></i> <sub>\*</sub> |
+| [Materialized Views](https://docs.scylladb.com/manual/branch-2026.3/features/materialized-views.md)                          | <i class="inline-icon icon-check" aria-hidden="true"></i>               |
 
 <sub>\*</sub> SAI class name on vector columns is rewritten to native `vector_index`;
 SAI on `ENTRIES(map)` is rewritten to a regular secondary index
@@ -222,12 +222,12 @@ SAI on `ENTRIES(map)` is rewritten to a regular secondary index
 
 #### Create Table Compaction
 
-| Feature                                                                                               | Support                                                                      |
-|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
-| DateTieredCompactionStrategy (DTCS)                                                                   | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub> |
-| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/stable/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
+| Feature                                                                                                      | Support                                                                      |
+|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| [SizeTieredCompactionStrategy](https://docs.scylladb.com/manual/branch-2026.3/cql/compaction.md#stcs) (STCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
+| [LeveledCompactionStrategy](https://docs.scylladb.com/manual/branch-2026.3/cql/compaction.md#lcs) (LCS)      | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
+| DateTieredCompactionStrategy (DTCS)                                                                          | <i class="inline-icon icon-cancel" aria-hidden="true"></i>     <sub>\*</sub> |
+| [TimeWindowCompactionStrategy](https://docs.scylladb.com/manual/branch-2026.3/cql/compaction.md#twcs) (TWCS) | <i class="inline-icon icon-check" aria-hidden="true"></i>                    |
 
 <sub>\*</sub> No longer supported. Use TimeWindowCompactionStrategy (TWCS) instead.
 

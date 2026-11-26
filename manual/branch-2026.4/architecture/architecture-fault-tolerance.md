@@ -1,8 +1,8 @@
 # ScyllaDB Architecture - Fault Tolerance
 
-ScyllaDB replicates data according to a [replication](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Replication) strategy that you choose. This strategy will determine the placement of the replicated data.  ScyllaDB runs nodes in a hash ring. All nodes are equal: there are no master, slave, or replica sets.
+ScyllaDB replicates data according to a [replication](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Replication) strategy that you choose. This strategy will determine the placement of the replicated data.  ScyllaDB runs nodes in a hash ring. All nodes are equal: there are no master, slave, or replica sets.
 
-The [Replication Factor (RF)](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Replication-Factor-RF) is equivalent to the number of nodes where data (rows and partitions) are replicated.   Data is replicated to multiple (RF=N) nodes.
+The [Replication Factor (RF)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Replication-Factor-RF) is equivalent to the number of nodes where data (rows and partitions) are replicated.   Data is replicated to multiple (RF=N) nodes.
 
 An RF of `1` means there is only one copy of a row in a cluster and there is no way to recover the data if the node is compromised or goes down.  RF=2 means that there are two copies of a row in a cluster.  An RF of at least `3` is used in most systems or similar.
 
@@ -14,11 +14,11 @@ In the example above, our client sends a request to write partition *1*  to node
 
 ![image](architecture/2-read_op_RF_3.jpg)
 
-During a [read operation](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Read-Operation), the client sends a request to the coordinator.   Effectively because the RF=3, 3 nodes respond to the read request.
+During a [read operation](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Read-Operation), the client sends a request to the coordinator.   Effectively because the RF=3, 3 nodes respond to the read request.
 
-The [Consistency Level (CL)](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Consistency-Level-CL) determines how many replicas in a cluster must acknowledge read or [write operations](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Write-Operation) before it is considered successful.
+The [Consistency Level (CL)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Consistency-Level-CL) determines how many replicas in a cluster must acknowledge read or [write operations](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Write-Operation) before it is considered successful.
 
-For the CQL Shell ([CQLsh](https://docs.scylladb.com/manual/branch-2026.4/cql/cqlsh.md)), the consistency level defaults to ONE for read and write operations.
+For the CQL Shell ([CQLsh](https://docs.scylladb.com/manual/stable/cql/cqlsh.md)), the consistency level defaults to ONE for read and write operations.
 
 #### NOTE
 Regardless of the **Consistency Level**, a write is always sent to *all* replicas, as set by the **Replication Factor**. Consistency Level control *when* a client is acknowledged, not how many replicas are updated.
@@ -39,7 +39,7 @@ During a read operation, the coordinator communicates with just enough replicas 
 
 ![image](architecture/5-read_op_RF_3_CL_2.jpg)
 
-The Consistency Level is tunable per operation in CQL.   This is known as [tunable consistency](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Tunable-Consistency). Sometimes response latency is more important, making it necessary to adjust settings on a per-query or operation level to override keyspace or even data center-wide consistency settings.  In other words, the Consistency Level setting allows you to choose a point in the consistency vs. latency tradeoff.
+The Consistency Level is tunable per operation in CQL.   This is known as [tunable consistency](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Tunable-Consistency). Sometimes response latency is more important, making it necessary to adjust settings on a per-query or operation level to override keyspace or even data center-wide consistency settings.  In other words, the Consistency Level setting allows you to choose a point in the consistency vs. latency tradeoff.
 
 #### NOTE
 Quorum is a global consistency level across the *entire* cluster. This means that if you have two data centers, all nodes in both datacenters count towards the quorum majority. For example, there is a cluster with two DCs with three nodes in one DC and two nodes in the other. If the smaller DC fails, requests will still pass under Quorum as 3 > 5/2.
@@ -48,9 +48,9 @@ The Consistency Level and Replication Factor both impact performance. The **lowe
 
 The Consistency Level itself impacts availability. A **higher** Consistency Level (more nodes required to be online)  means less availability with less tolerance to tolerate node failures. A **lower** Consistency Level means more availability and more fault tolerance.
 
-Refer to the [Consistency Level table](https://docs.scylladb.com/manual/branch-2026.4/cql/consistency.md#consistency-levels-reference) to get information about the Consistency Levels that are available for a read or write operation.
+Refer to the [Consistency Level table](https://docs.scylladb.com/manual/stable/cql/consistency.md#consistency-levels-reference) to get information about the Consistency Levels that are available for a read or write operation.
 
-ScyllaDB, as do many distributed database systems, adheres to the [CAP Theorem](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-CAP-Theorem).  The **CAP Theorem** is the notion that **Consistency**, **Availability** and **Partition Tolerance** of data are mutually dependent in a distributed system. Increasing any 2 of these factors will reduce the third.
+ScyllaDB, as do many distributed database systems, adheres to the [CAP Theorem](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-CAP-Theorem).  The **CAP Theorem** is the notion that **Consistency**, **Availability** and **Partition Tolerance** of data are mutually dependent in a distributed system. Increasing any 2 of these factors will reduce the third.
 
 ScyllaDB adheres to the CAP theorem  in the following way:
 
@@ -65,6 +65,6 @@ You’ll need to design your application around ScyllaDB’s data modeling, but 
 
 ## Additional Resources
 
-* [Consistency Level Console Demo](https://docs.scylladb.com/manual/branch-2026.4/architecture/console-CL-full-demo.md)
-* [Consistency Levels](https://docs.scylladb.com/manual/branch-2026.4/cql/consistency.md)
+* [Consistency Level Console Demo](https://docs.scylladb.com/manual/stable/architecture/console-CL-full-demo.md)
+* [Consistency Levels](https://docs.scylladb.com/manual/stable/cql/consistency.md)
 * From ScyllaDB University: take the [Consistency Level lesson](https://university.scylladb.com/courses/scylla-essentials-overview/lessons/architecture/topic/consistency-level-cl/)

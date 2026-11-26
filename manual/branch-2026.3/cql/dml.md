@@ -3,11 +3,11 @@
 This following pages describes the statements supported by CQL to insert, update, delete, and query data, followed by
 sections common to data updating statements.
 
-* [SELECT](https://docs.scylladb.com/manual/stable/cql/dml/select.md)
-* [INSERT](https://docs.scylladb.com/manual/stable/cql/dml/insert.md)
-* [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml/update.md)
-* [DELETE](https://docs.scylladb.com/manual/stable/cql/dml/delete.md)
-* [BATCH](https://docs.scylladb.com/manual/stable/cql/dml/batch.md)
+* [SELECT](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md)
+* [INSERT](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/insert.md)
+* [UPDATE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/update.md)
+* [DELETE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/delete.md)
+* [BATCH](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/batch.md)
 
 <a id="update-parameters"></a>
 
@@ -19,7 +19,7 @@ parameters:
 - `TIMESTAMP`: sets the timestamp for the operation. If not specified, the coordinator will use the current time, in
   *microseconds* since the [Unix epoch](https://en.wikipedia.org/wiki/Unix_time) (January 1st 1970 at 00:00:00 UTC),
   at the start of statement execution as the timestamp. This is usually a suitable default.
-  [INSERT](https://docs.scylladb.com/manual/stable/cql/dml/insert.md#insert-statement), [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml/update.md#update-statement), [DELETE](https://docs.scylladb.com/manual/stable/cql/dml/delete.md#delete-statement), or [BATCH](https://docs.scylladb.com/manual/stable/cql/dml/batch.md#batch-statement)
+  [INSERT](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/insert.md#insert-statement), [UPDATE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/update.md#update-statement), [DELETE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/delete.md#delete-statement), or [BATCH](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/batch.md#batch-statement)
   statements `USING TIMESTAMP` should provide a unique timestamp value, similar to the one
   implicitly set by the coordinator by default, when the USING TIMESTAMP update parameter is absent.
   ScyllaDB ensures that query timestamps created by the same coordinator node are unique (even across different shards
@@ -31,15 +31,15 @@ parameters:
   the columns themselves. This means that any subsequent update of the column will also reset the TTL (to whatever TTL
   is specified in that update). By default, values never expire. A TTL of 0 is equivalent to no TTL. If the table has a
   default_time_to_live, a TTL of 0 will remove the TTL for the inserted or updated values. A TTL of `null` is equivalent
-  to inserting with a TTL of 0. You can read more about TTL in the [documentation](https://docs.scylladb.com/manual/stable/cql/time-to-live.md) and also in [this ScyllaDB University lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/).
+  to inserting with a TTL of 0. You can read more about TTL in the [documentation](https://docs.scylladb.com/manual/branch-2026.3/cql/time-to-live.md) and also in [this ScyllaDB University lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/).
 - `TIMEOUT`: specifies a timeout duration for the specific request.
-  Please refer to the [SELECT](https://docs.scylladb.com/manual/stable/cql/dml/select.md#using-timeout) section for more information.
+  Please refer to the [SELECT](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md#using-timeout) section for more information.
 
 <a id="update-ordering"></a>
 
 ## Update ordering
 
-[INSERT](https://docs.scylladb.com/manual/stable/cql/dml/insert.md#insert-statement), [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml/update.md#update-statement), and [DELETE](https://docs.scylladb.com/manual/stable/cql/dml/delete.md#delete-statement)
+[INSERT](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/insert.md#insert-statement), [UPDATE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/update.md#update-statement), and [DELETE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/delete.md#delete-statement)
 operations are ordered by their `TIMESTAMP`.
 
 Ordering of such changes is done at the cell level, where each cell carries a write `TIMESTAMP`,
@@ -80,10 +80,10 @@ The conflict-resolution algorithm is documented in [ScyllaDB’s internal docume
 and it may be subject to change.
 
 Reliable serialization can be achieved using unique write `TIMESTAMP`
-and by using [Lightweight Transactions (LWT)](https://docs.scylladb.com/manual/stable/features/lwt.md) to ensure atomicity of
-[INSERT](https://docs.scylladb.com/manual/stable/cql/dml/insert.md#insert-statement), [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml/update.md#update-statement), and [DELETE](https://docs.scylladb.com/manual/stable/cql/dml/delete.md#delete-statement).
+and by using [Lightweight Transactions (LWT)](https://docs.scylladb.com/manual/branch-2026.3/features/lwt.md) to ensure atomicity of
+[INSERT](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/insert.md#insert-statement), [UPDATE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/update.md#update-statement), and [DELETE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/delete.md#delete-statement).
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
 
 Copyright
 

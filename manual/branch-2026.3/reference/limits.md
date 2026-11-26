@@ -9,7 +9,7 @@ This document provides hard and soft limits in ScyllaDB.
 | Nodes per cluster | Low hundreds |
 | Node size         | 4096 CPUs    |
 
-See [Hardware Requirements](https://docs.scylladb.com/manual/stable/getting-started/system-requirements.md#system-requirements-hardware) for storage
+See [Hardware Requirements](https://docs.scylladb.com/manual/branch-2026.3/getting-started/system-requirements.md#system-requirements-hardware) for storage
 and memory requirements and limits.
 
 ## CQL Limits

@@ -4,7 +4,7 @@
 
 Add the files to the upload directory, by default it is located under `/var/lib/scylla/data/keyspace_name/table_name-UUID/upload`
 
-[Materialized Views (MV)](https://docs.scylladb.com/manual/stable/cql/mv.md) and [Secondary Indexes (SI)](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md) of the upload table, and if they exist, they are automatically updated. Uploading MV or SI SSTables is not required and will fail.
+[Materialized Views (MV)](https://docs.scylladb.com/manual/branch-2026.3/cql/mv.md) and [Secondary Indexes (SI)](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md) of the upload table, and if they exist, they are automatically updated. Uploading MV or SI SSTables is not required and will fail.
 
 #### NOTE
 ScyllaDB node will ignore the partitions in the sstables which are not assigned to this node. For example, if sstable are copied from a different node.
@@ -64,7 +64,7 @@ nodetool refresh <my_keyspace> <my_table> [--skip-cleanup]
 ```
 
 When loading an SSTable, Scylla will cleanup it from keys that the node is not responsible for. To skip this step, use the `--skip-cleanup` option.
-See [nodetool cleanup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cleanup.md#nodetool-cleanup-cmd).
+See [nodetool cleanup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/cleanup.md#nodetool-cleanup-cmd).
 
 ## Skip reshape
 
@@ -74,4 +74,4 @@ nodetool refresh <my_keyspace> <my_table> [--skip-reshape]
 
 When refreshing, the SSTables to load might be out of shape, Scylla will attempt to reshape them if that’s the case. To skip this step, use the `--skip-reshape` option.
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

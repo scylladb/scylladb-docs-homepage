@@ -6,15 +6,15 @@
             <div class="cell my-panel">
                 <div class="panel">
                     <h5 class="panel_\_title">Change Data Capture</h5>
-            * [CDC Overview](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-intro.md)
-* [The CDC Log Table](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-log-table.md)
-* [Basic Operations in CDC](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-basic-operations.md)
-* [CDC Streams](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-streams.md)
-* [CDC Stream Changes](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-stream-changes.md)
-* [Querying CDC Streams](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-querying-streams.md)
-* [Advanced Column Types](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-advanced-types.md)
-* [Preimages and Postimages](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-preimages.md)
-* [Data consistency](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-consistency.md)
+            * [CDC Overview](https://docs.scylladb.com/manual/stable/features/cdc/cdc-intro.md)
+* [The CDC Log Table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md)
+* [Basic Operations in CDC](https://docs.scylladb.com/manual/stable/features/cdc/cdc-basic-operations.md)
+* [CDC Streams](https://docs.scylladb.com/manual/stable/features/cdc/cdc-streams.md)
+* [CDC Stream Changes](https://docs.scylladb.com/manual/stable/features/cdc/cdc-stream-changes.md)
+* [Querying CDC Streams](https://docs.scylladb.com/manual/stable/features/cdc/cdc-querying-streams.md)
+* [Advanced Column Types](https://docs.scylladb.com/manual/stable/features/cdc/cdc-advanced-types.md)
+* [Preimages and Postimages](https://docs.scylladb.com/manual/stable/features/cdc/cdc-preimages.md)
+* [Data consistency](https://docs.scylladb.com/manual/stable/features/cdc/cdc-consistency.md)
 
 </div></div>
             <div class="cell my-panel">
@@ -23,7 +23,7 @@
             * [Go (scylla-cdc-go)](https://github.com/scylladb/scylla-cdc-go)
 * [Java (scylla-cdc-java)](https://github.com/scylladb/scylla-cdc-java)
 * [Rust (scylla-cdc-rust)](https://github.com/scylladb/scylla-cdc-rust)
-* [CDC Source Connector (compatible with Kafka Connect)](https://docs.scylladb.com/manual/branch-2026.4/using-scylla/integrations/scylla-cdc-source-connector.md)
-* [CDC Source Connector Quickstart](https://docs.scylladb.com/manual/branch-2026.4/using-scylla/integrations/scylla-cdc-source-connector-quickstart.md)
+* [CDC Source Connector (compatible with Kafka Connect)](https://docs.scylladb.com/manual/stable/using-scylla/integrations/scylla-cdc-source-connector.md)
+* [CDC Source Connector Quickstart](https://docs.scylladb.com/manual/stable/using-scylla/integrations/scylla-cdc-source-connector-quickstart.md)
 
 </div></div>

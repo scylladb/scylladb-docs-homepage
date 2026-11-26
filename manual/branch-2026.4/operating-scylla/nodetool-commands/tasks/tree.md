@@ -44,6 +44,6 @@ c1eb0701-ad7a-45ff-956f-7b8d671fc5db offstrategy compaction node    shard    don
 
 ## See also
 
-- [tasks status](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tasks/status.md)
-- [tasks list](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tasks/list.md)
-- [tasks wait](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tasks/wait.md)
+- [tasks status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/status.md)
+- [tasks list](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/list.md)
+- [tasks wait](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/wait.md)

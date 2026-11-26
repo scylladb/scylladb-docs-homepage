@@ -19,7 +19,7 @@ In the same manner, should someone leave the organization, all you would have to
 Should someone change positions at the company, just assign the new employee to the new role and revoke roles no longer required for the new position.
 
 To build an RBAC environment, you need to create the roles and their associated permissions and then assign or grant the roles to the individual users. Roles inherit the permissions of any other roles that they are granted. The hierarchy of roles can be either simple or extremely complex. This gives great flexibility to database administrators, where they can  create specific permission conditions without incurring a huge administrative burden.
-In addition to standard roles, ScyllaDB users can implement [Workload Prioritization](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md), which allows you to attach roles to Service Levels, thus granting resources to roles as the role demands.
+In addition to standard roles, ScyllaDB users can implement [Workload Prioritization](https://docs.scylladb.com/manual/branch-2026.3/features/workload-prioritization.md), which allows you to attach roles to Service Levels, thus granting resources to roles as the role demands.
 
 <a id="rbac-usecase-grant-roles-and-permissions"></a>
 
@@ -54,7 +54,7 @@ Trainers can only view their schedule and can view customer data.
 Customers view the class schedule.
 There is also a database administrator who manages the database.
 
-In this case, four roles would be created: staff, customer, trainer, and administrator. Permissions could be any of the [following](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#data-control).
+In this case, four roles would be created: staff, customer, trainer, and administrator. Permissions could be any of the [following](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#data-control).
 It may be helpful to make a table as follows, listing the roles and the tables or keyspaces you are granting permission on.
 In the table cell, list the permission to be granted, leaving a blank space for no permission.
 
@@ -67,7 +67,7 @@ In the table cell, list the permission to be granted, leaving a blank space for 
 
 **Before you begin**
 
-You need to login to cqlsh as a user with authentication and authorization. You **must** enable [authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/authentication.md) **and** [authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md) if you have not already done so. In addition, the user you create for yourself **must** have login privileges, a user name, and a password.
+You need to login to cqlsh as a user with authentication and authorization. You **must** enable [authentication](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authentication.md) **and** [authorization](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/enable-authorization.md) if you have not already done so. In addition, the user you create for yourself **must** have login privileges, a user name, and a password.
 
 #### WARNING
 It is **highly** recommended to set a password when creating a role with login privileges.  If you are using password authentication and you create a role with `LOGIN` privileges and a blank `PASSWORD` or no password, the user assigned to this role will not be able to login to the database.
@@ -196,6 +196,6 @@ LIST ROLES OF mary;
 
 ## Additional References
 
-* [Authorization](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md)
-* [CQLSh the CQL shell](https://docs.scylladb.com/manual/stable/cql/cqlsh.md)
-* [Workload Prioritization](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md) - to attach a service level to a role
+* [Authorization](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md)
+* [CQLSh the CQL shell](https://docs.scylladb.com/manual/branch-2026.3/cql/cqlsh.md)
+* [Workload Prioritization](https://docs.scylladb.com/manual/branch-2026.3/features/workload-prioritization.md) - to attach a service level to a role

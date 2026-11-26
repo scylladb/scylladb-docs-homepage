@@ -8,7 +8,7 @@ The target audience of this statement and therefore that of this document is peo
 
 The `SELECT * FROM MUTATION_FRAGMENTS()` statement allows for reading the raw underlying mutations (data) from a table.
 This is intended to be used as a diagnostics tool to debug performance or correctness issues, where inspecting the raw underlying data, as scylla stores it, is desired.
-So far this was only possible with sstables, using a tool like [ScyllaDB SStable](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md).
+So far this was only possible with sstables, using a tool like [ScyllaDB SStable](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md).
 This statement allows inspecting the content of the row-cache, as well as that of individual memtables, in addition to individual sstables.
 
 The statement has to be used on an existing table, by using a regular `SELECT` query, which wraps the table name in `MUTATION_FRAGMENTS()`. For example, to dump all mutations from `my_keyspace.my_table`:
@@ -126,7 +126,7 @@ This is the text representation of the `enum class mutation_fragment_v2_kind`. S
 #### metadata
 
 The content of the mutation-fragment represented as JSON, without the values, if applicable.
-This is uses the same JSON schema as [scylla sstable dump-data](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation).
+This is uses the same JSON schema as [scylla sstable dump-data](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation).
 Content of `metadata` column for various mutation fragment kinds:
 
 | mutation fragment kind   | Content                                               |
@@ -137,14 +137,14 @@ Content of `metadata` column for various mutation fragment kinds:
 | range tombstone change   | `{"tombstone": $TOMBSTONE}`                           |
 | partition end            | N/A                                                   |
 
-JSON symbols are represented as `$SYMBOL_NAME`, the definition of these can be found in [scylla sstable dump-data](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation).
+JSON symbols are represented as `$SYMBOL_NAME`, the definition of these can be found in [scylla sstable dump-data](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation).
 
 #### value
 
 The value of the mutation-fragment, represented as JSON, if applicable.
 Only `static row` and `clustering row` fragments have values.
 The JSON schema of both is that of the `$COLUMNS` JSON symbol.
-See [scylla sstable dump-data](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation) for the definition of these.
+See [scylla sstable dump-data](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/scylla-sstable.md#scylla-sstable-dump-data-operation) for the definition of these.
 Only the `value` field is left in cell objects (`$REGULAR_CELL`, `$COUNTER_SHARDS_CELL`, `$COUNTER_UPDATE_CELL` and `$FROZEN_COLLECTION`) and the `cells` field in collection objects (`$COLLECTION`).
 The reason for extracting this out into a separate column, is to allow deselecting the potentially large values, de-cluttering the CQL output, and reducing the amount of data that has to transferred.
 

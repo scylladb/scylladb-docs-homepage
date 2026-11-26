@@ -24,8 +24,8 @@ Initially ScyllaDB has two service levels:
 
 To create a new service level and assign it to a role, you need:
 
-* An [authenticated](https://docs.scylladb.com/manual/stable/operating-scylla/security/runtime-authentication.md) and [authorized](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md) user
-* At least one [role created](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#create-role-statement).
+* An [authenticated](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/runtime-authentication.md) and [authorized](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/enable-authorization.md) user
+* At least one [role created](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#create-role-statement).
 
 ### Work by Example
 
@@ -53,7 +53,7 @@ These commands set, list, and edit the level of service.
 
 ### Create a Service Level
 
-When you create a service level, you allocate a percentage of resources to the service level. Remember to use the correct naming convention to name your service level. If you decide to use [reserved keywords](https://docs.scylladb.com/manual/stable/cql/appendices.md#appendix-a), enclose them in either single or double quotes (for example `'primary'`).
+When you create a service level, you allocate a percentage of resources to the service level. Remember to use the correct naming convention to name your service level. If you decide to use [reserved keywords](https://docs.scylladb.com/manual/branch-2026.3/cql/appendices.md#appendix-a), enclose them in either single or double quotes (for example `'primary'`).
 
 **Syntax**
 
@@ -254,7 +254,7 @@ ATTACH SERVICE_LEVEL <service_level_name> TO <role_name>;
 Where:
 
 * `service_level_name` - Specifies the name of the service level you created. See [Create a Service Level]().
-* `role_name` - Specifies the role that you want to use the service level on. This is the role you created with [create role](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#create-role-statement).
+* `role_name` - Specifies the role that you want to use the service level on. This is the role you created with [create role](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#create-role-statement).
 
 #### NOTE
 Any role which does not have an SLA attached to it, receives the default SLA.
@@ -319,7 +319,7 @@ LIST ATTACHED SERVICE_LEVEL OF <role_name>;
 
 Where:
 
-* `role_name` - Specifies the role that you want to use the service level on. This is the role you created with [create role](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#create-role-statement).
+* `role_name` - Specifies the role that you want to use the service level on. This is the role you created with [create role](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#create-role-statement).
 
 #### Example
 
@@ -351,7 +351,7 @@ DETACH SERVICE_LEVEL FROM <role_name>;
 
 Where:
 
-* `role_name` - Specifies the role that you want to use the service level on. This is the role you created with [create role](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#create-role-statement).
+* `role_name` - Specifies the role that you want to use the service level on. This is the role you created with [create role](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#create-role-statement).
 
 #### Example
 

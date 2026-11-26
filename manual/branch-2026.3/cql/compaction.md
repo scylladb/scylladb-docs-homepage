@@ -2,7 +2,7 @@
 
 # Compaction
 
-This document describes the compaction strategy options available when creating a table. For more information about creating a table in ScyllaDB, refer to the [CQL Reference](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-statement).
+This document describes the compaction strategy options available when creating a table. For more information about creating a table in ScyllaDB, refer to the [CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#create-table-statement).
 
 By default, ScyllaDB starts a compaction task whenever a new SSTable is written. Compaction merges several SSTables into a new SSTable, which contains only the live data from the input SSTables. Merging several sorted files to get a sorted result is an efficient process, and this is the main reason why SSTables are kept sorted.
 
@@ -13,7 +13,7 @@ The following compaction strategies are supported by ScyllaDB:
 * Incremental Compaction Strategy ([ICS]())
 * Time-window Compaction Strategy ([TWCS]())
 
-This page concentrates on the parameters to use when creating a table with a compaction strategy. If you are unsure which strategy to use or want general information on the compaction strategies which are available to ScyllaDB, refer to [Compaction Strategies](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md).
+This page concentrates on the parameters to use when creating a table with a compaction strategy. If you are unsure which strategy to use or want general information on the compaction strategies which are available to ScyllaDB, refer to [Compaction Strategies](https://docs.scylladb.com/manual/branch-2026.3/architecture/compaction/compaction-strategies.md).
 
 ## Common options
 
@@ -31,7 +31,7 @@ compaction = {
 `class` (default: SizeTieredCompactionStrategy)
 : Selects the compaction strategy.
   <br/>
-  It can be one of the following. If you are unsure which one to choose, refer to [Compaction Strategies](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md) :
+  It can be one of the following. If you are unsure which one to choose, refer to [Compaction Strategies](https://docs.scylladb.com/manual/branch-2026.3/architecture/compaction/compaction-strategies.md) :
   <br/>
   * SizeTieredCompactionStrategy
   * TimeWindowCompactionStrategy
@@ -312,9 +312,9 @@ compaction = {
 
 ## See Also
 
-* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
-* [Compaction Strategies](https://docs.scylladb.com/manual/stable/architecture/compaction/compaction-strategies.md)
-* [Compaction Overview](https://docs.scylladb.com/manual/stable/kb/compaction.md)
+* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
+* [Compaction Strategies](https://docs.scylladb.com/manual/branch-2026.3/architecture/compaction/compaction-strategies.md)
+* [Compaction Overview](https://docs.scylladb.com/manual/branch-2026.3/kb/compaction.md)
 
 Copyright
 

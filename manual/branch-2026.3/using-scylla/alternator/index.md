@@ -6,6 +6,6 @@ Project Alternator is an open-source project for an Amazon DynamoDB™-compatibl
 
 DynamoDB users can keep their same client code unchanged.
 
-* [ScyllaDB Alternator Documentation](https://docs.scylladb.com/manual/stable/alternator/alternator.md)
+* [ScyllaDB Alternator Documentation](https://docs.scylladb.com/manual/branch-2026.3/alternator/alternator.md)
 * [ScyllaDB Alternator project](https://github.com/scylladb/scylla/tree/master/alternator) - Part of the ScyllaDB project
 * [ScyllaDB Alternator course](https://university.scylladb.com/courses/scylla-alternator/) on ScyllaDB University

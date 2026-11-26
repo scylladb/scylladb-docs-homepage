@@ -30,14 +30,14 @@ The `WHERE` clause specifies which rows are to be deleted. Multiple rows may be 
 `IN` operator. A range of rows may be deleted using an inequality operator (such as `>=`).
 
 `DELETE` supports the `TIMESTAMP` option with the same semantics as the TIMESTAMP parameter used in the `UPDATE` statement.
-The `DELETE` statement deletes data written with [INSERT](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/insert.md#insert-statement) or [UPDATE](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/update.md#update-statement) (or [BATCH](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/batch.md#batch-statement))
+The `DELETE` statement deletes data written with [INSERT](https://docs.scylladb.com/manual/stable/cql/dml/insert.md#insert-statement) or [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml/update.md#update-statement) (or [BATCH](https://docs.scylladb.com/manual/stable/cql/dml/batch.md#batch-statement))
 using a timestamp that is less than or equal to the `DELETE` timestamp.
-For more information on the `update_parameter` refer to the [UPDATE](https://docs.scylladb.com/manual/branch-2026.4/cql/dml.md#update-parameters) section.
+For more information on the `update_parameter` refer to the [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section.
 
 In a `DELETE` statement, all deletions within the same partition key are applied atomically,
 meaning either all columns mentioned in the statement are deleted or none.
 If `DELETE` statement has the same timestamp as `INSERT` or
-`UPDATE` of the same primary key, delete operation prevails (see [update ordering](https://docs.scylladb.com/manual/branch-2026.4/cql/dml.md#update-ordering)).
+`UPDATE` of the same primary key, delete operation prevails (see [update ordering](https://docs.scylladb.com/manual/stable/cql/dml.md#update-ordering)).
 
 A `DELETE` operation can be conditional through the use of an `IF` clause, similar to `UPDATE` and `INSERT`
 statements. Each such `DELETE` gets a globally unique timestamp.
@@ -45,12 +45,12 @@ However, as with `INSERT` and `UPDATE` statements, this will incur a non-negligi
 (internally, Paxos will be used) and so should be used sparingly.
 
 The `BYPASS LARGE_DATA_GUARDRAILS` clause is a ScyllaDB CQL extension for
-deleting data from tables with [large data guardrails](https://docs.scylladb.com/manual/branch-2026.4/cql/guardrails.md#guardrails-large-data)
+deleting data from tables with [large data guardrails](https://docs.scylladb.com/manual/stable/cql/guardrails.md#guardrails-large-data)
 enabled. It skips large data guardrail checks for this standalone `DELETE` so
 that oversized data can be removed even when writes to the same partition, row,
 or collection would otherwise be rejected.
 
-Please refer to the [update parameters](https://docs.scylladb.com/manual/branch-2026.4/cql/dml.md#update-parameters) section for more information on the `update_parameter`.
+Please refer to the [update parameters](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section for more information on the `update_parameter`.
 
 ## Range deletions
 
@@ -108,7 +108,7 @@ SELECT * from events;
 (4 rows)
 ```
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
 
 Copyright
 

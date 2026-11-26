@@ -16,8 +16,8 @@ There are a few alternatives to do this:
 
 This procedure can be used to either upscale an entire cluster or to upscale a single node.
 
-1. Add [new bigger nodes](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)  to the cluster. Confirm Streaming has completed before continuing.
-2. [Remove the old smaller nodes](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md). Confirm Streaming has completed before continuing.
+1. Add [new bigger nodes](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/add-node-to-cluster.md)  to the cluster. Confirm Streaming has completed before continuing.
+2. [Remove the old smaller nodes](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/remove-node.md). Confirm Streaming has completed before continuing.
 3. Repeat steps 1 and 2 until the entire cluster is using bigger nodes.
 
 #### NOTE
@@ -28,13 +28,13 @@ The cluster is only as strong as its weakest node. Do not overload the cluster b
 #### NOTE
 Upscaling a cluster by adding CPUs requires at least a quorum of nodes in a cluster to be available.
 If the quorum is lost, it must be restored before a node is upscaled.
-See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 
 This procedure is only useful for entire clusters, not individual nodes.
 Do the following on each node in the cluster, making sure the nodes are restarted **sequentially**
 to avoid interrupting the availability of your application:
 
-1. Run [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md) to stop traffic to the node.
+1. Run [nodetool drain](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/drain.md) to stop traffic to the node.
 2. Stop the service.
 
    Supported OS

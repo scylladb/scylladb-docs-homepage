@@ -10,7 +10,7 @@ Tracing is a ScyllaDB tool meant to help debugging and analyzing internal flows 
 If you’re planning to use either **probabilistic tracing** or **slow query logging** (see below), it’s advisable to change the `replication_factor` of the  `system_traces` keyspace to `ALL`:
 
 If you use `NetworkTopologyStrategy`, we recommend using a replication factor for each datacenter equal to the number
-of nodes in that datacenter. Alternatively, you can use `EverywhereReplicationStrategy`. See [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/branch-2026.4/kb/rf-increase.md) for details on changing the RF.
+of nodes in that datacenter. Alternatively, you can use `EverywhereReplicationStrategy`. See [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/stable/kb/rf-increase.md) for details on changing the RF.
 
 Such configuration will speed up reads and writes (if combined with a reasonable consistency level, such as ONE or LOCAL_ONE).
 
@@ -369,4 +369,4 @@ This procedure can also be used to collect tracing data in order to view which q
    COPY system_traces.events TO '/tmp/tracing/events.out' WITH HEADER = TRUE;
    ```
 
-If you are sending this data to ScyllaDB for help, follow the directions in [How to Report a ScyllaDB Problem](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/report-scylla-problem.md#report-performance-problem).
+If you are sending this data to ScyllaDB for help, follow the directions in [How to Report a ScyllaDB Problem](https://docs.scylladb.com/manual/stable/troubleshooting/report-scylla-problem.md#report-performance-problem).

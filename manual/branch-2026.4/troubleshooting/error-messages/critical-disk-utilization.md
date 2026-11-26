@@ -18,7 +18,7 @@ Scaling out a cluster failed or is delayed. As a consequence the disk space beco
 
 Run `nodetool status` to check nodes are up and running.
 
-Run `df -h /var/lib/scylla/` to verify that the current disk utilization (in %) is higher than the configured threshold [critical_disk_utilization_level](https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md#confprop-critical-disk-utilization-level).
+Run `df -h /var/lib/scylla/` to verify that the current disk utilization (in %) is higher than the configured threshold [critical_disk_utilization_level](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confprop-critical-disk-utilization-level).
 
 ## Solution
 

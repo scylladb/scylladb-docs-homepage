@@ -275,4 +275,4 @@ docker logs some-scylla | tail
 
 ## Additional information
 
-* [Kafka Sink Connector Configuration](https://docs.scylladb.com/manual/stable/using-scylla/integrations/sink-config.md)
+* [Kafka Sink Connector Configuration](https://docs.scylladb.com/manual/branch-2026.3/using-scylla/integrations/sink-config.md)

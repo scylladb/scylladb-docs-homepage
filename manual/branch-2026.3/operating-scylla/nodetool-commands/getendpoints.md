@@ -92,4 +92,4 @@ nodetool getendpoints "mykeyspace" "superheroes" --key-components "peter:the-gre
 In this example, the first key component includes a colon, which would cause parsing issues in the string format.
 Using `--key-components` ensures it’s interpreted correctly.
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

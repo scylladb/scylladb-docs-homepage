@@ -202,6 +202,6 @@ wasm
 
 ## Additional Information
 
-[Change the Log Level](https://docs.scylladb.com/manual/stable/troubleshooting/log-level.md)
+[Change the Log Level](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/log-level.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

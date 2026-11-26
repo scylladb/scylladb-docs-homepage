@@ -1,15 +1,15 @@
 # Advanced column types
 
-Prerequisites: we assume that the reader is familiar with the [CDC log table](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-log-table.md) and [Basic operations in CDC](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-basic-operations.md) documents.
+Prerequisites: we assume that the reader is familiar with the [CDC log table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md) and [Basic operations in CDC](https://docs.scylladb.com/manual/stable/features/cdc/cdc-basic-operations.md) documents.
 
-As explained in [CDC log table](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-log-table.md), each *atomic* non-primary-key column of the base table gets two corresponding columns in the log table:
+As explained in [CDC log table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md), each *atomic* non-primary-key column of the base table gets two corresponding columns in the log table:
 
 * one with the same name and type; we call this the value column,
 * one with the original name prefixed with `cdc$deleted_` and of `boolean` type; we call this the deletion column.
 
 Atomic means any column whose type is not a non-frozen collection, non-frozen UDT, or a counter. Examples of atomic column types are: `int`, `timeuuid`, `text`, `frozen<map<int, int>>`, `frozen<my_type>` (where `my_type` was created using a `CREATE TYPE` statement). Examples of non-atomic types are: `map<int, int>`, `set<int>`, `my_type`.
 
-These columns are filled in CDC log delta rows created for `UPDATE`, `INSERT`, and column `DELETE` statements, as explained in the [basic operations](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-basic-operations.md) document. If the statement writes a non-null value to the column, its corresponding value column in the delta row gets filled with that exact value. If the statement writes a `null`, its corresponding deletion column in the delta row gets filled with `True`.
+These columns are filled in CDC log delta rows created for `UPDATE`, `INSERT`, and column `DELETE` statements, as explained in the [basic operations](https://docs.scylladb.com/manual/stable/features/cdc/cdc-basic-operations.md) document. If the statement writes a non-null value to the column, its corresponding value column in the delta row gets filled with that exact value. If the statement writes a `null`, its corresponding deletion column in the delta row gets filled with `True`.
 
 For example:
 
@@ -183,7 +183,7 @@ result:
  90dd91b4-2f43-11eb-7ee7-e37ab84122d4 |  0 |  0 | {1: 'v1', 2: 'v2'} |          True |                   null |             1
 ```
 
-As we can see, the effect on the `v`-related columns for `INSERT` is the same as for `UPDATE`. Which statement was used can be determined by the `cdc$operation` column. The exact difference between the two types of statements was explained in the [basic operations](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-basic-operations.md) document.
+As we can see, the effect on the `v`-related columns for `INSERT` is the same as for `UPDATE`. Which statement was used can be determined by the `cdc$operation` column. The exact difference between the two types of statements was explained in the [basic operations](https://docs.scylladb.com/manual/stable/features/cdc/cdc-basic-operations.md) document.
 
 <a id="cdc-collection-tombstones"></a>
 
@@ -253,7 +253,7 @@ gives:
 
 In this example, the elements `(1, 'v1'), (2, 'v2')` were given the same timestamp as the tombstone coming from the `DELETE` statement (by default, all statements in a `BATCH` are given the same timestamp), hence they were deleted by that tombstone.
 
-CDC takes this rule into account when calculating the value of the `cdc$time` column. Recall from the [CDC log table](https://docs.scylladb.com/manual/branch-2026.4/features/cdc/cdc-log-table.md) document that the `cdc$time` column is a timeuuid that contains a timestamp. Usually, when we write a cell to the base table, a corresponding row in the CDC log table appears whose `cdc$time` is a timeuuid whose timestamp is equal to the timestamp of the written cell. However, collection-wide tombstones are an exception; because of the above rule, the CDC log row which informs about the tombstone (i.e. one which has `cdc$deleted_X` column set to `True`) has `cdc$time` such that its timestamp is the timestamp of the collection-wide tombstone increased by 1.
+CDC takes this rule into account when calculating the value of the `cdc$time` column. Recall from the [CDC log table](https://docs.scylladb.com/manual/stable/features/cdc/cdc-log-table.md) document that the `cdc$time` column is a timeuuid that contains a timestamp. Usually, when we write a cell to the base table, a corresponding row in the CDC log table appears whose `cdc$time` is a timeuuid whose timestamp is equal to the timestamp of the written cell. However, collection-wide tombstones are an exception; because of the above rule, the CDC log row which informs about the tombstone (i.e. one which has `cdc$deleted_X` column set to `True`) has `cdc$time` such that its timestamp is the timestamp of the collection-wide tombstone increased by 1.
 
 We already saw this phenomenon before. Consider the following example, where we pick the timestamp manually:
 

@@ -79,7 +79,7 @@ As a result, less data is streamed over the network, and less CPU is consumed,
 especially for data models that contain small cells.
 
 File-based streaming is used for tablet migration in all
-[keyspaces created with tablets enabled](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#tablets).
+[keyspaces created with tablets enabled](https://docs.scylladb.com/manual/stable/cql/ddl.md#tablets).
 
 <a id="absolute-number-of-tablets"></a>
 
@@ -89,19 +89,19 @@ ScyllaDB has a background process that periodically re-evaluates the number of t
 The computed number of tablets a table will have is based on several parameters and factors. These are:
 
 * Keyspace tablets option `'initial'`. This option sets the initial number of tablets on the keyspace level.
-  See [The tablets property](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#tablets) for details.
+  See [The tablets property](https://docs.scylladb.com/manual/stable/cql/ddl.md#tablets) for details.
 * Table-level option `'expected_data_size_in_gb'`. This option sets the minimal number of tablets for a table
   based on the expected table size and the target tablet size. See
-  [Per-table tablet options](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#cql-per-table-tablet-options) for details.
+  [Per-table tablet options](https://docs.scylladb.com/manual/stable/cql/ddl.md#cql-per-table-tablet-options) for details.
 * Table-level option `'min_per_shard_tablet_count'`. Using this option results in the number of tablets being
   computed based on the number of shards in a DC so that each shard has at least `'min_per_shard_tablet_count'`
-  tablets on average. See [Per-table tablet options](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#cql-per-table-tablet-options) for details.
+  tablets on average. See [Per-table tablet options](https://docs.scylladb.com/manual/stable/cql/ddl.md#cql-per-table-tablet-options) for details.
 * Table-level option `'min_tablet_count'`. This option sets the minimal number of tablets for the given table.
-  See [Per-table tablet options](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#cql-per-table-tablet-options) for details.
+  See [Per-table tablet options](https://docs.scylladb.com/manual/stable/cql/ddl.md#cql-per-table-tablet-options) for details.
 * Table-level option `'max_tablet_count'`. This option sets the maximum number of tablets for the given table
-  See [Per-table tablet options](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#cql-per-table-tablet-options) for details.
+  See [Per-table tablet options](https://docs.scylladb.com/manual/stable/cql/ddl.md#cql-per-table-tablet-options) for details.
 * Table-level option `pow2_count`. This option, when set to true, forces the number of tablets for a given table to be a power of 2.
-  See [Per-table tablet options](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#cql-per-table-tablet-options) for details.
+  See [Per-table tablet options](https://docs.scylladb.com/manual/stable/cql/ddl.md#cql-per-table-tablet-options) for details.
 * Config option `'tablets_initial_scale_factor'`. This option sets the minimal number of tablets per shard
   per table globally. This option can be overridden by the table-level option: `'min_per_shard_tablet_count'`.
   `'tablets_initial_scale_factor'` is ignored if either the keyspace option `'initial'` or table-level
@@ -150,12 +150,12 @@ a difference, a table resize (split or merge) is executed.
 
 ScyllaDB now uses tablets by default for data distribution.
 Enabling tablets by default when creating new keyspaces is
-controlled by the [`tablets_mode_for_new_keyspaces`](https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md#confval-tablets_mode_for_new_keyspaces) option. However, tablets only work if
+controlled by the [`tablets_mode_for_new_keyspaces`](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confval-tablets_mode_for_new_keyspaces) option. However, tablets only work if
 supported on all nodes within the cluster.
 
 When creating a new keyspace with tablets enabled by default, you can still opt-out
 on a per-keyspace basis using `CREATE KEYSPACE <ks> WITH tablets = {'enabled': false}`,
-unless the [`tablets_mode_for_new_keyspaces`](https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md#confval-tablets_mode_for_new_keyspaces) option is set to `enforced`.
+unless the [`tablets_mode_for_new_keyspaces`](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confval-tablets_mode_for_new_keyspaces) option is set to `enforced`.
 
 Note: The recommended `NetworkTopologyStrategy` for keyspaces
 remains *required* even if tablets are disabled.
@@ -198,14 +198,14 @@ the keyspace schema with `tablets = { 'enabled': false }` or
 ## Enforcing Rack-List Replication for Tablet Keyspaces
 
 The `rf_rack_valid_keyspaces` is a legacy option that ensures that all keyspaces with tablets enabled are
-[RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace).
+[RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace).
 
 Requiring every tablet keyspace to use the rack list replication factor exclusively is enough to guarantee the keyspace is
-[RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace). It reduces restrictions and provides stronger guarantees compared
+[RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace). It reduces restrictions and provides stronger guarantees compared
 to `rf_rack_valid_keyspaces` option.
 
 To enforce rack list in tablet keyspaces, use `enforce_rack_list` option. It can be set only if all tablet keyspaces use
-rack list. To ensure that, follow a procedure of [conversion to rack list replication factor](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#conversion-to-rack-list-rf).
+rack list. To ensure that, follow a procedure of [conversion to rack list replication factor](https://docs.scylladb.com/manual/stable/cql/ddl.md#conversion-to-rack-list-rf).
 After that restart all nodes in the cluster, with `enforce_rack_list` enabled and `rf_rack_valid_keyspaces` disabled. Make
 sure to avoid setting or updating replication factor (with CREATE KEYSPACE or ALTER KEYSPACE) while nodes are being restarted.
 
@@ -215,7 +215,7 @@ sure to avoid setting or updating replication factor (with CREATE KEYSPACE or AL
 
 #### WARNING
 If a keyspace has tablets enabled and contains a materialized view or a secondary index, it must
-remain [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace) throughout its lifetime. Failing to keep that
+remain [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace) throughout its lifetime. Failing to keep that
 invariant satisfied may result in data inconsistencies, performance problems, or other issues.
 
 The invariant is enforced while the keyspace contains a materialized view or a secondary index, or
@@ -224,8 +224,8 @@ Altering a keyspace’s replication factor, adding a node in a new rack, or remo
 in a rack, will be rejected if they would result in an RF-rack-invalid keyspace.
 
 To enable materialized views and secondary indexes for tablet keyspaces, the keyspace
-must be [RF-rack-valid](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-RF-rack-valid-keyspace).
-See [Views with tablets](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#admin-views-with-tablets) for details.
+must be [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace).
+See [Views with tablets](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#admin-views-with-tablets) for details.
 
 Resharding in keyspaces with tablets enabled has the following limitations:
 

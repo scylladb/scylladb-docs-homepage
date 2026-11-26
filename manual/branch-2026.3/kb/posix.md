@@ -25,7 +25,7 @@ for instructions on how to enable transparent hugepages.
 ## Firewall Configuration
 
 For a single node, the firewall will need to be set up to allow TCP on
-the following [ports](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#cqlsh-networking).
+the following [ports](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#cqlsh-networking).
 
 ## ScyllaDB Configuration
 
@@ -47,4 +47,4 @@ access](http://docs.datastax.com/en//cassandra/2.0/cassandra/security/secureFire
 [How to use, monitor, and disable transparent hugepages in Red Hat
 Enterprise Linux 6](https://access.redhat.com/solutions/46111)
 
-[Knowledge Base](https://docs.scylladb.com/manual/stable/kb/index.md)
+[Knowledge Base](https://docs.scylladb.com/manual/branch-2026.3/kb/index.md)

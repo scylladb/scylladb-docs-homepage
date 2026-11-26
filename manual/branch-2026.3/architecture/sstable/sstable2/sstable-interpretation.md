@@ -5,7 +5,7 @@
 **Audience: Devops professionals, architects**
 
 The SSTables Data File contains rows of data. This document discusses
-how to interpret the various fields described in [SSTables Data File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-data-file.md) in the context of ScyllaDB, and how to
+how to interpret the various fields described in [SSTables Data File](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-data-file.md) in the context of ScyllaDB, and how to
 convert this data into ScyllaDB’s native data structure:
 **mutation_partition**.
 
@@ -27,7 +27,7 @@ from the SSTable is called `class mutation_partition`.
 
 ## Column Names
 
-As explained in [SSTables Data File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-data-file.md), the
+As explained in [SSTables Data File](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-data-file.md), the
 sstable row (a mutation partition) is a list of *cells* (column values).
 Each cell is preceded by the full column name. This was considered a
 good idea when Apache Cassandra was designed to support rows with many and
@@ -46,7 +46,7 @@ be done to the column names which we read from the SSTable.
 The first issue is that starting with Apache Cassandra 1.2 (and unless
 `WITH COMPACT STORAGE` is used), column names aren’t plain strings,
 but each is rather rather a *composite* name - a short list of name
-components. See [SSTables Data File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-data-file.md) for this
+components. See [SSTables Data File](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-data-file.md) for this
 list’s on-disk encoding, but for simplicity of exposition let’s use the
 convention of writing a composite name as **(part1:part2:…)**
 
@@ -71,7 +71,7 @@ ID in the `mutation_partition`, as explained above.
 
 ## CQL Row Marker
 
-As explained in [SSTables Data File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-data-file.md),
+As explained in [SSTables Data File](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-data-file.md),
 Apache Cassandra always (except when a COMPACT table is used and other esoteric
 exceptions) adds to each row an empty-named and empty-valued bogus
 “cell”, to solve various problems involving finding a row after its only
@@ -511,7 +511,7 @@ Note how the cell has the DELETION_MASK bit (written as a “d”), its
 “value” is the local-deletion-time, 1430200516, and as usual it has a
 timestamp
 
-[ScyllaDB Architecture](https://docs.scylladb.com/manual/stable/architecture/index.md)
+[ScyllaDB Architecture](https://docs.scylladb.com/manual/branch-2026.3/architecture/index.md)
 
 Copyright
 

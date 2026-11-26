@@ -6,7 +6,7 @@
 
 **Audience: ScyllaDB administrators**
 
-When you create a snapshot using [nodetool snapshot](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/snapshot.md) command, ScyllaDB is not going to copy existing SStables to the snapshot directory as one could have expected. Instead, it is going to create hard links to them. While this may seem trivial, what should be noted is the following:
+When you create a snapshot using [nodetool snapshot](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/snapshot.md) command, ScyllaDB is not going to copy existing SStables to the snapshot directory as one could have expected. Instead, it is going to create hard links to them. While this may seem trivial, what should be noted is the following:
 
 * The snapshot disk space at first will start at zero and will grow to become equal to the size of the node data set when the snapshot was created. So at the beginning there will not be any significant increase in the disk space utilization.
 * While it may seem plausible to believe that the snapshot image is immediately created, the snapshot eventually grows to its expected size
@@ -43,4 +43,4 @@ A major compaction makes the true snapshot size jump to the data size immediatel
 
 ## Additional References
 
-* [Nodetool Snapshoot](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/snapshot.md)
+* [Nodetool Snapshoot](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/snapshot.md)

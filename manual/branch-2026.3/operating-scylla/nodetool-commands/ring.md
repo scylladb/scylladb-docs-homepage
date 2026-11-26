@@ -25,7 +25,7 @@ status of each of the nodes.
 
 You can specify a `<keyspace>` name to filter the output and focus on
 a specific keyspace. Another optional argument `<table>` allows you
-to further narrow down. For keyspaces with [tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md)
+to further narrow down. For keyspaces with [tablets](https://docs.scylladb.com/manual/branch-2026.3/architecture/tablets.md)
 enabled, you need to provide both `<keyspace>` and `<table>`. This
 will display the partition ranges for that specific table.
 
@@ -33,4 +33,4 @@ will display the partition ranges for that specific table.
 nodetool ring <keyspace> <table>
 ```
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

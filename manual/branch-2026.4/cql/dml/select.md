@@ -69,7 +69,7 @@ and returns them as a single row (see [SELECT without FROM](#select-without-from
 [limit](#limit-clause) the results. Lastly, [queries that require filtering](#allow-filtering) can be allowed
 if the `ALLOW FILTERING` flag is provided.
 
-If your `SELECT` query results in what appears to be missing data, see this [KB Article](https://docs.scylladb.com/manual/branch-2026.4/kb/cqlsh-results.md) for information.
+If your `SELECT` query results in what appears to be missing data, see this [KB Article](https://docs.scylladb.com/manual/stable/kb/cqlsh-results.md) for information.
 
 <a id="selection-clause"></a>
 
@@ -86,7 +86,7 @@ A `selector` can be one of the following:
 - A column name of the table selected to retrieve the values for that column.
 - A casting, which allows you to convert a nested selector to a (compatible) type.
 - A function call, where the arguments are selector themselves.
-- A call to the [COUNT function](https://docs.scylladb.com/manual/branch-2026.4/cql/functions.md#count-function), which counts all non-null results.
+- A call to the [COUNT function](https://docs.scylladb.com/manual/stable/cql/functions.md#count-function), which counts all non-null results.
 - A literal value: a constant, or a collection or tuple literal.
 - A bind variable (? or :name).
 
@@ -168,11 +168,11 @@ Those functions let you retrieve meta-information that is stored internally for 
 
 - `WRITETIME` retrieves the timestamp used when writing the column. The timestamp is typically the number of *microseconds* since the [Unix epoch](https://en.wikipedia.org/wiki/Unix_time) (January 1st 1970 at 00:00:00 UTC).
 
-You can read more about the `TIMESTAMP` retrieved by `WRITETIME` in the [UPDATE](https://docs.scylladb.com/manual/branch-2026.4/cql/dml.md#update-parameters) section.
+You can read more about the `TIMESTAMP` retrieved by `WRITETIME` in the [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section.
 
 - `TTL` retrieves the remaining time to live (in *seconds*) for the value of the column, if it set to expire, or `null` otherwise.
 
-You can read more about TTL in the [documentation](https://docs.scylladb.com/manual/branch-2026.4/cql/time-to-live.md) and also in [this ScyllaDB University lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/).
+You can read more about TTL in the [documentation](https://docs.scylladb.com/manual/stable/cql/time-to-live.md) and also in [this ScyllaDB University lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/).
 
 **Using** `WRITETIME` **and** `TTL` **on map and set collection elements**
 
@@ -364,12 +364,12 @@ The following should be considered when using the `GROUP BY` option:
 
 The default order for a SELECT statement depends on the default clustering order of a table, which is defined when
 the table is created - it is `ASC` (ascendant) by default, but can be changed using the `WITH CLUSTERING ORDER BY`
-option. See [CREATE TABLE](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#create-table-statement).
+option. See [CREATE TABLE](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-statement).
 
 The `ORDER BY` clause allows you to configure a non-default order of the returned result. It takes a list of column names
 along with the order for the column as an argument  (`ASC` for ascendant and `DESC` for descendant, omitting the default order).
 
-Currently, the possible orderings are limited by the [clustering order](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#clustering-order) defined on the table:
+Currently, the possible orderings are limited by the [clustering order](https://docs.scylladb.com/manual/stable/cql/ddl.md#clustering-order) defined on the table:
 
 - If the table has been defined without any specific `CLUSTERING ORDER`, then allowed orderings are the order
   induced by the clustering columns and the reverse of that one.
@@ -387,8 +387,8 @@ order_by_vector: ORDER BY ( `vector_column_name` ANN OF `vector` | ANN '(' `vect
 ```
 
 Where `vector_column_name` is the name of the vector column,
-`vector` is the query [vector](https://docs.scylladb.com/manual/branch-2026.4/cql/types.md#vectors), and `LIMIT` is a limit on the number of results to return.
-Vector queries can only be performed on a vector column that has a [vector index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-vector-index-statement) created.
+`vector` is the query [vector](https://docs.scylladb.com/manual/stable/cql/types.md#vectors), and `LIMIT` is a limit on the number of results to return.
+Vector queries can only be performed on a vector column that has a [vector index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement) created.
 
 The two forms are equivalent: `ORDER BY embedding ANN OF [0.1, 0.2]` and
 `ORDER BY ANN(embedding, [0.1, 0.2])` produce the same query. The function form is a
@@ -397,7 +397,7 @@ function is written; the `ANN OF` form is compatible with Apache Cassandra.
 
 The ANN ordering clause orders the results by their distance to the provided query vector,
 using the distance function defined for the vector column when
-[creating the vector index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-vector-index-statement).
+[creating the vector index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement).
 The query vector must have the same dimension as the vector column.
 
 Supported `LIMIT` values are integers between 1 and 1000, inclusive.
@@ -441,13 +441,13 @@ All three describe the search the rows are ranked by, so each is only accepted i
 use the same query vector as that search. A query using several of them still makes a single
 request.
 
-An index configured for [rescoring](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-vector-index-statement) recomputes the similarity
+An index configured for [rescoring](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement) recomputes the similarity
 on the coordinator and reorders the rows by it, so the rank the Vector Store gave them no longer
 applies. `ANN_RANK()` and `ANN()` are rejected in the `SELECT` clause of such a query;
 `ANN_SCORE()` and the `ORDER BY` itself work as usual.
 
 To score rows against a vector other than the one being searched for, use the
-[similarity functions](https://docs.scylladb.com/manual/branch-2026.4/cql/functions.md#vector-similarity-functions) directly.
+[similarity functions](https://docs.scylladb.com/manual/stable/cql/functions.md#vector-similarity-functions) directly.
 
 For example:
 
@@ -481,10 +481,10 @@ duplicate partition keys. More information about Vector Search is available in t
 
 #### NOTE
 Full-Text Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
-For more information, see the [Full-Text Search documentation](https://docs.scylladb.com/manual/branch-2026.4/features/fulltext-search.md).
+For more information, see the [Full-Text Search documentation](https://docs.scylladb.com/manual/stable/features/fulltext-search.md).
 
 The `BM25()` function enables full-text search queries over text columns that
-have a [full-text index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-fulltext-index-statement) created with
+have a [full-text index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-fulltext-index-statement) created with
 `USING 'fulltext_index'`. `BM25()` takes a column name and a query string
 and scores rows using the BM25 ranking algorithm.
 
@@ -509,8 +509,8 @@ fts_query: SELECT ... FROM `table_name`
 
 In the `WHERE` clause, `>` is the only supported comparison operator, and the right-hand side must be
 the literal `0`. The column must be of type `text`, `varchar`, or `ascii`
-and have a `fulltext_index`. Columns of the [primary key](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#primary-key)
-and [static columns](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#static-columns) cannot be indexed.
+and have a `fulltext_index`. Columns of the [primary key](https://docs.scylladb.com/manual/stable/cql/ddl.md#primary-key)
+and [static columns](https://docs.scylladb.com/manual/stable/cql/ddl.md#static-columns) cannot be indexed.
 
 `ORDER BY BM25()` must be the only ordering in the query - it cannot be combined
 with another `ORDER BY` column. To rank the rows by several searches, such as a
@@ -581,10 +581,10 @@ SELECT id, BM25_HIGHLIGHT(body, 'distributed database') AS excerpt FROM articles
 It is accepted only in the `SELECT` clause, under the same rules as `BM25()`
 there. The result is of type `text` and is `null` for a row in which no
 fragment could be found; the row itself is still returned. See
-[Highlighting](https://docs.scylladb.com/manual/branch-2026.4/features/fulltext-search.md#fulltext-highlighting) for the details.
+[Highlighting](https://docs.scylladb.com/manual/stable/features/fulltext-search.md#fulltext-highlighting) for the details.
 
 For the full list of query constraints and requirements, see
-[Full-Text Search](https://docs.scylladb.com/manual/branch-2026.4/features/fulltext-search.md).
+[Full-Text Search](https://docs.scylladb.com/manual/stable/features/fulltext-search.md).
 
 <a id="hybrid-queries"></a>
 
@@ -653,7 +653,7 @@ SELECT id, ANN_RANK(embedding, [0.1, 0.2, 0.3, 0.4]) AS vector_rank,
     LIMIT 10;
 ```
 
-[BM25_HIGHLIGHT()](https://docs.scylladb.com/manual/branch-2026.4/features/fulltext-search.md#fulltext-highlighting) may be selected too, and is null in the same way: only
+[BM25_HIGHLIGHT()](https://docs.scylladb.com/manual/stable/features/fulltext-search.md#fulltext-highlighting) may be selected too, and is null in the same way: only
 the text of the rows the full-text search returned is sent to the index for an excerpt.
 
 Hybrid queries have the following limitations:
@@ -662,7 +662,7 @@ Hybrid queries have the following limitations:
 * A `LIMIT` clause is mandatory, and must not exceed 1000. Only the first `LIMIT` rows of each
   search’s answer are fused: a vector index with `oversampling` is asked for the `LIMIT` times
   the oversampling factor, but its answer is cut to the `LIMIT` before the fusion.
-* A vector index configured for [rescoring](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-vector-index-statement) cannot take part in
+* A vector index configured for [rescoring](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement) cannot take part in
   a hybrid query: the rescored order has no rank to fuse by. On such an index, `ORDER BY` accepts
   only `ANN()` or `ANN_SCORE()` called directly.
 * The rank is the position in the index’s result, not in the result set. If an index returns a row
@@ -676,13 +676,13 @@ Hybrid queries have the following limitations:
 
 #### NOTE
 Pattern Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
-For more information, see the [Pattern Search documentation](https://docs.scylladb.com/manual/branch-2026.4/features/pattern-search.md).
+For more information, see the [Pattern Search documentation](https://docs.scylladb.com/manual/stable/features/pattern-search.md).
 
-This section covers `LIKE` on a column that has a [pattern index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-pattern-index-statement).
+This section covers `LIKE` on a column that has a [pattern index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-pattern-index-statement).
 `LIKE` as a filter, available in every deployment, is described in [LIKE Operator](#like-operator).
 The two use the same pattern syntax but otherwise behave differently, for example in result order,
 paging, consistency and case sensitivity; see
-[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/branch-2026.4/features/pattern-search.md#pattern-search-indexed-vs-filtered) for a comparison.
+[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/stable/features/pattern-search.md#pattern-search-indexed-vs-filtered) for a comparison.
 
 On a column that has a pattern index, every `LIKE` restriction is served by the index instead of by
 filtering. Such a query does not need `ALLOW FILTERING`; if it is given, it is ignored and the index
@@ -716,7 +716,7 @@ The rules are:
 #### WARNING
 A pattern index changes every `LIKE` on its column, from every application, for as long as the
 index exists: a `LIKE` that worked by filtering before the index was created can fail or return
-different rows afterwards. Dropping the index with [DROP INDEX](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#drop-index-statement) restores
+different rows afterwards. Dropping the index with [DROP INDEX](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#drop-index-statement) restores
 filtered `LIKE`.
 
 <a id="limit-clause"></a>
@@ -957,10 +957,10 @@ The `LIKE` operation on `SELECT` statements informs ScyllaDB that you are lookin
 
 Without an index, `LIKE` is a filter: ScyllaDB reads the rows and checks each value against the
 pattern, so the query requires [ALLOW FILTERING](#allow-filtering). This section describes that
-filtered `LIKE`. On a column with a [pattern index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-pattern-index-statement), `LIKE`
+filtered `LIKE`. On a column with a [pattern index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-pattern-index-statement), `LIKE`
 is served by the index instead, even with `ALLOW FILTERING`, and follows different rules; see
 [Indexed LIKE queries](#pattern-queries) and
-[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/branch-2026.4/features/pattern-search.md#pattern-search-indexed-vs-filtered).
+[Indexed vs. Filtered LIKE](https://docs.scylladb.com/manual/stable/features/pattern-search.md#pattern-search-indexed-vs-filtered).
 
 The search pattern is a string of characters with two wildcards, as shown:
 
@@ -983,7 +983,7 @@ A query can find all values containing some text fragment by matching to an appr
 **Differences Between ScyllaDB and Cassandra LIKE Operators**
 
 * In Apache Cassandra, you must create a SASI index to use LIKE. ScyllaDB supports LIKE as a regular filter,
-  and can also serve it from a [pattern index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-pattern-index-statement).
+  and can also serve it from a [pattern index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-pattern-index-statement).
 * Consequently, a filtered ScyllaDB LIKE will be less performant than Apache Cassandra LIKE for some workloads.
 * ScyllaDB treats underscore (_) as a wildcard; Cassandra doesn’t.
 * ScyllaDB treats percent (%) as a wildcard anywhere in the pattern; Cassandra only at the beginning/end
@@ -1157,7 +1157,7 @@ SELECT * FROM users WHERE email IS NOT NULL ALLOW FILTERING;
 **Usage in Materialized Views**
 
 The `IS NOT NULL` restriction is required in materialized view definitions for all columns that are part of the
-view’s primary key, as primary key columns cannot be null. See [Materialized Views](https://docs.scylladb.com/manual/branch-2026.4/cql/mv.md#materialized-views) for
+view’s primary key, as primary key columns cannot be null. See [Materialized Views](https://docs.scylladb.com/manual/stable/cql/mv.md#materialized-views) for
 more details. This usage does not require `ALLOW FILTERING`. On a base table primary key column the restriction
 is a no-op, because a view row is only ever built from a base clustering row, and such a row has a value for every
 one of the base table’s primary key columns. On a regular base table column promoted into the view’s primary key it
@@ -1166,7 +1166,7 @@ is not a no-op: it is what excludes the base rows where that column is null from
 definition on a column that is not part of the view’s primary key - views do not support filtering on non-key
 columns.
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
 
 Copyright
 

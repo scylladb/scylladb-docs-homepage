@@ -32,12 +32,12 @@ Restoring to a live cluster is not yet supported.
 3. **Native Configuration**:
    * To prevent native backup from saturating the network and affecting user
      workloads, limit background I/O throughput with
-     [maintenance_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confprop-maintenance-io-throughput-mb-per-sec).
+     [maintenance_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md#confprop-maintenance-io-throughput-mb-per-sec).
      This limit applies to all background activities together, including backup,
      streaming, and maintenance compaction. To limit only the backup upload, use
-     [backup_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confprop-backup-io-throughput-mb-per-sec).
+     [backup_io_throughput_mb_per_sec](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md#confprop-backup-io-throughput-mb-per-sec).
    * For native backup to work, ScyllaDB node must have access to the S3 bucket.
-     See [Configuring Object Storage](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-configuration) for details.
+     See [Configuring Object Storage](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#object-storage-configuration) for details.
 
 ## Restore Process
 

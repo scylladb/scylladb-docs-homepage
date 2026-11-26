@@ -3,7 +3,7 @@
 **backup** - Copy SSTables from a specified keyspace’s snapshot to a designated bucket in object storage
 
 Note that status of backup can be checked for `user_task_ttl` seconds after the operation is done.
-You can set the ttl using [nodetool tasks user-ttl](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/user-ttl.md).
+You can set the ttl using [nodetool tasks user-ttl](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/tasks/user-ttl.md).
 If `--nowait` flag is not set, the command relies on `user_task_ttl` internally.
 
 ## Syntax
@@ -30,7 +30,7 @@ nodetool backup --endpoint s3.us-east-2.amazonaws.com  --bucket bucket-foo --pre
 * `--table` - Name of a table to copy SSTables from
 * `--snapshot` - Name of a snapshot to copy sstables from
 * `--endpoint` - Name of the configured object storage endpoint to copy SSTables to.
-  This should be configured as per [the object storage configuration instructions](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#object-storage-configuration).
+  This should be configured as per [the object storage configuration instructions](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin.md#object-storage-configuration).
 * `--bucket` - Name of the bucket to backup SSTables to
 * `--prefix` - Prefix to backup SSTables to
 * `--nowait` - Don’t wait on the backup process
@@ -38,6 +38,6 @@ nodetool backup --endpoint s3.us-east-2.amazonaws.com  --bucket bucket-foo --pre
 
 See also
 
-[Nodetool restore](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/restore.md)
+[Nodetool restore](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/restore.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

@@ -47,7 +47,7 @@
             
             
             
-                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest.md" />
+                <link rel="alternate" type="text/markdown" href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest.md" />
             
         
 
@@ -359,14 +359,14 @@
 
                 <div class="content-body"
                      
-                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.3/llms.txt"
+                         data-llms-txt-url="https://docs.scylladb.com/manual/branch-2026.4/llms.txt"
                      
                      
                          data-view-source-url="https://github.com/scylladb/scylladb/blob/master/docs/operating-scylla/security/encryption-at-rest.rst"
                      >
                     
                         <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.3/llms.txt">https://docs.scylladb.com/manual/branch-2026.3/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest.md">https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest.md</a>.
+                            For AI agents: a documentation index is available at <a href="https://docs.scylladb.com/manual/branch-2026.4/llms.txt">https://docs.scylladb.com/manual/branch-2026.4/llms.txt</a>. A Markdown version of this page is at <a href="https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest.md">https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest.md</a>.
                         </div>
                     
                     
@@ -826,7 +826,7 @@ following in KMIP host(s) section:</p>
 <span class="w">       </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;password&gt; (optional)</span>
 <span class="w">       </span><span class="nt">max_command_retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;int&gt; (optional; default 3)</span>
 <span class="w">       </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt;</span>
-<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt;</span>
+<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt;</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -847,8 +847,8 @@ but you can customize it with <code class="docutils literal notranslate"><span c
 <li><p><code class="docutils literal notranslate"><span class="pre">username</span></code> - The KMIP server user name.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">password</span></code> - The KMIP server password.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_command_retries</span></code> - The number of attempts to connect to the KMIP server before trying the next host in the list.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from server. Default is 30s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 100s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 100s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 30s.</p></li>
 </ul>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kmip_hosts</span><span class="p">:</span>
@@ -915,7 +915,7 @@ following in KMS host(s) section:</p>
 <span class="w">       </span><span class="nt">truststore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;truststore for SSL connection&gt; (optional)</span>
 <span class="w">       </span><span class="nt">priority_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;KMS TLS priority string&gt; (optional)</span>
 <span class="w">       </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt;</span>
-<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt;</span>
+<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt;</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -938,8 +938,8 @@ read the key and encrypt data using that key. This parameter is required.</p></l
 <li><p><code class="docutils literal notranslate"><span class="pre">keyfile</span></code> - The name of the key for the certificate. It is generated together with the certificate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">truststore</span></code> - The location and key for the truststore to present to the KMS server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">priority_string</span></code> - The KMS TLS priority string.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from server. Default is 600s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 300s.</p></li>
 </ul>
 <p>Examples:</p>
 <div class="sphinx-tabs docutils container">
@@ -1054,7 +1054,7 @@ following in KMS host(s) section:</p>
 <span class="w">       </span><span class="nt">truststore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;truststore for SSL connection&gt; (optional)</span>
 <span class="w">       </span><span class="nt">priority_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;KMS TLS priority string&gt; (optional)</span>
 <span class="w">       </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt;</span>
-<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt;</span>
+<span class="w">       </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt;</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -1071,8 +1071,8 @@ to encrypt and decrypt data using that key. This parameter is required.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">keyfile</span></code> - The name of the key for the certificate. It is generated together with the certificate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">truststore</span></code> - The location and key for the truststore to present to the KMS server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">priority_string</span></code> - The KMS TLS priority string.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from server. Default is 600s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which cache is checked for expired entries. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 300s.</p></li>
 </ul>
 <p>Examples:</p>
 <div class="sphinx-tabs docutils container">
@@ -1183,7 +1183,7 @@ following in the Azure host(s) section:</p>
 <span class="w">      </span><span class="nt">truststore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;PEM file with CA certificates for TLS&gt; (optional)</span>
 <span class="w">      </span><span class="nt">priority_string</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;TLS priority string&gt; (optional)</span>
 <span class="w">      </span><span class="nt">key_cache_expiry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache expiry period&gt; (optional)</span>
-<span class="w">      </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh/prune period&gt; (optional)</span>
+<span class="w">      </span><span class="nt">key_cache_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key cache refresh period&gt; (optional)</span>
 <span class="c1">#   &lt;name&gt;:</span>
 </pre></div>
 </div>
@@ -1197,8 +1197,8 @@ following in the Azure host(s) section:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">master_key</span></code> - The &lt;vaultname&gt;/&lt;keyname&gt; of your key. This parameter is required.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">truststore</span></code> - Path to a PEM file with CA certificates to validate the server’s TLS certificate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">priority_string</span></code> - The TLS priority string for TLS handshakes.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period, after which keys will be re-requested from Azure Key Vault. Default is 600s.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - the frequency at which the cache is checked for expired entries. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> - Key cache expiry period - a cached key is removed if it has not been read, or has not been successfully reloaded, within this period. It is then re-requested from the key provider on next use. Default is 1200s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> - Key cache refresh period - a cached key is reloaded in the background between one and two refresh periods after it was loaded; should be less than half of <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>. Default is 300s.</p></li>
 </ul>
 <p>Example:</p>
 <div class="sphinx-tabs docutils container">
@@ -2313,9 +2313,11 @@ encryption operations when refreshing its key cache. However, ScyllaDB
 will still be able to use this key to decrypt old data.</p></li>
 <li><p>Clear the old key from the key cache:</p>
 <ul>
-<li><p>You can choose to wait for the KMIP host’s <code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code>
-interval (default is 30 seconds), after which ScyllaDB will
-automatically clear the key cache, or</p></li>
+<li><p>You can wait for the key cache to pick up the new key. Cached keys
+are reloaded in the background between one and two
+<code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> periods after they were loaded, so the new key
+is picked up within about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code> (2 minutes
+with the default of 30s), or</p></li>
 <li><p>You can clear the key cache of each node manually by draining the node
 with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>
 and then restarting the scylla-server service:</p>
@@ -2357,15 +2359,15 @@ and the AWS KMS will detect and use the appropriate key version when
 decrypting old data.</p>
 <p>When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-<code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:</p>
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>). The cached data
+encryption keys are replaced on their next background reload (within
+about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:</p>
 <ol class="arabic">
 <li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>.</p></li>
 <li><p>Restart the scylla-server service to discard any cached data encryption
@@ -2397,15 +2399,15 @@ and the Google Cloud KMS will detect and use the appropriate key version
 when decrypting old data.</p>
 <p>When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-<code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:</p>
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>). The cached data
+encryption keys are replaced on their next background reload (within
+about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:</p>
 <ol class="arabic">
 <li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>.</p></li>
 <li><p>Restart the scylla-server service to discard any cached data encryption
@@ -2439,15 +2441,15 @@ SSTable and commitlog metadata, which allows it to track the exact version
 used for encryption.</p>
 <p>When a key is rotated, previously written out system artifacts and
 SSTables are not affected, meaning that they remain encrypted with the old
-key version. Additionally, for a few minutes after the rotation, ScyllaDB
-may be generating new system artifacts and SSTables with the old key
-version, due to cached data encryption keys created before the rotation
-(keys are cached for 10 minutes by default, depending on the
-<code class="docutils literal notranslate"><span class="pre">key_cache_expiry</span></code> option). Eventually, the cached data encryption keys
-will be evicted and the old SSTables will be re-encrypted with the new key
-version when they are naturally compacted. If you prefer not to wait for
-this process to complete on its own, you can run the following steps on
-each node:</p>
+key version. Additionally, after the rotation, ScyllaDB may be generating
+new system artifacts and SSTables with the old key version, due to cached
+data encryption keys created before the rotation (cached keys are
+refreshed periodically, see <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>). The cached data
+encryption keys are replaced on their next background reload (within
+about four times <code class="docutils literal notranslate"><span class="pre">key_cache_refresh</span></code>) and the old SSTables will be
+re-encrypted with the new key version when they are naturally compacted.
+If you prefer not to wait for this process to complete on its own, you can
+run the following steps on each node:</p>
 <ol class="arabic">
 <li><p>Drain the node with <a class="reference internal" href="../nodetool-commands/drain.html"><span class="doc">nodetool drain</span></a>.</p></li>
 <li><p>Restart the scylla-server service to discard any cached data encryption
@@ -2518,7 +2520,7 @@ data encrypted with that key will be unreadable.</p>
             const themeGithubRepository = true;
             let message = 'Great! Thanks for your feedback.';
             if (themeGithubRepository && !liked) {
-                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Encryption at Rest&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
+                message = "Thanks for your feedback! Please don't hesitate to <a href='https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Encryption at Rest&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation'>create an issue</a> if you have any suggestions on how we can improve.";
             }
             feedbackMessage.innerHTML = message;
         }
@@ -2587,7 +2589,7 @@ data encrypted with that key will be unreadable.</p>
     
     <ul class="contribute">
         <li class="contribute__item">
-            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Encryption at Rest&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/encryption-at-rest%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
+            <a class="button button-sm" href="https://github.com/scylladb/scylladb/issues/new?title=docs:%20Issue on page Encryption at Rest&&body=I%20would%20like%20to%20report%20an%20issue%20on%20page%20https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/encryption-at-rest%0A%0A%23%23%23%20Problem%0A%0A%23%23%23%20%20Suggest%20a%20fix&labels=documentation"
                target="_blank">
                 <i class="icon-github" aria-hidden="true"></i>Create an issue
             </a>
@@ -2693,7 +2695,7 @@ data encrypted with that key will be unreadable.</p>
     <li class="scylla-dropdown__item">
         <a class="scylla-dropdown__title" href="#">
             
-                2026.3
+                2026.4
             
             <i class="chevron icon-docs-chevron-right"></i>
         </a>
@@ -2707,13 +2709,13 @@ data encrypted with that key will be unreadable.</p>
             
                 
                     <li>
-                        <a href="../../../branch-2026.4/operating-scylla/security/encryption-at-rest.html">2026.4</a>
+                        <a href="encryption-at-rest.html">2026.4</a>
                     </li>
                 
             
                 
                     <li>
-                        <a href="encryption-at-rest.html">2026.3</a>
+                        <a href="../../../branch-2026.3/operating-scylla/security/encryption-at-rest.html">2026.3</a>
                     </li>
                 
             
@@ -2760,17 +2762,16 @@ data encrypted with that key will be unreadable.</p>
         <div class="side-nav__content">
             <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../getting-started/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.3</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.3 on AWS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.3 on GCP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.3 on Azure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.3 on Oracle Cloud Infrastructure (OCI)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../getting-started/install-scylla/index.html">Install ScyllaDB 2026.4</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-aws.html">Launch ScyllaDB 2026.4 on AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-gcp.html">Launch ScyllaDB 2026.4 on GCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-azure.html">Launch ScyllaDB 2026.4 on Azure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/launch-on-oci.html">Launch ScyllaDB 2026.4 on Oracle Cloud Infrastructure (OCI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/scylla-web-installer.html">ScyllaDB Web Installer for Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.3 Linux Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/install-on-linux.html">Install ScyllaDB 2026.4 Linux Packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/install-scylla/run-in-docker.html">Run ScyllaDB in Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/unified-installer.html">Install ScyllaDB Without root Privileges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/air-gapped-install.html">Air-gapped Server Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">ScyllaDB Housekeeping and how to disable it</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/dev-mod.html">ScyllaDB Developer Mode</a></li>
 </ul>
 </li>
@@ -2819,7 +2820,6 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l3"><a class="reference internal" href="../procedures/tips/index.html">Best Practices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../benchmarking-scylla.html">Benchmarking ScyllaDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../procedures/cassandra-to-scylla-migration-process.html">Migrate from Cassandra to ScyllaDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting-started/installation-common/disable-housekeeping.html">Disable Housekeeping</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Security</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon-chevron-right"></i></label><div class="break"></div><ul class="current">
@@ -2832,6 +2832,7 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l3"><a class="reference internal" href="enable-authorization.html">Enable Authorization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="authorization.html">Grant Authorization CQL Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="certificate-authentication.html">Certificate-based Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="certificate-or-password-authentication.html">Certificate or Password Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rbac-usecase.html">Role Based Access Control (RBAC)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auditing.html">ScyllaDB Auditing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="client-node-encryption.html">Encryption: Data in Transit Client to Node</a></li>
@@ -2861,6 +2862,7 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/maintenance-socket.html">Maintenance socket</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/maintenance-mode.html">Maintenance mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../admin-tools/task-manager.html">Task manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin-tools/compression-advisor.html">Compression Advisor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference external" href="https://monitoring.docs.scylladb.com/">ScyllaDB Monitoring Stack</a></li>
@@ -2898,6 +2900,7 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/ddl.html">Data Definition</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../cql/dml.html">Data Manipulation</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html">SELECT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cql/dml/select.html#selecting-an-excerpt">Selecting an excerpt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/insert.html">INSERT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/update.html">UPDATE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../cql/dml/delete.html">DELETE</a></li>
@@ -2914,6 +2917,7 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/json.html">JSON Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/mv.html">Materialized Views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/describe-schema.html">DESCRIBE SCHEMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cql/cluster-config.html">Configuring a Cluster with CQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/service-levels.html">Service Levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cql/cql-extensions.html">ScyllaDB CQL Extensions</a></li>
 </ul>
@@ -2924,6 +2928,7 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/new-apis.html">Alternator-specific APIs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/network.html">Reducing network costs in Alternator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../alternator/vector-search.html">Alternator Vector Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alternator/sdks.html">Alternator client libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../features/index.html">Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -2951,6 +2956,7 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../features/automatic-repair.html">Automatic Repair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/vector-search.html">Vector Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../features/fulltext-search.html">Full-Text Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../features/pattern-search.html">Pattern Search</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../architecture/index.html">ScyllaDB Architecture</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
@@ -3072,13 +3078,13 @@ data encrypted with that key will be unreadable.</p>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/aws-images.html">AWS Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/azure-images.html">Azure Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/gcp-images.html">GCP Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/oci-images.html">OCI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/configuration-parameters.html">Configuration Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/glossary.html">Glossary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/limits.html">Limits</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon-chevron-right"></i></label><div class="break"></div><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/authorization-cache.html">Authorization Cache</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/cache-service.html">Cache Service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/api/collectd.html">Collectd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/column-family.html">Column Family</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/commit-log.html">Commit Log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/api/compaction-manager.html">Compaction Manager</a></li>
@@ -3159,7 +3165,7 @@ data encrypted with that key will be unreadable.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 26 Nov 2025.
+                        Last updated on 21 Oct 2026.
                     
                 </div>
             

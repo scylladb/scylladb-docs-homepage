@@ -44,7 +44,7 @@ than its `LIMIT`, even when more rows match, if a row was deleted after the
 index found it.
 
 Pattern Search does not tokenize, stem or rank. For word-based search ranked
-by relevance, use [Full-Text Search](https://docs.scylladb.com/manual/branch-2026.4/features/fulltext-search.md).
+by relevance, use [Full-Text Search](https://docs.scylladb.com/manual/stable/features/fulltext-search.md).
 
 ## Creating a Pattern Index
 
@@ -64,7 +64,7 @@ CREATE CUSTOM INDEX ON ks.parts (code) USING 'pattern_index'
 ```
 
 For the option and its default, see
-[Pattern Index](https://docs.scylladb.com/manual/branch-2026.4/cql/secondary-indexes.md#create-pattern-index-statement).
+[Pattern Index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-pattern-index-statement).
 
 #### WARNING
 Creating a pattern index changes the meaning of every `LIKE` on its
@@ -104,7 +104,7 @@ Cell-level TTL, set with the standard `USING TTL` syntax on `INSERT` or
 generate a CDC event, so the pattern index is not updated and keeps a stale
 entry for that value. A `LIKE` query can then still return the row, with the
 expired value read as `null`. If the index must reflect expiration, use the
-[Per-row TTL](https://docs.scylladb.com/manual/branch-2026.4/cql/cql-extensions.md#cql-per-row-ttl) feature instead.
+[Per-row TTL](https://docs.scylladb.com/manual/stable/cql/cql-extensions.md#cql-per-row-ttl) feature instead.
 
 ## Querying with LIKE
 
@@ -126,7 +126,7 @@ SELECT id, code FROM ks.parts
 
 Creating the index is a deliberate choice to serve every `LIKE` on the
 column from the index, even with `ALLOW FILTERING`. The full rules are in
-[Indexed LIKE queries](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#pattern-queries).
+[Indexed LIKE queries](https://docs.scylladb.com/manual/stable/cql/dml/select.md#pattern-queries).
 
 <a id="pattern-search-indexed-vs-filtered"></a>
 
@@ -134,7 +134,7 @@ column from the index, even with `ALLOW FILTERING`. The full rules are in
 
 Without a pattern index, `LIKE` is a filter: ScyllaDB reads the rows and
 checks each value against the pattern, as described in
-[LIKE Operator](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#like-operator). On a column with a pattern index, the
+[LIKE Operator](https://docs.scylladb.com/manual/stable/cql/dml/select.md#like-operator). On a column with a pattern index, the
 same `LIKE` is served by the index instead, and the query differs from a
 filtered one as follows:
 
@@ -161,5 +161,5 @@ DROP INDEX ks.parts_code_idx;
 
 From then on, a `LIKE` on the column is a filter again: it requires
 `ALLOW FILTERING`, matches case-sensitively, and follows the rules of
-[LIKE Operator](https://docs.scylladb.com/manual/branch-2026.4/cql/dml/select.md#like-operator). Dropping the index is the way back when
+[LIKE Operator](https://docs.scylladb.com/manual/stable/cql/dml/select.md#like-operator). Dropping the index is the way back when
 the indexed `LIKE` does not suit an application that queries the column.

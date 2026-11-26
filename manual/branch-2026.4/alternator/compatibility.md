@@ -63,7 +63,7 @@ it could use LWT only for the read-modify-write operations.
 Therefore, Alternator must be explicitly configured to tell it which of the
 above assumptions it may make on the write workload. This configuration is
 mandatory, and described in the “Write isolation policies” section of
-[Alternator-specific APIs](https://docs.scylladb.com/manual/branch-2026.4/alternator/new-apis.md). One of the options, `always_use_lwt`,
+[Alternator-specific APIs](https://docs.scylladb.com/manual/stable/alternator/new-apis.md). One of the options, `always_use_lwt`,
 is always safe, but the other options result in significantly better write
 performance and should be considered when the workload involves pure writes
 (e.g., ingestion of new data) or if pure writes and read-modify-writes go
@@ -166,7 +166,7 @@ that present a valid certificate are authenticated using the subject fields
 required or checked. With `require_client_auth=true` client certificates are
 mandatory; with `require_client_auth=optional` they are optional, allowing both
 mTLS and SigV4 clients to share the same port. See the
-[Mutual TLS (mTLS) for Alternator](https://docs.scylladb.com/manual/branch-2026.4/alternator/alternator.md#mutual-tls-mtls-for-alternator)
+[Mutual TLS (mTLS) for Alternator](https://docs.scylladb.com/manual/stable/alternator/alternator.md#mutual-tls-mtls-for-alternator)
 section for full configuration details.
 
 Alternator also implements authorization, or *access control* - defining
@@ -237,7 +237,7 @@ ATTACH SERVICE_LEVEL oltp TO bob;
 Note that `alternator_enforce_authorization` has to be enabled in ScyllaDB configuration.
 
 See [Authorization]() section to learn more about roles and authorization.
-See [Workload Prioritization](https://docs.scylladb.com/manual/branch-2026.4/features/workload-prioritization.md)
+See [Workload Prioritization](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md)
 to read about Workload Prioritization in detail.
 
 ## Metrics

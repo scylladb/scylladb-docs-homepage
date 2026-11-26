@@ -28,7 +28,7 @@ CREATE CUSTOM INDEX ON ks.t (v) USING 'fulltext_index';
 
 You can specify an analyzer to control how text is tokenized. The default is
 `standard`; for a description of each supported analyzer, see
-[Full-text Index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-fulltext-index-statement).
+[Full-text Index](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md#create-fulltext-index-statement).
 
 ```default
 CREATE CUSTOM INDEX ON ks.t (v) USING 'fulltext_index'
@@ -51,7 +51,7 @@ Cell-level TTL, set with the standard `USING TTL` syntax on `INSERT` or
 `UPDATE`, makes the value unreadable at its expiration deadline but does
 not generate a CDC event, so the fulltext index is not updated and keeps a
 stale entry for that value. If the index must reflect expiration, use the
-[Per-row TTL](https://docs.scylladb.com/manual/stable/cql/cql-extensions.md#cql-per-row-ttl) feature instead: it deletes expired rows
+[Per-row TTL](https://docs.scylladb.com/manual/branch-2026.3/cql/cql-extensions.md#cql-per-row-ttl) feature instead: it deletes expired rows
 explicitly and does generate a CDC event.
 
 ## Querying with BM25
@@ -71,7 +71,7 @@ Neither clause works on its own - a query with only `WHERE BM25()` or only
 `ORDER BY BM25()` is rejected, and both must reference the **same column** and
 the **same search term**. Every FTS query also requires a `LIMIT`.
 
-For the full syntax reference, see [Full-Text Search queries (BM25)](https://docs.scylladb.com/manual/stable/cql/dml/select.md#fulltext-queries).
+For the full syntax reference, see [Full-Text Search queries (BM25)](https://docs.scylladb.com/manual/branch-2026.3/cql/dml/select.md#fulltext-queries).
 
 ### Basic query
 

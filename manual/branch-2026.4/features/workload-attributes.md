@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A typical database has more than one [workload](https://docs.scylladb.com/manual/branch-2026.4/reference/glossary.md#term-Workload) running simultaneously with a different acceptable level of latency and
+A typical database has more than one [workload](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Workload) running simultaneously with a different acceptable level of latency and
 throughput. By defining the attributes of each workload, you can specify how ScyllaDB will handle requests depending on
 the workload to which they are assigned.
 
@@ -10,12 +10,12 @@ You can define a workload’s attribute using the *service level* concept. The s
 attributes to users and roles. When a user logs into the system, all of the attributes attached to that user and to the roles
 granted to that user are combined and become a set of workload attributes.
 
-See [Service Level Management](https://docs.scylladb.com/manual/branch-2026.4/features/workload-prioritization.md#workload-priorization-service-level-management) for more information about service levels.
+See [Service Level Management](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md#workload-priorization-service-level-management) for more information about service levels.
 
 ## Prerequisites
 
-* An [authenticated](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/runtime-authentication.md) and [authorized](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/enable-authorization.md) user
-* At least one [role created](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authorization.md#create-role-statement).
+* An [authenticated](https://docs.scylladb.com/manual/stable/operating-scylla/security/runtime-authentication.md) and [authorized](https://docs.scylladb.com/manual/stable/operating-scylla/security/enable-authorization.md) user
+* At least one [role created](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#create-role-statement).
 
 ## Procedure
 
@@ -91,8 +91,8 @@ sensitive to latency).
 
 ### Available Workload Types
 
-| Workload type   | Description                                                                                                                                                                                                                                                                                                            |
-|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `unspecified`   | A generic workload without any specific characteristics (default).                                                                                                                                                                                                                                                     |
-| `interactive`   | A workload sensitive to latency, expected to have high/unbounded concurrency, with dynamic characteristics, [OLTP](https://docs.scylladb.com/manual/branch-2026.4/features/workload-prioritization.md). For example, a workload assigned to users clicking on a website and generating events with their clicks.       |
-| `batch`         | A workload for processing large amounts of data, not sensitive to latency, expected to have fixed concurrency, [OLAP](https://docs.scylladb.com/manual/branch-2026.4/features/workload-prioritization.md). For example, a workload assigned to processing billions of historical sales records to generate statistics. |
+| Workload type   | Description                                                                                                                                                                                                                                                                                                     |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `unspecified`   | A generic workload without any specific characteristics (default).                                                                                                                                                                                                                                              |
+| `interactive`   | A workload sensitive to latency, expected to have high/unbounded concurrency, with dynamic characteristics, [OLTP](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md). For example, a workload assigned to users clicking on a website and generating events with their clicks.       |
+| `batch`         | A workload for processing large amounts of data, not sensitive to latency, expected to have fixed concurrency, [OLAP](https://docs.scylladb.com/manual/stable/features/workload-prioritization.md). For example, a workload assigned to processing billions of historical sales records to generate statistics. |

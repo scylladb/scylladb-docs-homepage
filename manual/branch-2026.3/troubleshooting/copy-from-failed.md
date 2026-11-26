@@ -25,6 +25,6 @@ field_size_limit = 1000000000
 
 Additional References
 
-[Troubleshoot](https://docs.scylladb.com/manual/stable/troubleshooting/index.md)
+[Troubleshoot](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/index.md)
 
-[CQL Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+[CQL Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)

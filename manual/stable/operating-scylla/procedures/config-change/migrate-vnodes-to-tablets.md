@@ -54,33 +54,64 @@ tablet load balancer rebalances the data.
 
 ### Keyspace and table configuration
 
-* The keyspace’s replication strategy must be the **NetworkTopologyStrategy**,
-  and its replication factor must equal the number of racks to ensure that the
-  keyspace will be [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace) after the
-  migration. If your configuration requires changes, see
-  [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md)
-  and [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/stable/kb/rf-increase.md).
-* All tables in the keyspace should have `tombstone_gc` mode set to `repair`
-  to prevent tombstone garbage collection from running during migration.
-  For guidance, see [Tombstone Garbage Collection](https://docs.scylladb.com/manual/stable/cql/ddl.md#ddl-tombstones-gc).
+* The keyspace’s replication strategy must be the **NetworkTopologyStrategy**.
+  To change it, see
+  [Update Topology Strategy From Simple to Network](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/update-topology-strategy-from-simple-to-network.md).
+* In every datacenter, the keyspace’s replication factor must equal the number
+  of racks in that datacenter, to ensure that the keyspace will be
+  [RF-rack-valid](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-RF-rack-valid-keyspace) after the migration.
+  Racks that contain only [zero-token nodes](https://docs.scylladb.com/manual/stable/architecture/zero-token-nodes.md)
+  are not counted. A datacenter can also have a replication factor of zero
+  (RF=0), in which case it holds no replicas of the keyspace. For example, a
+  keyspace with replication `{'dc1': 3, 'dc2': 2, 'dc3': 0}` can be migrated
+  if `dc1` has three racks and `dc2` has two racks. An
+  [arbiter datacenter](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/arbiter-dc.md),
+  which contains only zero-token nodes, must have RF=0. To change the
+  replication factor, see [How to Safely Increase the Replication Factor](https://docs.scylladb.com/manual/stable/kb/rf-increase.md).
+  If the keyspace has materialized views or secondary indexes, or the
+  `rf_rack_valid_keyspaces` option is enabled, the migration refuses to
+  start unless the keyspace is RF-rack-valid. Migration with the
+  `enforce_rack_list` option enabled is not currently supported. Check the
+  Limitations section below for more details.
+* All tables, materialized views and secondary indexes in the keyspace should
+  have `tombstone_gc` mode set to `repair` to prevent tombstone garbage
+  collection from running during migration. For guidance, see
+  [Tombstone Garbage Collection](https://docs.scylladb.com/manual/stable/cql/ddl.md#ddl-tombstones-gc).
+* All materialized views and secondary indexes in the keyspace must be
+  **fully built** before the migration is started. Builds in progress are not
+  carried over to tablets. Check the build status with
+  [nodetool viewbuildstatus](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/viewbuildstatus.md);
+  for a secondary index, pass the name of its backing view, `<index name>_index`.
 
 ## Limitations
 
 The current migration procedure has the following limitations:
 
-* Only **single-DC clusters** are supported.
-* **No schema changes** during the migration. Do not create, alter, or drop
-  tables in the migrating keyspace until the migration is finished.
-* **No topology changes** during the migration. Do not add, remove, decommission,
-  replace, or rebuild nodes while a migration is in progress.
+* Clusters with the `enforce_rack_list` option enabled are not yet
+  supported: the migrated keyspace would keep its numeric replication factors,
+  which the option rejects. Disable the option, run the migration, convert the
+  replication factors to rack lists with `ALTER KEYSPACE`, then enable it
+  again.
+* **No schema changes** during the migration. Creating or dropping tables, views,
+  or indexes, and dropping the migrating keyspace are rejected until the
+  migration is finished. Altering the properties of existing tables and views is
+  allowed, except enabling CDC, which is not supported.
+* **No planned topology changes** during the migration. Do not add, remove,
+  decommission, or rebuild nodes while a migration is in progress. Replacing
+  a dead node is supported as an emergency recovery operation.
 * **No repair** operations during the migration. Do not run `nodetool repair`
   on the migrating keyspace while a migration is in progress.
 * **No backup and restore** for migrating tables during the migration.
   Do not take snapshots, run backups, or restore into the migrating keyspace
   while the migration is in progress.
 * **No TRUNCATE** on tables in the migrating keyspace during the migration.
-* Only **CQL base tables** can be migrated. Materialized views, secondary
-  indexes, CDC tables, and Alternator tables are not supported.
+* Only **CQL tables, materialized views, and secondary indexes** can be
+  migrated. CDC tables and Alternator tables are not supported. Views whose
+  partition key consists of exactly the base table’s partition key columns,
+  in the same order, including the backing views of local secondary indexes,
+  are migrated as [co-located tables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Colocated-Table) with their base
+  table (sharing its tablets). Other views, including the backing views of
+  global secondary indexes, get tablets of their own.
 * Tables with **counters** or **LWTs** cannot be migrated.
 * Only tables using the **Incremental Compaction Strategy (ICS)** can be migrated.
   Other compaction strategies are not supported.
@@ -136,10 +167,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   uses vnodes
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses vnodes
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
 
    <a id="upgrade-nodes"></a>
@@ -170,10 +201,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   migrating to tablets  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   migrating to tablets  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    4. Drain and stop the node:
       ```console
@@ -273,10 +304,10 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   uses tablets  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   uses vnodes
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses tablets  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   uses vnodes
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    8. Move to the next node and repeat from [step a](#upgrade-node-start)
       until all nodes are upgraded.
@@ -290,6 +321,13 @@ vice versa. Do not confuse it with version upgrades/downgrades.
       ```console
       nodetool migrate-to-tablets finalize <keyspace>
       ```
+
+      Finalization switches co-located materialized views and local secondary
+      indexes that use the `repair` `tombstone_gc` mode to `timeout`.
+      After the migration they become
+      [co-located tables](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-Colocated-Table), which do not support
+      `repair`, and `timeout` is their default mode. Other views and the
+      backing views of global secondary indexes keep their mode.
    2. Verify that the keyspace status changed to `tablets`:
       ```console
       nodetool migrate-to-tablets status <keyspace>
@@ -339,6 +377,12 @@ vice versa. Do not confuse it with version upgrades/downgrades.
    data. As the storage upgrade process kept each node offline for an extended
    period of time, its dataset might have become stale.
 
+   If the keyspace has materialized views or secondary indexes, the repair
+   also covers updates to them that were lost during finalization. Each node
+   switches to the tablet-based way of pairing base and view replicas when it
+   applies the finalization, so view updates written while the nodes
+   disagreed can miss some view replicas.
+
    Either run the repair with `nodetool`, as described below, or let
    [ScyllaDB Manager](https://manager.docs.scylladb.com/) run it for you.
 
@@ -381,10 +425,10 @@ following:
    Status: migrating_to_tablets
 
    Nodes:
-   Host ID                                Status
-   99d8de76-3954-4727-911a-6a07251b180c   uses tablets  <---
-   0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets  <---
-   017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+   Host ID                                Address    Status
+   99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses tablets  <---
+   0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets  <---
+   017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
    ```
 2. For **each upgraded or upgrading node** in the cluster, perform a downgrade
    (one node at a time):
@@ -410,10 +454,10 @@ following:
       Status: migrating_to_tablets
 
       Nodes:
-      Host ID                                Status
-      99d8de76-3954-4727-911a-6a07251b180c   migrating to vnodes  <---
-      0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
-      017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+      Host ID                                Address    Status
+      99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   migrating to vnodes  <---
+      0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
+      017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
       ```
    4. If the node status is `uses vnodes`, the downgrade is complete. Move to
       the next node and repeat from [step a](#downgrade-node-start).
@@ -517,10 +561,10 @@ following:
          Status: migrating_to_tablets
 
          Nodes:
-         Host ID                                Status
-         99d8de76-3954-4727-911a-6a07251b180c   uses vnodes  <---
-         0b5fd6f6-9670-4faf-a480-ad58cf119007   migrating to tablets
-         017dd39a-3d06-4c8a-8ac4-379f9e595607   uses vnodes
+         Host ID                                Address    Status
+         99d8de76-3954-4727-911a-6a07251b180c   10.0.0.1   uses vnodes  <---
+         0b5fd6f6-9670-4faf-a480-ad58cf119007   10.0.0.2   migrating to tablets
+         017dd39a-3d06-4c8a-8ac4-379f9e595607   10.0.0.3   uses vnodes
          ```
       5. Move to the next node and repeat from
          [step a](#downgrade-node-start) until all nodes are downgraded.
@@ -591,3 +635,15 @@ To migrate multiple keyspaces simultaneously, follow these steps:
    nodetool migrate-to-tablets finalize <keyspace2>
    ...
    ```
+
+## Replacing a Dead Node during Migration
+
+If a node fails during the migration, replace it using the standard procedure
+for [replacing a dead node](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md).
+
+The replacing node must have the same shard count as the replaced node. If the
+shard count differs, the replacement will fail.
+
+After replacement completes, you can resume the migration. The replacing node
+always starts in vnode mode and must be upgraded to tablets, regardless of the
+storage mode of node it replaced.

@@ -42,6 +42,6 @@ In this case, the safest way is to stop the service, clean all of the data, and 
 
 ## Additional Topics
 
-[Create a ScyllaDB Cluster - Single Data Center (DC)](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/create-cluster.md)
+[Create a ScyllaDB Cluster - Single Data Center (DC)](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/create-cluster.md)
 
-[ScyllaDB Procedures](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/cluster-management/index.md)
+[ScyllaDB Procedures](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/index.md)

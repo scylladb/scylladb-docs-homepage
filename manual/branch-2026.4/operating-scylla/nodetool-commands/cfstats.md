@@ -1,3 +1,3 @@
 # Nodetool cfstats
 
-This tool has been renamed as [nodetool tablestats](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/tablestats.md).
+This tool has been renamed as [nodetool tablestats](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tablestats.md).

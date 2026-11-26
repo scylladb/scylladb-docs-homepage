@@ -19,9 +19,9 @@ In addition, you should follow the procedure below in order to avoid data resurr
 ## Resolution
 
 1. Run a [full repair](https://manager.docs.scylladb.com/stable/repair) for the table in question.
-2. Change the `gc_grace_seconds` value for the table using the [ALTER table](https://docs.scylladb.com/manual/branch-2026.4/cql/ddl.md#alter-table-statement) command.
-3. Verify that the schema is in sync after the change by issuing [nodetool describecluster](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/describecluster.md) command from all nodes.
-   Verify that only a single schema version is reported. Read the [Schema Mismatch Troubleshooting Guide](https://docs.scylladb.com/manual/branch-2026.4/troubleshooting/error-messages/schema-mismatch.md) if it’s not the case.
+2. Change the `gc_grace_seconds` value for the table using the [ALTER table](https://docs.scylladb.com/manual/stable/cql/ddl.md#alter-table-statement) command.
+3. Verify that the schema is in sync after the change by issuing [nodetool describecluster](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/describecluster.md) command from all nodes.
+   Verify that only a single schema version is reported. Read the [Schema Mismatch Troubleshooting Guide](https://docs.scylladb.com/manual/stable/troubleshooting/error-messages/schema-mismatch.md) if it’s not the case.
 4. Make sure that you run at least one [full repair](https://manager.docs.scylladb.com/stable/repair) for the table in question during the `gc_grace_seconds` time window.
    For example, if the `gc_grace_seconds` is set to 10 days, you should run a full repair on your tables every 8-9 days to make sure your tables are repaired before the `gc_grace_seconds` threshold is reached.
 

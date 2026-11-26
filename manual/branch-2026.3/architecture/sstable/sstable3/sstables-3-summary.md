@@ -6,7 +6,7 @@ The summary file is meant to be read and stored entirely in memory, therefore it
 
 ## SSTables Summary File Layout
 
-The summary file format in SSTables 3.0 has minimal changes compared to the previous version of the format described here: [SSTable 2.0 format](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-format.md)
+The summary file format in SSTables 3.0 has minimal changes compared to the previous version of the format described here: [SSTable 2.0 format](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-format.md)
 The only noticeable change is that in 3.0 the summary file does not store information about segment boundaries. See [CASSANDRA-8630](https://issues.apache.org/jira/browse/CASSANDRA-8630) for more details about this change.
 
 Other than that, the data format remains the same. Note that, unlike data and index files, the summary file does not make use of variable-length integers:

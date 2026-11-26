@@ -12,7 +12,7 @@ To verify the gossip status run `nodetool statusgossip` Result will be `running`
 
 See also
 
-* [disablegossip](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/disablegossip.md)
-* [statusgossip](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/statusgossip.md)
+* [disablegossip](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/disablegossip.md)
+* [statusgossip](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/statusgossip.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

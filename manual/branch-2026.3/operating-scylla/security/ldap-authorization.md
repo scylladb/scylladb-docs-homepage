@@ -62,7 +62,7 @@ After Scylla queries LDAP and obtains the resulting entries, it looks for a part
 The name of this attribute can be configured in scylla.yaml by setting the `ldap_attr_role` parameter there.
 
 When the LDAP query returns multiple entries, multiple roles will be granted to the user.
-Each role must already exist in Scylla, created via the [CREATE ROLE](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md#create-role-statement) CQL command beforehand.
+Each role must already exist in Scylla, created via the [CREATE ROLE](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md#create-role-statement) CQL command beforehand.
 
 For example, if the LDAP query returns the following results:
 

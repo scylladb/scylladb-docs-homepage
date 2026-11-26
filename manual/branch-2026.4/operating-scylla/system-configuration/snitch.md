@@ -140,7 +140,7 @@ Ec2Snitch and Ec2MultiRegionSnitch will define DC/RACK differently for AWS Avail
 
 Use the Ec2MultiRegionSnitch when working on EC2 and using multi-cluster deployments where the nodes are in various regions.
 This snitch works like the Ec2Snitch, but in addition, it sets the node’s `broadcast_address` and `broadcast_rpc_address` to the node’s public IP address.
-This setting allows nodes from other zones to communicate with the node regardless of what is configured in the node’s [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md) configuration file for `broadcast_address` and `broadcast_rpc_address` parameters.
+This setting allows nodes from other zones to communicate with the node regardless of what is configured in the node’s [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md) configuration file for `broadcast_address` and `broadcast_rpc_address` parameters.
 
 `Ec2MultiRegionSnitch` also unconditionally imposes the “prefer local” policy on a node (similar to GossipingPropertyFileSnitch when `prefer_local` is set to `true`).
 
@@ -170,7 +170,7 @@ Use the GoogleCloudSnitch for deploying ScyllaDB on the Google Cloud Engine (GCE
 The region is treated as a datacenter, and the availability zones are treated as racks within the datacenter.
 All communication occurs over private IP addresses within the same logical network.
 
-To use the GoogleCloudSnitch, add the snitch name to the [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md) file, which is located in the `/etc/scylla/` directory for **all nodes** in the cluster.
+To use the GoogleCloudSnitch, add the snitch name to the [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md) file, which is located in the `/etc/scylla/` directory for **all nodes** in the cluster.
 
 You can add a suffix to the data center name as an additional identifier. This suffix is appended to the Zone name without adding any spaces. To add this suffix edit the `cassandra-rackdc.properties` file, which can be found under `/etc/scylla/` and set the `dc_suffix` with an appropriate text string. It may help to add an underscore or dash in front. Keep in mind that this property file is used for all ScyllaDB snitches. When using GoogleCloudSnitch, all other properties are ignored.
 
@@ -186,7 +186,7 @@ It’s important to note that:
 
 Racks are important for distributing replicas, but not for datacenter naming as this Snitch can work across multiple regions without additional configuration.
 
-After creating the instances on GCE, edit the [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md) file to select the GoogleCloudSnitch.
+After creating the instances on GCE, edit the [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md) file to select the GoogleCloudSnitch.
 
 ```none
 endpoint_snitch: GoogleCloudSnitch
@@ -239,7 +239,7 @@ Use the AzureSnitch for deploying ScyllaDB on the Azure platform across one or m
 The location is treated as a datacenter, and the availability zones are treated as racks within the datacenter.
 All communication occurs over private IP addresses within the same logical network.
 
-To use the AzureSnitch, add the snitch name to the [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md) file, which is located in the `/etc/scylla/` directory, for **all nodes** in the cluster:
+To use the AzureSnitch, add the snitch name to the [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md) file, which is located in the `/etc/scylla/` directory, for **all nodes** in the cluster:
 
 ```none
 endpoint_snitch: AzureSnitch
@@ -269,7 +269,7 @@ It’s important to note that:
 
 Racks are important for distributing replicas, but not for datacenter naming, as this Snitch can work across multiple locations without additional configuration.
 
-After creating the instances on Azure, edit the [scylla.yaml](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md) file to select the AzureSnitch.
+After creating the instances on Azure, edit the [scylla.yaml](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md) file to select the AzureSnitch.
 
 ```none
 endpoint_snitch: AzureSnitch
@@ -316,4 +316,4 @@ UN  192.0.2.5     670.16 KB  256          ?       f0a44a49-0035-4146-8fdc-30e66c
 
 ## Related Topics
 
-[Getting Started](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md)
+[Getting Started](https://docs.scylladb.com/manual/stable/getting-started/index.md)

@@ -32,4 +32,4 @@ In this example, 95% of the write latency measurements were 42 microseconds (μs
 | Partition Size | Estimated row size                      |
 | Cell Count     | Estimated column count                  |
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

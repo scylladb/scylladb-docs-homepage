@@ -3,7 +3,7 @@
 ## Chunked Compression of Data File
 
 SSTables compression allows to optionally compress the [SSTables Data
-File](https://docs.scylladb.com/manual/branch-2026.4/architecture/sstable/sstable2/sstable-data-file.md), which is the biggest part of the
+File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-data-file.md), which is the biggest part of the
 SSTable (the other parts, like the index, cannot be compressed).
 
 Because random-access read from the data file is important, Apache Cassandra implements
@@ -90,7 +90,7 @@ chunk is followed by a be32 (big-endian 4-byte integer) Adler32 checksum
 of the *compressed* data, which can be used to verify the data hasn’t
 been corrupted
 
-[ScyllaDB Architecture](https://docs.scylladb.com/manual/branch-2026.4/architecture/index.md)
+[ScyllaDB Architecture](https://docs.scylladb.com/manual/stable/architecture/index.md)
 
 Copyright
 

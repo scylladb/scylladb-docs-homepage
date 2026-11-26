@@ -10,8 +10,8 @@ responsible for producing a sequence of CQL commands that can be executed in ord
 Aside from elements of schema, like keyspaces and tables, it also allows for restoring entities such as
 roles and service levels.
 
-For more context, see the articles covering [backing up](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/backup.md)
-and [restoring](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/procedures/backup-restore/restore.md) the schema.
+For more context, see the articles covering [backing up](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/backup.md)
+and [restoring](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/backup-restore/restore.md) the schema.
 
 ## Syntax and semantics
 
@@ -29,7 +29,7 @@ and [restoring](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/
   `CREATE` statements; they are described by separate rows of type `cluster_config`, `keyspace_config`,
   or `table_config`, holding `ALTER CLUSTER`, `ALTER KEYSPACE`, or `ALTER TABLE` statements, which
   follow all keyspaces.
-  See [Cluster configuration](https://docs.scylladb.com/manual/branch-2026.4/cql/cluster-config.md).
+  See [Cluster configuration](https://docs.scylladb.com/manual/stable/cql/cluster-config.md).
 * `DESCRIBE [FULL] SCHEMA WITH INTERNALS AND PASSWORDS`: aside from the information retrieved as part of the
   previous tier, the statements corresponding to restoring roles *do* contain information about their
   passwords; namely—their hashed passwords. For more information regarding hashed passwords, see the relevant section
@@ -56,23 +56,23 @@ The `type` column takes one of the following values. A tool processing the outpu
 part of it, should select rows by `keyspace_name`, `type` and `name` rather than by parsing
 `create_statement`.
 
-| `type`                     | `keyspace_name`   | `name`                                | `create_statement`                                                                                                                                                                                          |
-|----------------------------|-------------------|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `keyspace`                 | the keyspace      | the keyspace                          | `CREATE KEYSPACE`                                                                                                                                                                                           |
-| `type`                     | the keyspace      | the user-defined type                 | `CREATE TYPE`                                                                                                                                                                                               |
-| `function`                 | the keyspace      | the function                          | `CREATE FUNCTION`                                                                                                                                                                                           |
-| `aggregate`                | the keyspace      | the aggregate                         | `CREATE AGGREGATE`                                                                                                                                                                                          |
-| `table`                    | the keyspace      | the table                             | `CREATE TABLE`; for the CDC log table of a table with CDC enabled, an `ALTER TABLE` statement<br/>restoring the log table’s properties                                                                      |
-| `index`                    | the keyspace      | the index                             | `CREATE INDEX`                                                                                                                                                                                              |
-| `view`                     | the keyspace      | the materialized view                 | `CREATE MATERIALIZED VIEW`                                                                                                                                                                                  |
-| `cluster_config`           | `null`            | `cluster`                             | The cluster configuration overrides stored at cluster scope, one `ALTER CLUSTER` statement per line.<br/>See [Cluster configuration](https://docs.scylladb.com/manual/branch-2026.4/cql/cluster-config.md). |
-| `keyspace_config`          | the keyspace      | the keyspace                          | The cluster configuration overrides stored at keyspace scope, one `ALTER KEYSPACE` statement per line.                                                                                                      |
-| `table_config`             | the keyspace      | the table                             | The cluster configuration overrides stored at table scope, one `ALTER TABLE` statement per line.                                                                                                            |
-| `role`                     | `null`            | the role                              | `CREATE ROLE`                                                                                                                                                                                               |
-| `grant_role`               | `null`            | the granted role                      | `GRANT <role> TO <role>`                                                                                                                                                                                    |
-| `grant_permission`         | `null`            | the role the permission is granted to | `GRANT <permission> ON <resource> TO <role>`                                                                                                                                                                |
-| `service_level`            | `null`            | the service level                     | `CREATE SERVICE LEVEL`; for the built-in `driver` service level, an `ALTER` or `DROP` statement may<br/>follow or replace it, so there can be more than one row with the same name                          |
-| `service_level_attachment` | `null`            | the service level                     | `ATTACH SERVICE LEVEL <service level> TO <role>`                                                                                                                                                            |
+| `type`                     | `keyspace_name`   | `name`                                | `create_statement`                                                                                                                                                                                   |
+|----------------------------|-------------------|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `keyspace`                 | the keyspace      | the keyspace                          | `CREATE KEYSPACE`                                                                                                                                                                                    |
+| `type`                     | the keyspace      | the user-defined type                 | `CREATE TYPE`                                                                                                                                                                                        |
+| `function`                 | the keyspace      | the function                          | `CREATE FUNCTION`                                                                                                                                                                                    |
+| `aggregate`                | the keyspace      | the aggregate                         | `CREATE AGGREGATE`                                                                                                                                                                                   |
+| `table`                    | the keyspace      | the table                             | `CREATE TABLE`; for the CDC log table of a table with CDC enabled, an `ALTER TABLE` statement<br/>restoring the log table’s properties                                                               |
+| `index`                    | the keyspace      | the index                             | `CREATE INDEX`                                                                                                                                                                                       |
+| `view`                     | the keyspace      | the materialized view                 | `CREATE MATERIALIZED VIEW`                                                                                                                                                                           |
+| `cluster_config`           | `null`            | `cluster`                             | The cluster configuration overrides stored at cluster scope, one `ALTER CLUSTER` statement per line.<br/>See [Cluster configuration](https://docs.scylladb.com/manual/stable/cql/cluster-config.md). |
+| `keyspace_config`          | the keyspace      | the keyspace                          | The cluster configuration overrides stored at keyspace scope, one `ALTER KEYSPACE` statement per line.                                                                                               |
+| `table_config`             | the keyspace      | the table                             | The cluster configuration overrides stored at table scope, one `ALTER TABLE` statement per line.                                                                                                     |
+| `role`                     | `null`            | the role                              | `CREATE ROLE`                                                                                                                                                                                        |
+| `grant_role`               | `null`            | the granted role                      | `GRANT <role> TO <role>`                                                                                                                                                                             |
+| `grant_permission`         | `null`            | the role the permission is granted to | `GRANT <permission> ON <resource> TO <role>`                                                                                                                                                         |
+| `service_level`            | `null`            | the service level                     | `CREATE SERVICE LEVEL`; for the built-in `driver` service level, an `ALTER` or `DROP` statement may<br/>follow or replace it, so there can be more than one row with the same name                   |
+| `service_level_attachment` | `null`            | the service level                     | `ATTACH SERVICE LEVEL <service level> TO <role>`                                                                                                                                                     |
 
 The rows of type `keyspace_config`, `table_config`, `role`, `grant_role`, `grant_permission`,
 `service_level` and `service_level_attachment` are emitted only with `WITH INTERNALS`. The rows of the three
@@ -146,4 +146,4 @@ CREATE ROLE [IF NOT EXISTS] <role_name> WITH HASHED PASSWORD = '<hashed_password
 
 The semantics of this statement is analogous to the regular `CREATE ROLE` statement except that it circumvents
 the encryption phase of the execution and inserts the hashed password directly into the database.
-See [the article on authorization in ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/security/authorization.md) to learn more about it.
+See [the article on authorization in ScyllaDB](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md) to learn more about it.

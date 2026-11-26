@@ -40,6 +40,6 @@ children_ids: [{task_id: 9de80fd8-296e-432b-837e-63daf7c93e17, node: 127.0.0.1 }
 
 ## See also
 
-- [tasks tree](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/tree.md)
-- [tasks list](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/list.md)
-- [tasks wait](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/tasks/wait.md)
+- [tasks tree](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/tasks/tree.md)
+- [tasks list](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/tasks/list.md)
+- [tasks wait](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/tasks/wait.md)

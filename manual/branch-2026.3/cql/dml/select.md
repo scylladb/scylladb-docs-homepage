@@ -65,7 +65,7 @@ table). In most cases, a select will also have a [where clause](#where-clause) a
 clauses to [order](#ordering-clause) or [limit](#limit-clause) the results. Lastly, [queries that require
 filtering](#allow-filtering) can be allowed if the `ALLOW FILTERING` flag is provided.
 
-If your `SELECT` query results in what appears to be missing data, see this [KB Article](https://docs.scylladb.com/manual/stable/kb/cqlsh-results.md) for information.
+If your `SELECT` query results in what appears to be missing data, see this [KB Article](https://docs.scylladb.com/manual/branch-2026.3/kb/cqlsh-results.md) for information.
 
 <a id="selection-clause"></a>
 
@@ -82,7 +82,7 @@ A `selector` can be one of the following:
 - A column name of the table selected to retrieve the values for that column.
 - A casting, which allows you to convert a nested selector to a (compatible) type.
 - A function call, where the arguments are selector themselves.
-- A call to the [COUNT function](https://docs.scylladb.com/manual/stable/cql/functions.md#count-function), which counts all non-null results.
+- A call to the [COUNT function](https://docs.scylladb.com/manual/branch-2026.3/cql/functions.md#count-function), which counts all non-null results.
 - A literal value: a constant, or a collection or tuple literal.
 - A bind variable (? or :name).
 
@@ -164,11 +164,11 @@ Those functions let you retrieve meta-information that is stored internally for 
 
 - `WRITETIME` retrieves the timestamp used when writing the column. The timestamp is typically the number of *microseconds* since the [Unix epoch](https://en.wikipedia.org/wiki/Unix_time) (January 1st 1970 at 00:00:00 UTC).
 
-You can read more about the `TIMESTAMP` retrieved by `WRITETIME` in the [UPDATE](https://docs.scylladb.com/manual/stable/cql/dml.md#update-parameters) section.
+You can read more about the `TIMESTAMP` retrieved by `WRITETIME` in the [UPDATE](https://docs.scylladb.com/manual/branch-2026.3/cql/dml.md#update-parameters) section.
 
 - `TTL` retrieves the remaining time to live (in *seconds*) for the value of the column, if it set to expire, or `null` otherwise.
 
-You can read more about TTL in the [documentation](https://docs.scylladb.com/manual/stable/cql/time-to-live.md) and also in [this ScyllaDB University lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/).
+You can read more about TTL in the [documentation](https://docs.scylladb.com/manual/branch-2026.3/cql/time-to-live.md) and also in [this ScyllaDB University lesson](https://university.scylladb.com/courses/data-modeling/lessons/advanced-data-modeling/topic/expiring-data-with-ttl-time-to-live/).
 
 **Using** `WRITETIME` **and** `TTL` **on map and set collection elements**
 
@@ -360,12 +360,12 @@ The following should be considered when using the `GROUP BY` option:
 
 The default order for a SELECT statement depends on the default clustering order of a table, which is defined when
 the table is created - it is `ASC` (ascendant) by default, but can be changed using the `WITH CLUSTERING ORDER BY`
-option. See [CREATE TABLE](https://docs.scylladb.com/manual/stable/cql/ddl.md#create-table-statement).
+option. See [CREATE TABLE](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#create-table-statement).
 
 The `ORDER BY` clause allows you to configure a non-default order of the returned result. It takes a list of column names
 along with the order for the column as an argument  (`ASC` for ascendant and `DESC` for descendant, omitting the default order).
 
-Currently, the possible orderings are limited by the [clustering order](https://docs.scylladb.com/manual/stable/cql/ddl.md#clustering-order) defined on the table:
+Currently, the possible orderings are limited by the [clustering order](https://docs.scylladb.com/manual/branch-2026.3/cql/ddl.md#clustering-order) defined on the table:
 
 - If the table has been defined without any specific `CLUSTERING ORDER`, then allowed orderings are the order
   induced by the clustering columns and the reverse of that one.
@@ -383,12 +383,12 @@ order_by_vector: ORDER BY `vector_column_name` ANN OF `vector` LIMIT `integer`
 ```
 
 Where `vector_column_name` is the name of the vector column,
-`vector` is the query [vector](https://docs.scylladb.com/manual/stable/cql/types.md#vectors), and `LIMIT` is a limit on the number of results to return.
-Vector queries can only be performed on a vector column that has a [vector index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement) created.
+`vector` is the query [vector](https://docs.scylladb.com/manual/branch-2026.3/cql/types.md#vectors), and `LIMIT` is a limit on the number of results to return.
+Vector queries can only be performed on a vector column that has a [vector index](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md#create-vector-index-statement) created.
 
 The `ANN OF` clause orders the results by their distance to the provided query vector,
 using the distance function defined for the vector column when
-[creating the vector index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-vector-index-statement).
+[creating the vector index](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md#create-vector-index-statement).
 The query vector must have the same dimension as the vector column.
 
 Supported `LIMIT` values are integers between 1 and 1000, inclusive.
@@ -405,7 +405,7 @@ SELECT image_id FROM ImageEmbeddings
 This query returns up to 5 rows with the closest distance of `embedding` vector to the provided query vector,
 in this case `[0.1, 0.2, 0.3, 0.4]`.
 
-There’s also possibility to return the similarity score along with the results by using the [similarity functions](https://docs.scylladb.com/manual/stable/cql/functions.md#vector-similarity-functions).
+There’s also possibility to return the similarity score along with the results by using the [similarity functions](https://docs.scylladb.com/manual/branch-2026.3/cql/functions.md#vector-similarity-functions).
 
 For example:
 
@@ -438,10 +438,10 @@ about Vector Search is available in the
 
 #### NOTE
 Full-Text Search is supported in ScyllaDB Cloud only in clusters that have the Vector and Text Search feature enabled.
-For more information, see the [Full-Text Search documentation](https://docs.scylladb.com/manual/stable/features/fulltext-search.md).
+For more information, see the [Full-Text Search documentation](https://docs.scylladb.com/manual/branch-2026.3/features/fulltext-search.md).
 
 The `BM25()` function enables full-text search queries over text columns that
-have a [full-text index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-fulltext-index-statement) created with
+have a [full-text index](https://docs.scylladb.com/manual/branch-2026.3/cql/secondary-indexes.md#create-fulltext-index-statement) created with
 `USING 'fulltext_index'`. `BM25()` takes a column name and a query string
 and scores rows using the BM25 ranking algorithm.
 
@@ -504,7 +504,7 @@ the built-in operator as `system.bm25(...)` to disambiguate it.
 It cannot be used as a selector in the `SELECT` clause.
 
 For the full list of query constraints and requirements, see
-[Full-Text Search](https://docs.scylladb.com/manual/stable/features/fulltext-search.md).
+[Full-Text Search](https://docs.scylladb.com/manual/branch-2026.3/features/fulltext-search.md).
 
 <a id="limit-clause"></a>
 
@@ -816,7 +816,7 @@ This table contains some commonly used `LIKE` filters and the matches you can ex
 | \_0%     | 10%, 20%, 50%                          |
 | a%t      | asphalt, adapt, at                     |
 
-[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
+[Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.3/cql/index.md)
 
 Copyright
 

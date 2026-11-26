@@ -54,7 +54,7 @@ Several options related to this feature are available in `scylla.yaml`,
 but they shouldn’t be useful during regular usage. Most of them control the
 frequency of automatic dictionary training in various ways.
 
-Refer to [Configuration Parameters](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md)
+Refer to [Configuration Parameters](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md)
 for details.
 
 ## Compatibility

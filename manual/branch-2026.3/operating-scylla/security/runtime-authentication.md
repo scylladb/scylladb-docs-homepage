@@ -1,6 +1,6 @@
 # Enable and Disable Authentication Without Downtime
 
-Authentication is the process where login accounts and their passwords are verified, and the user is allowed access into the database. Authentication is done internally within ScyllaDB and is not done with a third party. Users and passwords are created with [roles](https://docs.scylladb.com/manual/stable/operating-scylla/security/authorization.md) using a `CREATE ROLE` statement. This procedure enables Authentication on the ScyllaDB servers using a transit state, allowing clients to work with or without Authentication at the same time. In this state, you can update the clients (application using ScyllaDB/Apache Cassandra drivers) one at the time. Once all the clients are using Authentication, you can enforce Authentication on all ScyllaDB nodes as well. If you would rather perform a faster authentication procedure where all clients (application using ScyllaDB/Apache Cassandra drivers) will stop working until they are updated to work with Authentication, refer to [Enable Authentication](https://docs.scylladb.com/manual/stable/operating-scylla/security/runtime-authentication.md).
+Authentication is the process where login accounts and their passwords are verified, and the user is allowed access into the database. Authentication is done internally within ScyllaDB and is not done with a third party. Users and passwords are created with [roles](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/authorization.md) using a `CREATE ROLE` statement. This procedure enables Authentication on the ScyllaDB servers using a transit state, allowing clients to work with or without Authentication at the same time. In this state, you can update the clients (application using ScyllaDB/Apache Cassandra drivers) one at the time. Once all the clients are using Authentication, you can enforce Authentication on all ScyllaDB nodes as well. If you would rather perform a faster authentication procedure where all clients (application using ScyllaDB/Apache Cassandra drivers) will stop working until they are updated to work with Authentication, refer to [Enable Authentication](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/runtime-authentication.md).
 
 ## Enable Authentication Without Downtime
 
@@ -12,7 +12,7 @@ This procedure allows you to enable authentication on a live ScyllaDB cluster wi
    ```yaml
    authenticator:  com.scylladb.auth.TransitionalAuthenticator
    ```
-2. Run the [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md) command (ScyllaDB stops listening to its connections from the client and other nodes).
+2. Run the [nodetool drain](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/drain.md) command (ScyllaDB stops listening to its connections from the client and other nodes).
 3. Restart the nodes one by one to apply the effect.
 
    Supported OS
@@ -28,7 +28,7 @@ This procedure allows you to enable authentication on a live ScyllaDB cluster wi
    (without restarting *some-scylla* container)
 4. Login over the maintenance socket and create an authenticated user with strong password.
 
-   See [Setting Up a Superuser Using the Maintenance Socket](https://docs.scylladb.com/manual/stable/operating-scylla/security/create-superuser.md#create-superuser-using-maintenance-socket) for instructions.
+   See [Setting Up a Superuser Using the Maintenance Socket](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/security/create-superuser.md#create-superuser-using-maintenance-socket) for instructions.
    ```cql
    cqlsh /path/to/maintenance/socket/cql.m
 

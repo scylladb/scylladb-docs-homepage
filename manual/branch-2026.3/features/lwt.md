@@ -532,5 +532,5 @@ Other limitations are more minor:
 
 ## Additional Information
 
-* [How does ScyllaDB LWT Differ from Apache Cassandra ?](https://docs.scylladb.com/manual/stable/kb/lwt-differences.md) - How does ScyllaDB’s implementation of lightweight transactions differ from Apache Cassandra?
-* [How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/stable/kb/gc-grace-seconds.md) - How to change the `gc_grace_seconds` parameter for a table
+* [How does ScyllaDB LWT Differ from Apache Cassandra ?](https://docs.scylladb.com/manual/branch-2026.3/kb/lwt-differences.md) - How does ScyllaDB’s implementation of lightweight transactions differ from Apache Cassandra?
+* [How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/branch-2026.3/kb/gc-grace-seconds.md) - How to change the `gc_grace_seconds` parameter for a table

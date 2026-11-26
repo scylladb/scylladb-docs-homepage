@@ -23,7 +23,7 @@ The most common cause is due to swap. There are two main situations we need to c
    * If there are other processes running but they are not essential, we recommend moving them to other machines.
    * If there are other processes running and they are essential, the default reservation may not be enough.  Change the reservation following the steps below.
 
-   Swap can be set up in several ways. One way to set up swap is detailed in the KB Article [How to Setup a Swap Space](https://docs.scylladb.com/manual/stable/kb/set-up-swap.md).
+   Swap can be set up in several ways. One way to set up swap is detailed in the KB Article [How to Setup a Swap Space](https://docs.scylladb.com/manual/branch-2026.3/kb/set-up-swap.md).
 2. Having swap enabled and not using it is better than needing swap and not having it. Configure a file or partition to be used as swap for production deployments.
 
 ## Change memory reservation

@@ -4,7 +4,7 @@ Alternator’s primary goal is to be compatible with Amazon DynamoDB(TM)
 and its APIs, so that any application written to use Amazon DynamoDB could
 be run, unmodified, against ScyllaDB with Alternator enabled. The extent of
 Alternator’s compatibility with DynamoDB is described in the
-[ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/branch-2026.4/alternator/compatibility.md) document.
+[ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/stable/alternator/compatibility.md) document.
 
 But Alternator also adds several features and APIs that are not available in
 DynamoDB. These Alternator-specific APIs are documented here.
@@ -14,7 +14,7 @@ DynamoDB. These Alternator-specific APIs are documented here.
 Alternator implements Amazon DynamoDB’s own Vector Search API
 (`VectorIndexes`, `VectorIndexUpdates`, `SearchVectors`), so this core
 functionality is *not* Alternator-specific and is documented separately in
-[Alternator Vector Search](https://docs.scylladb.com/manual/branch-2026.4/alternator/vector-search.md). That document does, however,
+[Alternator Vector Search](https://docs.scylladb.com/manual/stable/alternator/vector-search.md). That document does, however,
 also cover the handful of genuine ScyllaDB-only extensions layered on top
 of the standard API - most notably the `FLOAT32VECTOR` attribute type, a
 more compact representation for vectors than DynamoDB’s own encoding, and
@@ -126,7 +126,7 @@ in Alternator.
 
 ## Service discovery
 
-As explained in [ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/branch-2026.4/alternator/compatibility.md),
+As explained in [ScyllaDB Alternator for DynamoDB users](https://docs.scylladb.com/manual/stable/alternator/compatibility.md),
 Alternator requires a load-balancer or a client-side load-balancing library
 to distribute requests between all ScyllaDB nodes. This load-balancer needs
 to be able to *discover* the ScyllaDB nodes. Alternator provides two special
@@ -196,11 +196,11 @@ entire data center, or other data centers, in that case.
 
 “Tablets” are ScyllaDB’s new approach to replicating data across a cluster.
 It replaces the older approach which was named “vnodes”. See
-[Data Distribution with Tablets](https://docs.scylladb.com/manual/branch-2026.4/architecture/tablets.md) for details.
+[Data Distribution with Tablets](https://docs.scylladb.com/manual/stable/architecture/tablets.md) for details.
 
 In this version, tablet support is complete, so new
 Alternator tables default to following what the global configuration flag
-[tablets_mode_for_new_keyspaces](https://docs.scylladb.com/manual/branch-2026.4/reference/configuration-parameters.md#confval-tablets_mode_for_new_keyspaces)
+[tablets_mode_for_new_keyspaces](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md#confval-tablets_mode_for_new_keyspaces)
 tells them to.
 
 If you want to influence whether a specific Alternator table is created with tablets or vnodes,

@@ -12,7 +12,7 @@ Result can be one of the following:`running` Or`not running`
 
 See also
 
-- [enablegossip](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/enablegossip.md)
-- [disablegossip](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool-commands/disablegossip.md)
+- [enablegossip](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/enablegossip.md)
+- [disablegossip](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/disablegossip.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)

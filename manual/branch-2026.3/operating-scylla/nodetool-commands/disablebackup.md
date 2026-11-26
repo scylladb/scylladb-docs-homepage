@@ -8,7 +8,7 @@ For example:
 
 See also
 
-* [statusbackup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/statusbackup.md)
-* [enablebackup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/enablebackup.md)
+* [statusbackup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/statusbackup.md)
+* [enablebackup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/enablebackup.md)
 
-[Nodetool Reference](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool.md)
+[Nodetool Reference](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool.md)

@@ -1,6 +1,6 @@
 # ScyllaDB SSTable - 2.x
 
-[Sorted Strings Table (SSTable)](https://docs.scylladb.com/manual/stable/reference/glossary.md#term-SSTable) is the persistent file format used by ScyllaDB and Apache Cassandra. SSTable is saved as a persistent, ordered, immutable set of files on disk.
+[Sorted Strings Table (SSTable)](https://docs.scylladb.com/manual/branch-2026.3/reference/glossary.md#term-SSTable) is the persistent file format used by ScyllaDB and Apache Cassandra. SSTable is saved as a persistent, ordered, immutable set of files on disk.
 Immutable means SSTables are never modified; they are created by a MemTable flush and are deleted by a compaction.
 The location of ScyllaDB SSTables is specified in scylla.yaml `data_file_directories` parameter (default location: `/var/lib/scylla/data`).
 
@@ -8,8 +8,8 @@ SSTable 3.x is more efficient and requires less disk space than the SSTable 2.x.
 
 For more information on each of the SSTable formats, see below:
 
-* [SSTable 2.x](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/index.md)
-* [SSTable 3.x](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/index.md)
+* [SSTable 2.x](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/index.md)
+* [SSTable 3.x](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable3/index.md)
 
 ## SSTable Version Support
 
@@ -34,15 +34,15 @@ For more information on each of the SSTable formats, see below:
 
 The `ms` format introduces a *trie-based* SSTable index.
 
-For a detailed description of the trie index format, see [SSTable ms Index](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable3/sstable-ms-index.md).
+For a detailed description of the trie index format, see [SSTable ms Index](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable3/sstable-ms-index.md).
 
 For more information about ScyllaDB 2.x SSTable formats, see below:
 
-* [SSTable Compression](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-compression.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable Compression
-* [SSTable Data File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-data-file.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable format
-* [SSTable format in ScyllaDB](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-format.md) - ScyllaDB SSTables are compatible to those in Apache Cassandra 2.1.8, but why there are more of them?
-* [SSTable Interpretation](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-interpretation.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable Interpretation in ScyllaDB
-* [SSTable Summary File](https://docs.scylladb.com/manual/stable/architecture/sstable/sstable2/sstable-summary-file.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable Summary file format
+* [SSTable Compression](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-compression.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable Compression
+* [SSTable Data File](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-data-file.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable format
+* [SSTable format in ScyllaDB](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-format.md) - ScyllaDB SSTables are compatible to those in Apache Cassandra 2.1.8, but why there are more of them?
+* [SSTable Interpretation](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-interpretation.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable Interpretation in ScyllaDB
+* [SSTable Summary File](https://docs.scylladb.com/manual/branch-2026.3/architecture/sstable/sstable2/sstable-summary-file.md) - Deep dive into ScyllaDB/Apache Cassandra SSTable Summary file format
 
 Copyright
 

@@ -154,7 +154,7 @@ consistency `ALL` is not guaranteed to be enough).
 This command is useful if you want to check which Cassandra version is compatible with your ScyllaDB version.
 Note that the two standards are not 100% identical and this command is simply a comparison tool.
 
-If you want to display your current ScyllaDB version, refer to [Check your current version of ScyllaDB](https://docs.scylladb.com/manual/branch-2026.4/operating-scylla/admin.md#check-your-current-version-of-scylla).
+If you want to display your current ScyllaDB version, refer to [Check your current version of ScyllaDB](https://docs.scylladb.com/manual/stable/operating-scylla/admin.md#check-your-current-version-of-scylla).
 
 The display shows:
 
@@ -388,7 +388,7 @@ The `DESCRIBE SCHEMA` command prints the DDL statements needed to recreate the e
 can also include information that can be used to restore authentication/authorization and service levels. This is especially
 useful for cloning a cluster or restoring its state from a backup.
 
-See [a dedicated article](https://docs.scylladb.com/manual/branch-2026.4/cql/describe-schema.md) to learn more.
+See [a dedicated article](https://docs.scylladb.com/manual/stable/cql/describe-schema.md) to learn more.
 
 <a id="cqlsh-copy-to"></a>
 
@@ -524,9 +524,9 @@ See also:
 
 CQLSH [lesson](https://university.scylladb.com/courses/data-modeling/lessons/basic-data-modeling-2/topic/cql-cqlsh-and-basic-cql-syntax/) on ScyllaDB University
 
-* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/branch-2026.4/cql/index.md)
+* [Apache Cassandra Query Language (CQL) Reference](https://docs.scylladb.com/manual/stable/cql/index.md)
 
-[Back](https://docs.scylladb.com/manual/branch-2026.4/getting-started/index.md)
+[Back](https://docs.scylladb.com/manual/stable/getting-started/index.md)
 
 Copyright
 

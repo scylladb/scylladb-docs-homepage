@@ -8,9 +8,9 @@ There are two methods to replace a running node in a ScyllaDB cluster.
 #### NOTE
 Updating the cluster topology requires at least a quorum of nodes in a cluster to be available.
 If the quorum is lost, it must be restored before you change the cluster topology.
-See [Handling Node Failures](https://docs.scylladb.com/manual/stable/troubleshooting/handling-node-failures.md) for details.
+See [Handling Node Failures](https://docs.scylladb.com/manual/branch-2026.3/troubleshooting/handling-node-failures.md) for details.
 
-You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command.
+You can check the status of the nodes in the cluster using the [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command.
 
 ## Add a new node to the cluster and then decommission the old node
 
@@ -21,10 +21,10 @@ Hence, replacing a node by adding and decommissioning redistribute the vNodes tw
 
 ### Procedure
 
-1. Follow the procedure: [Adding a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/add-node-to-cluster.md).
-2. Decommission the old node using the [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/remove-node.md) procedure
-3. Run the [nodetool cleanup](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/cleanup.md) command on all the remaining nodes in the cluster
-4. Verify that the node removed using [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command
+1. Follow the procedure: [Adding a New Node Into an Existing ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/add-node-to-cluster.md).
+2. Decommission the old node using the [Remove a Node from a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/remove-node.md) procedure
+3. Run the [nodetool cleanup](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/cleanup.md) command on all the remaining nodes in the cluster
+4. Verify that the node removed using [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command
 
 ## Replace a running node - by taking its place in the cluster
 
@@ -32,7 +32,7 @@ Stopping a node and taking its place in the cluster is not as safe as the data r
 
 ### Procedure
 
-1. Run [nodetool drain](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/drain.md) command (ScyllaDB stops listening to its connections from the client and other nodes).
+1. Run [nodetool drain](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/drain.md) command (ScyllaDB stops listening to its connections from the client and other nodes).
 2. Stop the ScyllaDB node you want to replace
 
 Supported OS
@@ -49,5 +49,5 @@ docker exec -it some-scylla supervisorctl stop scylla
 
 (without stopping *some-scylla* container)
 
-1. Follow the [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/stable/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure
-2. Verify that the node is successfully replaced using [nodetool status](https://docs.scylladb.com/manual/stable/operating-scylla/nodetool-commands/status.md) command
+1. Follow the [Replace a Dead Node in a ScyllaDB Cluster](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/procedures/cluster-management/replace-dead-node.md) procedure
+2. Verify that the node is successfully replaced using [nodetool status](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/nodetool-commands/status.md) command

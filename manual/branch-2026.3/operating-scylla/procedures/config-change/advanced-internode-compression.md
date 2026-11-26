@@ -43,7 +43,7 @@ To enable shared dictionaries:
 1. Set `internode_compression_enable_advanced` to `true`.
 2. Configure the `rpc_dict_training_when` parameter.
    In typical scenarios, you should set it to `when_leader`.
-   As a result, the [Raft leader](https://docs.scylladb.com/manual/stable/architecture/raft.md) node will
+   As a result, the [Raft leader](https://docs.scylladb.com/manual/branch-2026.3/architecture/raft.md) node will
    train and publish new dictionaries.
 
 ```default
@@ -58,5 +58,5 @@ applied at the storage layer rather than within the database itself.
 
 ## Reference
 
-See the *Inter-node settings* section in [Configuration Parameters](https://docs.scylladb.com/manual/stable/reference/configuration-parameters.md)
+See the *Inter-node settings* section in [Configuration Parameters](https://docs.scylladb.com/manual/branch-2026.3/reference/configuration-parameters.md)
 for a complete list of internode compression options.

@@ -10,7 +10,7 @@ In this mode, the node is not reachable from the outside, i.e.
 >   * cannot read or write data from/to other nodes,
 > * it does not open Alternator transport ports and the TCP CQL port.
 
-The only way to make CQL queries is to use [the maintenance socket](https://docs.scylladb.com/manual/stable/operating-scylla/admin-tools/maintenance-socket.md). The node serves only local data.
+The only way to make CQL queries is to use [the maintenance socket](https://docs.scylladb.com/manual/branch-2026.3/operating-scylla/admin-tools/maintenance-socket.md). The node serves only local data.
 
 To start the node in maintenance mode, use the –maintenance-mode true flag or set maintenance_mode: true in the configuration file.
 
