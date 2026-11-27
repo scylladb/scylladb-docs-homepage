@@ -1014,7 +1014,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### internode_compression_zstd_max_message_size
 
-> Maximum RPC message size which can be compressed with ZSTD. RPC messages might be large, but they are always compressed at once. This might cause reactor stalls.     If this happens, this option can be used to make the stalls less severe.
+> Maximum RPC message size which can be compressed with ZSTD. Large RPC messages are split into segments, which are compressed separately,     with preemption points in between, so they shouldn’t cause reactor stalls.     If they do anyway, this option can be used to make the stalls less severe.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `std::numeric_limits<uint32_t>::max()`

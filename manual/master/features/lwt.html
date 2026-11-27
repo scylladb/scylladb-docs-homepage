@@ -521,11 +521,11 @@ the <a class="reference internal" href="#paxos-state-tables"><span class="std st
 reduces write amplification when it’s compacted.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>TTL on records in system.paxos table is set with the <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> value.
-If this value is not set, the value from <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> is used.
-The default for <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> and <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> are both the same (10 days).
-You can have two different settings for <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> and <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code>.
-You can change the <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> value by altering the system.paxos table.</p>
+<p>ScyllaDB sets the TTL of a table’s Paxos state, stored in <code class="docutils literal notranslate"><span class="pre">system.paxos</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&lt;user-table&gt;$paxos</span></code> (see <a class="reference internal" href="#paxos-state-tables"><span class="std std-ref">Paxos State Tables</span></a>), to the table’s
+<code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code>. The default value is 10 days. You can change it by
+altering the user table. See <a class="reference internal" href="../cql/cql-extensions.html#cql-paxos-grace-seconds"><span class="std std-ref">Paxos grace seconds</span></a>
+for details.</p>
 </div>
 </section>
 <section id="batch-statements">
@@ -922,7 +922,6 @@ during these are still returned as write timeouts.</p></td>
 <h2>Additional Information<a class="headerlink" href="#additional-information" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../kb/lwt-differences.html"><span class="doc">How does ScyllaDB LWT Differ from Apache Cassandra ?</span></a> - How does ScyllaDB’s implementation of lightweight transactions differ from Apache Cassandra?</p></li>
-<li><p><a class="reference internal" href="../kb/gc-grace-seconds.html"><span class="doc">How to Change gc_grace_seconds for a Table</span></a> - How to change the <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> parameter for a table</p></li>
 </ul>
 </section>
 </section>
@@ -1561,7 +1560,7 @@ during these are still returned as write timeouts.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 19 Nov 2026.
+                        Last updated on 15 Nov 2026.
                     
                 </div>
             

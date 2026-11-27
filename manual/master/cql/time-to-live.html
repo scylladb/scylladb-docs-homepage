@@ -438,14 +438,13 @@ If you wait 10 minutes and run this command again, you will get a null value for
 <h3>TTL with  LWT<a class="headerlink" href="#ttl-with-lwt" title="Link to this heading">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>TTL on records in system.paxos table is set with the <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> value.
-If this value is not set, the value from <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> is used.
-The default for <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> and <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> are both the same (10 days).
-You can have two different settings for <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> and <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code>.
-You can change the <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> value by altering the system.paxos table.</p>
+<p>ScyllaDB sets the TTL of a table’s Paxos state, stored in <code class="docutils literal notranslate"><span class="pre">system.paxos</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&lt;user-table&gt;$paxos</span></code> (see <a class="reference internal" href="../features/lwt.html#paxos-state-tables"><span class="std std-ref">Paxos State Tables</span></a>), to the table’s
+<code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code>. The default value is 10 days. You can change it by
+altering the user table. See <a class="reference internal" href="cql-extensions.html#cql-paxos-grace-seconds"><span class="std std-ref">Paxos grace seconds</span></a>
+for details.</p>
 </div>
 <p>Refer to <a class="reference internal" href="../features/lwt.html"><span class="doc">LWT</span></a> for more information.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span></code> parameter is defined <a class="reference internal" href="ddl.html#create-table-general-options"><span class="std std-ref">here</span></a>.</p>
 </section>
 </section>
 <section id="ttl-for-a-collection">
@@ -1120,7 +1119,7 @@ You can query the remaining TTL or write timestamp of a specific field using dot
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 22 Mar 2026.
+                        Last updated on 15 Nov 2026.
                     
                 </div>
             

@@ -170,11 +170,11 @@ the [paxos state table](#paxos-state-tables) small and thus
 reduces write amplification when it’s compacted.
 
 #### NOTE
-TTL on records in system.paxos table is set with the `paxos_grace_seconds` value.
-If this value is not set, the value from `gc_grace_seconds` is used.
-The default for `gc_grace_seconds` and `paxos_grace_seconds` are both the same (10 days).
-You can have two different settings for `paxos_grace_seconds` and `gc_grace_seconds`.
-You can change the `paxos_grace_seconds` value by altering the system.paxos table.
+ScyllaDB sets the TTL of a table’s Paxos state, stored in `system.paxos` or
+`<user-table>$paxos` (see [Paxos State Tables](#paxos-state-tables)), to the table’s
+`paxos_grace_seconds`. The default value is 10 days. You can change it by
+altering the user table. See [Paxos grace seconds](https://docs.scylladb.com/manual/master/cql/cql-extensions.md#cql-paxos-grace-seconds)
+for details.
 
 ## Batch statements
 
@@ -543,4 +543,3 @@ Other limitations are more minor:
 ## Additional Information
 
 * [How does ScyllaDB LWT Differ from Apache Cassandra ?](https://docs.scylladb.com/manual/master/kb/lwt-differences.md) - How does ScyllaDB’s implementation of lightweight transactions differ from Apache Cassandra?
-* [How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/master/kb/gc-grace-seconds.md) - How to change the `gc_grace_seconds` parameter for a table

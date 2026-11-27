@@ -47,6 +47,8 @@ BYPASS LARGE_DATA_GUARDRAILS;
 The clause is supported only for standalone `DELETE` statements. It is not
 supported for `INSERT`, `UPDATE`, or `BATCH` statements.
 
+<a id="cql-paxos-grace-seconds"></a>
+
 ## “Paxos grace seconds” per-table option
 
 The `paxos_grace_seconds` option is used to set the amount of seconds which
@@ -61,7 +63,7 @@ deletions and hence doesn’t need to repair.
 However, paxos tables still rely on repair to achieve consistency, and
 the user is required to execute repair within `paxos_grace_seconds`.
 
-Default value is equal to `DEFAULT_GC_GRACE_SECONDS`, which is 10 days.
+The default value is 10 days (864000 seconds).
 
 The option can be specified at `CREATE TABLE` or `ALTER TABLE` queries in the same
 way as other options by using `WITH` clause:

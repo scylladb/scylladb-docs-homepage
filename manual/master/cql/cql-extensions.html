@@ -416,8 +416,8 @@ limit.</p>
 <p>The clause is supported only for standalone <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> statements. It is not
 supported for <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, or <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> statements.</p>
 </section>
-<section id="paxos-grace-seconds-per-table-option">
-<h2>“Paxos grace seconds” per-table option<a class="headerlink" href="#paxos-grace-seconds-per-table-option" title="Link to this heading">¶</a></h2>
+<section id="cql-paxos-grace-seconds">
+<span id="paxos-grace-seconds-per-table-option"></span><h2>“Paxos grace seconds” per-table option<a class="headerlink" href="#cql-paxos-grace-seconds" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code> option is used to set the amount of seconds which
 are used to TTL data in paxos tables when using LWT queries against the base
 table.</p>
@@ -427,7 +427,7 @@ collect entries, e.g. can set <code class="docutils literal notranslate"><span c
 deletions and hence doesn’t need to repair.</p>
 <p>However, paxos tables still rely on repair to achieve consistency, and
 the user is required to execute repair within <code class="docutils literal notranslate"><span class="pre">paxos_grace_seconds</span></code>.</p>
-<p>Default value is equal to <code class="docutils literal notranslate"><span class="pre">DEFAULT_GC_GRACE_SECONDS</span></code>, which is 10 days.</p>
+<p>The default value is 10 days (864000 seconds).</p>
 <p>The option can be specified at <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> or <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span></code> queries in the same
 way as other options by using <code class="docutils literal notranslate"><span class="pre">WITH</span></code> clause:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CREATE TABLE tbl ...
@@ -1154,7 +1154,7 @@ both features in the same table, or even the same row.</p>
 <li><a class="reference internal" href="#">ScyllaDB CQL Extensions</a><ul>
 <li><a class="reference internal" href="#bypass-cache-clause">BYPASS CACHE clause</a></li>
 <li><a class="reference internal" href="#bypass-large-data-guardrails-clause">BYPASS LARGE_DATA_GUARDRAILS clause</a></li>
-<li><a class="reference internal" href="#paxos-grace-seconds-per-table-option">“Paxos grace seconds” per-table option</a></li>
+<li><a class="reference internal" href="#cql-paxos-grace-seconds">“Paxos grace seconds” per-table option</a></li>
 <li><a class="reference internal" href="#using-timeout">USING TIMEOUT</a></li>
 <li><a class="reference internal" href="#cql-keyspace-storage-options">Keyspace storage options</a></li>
 <li><a class="reference internal" href="#prune-materialized-view-statements">PRUNE MATERIALIZED VIEW statements</a></li>
@@ -1673,7 +1673,7 @@ both features in the same table, or even the same row.</p>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 21 Apr 2026.
+                        Last updated on 15 Nov 2026.
                     
                 </div>
             

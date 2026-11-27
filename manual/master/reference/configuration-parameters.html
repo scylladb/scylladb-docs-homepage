@@ -1769,7 +1769,7 @@ The change will take effect without a node restart, changing the value in the co
 <dt class="sig sig-object std" id="confval-internode_compression_zstd_max_message_size">
 <span class="sig-name descname"><span class="pre">internode_compression_zstd_max_message_size</span></span><a class="headerlink" href="#confval-internode_compression_zstd_max_message_size" title="Link to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Maximum RPC message size which can be compressed with ZSTD. RPC messages might be large, but they are always compressed at once. This might cause reactor stalls.     If this happens, this option can be used to make the stalls less severe.</p>
+<div><p>Maximum RPC message size which can be compressed with ZSTD. Large RPC messages are split into segments, which are compressed separately,     with preemption points in between, so they shouldn’t cause reactor stalls.     If they do anyway, this option can be used to make the stalls less severe.</p>
 <ul class="simple">
 <li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code></p></li>
 <li><p><strong>Default value:</strong> <code class="docutils literal notranslate"><span class="pre">std::numeric_limits&lt;uint32_t&gt;::max()</span></code></p></li>

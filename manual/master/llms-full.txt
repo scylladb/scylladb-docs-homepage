@@ -13211,7 +13211,7 @@ through CQL and are automatically applied by all nodes in the cluster. See
 
 ### internode_compression_zstd_max_message_size
 
-> Maximum RPC message size which can be compressed with ZSTD. RPC messages might be large, but they are always compressed at once. This might cause reactor stalls.     If this happens, this option can be used to make the stalls less severe.
+> Maximum RPC message size which can be compressed with ZSTD. Large RPC messages are split into segments, which are compressed separately,     with preemption points in between, so they shouldn’t cause reactor stalls.     If they do anyway, this option can be used to make the stalls less severe.
 
 > * **Type:** `uint32_t`
 > * **Default value:** `std::numeric_limits<uint32_t>::max()`
@@ -16521,6 +16521,8 @@ BYPASS LARGE_DATA_GUARDRAILS;
 The clause is supported only for standalone `DELETE` statements. It is not
 supported for `INSERT`, `UPDATE`, or `BATCH` statements.
 
+<a id="cql-paxos-grace-seconds"></a>
+
 ## “Paxos grace seconds” per-table option
 
 The `paxos_grace_seconds` option is used to set the amount of seconds which
@@ -16535,7 +16537,7 @@ deletions and hence doesn’t need to repair.
 However, paxos tables still rely on repair to achieve consistency, and
 the user is required to execute repair within `paxos_grace_seconds`.
 
-Default value is equal to `DEFAULT_GC_GRACE_SECONDS`, which is 10 days.
+The default value is 10 days (864000 seconds).
 
 The option can be specified at `CREATE TABLE` or `ALTER TABLE` queries in the same
 way as other options by using `WITH` clause:
@@ -29258,11 +29260,11 @@ the [paxos state table](#paxos-state-tables) small and thus
 reduces write amplification when it’s compacted.
 
 #### NOTE
-TTL on records in system.paxos table is set with the `paxos_grace_seconds` value.
-If this value is not set, the value from `gc_grace_seconds` is used.
-The default for `gc_grace_seconds` and `paxos_grace_seconds` are both the same (10 days).
-You can have two different settings for `paxos_grace_seconds` and `gc_grace_seconds`.
-You can change the `paxos_grace_seconds` value by altering the system.paxos table.
+ScyllaDB sets the TTL of a table’s Paxos state, stored in `system.paxos` or
+`<user-table>$paxos` (see [Paxos State Tables](#paxos-state-tables)), to the table’s
+`paxos_grace_seconds`. The default value is 10 days. You can change it by
+altering the user table. See [Paxos grace seconds](https://docs.scylladb.com/manual/master/cql/cql-extensions.md#cql-paxos-grace-seconds)
+for details.
 
 ## Batch statements
 
@@ -29631,7 +29633,6 @@ Other limitations are more minor:
 ## Additional Information
 
 * [How does ScyllaDB LWT Differ from Apache Cassandra ?](https://docs.scylladb.com/manual/master/kb/lwt-differences.md) - How does ScyllaDB’s implementation of lightweight transactions differ from Apache Cassandra?
-* [How to Change gc_grace_seconds for a Table](https://docs.scylladb.com/manual/master/kb/gc-grace-seconds.md) - How to change the `gc_grace_seconds` parameter for a table
 
 
 # maintenance-mode.md
@@ -44848,15 +44849,13 @@ ALTER TABLE heartrate_ttl WITH default_time_to_live = 3600;
 ### TTL with  LWT
 
 #### NOTE
-TTL on records in system.paxos table is set with the `paxos_grace_seconds` value.
-If this value is not set, the value from `gc_grace_seconds` is used.
-The default for `gc_grace_seconds` and `paxos_grace_seconds` are both the same (10 days).
-You can have two different settings for `paxos_grace_seconds` and `gc_grace_seconds`.
-You can change the `paxos_grace_seconds` value by altering the system.paxos table.
+ScyllaDB sets the TTL of a table’s Paxos state, stored in `system.paxos` or
+`<user-table>$paxos` (see [Paxos State Tables](https://docs.scylladb.com/manual/master/features/lwt.md#paxos-state-tables)), to the table’s
+`paxos_grace_seconds`. The default value is 10 days. You can change it by
+altering the user table. See [Paxos grace seconds](https://docs.scylladb.com/manual/master/cql/cql-extensions.md#cql-paxos-grace-seconds)
+for details.
 
 Refer to [LWT](https://docs.scylladb.com/manual/master/features/lwt.md) for more information.
-
-The `gc_grace_seconds` parameter is defined [here](https://docs.scylladb.com/manual/master/cql/ddl.md#create-table-general-options).
 
 ## TTL for a Collection
 
