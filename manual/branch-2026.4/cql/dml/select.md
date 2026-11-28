@@ -485,8 +485,12 @@ For more information, see the [Full-Text Search documentation](https://docs.scyl
 
 The `BM25()` function enables full-text search queries over text columns that
 have a [full-text index](https://docs.scylladb.com/manual/stable/cql/secondary-indexes.md#create-fulltext-index-statement) created with
-`USING 'fulltext_index'`. `BM25()` takes a column name and a query string
+`USING 'fulltext_index'`. `BM25()` takes a column name and a search term
 and scores rows using the BM25 ranking algorithm.
+
+The search term is a query, not plain text, so some characters have a special
+meaning. Inside double quotes they lose that meaning, and the text is searched
+as a phrase. See [Search term syntax](https://docs.scylladb.com/manual/stable/features/fulltext-search.md#fulltext-search-term).
 
 A full-text search query must contain **both** of the following clauses,
 referencing the **same** column and the **same** search term:
@@ -534,7 +538,7 @@ SELECT * FROM articles
     LIMIT 10;
 ```
 
-Use bind markers for the query term:
+Use bind markers for the search term:
 
 ```cql
 SELECT * FROM articles

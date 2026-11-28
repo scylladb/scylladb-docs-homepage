@@ -419,7 +419,7 @@ explicitly and does generate a CDC event.</p>
 <section id="querying-with-bm25">
 <h2>Querying with BM25<a class="headerlink" href="#querying-with-bm25" title="Link to this heading">¶</a></h2>
 <p>FTS queries use the <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> function to score rows against a search term.
-<code class="docutils literal notranslate"><span class="pre">BM25()</span></code> takes two arguments: a column name and a query string.</p>
+<code class="docutils literal notranslate"><span class="pre">BM25()</span></code> takes two arguments: a column name and a search term.</p>
 <p>A full-text search query must use <code class="docutils literal notranslate"><span class="pre">BM25()</span></code> in <strong>both</strong> of these clauses, on
 the <strong>same</strong> column and with the <strong>same</strong> search term:</p>
 <ul class="simple">
@@ -473,6 +473,42 @@ several of them still makes a single request.</p>
 that is no longer in the base table, that row’s rank is missing from the result and the ranks after
 it are not renumbered.</p>
 </section>
+<section id="search-term-syntax">
+<span id="fulltext-search-term"></span><h3>Search term syntax<a class="headerlink" href="#search-term-syntax" title="Link to this heading">¶</a></h3>
+<p>The search term is a query, not plain text. Some characters, such as <code class="docutils literal notranslate"><span class="pre">'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">:</span></code>, <code class="docutils literal notranslate"><span class="pre">~</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>, <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code> and parentheses, have a special
+meaning. Ordinary text, especially user input, may then be rejected or match
+unexpected rows.</p>
+<p>Words separated by whitespace are combined with <code class="docutils literal notranslate"><span class="pre">OR</span></code>: a row that contains any
+of them matches. The operators <code class="docutils literal notranslate"><span class="pre">AND</span></code>, <code class="docutils literal notranslate"><span class="pre">OR</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span></code> combine words, and
+parentheses group them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">ks</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'(jupiter OR saturn) AND planet NOT rings'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'(jupiter OR saturn) AND planet NOT rings'</span><span class="p">)</span>
+    <span class="n">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The operators are recognized only in upper case. A lowercase <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code> or
+<code class="docutils literal notranslate"><span class="pre">not</span></code> is not an operator.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">-</span></code> before a word excludes it, like <code class="docutils literal notranslate"><span class="pre">NOT</span></code>. A <code class="docutils literal notranslate"><span class="pre">+</span></code> before a word makes
+that word required, but the other words stay optional, so it is not the same as
+<code class="docutils literal notranslate"><span class="pre">AND</span></code>: <code class="docutils literal notranslate"><span class="pre">planet</span> <span class="pre">+jupiter</span></code> matches every row that contains <em>jupiter</em>, while
+<code class="docutils literal notranslate"><span class="pre">planet</span> <span class="pre">AND</span> <span class="pre">jupiter</span></code> matches only the rows that contain both words.</p>
+<p>To search for text that contains special characters, wrap it in double quotes.
+Inside the double quotes they have no special meaning, and the text is searched
+as a phrase: the words must appear next to each other, in the same order. Write
+<code class="docutils literal notranslate"><span class="pre">\&quot;</span></code> for a double quote and <code class="docutils literal notranslate"><span class="pre">\\</span></code> for a backslash.
+Inside a CQL string literal, a single quote is written as <code class="docutils literal notranslate"><span class="pre">''</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">ks</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">WHERE</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'"don''t panic"'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">BM25</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'"don''t panic"'</span><span class="p">)</span>
+    <span class="n">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>A phrase of several words needs token positions, which the index stores by
+default. On an index created with <code class="docutils literal notranslate"><span class="pre">'positions':</span> <span class="pre">'false'</span></code>, such a phrase is
+rejected.</p>
+</section>
 <section id="highlighting">
 <span id="fulltext-highlighting"></span><h3>Highlighting<a class="headerlink" href="#highlighting" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">BM25_HIGHLIGHT()</span></code> returns an excerpt of the searched text with the matched
@@ -506,7 +542,7 @@ combined filtering is planned for a future release.</p>
 </section>
 <section id="using-bind-markers">
 <h3>Using bind markers<a class="headerlink" href="#using-bind-markers" title="Link to this heading">¶</a></h3>
-<p>The query term can be supplied with a bind marker in prepared statements:</p>
+<p>The search term can be supplied with a bind marker in prepared statements:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SELECT * FROM ks.t
     WHERE BM25(v, ?) &gt; 0
     ORDER BY BM25(v, ?)
@@ -731,6 +767,7 @@ returned per matching row.</p></td>
 <li><a class="reference internal" href="#creating-a-full-text-index">Creating a Full-Text Index</a></li>
 <li><a class="reference internal" href="#querying-with-bm25">Querying with BM25</a><ul>
 <li><a class="reference internal" href="#basic-query">Basic query</a></li>
+<li><a class="reference internal" href="#search-term-syntax">Search term syntax</a></li>
 <li><a class="reference internal" href="#highlighting">Highlighting</a></li>
 <li><a class="reference internal" href="#filtering-support">Filtering support</a></li>
 <li><a class="reference internal" href="#using-bind-markers">Using bind markers</a></li>
@@ -1256,7 +1293,7 @@ returned per matching row.</p></td>
             
                 <div class="footer-bottom__last-updated">
                     
-                        Last updated on 12 Nov 2026.
+                        Last updated on 29 Oct 2026.
                     
                 </div>
             
